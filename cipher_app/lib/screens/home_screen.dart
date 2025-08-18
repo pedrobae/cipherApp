@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../widgets/search_app_bar.dart';
 import '../widgets/bottom_navigation_icons.dart';
+import '../providers/search_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -10,9 +12,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool _isSearching = false;
   final TextEditingController _searchController = TextEditingController();
-  String _searchInput = '';
 
   @override
   void dispose() {
@@ -20,24 +20,23 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  void _handleSearch(String value) {
-    setState(() {
-      _searchInput = value;
-    });
-    print('Searching: $_searchInput');
-  }
-
   @override
   Widget build(BuildContext context) {
+    final searchProvider = context.watch<SearchProvider>();
+
     return Scaffold(
       appBar: SearchAppBar(
-        isSearching: _isSearching,
+        isSearching: searchProvider.isSearching,
         searchController: _searchController,
-        onSearchChanged: _handleSearch,
-        onSearchToggle: () => setState(() {
-          _isSearching = !_isSearching;
-          if (!_isSearching) _searchController.clear();
-        }),
+        onSearchChanged: (value) {
+          context.read<SearchProvider>().setSearchTerm(value);
+        },
+        onSearchToggle: () {
+          context.read<SearchProvider>().toggleSearch();
+          if (!searchProvider.isSearching) {
+            _searchController.clear();
+          }
+        },
         hint: 'Procure Cifras...',
       ),
       body: Column(

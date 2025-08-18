@@ -49,3 +49,15 @@ class CipherCard extends StatelessWidget {
     );
   }
 }
+
+
+// CipherCard(
+//   cipher: cipher,
+//   onAddToPlaylist: () {
+//     // Handle adding to playlist
+//     showModalBottomSheet(
+//       context: context,
+//       builder: (context) => PlaylistSelectionSheet(cipher: cipher),
+//     );
+//   },
+// ),

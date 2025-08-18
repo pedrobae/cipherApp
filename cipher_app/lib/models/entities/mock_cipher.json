@@ -1,0 +1,17 @@
+{
+  "id": "cipher001",
+  "title": "Amazing Grace",
+  "author": "John Newton",
+  "tempo": "Slow",
+  "tags": ["hymn", "worship", "traditional"],
+  "key": "G",
+  "language": "en",
+  "createdAt": "2025-08-18T10:00:00Z",
+  "updatedAt": "2025-08-18T10:00:00Z",
+  "isLocal": true,
+  "musicStruct": {
+    "verse1": "[G]Amazing [C]grace how [G]sweet the [D]sound\nThat [G]saved a [C]wretch like [G]me\n[G]I once was [C]lost but [G]now I'm [D]found\nWas [G]blind but [C]now I [G]see",
+    "verse2": "[G]T'was grace that [C]taught my [G]heart to [D]fear\nAnd [G]grace my [C]fears re[G]lieved\n[G]How precious [C]did that [G]grace ap[D]pear\nThe [G]hour I [C]first be[G]lieved",
+    "chorus": "[Em]My chains are [D]gone, I've been set [G]free\n[Em]My God, my [D]Savior has ransomed [G]me\n[Em]And like a [D]flood His mercy [C]reigns\n[G]Unending [D]love, amazing [G]grace"
+  }
+}

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../widgets/search_app_bar.dart';
+import '../widgets/bottom_navigation_icons.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -10,7 +12,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool _isSearching = false;
   final TextEditingController _searchController = TextEditingController();
-  String? searchInput = null;
+  String _searchInput = '';
 
   @override
   void dispose() {
@@ -18,47 +20,31 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
+  void _handleSearch(String value) {
+    setState(() {
+      _searchInput = value;
+    });
+    print('Searching: $_searchInput');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: _isSearching
-            ? TextField(
-                controller: _searchController,
-                decoration: const InputDecoration(
-                  hintText: 'Procure Cifras...',
-                ),
-                onChanged: (value) {
-                  searchInput = value;
-                  print('Searching: $value');
-                },
-              )
-            : const Text('Cipher App'),
-        actions: [
-          IconButton(
-            icon: Icon(_isSearching ? Icons.close : Icons.search),
-            onPressed: () => {
-              setState(() {
-                _isSearching = !_isSearching;
-                if (!_isSearching) {
-                  _searchController.clear();
-                }
-              }),
-            },
-          ),
-        ],
+      appBar: SearchAppBar(
+        isSearching: _isSearching,
+        searchController: _searchController,
+        onSearchChanged: _handleSearch,
+        onSearchToggle: () => setState(() {
+          _isSearching = !_isSearching;
+          if (!_isSearching) _searchController.clear();
+        }),
+        hint: 'Procure Cifras...',
       ),
       body: Column(
         mainAxisSize: MainAxisSize.max,
-        children: [
-          Expanded(child: const Center(child: Text('Home Screen'))),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: IconButton(
-              icon: const Icon(Icons.settings),
-              onPressed: () => Navigator.pushNamed(context, '/settings'),
-            ),
-          ),
+        children: const [
+          Expanded(child: Center(child: Text('Home Screen'))),
+          BottomNavigationIcons(),
         ],
       ),
     );

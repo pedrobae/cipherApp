@@ -10,6 +10,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool _isSearching = false;
   final TextEditingController _searchController = TextEditingController();
+  String? searchInput = null;
 
   @override
   void dispose() {
@@ -26,9 +27,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 controller: _searchController,
                 decoration: const InputDecoration(
                   hintText: 'Procure Cifras...',
-                  border: InputBorder.none,
                 ),
                 onChanged: (value) {
+                  searchInput = value;
                   print('Searching: $value');
                 },
               )
@@ -47,7 +48,19 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: const Center(child: Text('Home Screen')),
+      body: Column(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Expanded(child: const Center(child: Text('Home Screen'))),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: IconButton(
+              icon: const Icon(Icons.settings),
+              onPressed: () => Navigator.pushNamed(context, '/settings'),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

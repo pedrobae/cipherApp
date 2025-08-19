@@ -4,14 +4,14 @@ import '../widgets/search_app_bar.dart';
 import '../widgets/bottom_navigation_icons.dart';
 import '../providers/search_provider.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class LibraryScreen extends StatefulWidget {
+  const LibraryScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<LibraryScreen> createState() => _LibraryScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _LibraryScreenState extends State<LibraryScreen> {
   final TextEditingController _searchController = TextEditingController();
 
   @override

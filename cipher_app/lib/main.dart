@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/search_provider.dart';
-import 'screens/home_screen.dart';
+import 'screens/library_screen.dart';
 import 'screens/settings_screen.dart';
 
 void main() {
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
         ),
         initialRoute: '/',
         routes: {
-          '/': (context) => const HomeScreen(), // Default/home route
+          '/': (context) => const LibraryScreen(), // Default/home route
           '/settings': (context) => const SettingsScreen(), // Settings route
         },
       ),

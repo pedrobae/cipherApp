@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'providers/navigation_provider.dart';
 import 'providers/search_provider.dart';
+import 'routes/app_routes.dart';
 import 'screens/library_screen.dart';
-import 'screens/settings_screen.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -13,22 +15,23 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => SearchProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => NavigationProvider()),
+        ChangeNotifierProvider(create: (_) => SearchProvider()),
+      ],
       child: MaterialApp(
-        debugShowCheckedModeBanner: false,
         title: 'Cipher App',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 99, 212, 118),
-          ),
+          primarySwatch: Colors.blue,
           useMaterial3: true,
         ),
-        initialRoute: '/',
-        routes: {
-          '/': (context) => const LibraryScreen(), // Default/home route
-          '/settings': (context) => const SettingsScreen(), // Settings route
-        },
+        initialRoute: AppRoutes.library,
+        routes: AppRoutes.routes,
+        onUnknownRoute: (settings) => MaterialPageRoute(
+          builder: (_) => const LibraryScreen(),
+        ),
       ),
     );
   }

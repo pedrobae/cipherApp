@@ -1,7 +1,7 @@
+import 'package:cipher_app/widgets/app_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../widgets/search_app_bar.dart';
-import '../widgets/bottom_navigation_icons.dart';
 import '../providers/search_provider.dart';
 
 class LibraryScreen extends StatefulWidget {
@@ -25,6 +25,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
     final searchProvider = context.watch<SearchProvider>();
 
     return Scaffold(
+      drawer: const AppDrawer(),
       appBar: SearchAppBar(
         isSearching: searchProvider.isSearching,
         searchController: _searchController,
@@ -39,13 +40,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
         },
         hint: 'Procure Cifras...',
       ),
-      body: Column(
-        mainAxisSize: MainAxisSize.max,
-        children: const [
-          Expanded(child: Center(child: Text('Home Screen'))),
-          BottomNavigationIcons(),
-        ],
-      ),
+      body: Center(child: Text('Home Screen')),
     );
   }
 }

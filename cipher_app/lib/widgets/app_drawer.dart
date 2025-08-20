@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/navigation_provider.dart';
@@ -10,23 +12,29 @@ class AppDrawer extends StatelessWidget {
     return Consumer<NavigationProvider>(
       builder: (context, navigationProvider, child) {
         return Drawer(
-          shape: LinearBorder(),
-          child: ListView(
+            shape: LinearBorder(),
+            width: math.min(
+              math.max(
+                MediaQuery.of(context).size.width * (2 / 3),
+                224
+              ),
+              320),
+            child: ListView(
             padding: EdgeInsets.zero,
             children: [
               DrawerHeader(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    begin: Alignment(0, 0),
                     colors: [
                       Theme.of(context).colorScheme.primary,
                       Theme.of(context).colorScheme.primaryContainer
                     ]
                   ),
                 ),
-                child: const Text(
+                child: Text(
                   'Cipher App',
                   style: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimary,
                     fontSize: 24,
                   ),
                 ),

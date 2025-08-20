@@ -15,6 +15,7 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      actionsPadding: EdgeInsets.all(10),
       title: TextField(
         controller: searchController,
         decoration: InputDecoration(hintText: hint),

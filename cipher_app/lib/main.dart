@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Cipher App',
-        theme: ThemeData(colorSchemeSeed: const Color.fromARGB(255, 75, 204, 79)),
+        theme: ThemeData(colorSchemeSeed: const Color.fromARGB(255, 87, 253, 115)),
         initialRoute: AppRoutes.home,
         routes: AppRoutes.routes,
       ),

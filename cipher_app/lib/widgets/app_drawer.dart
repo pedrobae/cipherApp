@@ -10,17 +10,23 @@ class AppDrawer extends StatelessWidget {
     return Consumer<NavigationProvider>(
       builder: (context, navigationProvider, child) {
         return Drawer(
+          shape: LinearBorder(),
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
-              const DrawerHeader(
+              DrawerHeader(
                 decoration: BoxDecoration(
-                  color: Colors.blue,
+                  gradient: LinearGradient(
+                    begin: Alignment(0, 0),
+                    colors: [
+                      Theme.of(context).colorScheme.primary,
+                      Theme.of(context).colorScheme.primaryContainer
+                    ]
+                  ),
                 ),
-                child: Text(
-                  'Menu',
+                child: const Text(
+                  'Cipher App',
                   style: TextStyle(
-                    color: Colors.white,
                     fontSize: 24,
                   ),
                 ),
@@ -35,7 +41,7 @@ class AppDrawer extends StatelessWidget {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.featured_play_list),
+                leading: const Icon(Icons.featured_play_list_outlined),
                 title: const Text('Playlists'),
                 selected: navigationProvider.selectedIndex == 1,
                 onTap: () {

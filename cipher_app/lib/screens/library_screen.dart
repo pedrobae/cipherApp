@@ -21,20 +21,12 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final searchProvider = context.watch<SearchProvider>();
-
     return Scaffold(
       appBar: SearchAppBar(
-        isSearching: searchProvider.isSearching,
         searchController: _searchController,
         onSearchChanged: (value) {
           context.read<SearchProvider>().setSearchTerm(value);
-        },
-        onSearchToggle: () {
-          context.read<SearchProvider>().toggleSearch();
-          if (!searchProvider.isSearching) {
-            _searchController.clear();
-          }
+          print(value);
         },
         hint: 'Procure Cifras...',
       ),

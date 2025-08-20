@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/navigation_provider.dart';
 import 'providers/search_provider.dart';
-import 'screens/main_screen.dart';
+import 'routes/app_routes.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,9 +21,9 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Cipher App',
-        theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-        ),
-        home: const MainScreen(),
+        theme: ThemeData(colorSchemeSeed: const Color.fromARGB(255, 75, 204, 79)),
+        initialRoute: AppRoutes.home,
+        routes: AppRoutes.routes,
       ),
     );
   }

@@ -11,14 +11,14 @@ class CipherService {
   // Future database methods (placeholders)
   static Future<int> getCipherCount() async {
     // TODO: Implement when database is ready
-    return 1;
+    return 4;
   }
 
   static Future<List<Cipher>> getAllCiphers() async {
     try {
       // Load mock JSON file
       final String jsonString = await rootBundle.loadString('assets/data/mock_cipher.json');
-      final List<dynamic> jsonList = [json.decode(jsonString)];
+      final List<dynamic> jsonList = json.decode(jsonString);
       
       // Convert to Cipher objects and return
       return jsonList.map((json) => Cipher.fromJson(json)).toList();

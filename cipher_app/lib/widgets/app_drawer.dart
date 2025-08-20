@@ -8,85 +8,63 @@ class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<NavigationProvider>(
-      builder: (context, nav, _) => Drawer(
-        child: ListView(
-          children: [
-            _buildDrawerHeader(context),
-            ...drawerItems.map((item) => _buildDrawerItem(context, item, nav)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDrawerHeader(BuildContext context) {
-    // Extract header to separate method
-    return const DrawerHeader(
-      decoration: BoxDecoration(
-        color: Colors.blue,
-      ),
-      child: Text(
-        'Menu',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDrawerItem(BuildContext context, DrawerItem item, NavigationProvider nav) {
-    // Extract item building logic
-    return ListTile(
-      leading: Icon(item.icon),
-      title: Text(item.title),
-      selected: nav.selectedIndex == item.index,
-      onTap: () {
-        nav.navigateTo(item.index, item.route);
-        Navigator.pushNamed(context, item.route);
+      builder: (context, navigationProvider, child) {
+        return Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              const DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                ),
+                child: Text(
+                  'Menu',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                  ),
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.library_books),
+                title: const Text('Library'),
+                selected: navigationProvider.selectedIndex == 0,
+                onTap: () {
+                  navigationProvider.navigateTo(0, NavigationProvider.libraryRoute);
+                  Navigator.pop(context); // Close drawer
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.featured_play_list),
+                title: const Text('Playlists'),
+                selected: navigationProvider.selectedIndex == 1,
+                onTap: () {
+                  navigationProvider.navigateTo(1, NavigationProvider.playlistsRoute);
+                  Navigator.pop(context); // Close drawer
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.settings),
+                title: const Text('Settings'),
+                selected: navigationProvider.selectedIndex == 2,
+                onTap: () {
+                  navigationProvider.navigateTo(2, NavigationProvider.settingsRoute);
+                  Navigator.pop(context); // Close drawer
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.info),
+                title: const Text('Info'),
+                selected: navigationProvider.selectedIndex == 3,
+                onTap: () {
+                  navigationProvider.navigateTo(3, NavigationProvider.infoRoute);
+                  Navigator.pop(context); // Close drawer
+                },
+              ),
+            ],
+          ),
+        );
       },
     );
   }
 }
-
-class DrawerItem {
-  final IconData icon;
-  final String title;
-  final String route;
-  final int index;
-
-  DrawerItem({
-    required this.icon,
-    required this.title,
-    required this.route,
-    required this.index,
-  });
-}
-
-final List<DrawerItem> drawerItems = [
-  DrawerItem(
-    icon: Icons.library_books,
-    title: 'Library',
-    route: '/library',
-    index: 0,
-  ),
-  DrawerItem(
-    icon: Icons.featured_play_list,
-    title: 'Playlists',
-    route: '/playlists',
-    index: 1,
-  ),
-  DrawerItem(
-    icon: Icons.settings,
-    title: 'Settings',
-    route: '/settings',
-    index: 2,
-  ),
-  DrawerItem(
-    icon: Icons.info,
-    title: 'Info',
-    route: '/info',
-    index: 3,
-  ),
-];

@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/navigation_provider.dart';
 import 'providers/search_provider.dart';
-import 'routes/app_routes.dart';
-import 'screens/library_screen.dart';
+import 'screens/main_screen.dart';
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -21,17 +19,11 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => SearchProvider()),
       ],
       child: MaterialApp(
-        title: 'Cipher App',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          useMaterial3: true,
+        title: 'Cipher App',
+        theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         ),
-        initialRoute: AppRoutes.library,
-        routes: AppRoutes.routes,
-        onUnknownRoute: (settings) => MaterialPageRoute(
-          builder: (_) => const LibraryScreen(),
-        ),
+        home: const MainScreen(),
       ),
     );
   }

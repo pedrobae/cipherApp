@@ -25,7 +25,7 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
               decoration: InputDecoration(hintText: hint),
               onChanged: onSearchChanged,
             )
-          : const Text('Cipher App'),
+          : const Text(''),
       actions: [
         IconButton(
           icon: Icon(isSearching ? Icons.close : Icons.search),

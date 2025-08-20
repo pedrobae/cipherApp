@@ -1,4 +1,3 @@
-import 'package:cipher_app/widgets/app_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../widgets/search_app_bar.dart';
@@ -25,7 +24,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
     final searchProvider = context.watch<SearchProvider>();
 
     return Scaffold(
-      drawer: const AppDrawer(),
       appBar: SearchAppBar(
         isSearching: searchProvider.isSearching,
         searchController: _searchController,

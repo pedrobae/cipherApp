@@ -9,14 +9,17 @@ class NavigationProvider extends ChangeNotifier {
 
   int _selectedIndex = 0;
   String _currentRoute = libraryRoute;
+  String _routeTitle = 'Library';
 
   String get currentRoute => _currentRoute;
   int get selectedIndex => _selectedIndex;
+  String get routeTitle => _routeTitle;
 
   void navigateTo(int index, String route) {
     if (_selectedIndex != index || _currentRoute != route) {
       _selectedIndex = index;
       _currentRoute = route;
+      _routeTitle = _getTitleFromRoute(route);
       notifyListeners();
     }
   }
@@ -43,8 +46,20 @@ class NavigationProvider extends ChangeNotifier {
     }
   }
 
-  @override
-  void dispose() {
-    super.dispose();
+  String _getTitleFromRoute(String route) {
+    switch (route) {
+      case libraryRoute:
+        return 'Library';
+      case playlistsRoute:
+        return 'Playlists';
+      case settingsRoute:
+        return 'Settings';
+      case infoRoute:
+        return 'Info';
+      case cipherViewerRoute:
+        return 'Cipher Viewer';
+      default:
+        return 'Cipher App';
+    }
   }
 }

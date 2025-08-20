@@ -6,7 +6,6 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Cipher App')),
       body: const Center(child: Text('Settings Screen')),
     );
   }

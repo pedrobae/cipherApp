@@ -5,24 +5,19 @@ class InfoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Info'),
-      ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.info_outline, size: 48),
-            SizedBox(height: 16),
-            Text(
-              'App Information',
-              style: TextStyle(fontSize: 24),
-            ),
-            SizedBox(height: 8),
-            Text('Version 1.0.0'),
-          ],
-        ),
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.info_outline, size: 48),
+          SizedBox(height: 16),
+          Text(
+            'App Information',
+            style: TextStyle(fontSize: 24),
+          ),
+          SizedBox(height: 8),
+          Text('Version 1.0.0'),
+        ],
       ),
     );
   }

@@ -35,10 +35,10 @@ class _LibraryScreenState extends State<LibraryScreen> {
     return Scaffold(
       appBar: SearchAppBar(
         searchController: _searchController,
+        // When Searching something
         onSearchChanged: (value) {
           context.read<SearchProvider>().setSearchTerm(value);
           context.read<CipherProvider>().searchCiphers(value);
-          print(value);
         },
         hint: 'Procure Cifras...',
       ),
@@ -83,7 +83,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 cipher: cipher,
                 onAddToPlaylist: () {
                   // Handle add to playlist
-                  print('Add ${cipher.title} to playlist');
+                  
                 },
               );
             },

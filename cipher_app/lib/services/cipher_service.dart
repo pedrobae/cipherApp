@@ -23,7 +23,7 @@ class CipherService {
       // Convert to Cipher objects and return
       return jsonList.map((json) => Cipher.fromJson(json)).toList();
     } catch (e) {
-        print('Error loading mock data: $e');
+        // Add Log Later
         return [];
     }
     // TODO: Implement when database is ready
@@ -41,7 +41,6 @@ class CipherService {
 
   static Future<void> addToPlaylist(String cipherId, String playlistId) async {
     // TODO: Implement playlist functionality
-    print('Adding cipher $cipherId to playlist $playlistId');
   }
 
   static Future<void> closeDatabase() async {

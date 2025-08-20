@@ -12,14 +12,12 @@ class AppDrawer extends StatelessWidget {
     return Consumer<NavigationProvider>(
       builder: (context, navigationProvider, child) {
         return Drawer(
-            shape: LinearBorder(),
-            width: math.min(
-              math.max(
-                MediaQuery.of(context).size.width * (2 / 3),
-                224
-              ),
-              320),
-            child: ListView(
+          shape: LinearBorder(),
+          width: math.min(
+            math.max(MediaQuery.of(context).size.width * (2 / 3),224),
+            320
+          ),
+          child: ListView(
             padding: EdgeInsets.zero,
             children: [
               DrawerHeader(

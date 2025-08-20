@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/navigation_provider.dart';
 import 'providers/search_provider.dart';
+import 'providers/cipher_provider.dart';
 import 'routes/app_routes.dart';
 
 void main() {
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => NavigationProvider()),
         ChangeNotifierProvider(create: (_) => SearchProvider()),
+        ChangeNotifierProvider(create: (_) => CipherProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

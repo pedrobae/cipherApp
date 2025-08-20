@@ -15,6 +15,7 @@ class LibraryScreen extends StatefulWidget {
 class _LibraryScreenState extends State<LibraryScreen> {
   final TextEditingController _searchController = TextEditingController();
 
+  @override
   void initState() {
     super.initState();
     // Load ciphers when screen initializes

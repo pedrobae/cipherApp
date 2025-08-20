@@ -5,7 +5,11 @@ class CipherCard extends StatelessWidget {
   final Cipher cipher;
   final VoidCallback? onAddToPlaylist;
 
-  const CipherCard({super.key, required this.cipher, this.onAddToPlaylist});
+  const CipherCard({
+    super.key, 
+    required this.cipher, 
+    this.onAddToPlaylist
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -8,7 +8,7 @@ class InfoProvider extends ChangeNotifier {
   String? _error;
   InfoType? _selectedType;
 
-  List<InfoItem> get infoItem => _selectedType == null
+  List<InfoItem> get infoItems => _selectedType == null
       ? _infoItems
       : _infoItems.where((item) => item.type == _selectedType).toList();
 
@@ -38,7 +38,7 @@ class InfoProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void refresh() {
+  Future<void> refresh() async {
     loadInfoItems();
   }
 

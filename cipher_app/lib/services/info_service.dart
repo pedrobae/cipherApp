@@ -17,9 +17,11 @@ class InfoService {
       final List<dynamic> jsonList = json.decode(jsonString);
 
       // Convert to Cipher objects and return
+      print(jsonList);
       return jsonList.map((json) => InfoItem.fromJson(json)).toList();
     } catch (e) {
       // Add Log Later
+      print(e);
       return [];
     }
     // TODO: Implement when database is ready

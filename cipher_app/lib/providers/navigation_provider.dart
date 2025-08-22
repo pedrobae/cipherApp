@@ -9,7 +9,7 @@ class NavigationProvider extends ChangeNotifier {
 
   int _selectedIndex = 0;
   String _currentRoute = libraryRoute;
-  String _routeTitle = 'Library';
+  String _routeTitle = 'Biblioteca';
 
   String get currentRoute => _currentRoute;
   int get selectedIndex => _selectedIndex;
@@ -49,13 +49,13 @@ class NavigationProvider extends ChangeNotifier {
   String _getTitleFromRoute(String route) {
     switch (route) {
       case libraryRoute:
-        return 'Library';
+        return 'Biblioteca';
       case playlistsRoute:
         return 'Playlists';
       case settingsRoute:
-        return 'Settings';
+        return 'Configurações';
       case infoRoute:
-        return 'Info';
+        return 'Informações';
       case cipherViewerRoute:
         return 'Cipher Viewer';
       default:

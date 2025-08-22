@@ -14,8 +14,8 @@ class AppDrawer extends StatelessWidget {
         return Drawer(
           shape: LinearBorder(),
           width: math.min(
-            math.max(MediaQuery.of(context).size.width * (2 / 3),224),
-            320
+            math.max(MediaQuery.of(context).size.width * (2 / 3), 224),
+            320,
           ),
           child: ListView(
             padding: EdgeInsets.zero,
@@ -25,8 +25,8 @@ class AppDrawer extends StatelessWidget {
                   gradient: LinearGradient(
                     colors: [
                       Theme.of(context).colorScheme.primary,
-                      Theme.of(context).colorScheme.primaryContainer
-                    ]
+                      Theme.of(context).colorScheme.primaryContainer,
+                    ],
                   ),
                 ),
                 child: Text(
@@ -39,10 +39,13 @@ class AppDrawer extends StatelessWidget {
               ),
               ListTile(
                 leading: const Icon(Icons.library_books),
-                title: const Text('Library'),
+                title: const Text('Biblioteca'),
                 selected: navigationProvider.selectedIndex == 0,
                 onTap: () {
-                  navigationProvider.navigateTo(0, NavigationProvider.libraryRoute);
+                  navigationProvider.navigateTo(
+                    0,
+                    NavigationProvider.libraryRoute,
+                  );
                   Navigator.pop(context); // Close drawer
                 },
               ),
@@ -51,25 +54,34 @@ class AppDrawer extends StatelessWidget {
                 title: const Text('Playlists'),
                 selected: navigationProvider.selectedIndex == 1,
                 onTap: () {
-                  navigationProvider.navigateTo(1, NavigationProvider.playlistsRoute);
+                  navigationProvider.navigateTo(
+                    1,
+                    NavigationProvider.playlistsRoute,
+                  );
                   Navigator.pop(context); // Close drawer
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.settings),
-                title: const Text('Settings'),
+                title: const Text('Configurações'),
                 selected: navigationProvider.selectedIndex == 2,
                 onTap: () {
-                  navigationProvider.navigateTo(2, NavigationProvider.settingsRoute);
+                  navigationProvider.navigateTo(
+                    2,
+                    NavigationProvider.settingsRoute,
+                  );
                   Navigator.pop(context); // Close drawer
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.info),
-                title: const Text('Info'),
+                title: const Text('Informações'),
                 selected: navigationProvider.selectedIndex == 3,
                 onTap: () {
-                  navigationProvider.navigateTo(3, NavigationProvider.infoRoute);
+                  navigationProvider.navigateTo(
+                    3,
+                    NavigationProvider.infoRoute,
+                  );
                   Navigator.pop(context); // Close drawer
                 },
               ),

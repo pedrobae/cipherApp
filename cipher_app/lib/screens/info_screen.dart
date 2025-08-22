@@ -23,7 +23,6 @@ class _InfoScreenState extends State<InfoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Informações')),
       body: Consumer<InfoProvider>(
         builder: (context, infoProvider, child) {
           if (infoProvider.isLoading) {
@@ -34,7 +33,19 @@ class _InfoScreenState extends State<InfoScreen> {
             onRefresh: infoProvider.refresh,
             child: infoProvider.infoItems.isEmpty
                 ? const Center(child: Text('Nenhuma informação disponível'))
-                : CarouselInfo(items: infoProvider.infoItems),
+                : Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CarouselInfo(
+                      items: infoProvider.infoItems,
+                      height:
+                          MediaQuery.of(context).size.height -
+                          MediaQuery.of(context).padding.top -
+                          kToolbarHeight -
+                          MediaQuery.of(
+                            context,
+                          ).padding.bottom, // Subtract AppBar height
+                    ),
+                  ),
           );
         },
       ),

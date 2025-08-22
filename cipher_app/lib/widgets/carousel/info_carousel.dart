@@ -24,11 +24,16 @@ class CarouselInfo extends StatelessWidget {
         return InfoCard(item: items[index]);
       },
       options: CarouselOptions(
+        disableCenter: true,
+        enlargeStrategy: CenterPageEnlargeStrategy.zoom,
         height: height,
         autoPlay: true,
-        enlargeCenterPage: true,
-        viewportFraction: 0.9,
         autoPlayInterval: const Duration(seconds: 5),
+        enlargeCenterPage: true,
+        enlargeFactor: 0.25,
+        viewportFraction: 0.9,
+        padEnds: false,
+        enableInfiniteScroll: true,
       ),
     );
   }

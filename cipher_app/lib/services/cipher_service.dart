@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:isolate';
 import 'package:flutter/services.dart';
 import '../models/domain/cipher.dart';
 
@@ -18,10 +19,10 @@ class CipherService {
     try {
       // Load mock JSON file
       final String jsonString = await rootBundle.loadString('assets/data/mock_cipher.json');
-      final List<dynamic> jsonList = json.decode(jsonString);
       
-      // Convert to Cipher objects and return
-      return jsonList.map((json) => Cipher.fromJson(json)).toList();
+      // Parse JSON in background isolate
+      final List<Cipher> ciphers = await _parseJsonInIsolate(jsonString);
+      return List.from(ciphers);
     } catch (e) {
         // Add Log Later
         return [];
@@ -45,5 +46,13 @@ class CipherService {
 
   static Future<void> closeDatabase() async {
     // TODO: Implement when database is ready
+  }
+
+    // Heavy JSON parsing in background thread
+  static Future<List<Cipher>> _parseJsonInIsolate(String jsonString) async {
+    return await Isolate.run(() {
+      final List<dynamic> jsonList = json.decode(jsonString);
+      return jsonList.map((json) => Cipher.fromJson(json)).toList();
+    });
   }
 }

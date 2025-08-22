@@ -14,14 +14,17 @@ class LibraryScreen extends StatefulWidget {
 
 class _LibraryScreenState extends State<LibraryScreen> {
   final TextEditingController _searchController = TextEditingController();
+  bool _hasInitialized = false;
 
-  @override
-  void initState() {
-    super.initState();
-    // Load ciphers when screen initializes
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<CipherProvider>().loadCiphers();
-    });
+  void _loadDataIfNeeded() {
+    if (!_hasInitialized && mounted) {
+      _hasInitialized = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          context.read<CipherProvider>().loadCiphers();
+        }
+      });
+    }
   }
 
   @override
@@ -32,6 +35,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _loadDataIfNeeded();
     return Scaffold(
       appBar: SearchAppBar(
         searchController: _searchController,
@@ -68,22 +72,26 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
           // Handle empty state
           if (cipherProvider.ciphers.isEmpty) {
-            return const Center(
-              child: Text('No ciphers found'),
-            );
+            return const Center(child: Text('No ciphers found'));
           }
 
           // Display ciphers
           return ListView.builder(
-            padding: const EdgeInsets.all(16),
+            cacheExtent: 200,
+            physics: const BouncingScrollPhysics(), // Smoother scrolling
             itemCount: cipherProvider.ciphers.length,
             itemBuilder: (context, index) {
+              // Add bounds checking
+              if (index >= cipherProvider.ciphers.length) {
+                return const SizedBox.shrink();
+              }
+
               final cipher = cipherProvider.ciphers[index];
               return CipherCard(
+                key: ValueKey(cipher.id), // Add keys for better performance
                 cipher: cipher,
                 onAddToPlaylist: () {
                   // Handle add to playlist
-                  
                 },
               );
             },

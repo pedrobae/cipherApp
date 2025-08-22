@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'dart:async';
 import '../models/domain/cipher.dart';
 import '../services/cipher_service.dart';
 
@@ -12,6 +13,9 @@ class CipherProvider extends ChangeNotifier {
   String _searchTerm = '';
   bool _useMemoryFiltering = true;
 
+  // Add debouncing for rapid calls
+  Timer? _loadTimer;
+
   // Getters
   List<Cipher> get ciphers => _filteredCiphers;
   bool get isLoading => _isLoading;
@@ -20,6 +24,14 @@ class CipherProvider extends ChangeNotifier {
 
   // Load ciphers from local SQLite database
   Future<void> loadCiphers() async {
+    // Debounce rapid calls
+    _loadTimer?.cancel();
+    _loadTimer = Timer(const Duration(milliseconds: 100), _performLoad);
+  }
+
+  Future<void> _performLoad() async {
+    if (_isLoading) return; // Prevent multiple simultaneous loads
+
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -56,6 +68,24 @@ class CipherProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  // Future<void> _loadCiphersInChunks() async {
+  //   final allCiphers = await CipherService.getAllCiphers();
+    
+  //   // Process in smaller chunks to prevent frame drops
+  //   const chunkSize = 10;
+  //   _ciphers.clear();
+    
+  //   for (int i = 0; i < allCiphers.length; i += chunkSize) {
+  //     final chunk = allCiphers.skip(i).take(chunkSize).toList();
+  //     _ciphers.addAll(chunk);
+      
+  //     // Yield control back to UI thread
+  //     await Future.delayed(const Duration(milliseconds: 1));
+  //   }
+    
+  //   _filterCiphers();
+  // }
 
   // Search functionality
   Future<void> searchCiphers(String term) async {
@@ -116,6 +146,7 @@ class CipherProvider extends ChangeNotifier {
 
   @override
   void dispose() {
+    _loadTimer?.cancel();
     // Close database connection when ready
     CipherService.closeDatabase(); // Add this when you implement the service
     

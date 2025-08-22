@@ -16,7 +16,7 @@ class InfoProvider extends ChangeNotifier {
   String? get error => _error;
   InfoType? get selectedType => _selectedType;
 
-  Future<void> loadInfoItems() async {
+  Future<void> loadInfo() async {
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -39,7 +39,7 @@ class InfoProvider extends ChangeNotifier {
   }
 
   Future<void> refresh() async {
-    loadInfoItems();
+    loadInfo();
   }
 
   List<InfoItem> getRecentItems({int limit = 5}) {

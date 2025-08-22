@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../helpers/color_helpers.dart';
+import '../utils/string_utils.dart';
 
 class TagChip extends StatelessWidget {
   final String tag;
@@ -16,7 +17,7 @@ class TagChip extends StatelessWidget {
       onTap: onTap,
       child: Chip(
         label: Text(
-          tag,
+          StringUtils.toTitleCase(tag),
           style: theme.textTheme.labelSmall?.copyWith(
             color: tagColors.textColor,
             fontWeight: FontWeight.w500,

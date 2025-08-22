@@ -13,4 +13,10 @@ class StringUtils {
         ? '${text[0].toUpperCase()}${text.substring(1)}'
         : '';
   }
+
+  static String toTitleCase(String text) {
+    return text.split(' ')
+        .map((word) => capitalize(word))
+        .join(' ');
+  }
 }

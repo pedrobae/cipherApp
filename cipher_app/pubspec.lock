@@ -70,6 +70,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_chord:
+    dependency: "direct main"
+    description:
+      name: flutter_chord
+      sha256: e12c70b5e406c5236b8a4ee1fecd3f169cb5e02d2f58fa03f7a08b7ebef1e05c
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.2"
   flutter_lints:
     dependency: "direct dev"
     description:

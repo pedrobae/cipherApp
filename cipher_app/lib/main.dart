@@ -27,8 +27,9 @@ class MyApp extends StatelessWidget {
         title: 'Cipher App',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 99, 212, 118),
+            seedColor: const Color.fromARGB(255, 126, 197, 130),
             brightness: Brightness.light,
+            dynamicSchemeVariant: DynamicSchemeVariant.vibrant,
           ),
           useMaterial3: true,
           // Add custom theme extensions
@@ -39,13 +40,6 @@ class MyApp extends StatelessWidget {
             ),
           ),
           appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
-        ),
-        darkTheme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 99, 212, 118),
-            brightness: Brightness.dark,
-          ),
-          useMaterial3: true,
         ),
         initialRoute: AppRoutes.home,
         routes: AppRoutes.routes,

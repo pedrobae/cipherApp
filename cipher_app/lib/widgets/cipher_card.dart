@@ -28,53 +28,57 @@ static Color _getTagColor(String tag) {
       child: Card(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Text(
-                      cipher.title,
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.end,
+                    spacing: 10,
+                    children: [
+                      Text(
+                        cipher.title,
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      Text(cipher.author, ),
+                    ],
                   ),
-                  IconButton(
+                  Row(
+                    children: [
+                      Text('Key: ${cipher.key}'),
+                      const SizedBox(width: 8),
+                      Text('Tempo: ${cipher.tempo}'),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 4,
+                    runSpacing: 4,
+                    children: cipher.tags.map((tag) => Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: _getTagColor(tag),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        tag,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 12,
+                          color: Colors.black,
+                        ),
+                      ),
+                    )).toList(),
+                  ),
+                ],
+              ),
+              IconButton(
                     icon: const Icon(Icons.playlist_add),
                     onPressed: onAddToPlaylist,
                     tooltip: 'Add to playlist',
                   ),
-                ],
-              ),
-              Text(cipher.author),
-              Row(
-                children: [
-                  Text('Key: ${cipher.key}'),
-                  const SizedBox(width: 8),
-                  Text('Tempo: ${cipher.tempo}'),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 4,
-                runSpacing: 4,
-                children: cipher.tags.map((tag) => Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: _getTagColor(tag),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    tag,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 12,
-                      color: Colors.black,
-                    ),
-                  ),
-                )).toList(),
-              ),
             ],
           ),
         ),

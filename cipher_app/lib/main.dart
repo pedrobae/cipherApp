@@ -26,7 +26,26 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Cipher App',
         theme: ThemeData(
-          colorSchemeSeed: const Color.fromARGB(255, 87, 253, 115),
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color.fromARGB(255, 99, 212, 118),
+            brightness: Brightness.light,
+          ),
+          useMaterial3: true,
+          // Add custom theme extensions
+          cardTheme: CardThemeData(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
+        ),
+        darkTheme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color.fromARGB(255, 99, 212, 118),
+            brightness: Brightness.dark,
+          ),
+          useMaterial3: true,
         ),
         initialRoute: AppRoutes.home,
         routes: AppRoutes.routes,

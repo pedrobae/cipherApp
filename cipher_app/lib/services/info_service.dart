@@ -19,6 +19,7 @@ class InfoService {
       // Convert to Cipher objects and return
       return jsonList.map((json) => InfoItem.fromJson(json)).toList();
     } catch (e) {
+      print(e);
       // Add Log Later
       return [];
     }

@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
 import '../models/domain/cipher.dart';
 import '../routes/app_routes.dart';
+import './tag_chip.dart';
 
 class CipherCard extends StatelessWidget {
   final Cipher cipher;
   final VoidCallback? onAddToPlaylist;
 
-  static Color _getTagColor(String tag) {
-    final hash = tag.hashCode;
-    final hue = (hash % 360).toDouble();
-    // Adjust saturation and value for better readability
-    return HSVColor.fromAHSV(1, hue, 0.5, 0.8).toColor();
-  }
-
   const CipherCard({super.key, required this.cipher, this.onAddToPlaylist});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return InkWell(
       onTap: () => Navigator.pushNamed(
         context,
@@ -27,7 +24,6 @@ class CipherCard extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
                 child: Column(
@@ -35,54 +31,60 @@ class CipherCard extends StatelessWidget {
                   children: [
                     Wrap(
                       crossAxisAlignment: WrapCrossAlignment.end,
-                      spacing: 10,
+                      spacing: 5,
                       children: [
                         Text(
                           cipher.title,
-                          style: Theme.of(context).textTheme.titleLarge,
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            color: colorScheme.onSurface,
+                          ),
                         ),
-                        Text(cipher.author),
+                        Text(
+                          cipher.author,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
                       ],
                     ),
+
                     Row(
                       children: [
-                        Text('Key: ${cipher.key}'),
+                        Text(
+                          'Key: ${cipher.key}',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
                         const SizedBox(width: 8),
-                        Text('Tempo: ${cipher.tempo}'),
+                        Text(
+                          'Tempo: ${cipher.tempo}',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
                       ],
                     ),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 4,
-                      runSpacing: 4,
-                      children: cipher.tags
-                          .map(
-                            (tag) => Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 2,
+                    // Tags display with hash-based colors
+                    if (cipher.tags.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Wrap(
+                        spacing: 4,
+                        children: cipher.tags
+                            .map(
+                              (tag) => TagChip(
+                                tag: tag,
+                                onTap: () => _handleTagTap(tag),
                               ),
-                              decoration: BoxDecoration(
-                                color: _getTagColor(tag),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                tag,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 12,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                    ),
+                            )
+                            .toList(),
+                      ),
+                    ],
                   ],
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.playlist_add),
+                icon: Icon(Icons.playlist_add, color: colorScheme.primary),
                 onPressed: onAddToPlaylist,
                 tooltip: 'Add to playlist',
               ),
@@ -92,16 +94,8 @@ class CipherCard extends StatelessWidget {
       ),
     );
   }
+
+  void _handleTagTap(String tag) {
+    // Handle tag tap, e.g., navigate to a tag-specific page or filter content
+  }
 }
-
-
-// CipherCard(
-//   cipher: cipher,
-//   onAddToPlaylist: () {
-//     // Handle adding to playlist
-//     showModalBottomSheet(
-//       context: context,
-//       builder: (context) => PlaylistSelectionSheet(cipher: cipher),
-//     );
-//   },
-// ),

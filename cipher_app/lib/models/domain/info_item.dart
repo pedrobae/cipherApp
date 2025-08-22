@@ -8,6 +8,7 @@ class InfoItem {
   final DateTime publishedAt;
   final InfoType type;
   final String? link;
+  final Map<String, dynamic>? highlight;
   final Map<String, dynamic>? metadata;
 
   const InfoItem({
@@ -17,6 +18,7 @@ class InfoItem {
     this.imageUrl,
     required this.publishedAt,
     required this.type,
+    this.highlight,
     this.link,
     this.metadata,
   });
@@ -32,6 +34,7 @@ class InfoItem {
         (e) => e.name == json['type'],
         orElse: () => InfoType.news,
       ),
+      highlight: json['highlight'] as Map<String, dynamic>?,
       link: json['link'] as String?,
       metadata: json['metadata'] as Map<String, dynamic>?,
     );
@@ -44,6 +47,7 @@ class InfoItem {
     'imageUrl': imageUrl,
     'publishedAt': publishedAt.toIso8601String(),
     'type': type.name,
+    'highlight': highlight,
     'link': link,
     'metadata': metadata,
   };

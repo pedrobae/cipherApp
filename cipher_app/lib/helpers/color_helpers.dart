@@ -42,7 +42,7 @@ class ColorHelpers {
     return TagColors(
       backgroundColor: backgroundColor,
       textColor: textColor,
-      borderColor: textColor.withOpacity(0.3),
+      borderColor: textColor.withValues(alpha: 0.7),
     );
   }
 

@@ -1,0 +1,24 @@
+[
+  {
+    "id": "info001",
+    "title": "Nova Série de Estudos Bíblicos",
+    "description": "Começamos uma nova série sobre os livros de Samuel. Toda quarta-feira às 19h30.",
+    "publishedAt": "2025-08-21T10:00:00Z",
+    "type": "announcement",
+    "metadata": {
+      "priority": "high",
+      "category": "estudos"
+    }
+  },
+  {
+    "id": "info002",
+    "title": "Culto de Ação de Graças",
+    "description": "Domingo especial de ação de graças com testemunhos e louvor.",
+    "publishedAt": "2025-08-20T10:00:00Z",
+    "type": "event",
+    "metadata": {
+      "date": "2025-08-27T09:00:00Z",
+      "location": "Templo Principal"
+    }
+  }
+]

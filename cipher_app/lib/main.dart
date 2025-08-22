@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'providers/navigation_provider.dart';
 import 'providers/search_provider.dart';
 import 'providers/cipher_provider.dart';
+import 'providers/info_provider.dart'; // Import the new provider
 import 'routes/app_routes.dart';
 
 void main() {
@@ -19,11 +20,14 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => NavigationProvider()),
         ChangeNotifierProvider(create: (_) => SearchProvider()),
         ChangeNotifierProvider(create: (_) => CipherProvider()),
+        ChangeNotifierProvider(create: (_) => InfoProvider()), // Add this
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Cipher App',
-        theme: ThemeData(colorSchemeSeed: const Color.fromARGB(255, 87, 253, 115)),
+        theme: ThemeData(
+          colorSchemeSeed: const Color.fromARGB(255, 87, 253, 115),
+        ),
         initialRoute: AppRoutes.home,
         routes: AppRoutes.routes,
       ),

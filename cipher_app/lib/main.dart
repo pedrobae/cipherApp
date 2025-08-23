@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
         title: 'Cipher App',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 22, 206, 47),
+            seedColor: const Color.fromARGB(255, 0, 129, 17),
             brightness: Brightness.light,
             dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
           ),

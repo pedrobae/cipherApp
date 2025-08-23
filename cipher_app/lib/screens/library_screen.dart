@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../widgets/search_app_bar.dart';
-import '../widgets/cipher_card.dart';
+import '../widgets/cipher/cipher_card.dart';
 import '../providers/search_provider.dart';
 import '../providers/cipher_provider.dart';
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../models/domain/cipher.dart';
-import '../routes/app_routes.dart';
-import '../widgets/tag_chip.dart';
+import '../../models/domain/cipher.dart';
+import '../../routes/app_routes.dart';
+import 'tag_chip.dart';
 
 class CipherCard extends StatelessWidget {
   final Cipher cipher;
@@ -19,6 +19,8 @@ class CipherCard extends StatelessWidget {
       onTap: () =>
           Navigator.pushNamed(context, AppRoutes.cipherViewer, arguments: cipher),
       child: Card(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        elevation: 4,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(

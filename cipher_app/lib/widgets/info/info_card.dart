@@ -13,6 +13,8 @@ class InfoCard extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     return Card(
+      color: colorScheme.surfaceContainerHighest,
+      elevation: 4,
       child: Container(
         padding: const EdgeInsets.all(16.0),
         child: Column(

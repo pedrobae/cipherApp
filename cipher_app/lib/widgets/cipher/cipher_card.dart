@@ -43,7 +43,7 @@ class CipherCard extends StatelessWidget {
                   ),
                   Row(
                     children: [
-                      Text('Key: ${cipher.key}'),
+                      Text('Key: ${cipher.musicKey}'),
                       const SizedBox(width: 8),
                       Text('Tempo: ${cipher.tempo}'),
                     ],

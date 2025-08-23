@@ -45,8 +45,8 @@ class DatabaseHelper {
         tempo TEXT,
         music_key TEXT,
         language TEXT DEFAULT 'por',
-        is_deleted BOOLEAN DEFAULT 0
-        deleted_at TIMESTAMP
+        is_deleted BOOLEAN DEFAULT 0,
+        deleted_at TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
@@ -170,10 +170,10 @@ class DatabaseHelper {
     await db.execute('CREATE INDEX idx_app_info_expires_at ON app_info(expires_at)');
     await db.execute('CREATE INDEX idx_app_info_priority ON app_info(priority)');
     // For user lookups
-    await db.execute(' INDEX idx_user_google_id ON user(google_id)');
-    await db.execute(' INDEX idx_user_mail ON user(mail)');
+    await db.execute('CREATE INDEX idx_user_google_id ON user(google_id)');
+    await db.execute('CREATE INDEX idx_user_mail ON user(mail)');
     // For content queries
-    await db.execute(' INDEX idx_map_content_type ON map_content(content_type)');
+    await db.execute('CREATE INDEX idx_map_content_type ON map_content(content_type)');
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -186,7 +186,7 @@ class DatabaseHelper {
     await db.close();
   }
 
-  // Helper method to reset database (useful for development)
+  // Helper method to reset database (for development)
   Future<void> deleteDatabase() async {
     String path = join(await getDatabasesPath(), 'cipher_app.db');
     await databaseFactory.deleteDatabase(path);

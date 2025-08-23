@@ -1,87 +1,146 @@
 [
   {
-    "id": "cipher001",
+    "id": 1,
     "title": "Amazing Grace",
     "author": "John Newton",
     "tempo": "Slow",
-    "tags": ["hymn", "worship", "traditional"],
-    "key": "G",
+    "music_key": "G",
     "language": "en",
-    "createdAt": "2025-08-18T10:00:00Z",
-    "updatedAt": "2025-08-18T10:00:00Z",
-    "isLocal": true,
-    "musicStruct": {
-      "verse1": "[G]Amazing [C]grace how [G]sweet the [D]sound\nThat [G]saved a [C]wretch like [G]me\n[G]I once was [C]lost but [G]now I'm [D]found\nWas [G]blind but [C]now I [G]see",
-      "verse2": "[G]T'was grace that [C]taught my [G]heart to [D]fear\nAnd [G]grace my [C]fears re[G]lieved\n[G]How precious [C]did that [G]grace ap[D]pear\nThe [G]hour I [C]first be[G]lieved",
-      "chorus": "[Em]My chains are [D]gone, I've been set [G]free\n[Em]My God, my [D]Savior has ransomed [G]me\n[Em]And like a [D]flood His mercy [C]reigns\n[G]Unending [D]love, amazing [G]grace"
-    }
+    "is_deleted": false,
+    "deleted_at": null,
+    "updated_at": "2025-08-18T10:00:00Z",
+    "created_at": "2025-08-18T10:00:00Z",
+    "tags": ["hymn", "worship", "traditional"],
+    "maps": [
+      {
+        "id": 1,
+        "map_order": "V1,C,V2,C",
+        "transposed_key": null,
+        "version_name": "Standard",
+        "created_at": "2025-08-18T10:00:00Z",
+        "content": [
+          {
+            "content_type": "lyrics",
+            "content_text": "Amazing grace how sweet the sound\nThat saved a wretch like me\nI once was lost but now I'm found\nWas blind but now I see"
+          },
+          {
+            "content_type": "chords", 
+            "content_text": "[G]Amazing [C]grace how [G]sweet the [D]sound\nThat [G]saved a [C]wretch like [G]me\n[G]I once was [C]lost but [G]now I'm [D]found\nWas [G]blind but [C]now I [G]see"
+          }
+        ]
+      }
+    ]
   },
   {
-    "id": "cipher002",
+    "id": 2,
     "title": "House of the Rising Sun",
     "author": "Traditional",
     "tempo": "Medium",
-    "tags": ["folk", "traditional", "classic"],
-    "key": "Am",
+    "music_key": "Am",
     "language": "en",
-    "createdAt": "2025-08-18T11:30:00Z",
-    "updatedAt": "2025-08-18T11:30:00Z",
-    "isLocal": true,
-    "musicStruct": {
-      "verse1": "There [Am]is a [C]house in [D]New Or[F]leans\nThey [Am]call the [C]Rising [E]Sun\nAnd it's [Am]been the [C]ruin of [D]many a poor [F]boy\nAnd [Am]God, I [E]know I'm [Am]one",
-      "verse2": "My [Am]mother [C]was a [D]tailor [F]\nShe [Am]sewed my [C]new blue [E]jeans\nMy [Am]father [C]was a [D]gambling [F]man\nDown in [Am]New Or[E]leans [Am]",
-      "chorus": "Oh [Am]mother [C]tell your [D]children [F]\nNot to [Am]do what [C]I have [E]done\nSpend your [Am]lives in [C]sin and [D]misery [F]\nIn the [Am]House of [E]Rising [Am]Sun"
-    }
+    "is_deleted": false,
+    "deleted_at": null,
+    "updated_at": "2025-08-18T11:30:00Z",
+    "created_at": "2025-08-18T11:30:00Z",
+    "tags": ["folk", "traditional", "classic"],
+    "maps": [
+      {
+        "id": 2,
+        "map_order": "V1,V2,C,V3",
+        "transposed_key": null,
+        "version_name": "Full Version",
+        "created_at": "2025-08-18T11:30:00Z",
+        "content": [
+          {
+            "content_type": "chords",
+            "content_text": "There [Am]is a [C]house in [D]New Or[F]leans\nThey [Am]call the [C]Rising [E]Sun\nAnd it's [Am]been the [C]ruin of [D]many a poor [F]boy\nAnd [Am]God, I [E]know I'm [Am]one"
+          }
+        ]
+      }
+    ]
   },
   {
-    "id": "cipher003",
+    "id": 3,
     "title": "Wonderwall",
     "author": "Oasis",
     "tempo": "Medium",
-    "tags": ["rock", "britpop", "90s"],
-    "key": "Em",
+    "music_key": "Em",
     "language": "en",
-    "createdAt": "2025-08-18T12:45:00Z",
-    "updatedAt": "2025-08-18T12:45:00Z",
-    "isLocal": true,
-    "musicStruct": {
-      "verse1": "[Em7]Today is [G]gonna be the day that they're [D]gonna throw it back to [C]you\n[Em7]By now you [G]should've somehow real[D]ized what you gotta [C]do\n[Em7]I don't believe that [G]anybody [D]feels the way I [C]do about you [D]now",
-      "verse2": "[Em7]Backbeat the [G]word is on the street that [D]fire in your heart is [C]out\n[Em7]I'm sure you've [G]heard it all before but you [D]never really had a [C]doubt\n[Em7]I don't believe that [G]anybody [D]feels the way I [C]do about you [D]now",
-      "chorus": "And [C]all the roads we [D]have to walk are [Em7]winding\nAnd [C]all the lights that [D]lead us there are [Em7]blinding\n[C]There are many [D]things that I would [G]like to say to [Em7]you\nBut I don't know [A]how\nBecause [C]maybe [Em7]\nYou're [G]gonna be the one that [D]saves me\nAnd [C]after [Em7]all\nYou're my [G]wonder[D]wall"
-    }
+    "is_deleted": false,
+    "deleted_at": null,
+    "updated_at": "2025-08-18T12:45:00Z",
+    "created_at": "2025-08-18T12:45:00Z",
+    "tags": ["rock", "britpop", "90s"],
+    "maps": [
+      {
+        "id": 3,
+        "map_order": "V1,C,V2,C,B,C",
+        "transposed_key": null,
+        "version_name": "Album Version",
+        "created_at": "2025-08-18T12:45:00Z",
+        "content": [
+          {
+            "content_type": "chords",
+            "content_text": "[Em7]Today is [G]gonna be the day that they're [D]gonna throw it back to [C]you\n[Em7]By now you [G]should've somehow real[D]ized what you gotta [C]do"
+          }
+        ]
+      }
+    ]
   },
   {
-    "id": "cipher004",
+    "id": 4,
     "title": "Garota de Ipanema",
     "author": "Antônio Carlos Jobim",
     "tempo": "Medium",
-    "tags": ["bossa nova", "brazilian", "jazz"],
-    "key": "F",
+    "music_key": "F",
     "language": "pt",
-    "createdAt": "2025-08-18T14:20:00Z",
-    "updatedAt": "2025-08-18T14:20:00Z",
-    "isLocal": true,
-    "musicStruct": {
-      "verse1": "[F]Olha que coisa mais [G7]linda, mais [Gm7]cheia de [C7]graça\n[F]É ela menina que [G7]vem e que [Gm7]passa [C7]\n[F]Num doce [F#dim]balanço a ca[Gm7]minho do [C7]mar",
-      "verse2": "[F]Moça do corpo dou[G7]rado do [Gm7]sol de Ipa[C7]nema\n[F]O seu balançado é [G7]mais que um [Gm7]poema [C7]\n[F]É a coisa mais [F#dim]linda que [Gm7]eu já vi pas[C7]sar",
-      "bridge": "[Gb7]Ah, por que estou tão so[F]zinho?\n[Gb7]Ah, por que tudo é tão [F]triste?\n[Gb7]Ah, a beleza que e[Am7]xiste\nA be[D7]leza que [Gm7]não é só [C7]minha\nQue também [F]passa sozi[C7]nha"
-    }
+    "is_deleted": false,
+    "deleted_at": null,
+    "updated_at": "2025-08-18T14:20:00Z",
+    "created_at": "2025-08-18T14:20:00Z",
+    "tags": ["bossa nova", "brazilian", "jazz"],
+    "maps": [
+      {
+        "id": 4,
+        "map_order": "V1,V2,B,V1",
+        "transposed_key": null,
+        "version_name": "Standard",
+        "created_at": "2025-08-18T14:20:00Z",
+        "content": [
+          {
+            "content_type": "chords",
+            "content_text": "[F]Olha que coisa mais [G7]linda, mais [Gm7]cheia de [C7]graça\n[F]É ela menina que [G7]vem e que [Gm7]passa [C7]"
+          }
+        ]
+      }
+    ]
   },
   {
-    "id": "cipher005",
+    "id": 5,
     "title": "Hallelujah",
     "author": "Leonard Cohen",
     "tempo": "Slow",
-    "tags": ["folk", "spiritual", "cover"],
-    "key": "C",
+    "music_key": "C",
     "language": "en",
-    "createdAt": "2025-08-18T15:10:00Z",
-    "updatedAt": "2025-08-18T15:10:00Z",
-    "isLocal": true,
-    "musicStruct": {
-      "verse1": "Now I've [C]heard there was a [Am]secret chord\nThat [C]David played, and it [Am]pleased the Lord\nBut [F]you don't really [G]care for music, [C]do you? [G]\nIt [C]goes like this, the [F]fourth, the [G]fifth\nThe [Am]minor fall, the [F]major lift\nThe [G]baffled king com[E7]posing Halle[Am]lujah",
-      "verse2": "Your [C]faith was strong but you [Am]needed proof\nYou [C]saw her bathing [Am]on the roof\nHer [F]beauty and the [G]moonlight over[C]threw you [G]\nShe [C]tied you to a [F]kitchen [G]chair\nShe [Am]broke your throne, and she [F]cut your hair\nAnd [G]from your lips she [E7]drew the Halle[Am]lujah",
-      "chorus": "Halle[F]lujah, Halle[Am]lujah\nHalle[F]lujah, Halle[C]lu[G]jah [C]"
-    }
+    "is_deleted": false,
+    "deleted_at": null,
+    "updated_at": "2025-08-18T15:10:00Z",
+    "created_at": "2025-08-18T15:10:00Z",
+    "tags": ["folk", "spiritual", "cover"],
+    "maps": [
+      {
+        "id": 5,
+        "map_order": "V1,C,V2,C,V3,C",
+        "transposed_key": null,
+        "version_name": "Original",
+        "created_at": "2025-08-18T15:10:00Z",
+        "content": [
+          {
+            "content_type": "chords",
+            "content_text": "Now I've [C]heard there was a [Am]secret chord\nThat [C]David played, and it [Am]pleased the Lord"
+          }
+        ]
+      }
+    ]
   }
 ]

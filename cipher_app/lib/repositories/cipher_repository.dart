@@ -49,7 +49,7 @@ class CipherRepository {
         'title': cipher.title,
         'author': cipher.author,
         'tempo': cipher.tempo,
-        'music_key': cipher.key,
+        'music_key': cipher.musicKey,
         'language': cipher.language,
         'created_at': DateTime.now().toIso8601String(),
         'updated_at': DateTime.now().toIso8601String(),
@@ -76,7 +76,7 @@ class CipherRepository {
           'title': cipher.title,
           'author': cipher.author,
           'tempo': cipher.tempo,
-          'music_key': cipher.key,
+          'music_key': cipher.musicKey,
           'language': cipher.language,
           'updated_at': DateTime.now().toIso8601String(),
         },
@@ -102,27 +102,6 @@ class CipherRepository {
     return await db.delete('cipher', where: 'id = ?', whereArgs: [id]);
   }
 
-  // Search ciphers
-  Future<List<Cipher>> searchCiphers(String query) async {
-    final db = await _databaseHelper.database;
-    
-    final List<Map<String, dynamic>> maps = await db.rawQuery('''
-      SELECT DISTINCT c.* FROM cipher c
-      LEFT JOIN cipher_tags ct ON c.id = ct.cipher_id
-      LEFT JOIN tag t ON ct.tag_id = t.id
-      WHERE c.title LIKE ? OR c.author LIKE ? OR t.title LIKE ?
-      ORDER BY c.created_at DESC
-    ''', ['%$query%', '%$query%', '%$query%']);
-
-    List<Cipher> ciphers = [];
-    for (var map in maps) {
-      final cipher = await _buildCipherFromMap(map);
-      ciphers.add(cipher);
-    }
-
-    return ciphers;
-  }
-
   // Helper method to build Cipher object from database map
   Future<Cipher> _buildCipherFromMap(Map<String, dynamic> map) async {
     final db = await _databaseHelper.database;
@@ -141,13 +120,13 @@ class CipherRepository {
       title: map['title'],
       author: map['author'],
       tempo: map['tempo'],
-      key: map['music_key'],
+      musicKey: map['music_key'],
       language: map['language'],
       tags: tags,
       createdAt: DateTime.parse(map['created_at']),
       updatedAt: DateTime.parse(map['updated_at']),
       isLocal: true, // Since it's from local database
-      musicStruct: {}, // Empty for now, you can populate this later
+      maps: [], // Empty for now, you can populate this later
       // You'll need to add sections loading here when you implement the content system
       // sections: await _getSectionsForCipher(map['id']),
     );

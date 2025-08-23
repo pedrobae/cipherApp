@@ -25,7 +25,7 @@ class TagChip extends StatelessWidget {
         ),
         backgroundColor: tagColors.backgroundColor,
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        side: BorderSide(color: tagColors.borderColor, width: 0.5),
+        side: BorderSide(color: tagColors.borderColor, width: 1),
       ),
     );
   }

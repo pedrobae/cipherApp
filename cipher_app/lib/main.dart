@@ -27,9 +27,9 @@ class MyApp extends StatelessWidget {
         title: 'Cipher App',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 126, 197, 130),
+            seedColor: const Color.fromARGB(255, 22, 206, 47),
             brightness: Brightness.light,
-            dynamicSchemeVariant: DynamicSchemeVariant.vibrant,
+            dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
           ),
           useMaterial3: true,
           // Add custom theme extensions

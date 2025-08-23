@@ -1,18 +1,11 @@
 import 'package:flutter/material.dart';
 import '../models/domain/cipher.dart';
 import '../routes/app_routes.dart';
+import '../widgets/tag_chip.dart';
 
 class CipherCard extends StatelessWidget {
   final Cipher cipher;
   final VoidCallback? onAddToPlaylist;
-
-
-static Color _getTagColor(String tag) {
-  final hash = tag.hashCode;
-  final hue = (hash % 360).toDouble();
-  // Adjust saturation and value for better readability
-  return HSVColor.fromAHSV(1, hue, 0.5, 0.8).toColor();
-}
 
   const CipherCard({
     super.key, 
@@ -31,9 +24,10 @@ static Color _getTagColor(String tag) {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                   Wrap(
                     crossAxisAlignment: WrapCrossAlignment.end,
                     spacing: 10,
@@ -56,24 +50,11 @@ static Color _getTagColor(String tag) {
                   Wrap(
                     spacing: 4,
                     runSpacing: 4,
-                    children: cipher.tags.map((tag) => Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: _getTagColor(tag),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        tag,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 12,
-                          color: Colors.black,
-                        ),
-                      ),
-                    )).toList(),
+                    children: cipher.tags.map((tag) => TagChip(tag: tag,)).toList(),
                   ),
                 ],
               ),
+            ),
               IconButton(
                     icon: const Icon(Icons.playlist_add),
                     onPressed: onAddToPlaylist,

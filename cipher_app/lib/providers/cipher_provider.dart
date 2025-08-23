@@ -2,9 +2,12 @@ import 'package:flutter/foundation.dart';
 import 'dart:async';
 import '../models/domain/cipher.dart';
 import '../services/cipher_service.dart';
+import '../repositories/cipher_repository.dart';
 
 class CipherProvider extends ChangeNotifier {
-  static const int _memoryThreshold = 10000; // Higher threshold for local DB
+  // static const int _memoryThreshold = 10000; // Higher threshold for local DB
+  
+  final CipherRepository _cipherRepository = CipherRepository();
   
   List<Cipher> _ciphers = [];
   List<Cipher> _filteredCiphers = [];
@@ -37,26 +40,13 @@ class CipherProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Check total count first
-      final totalCount = await CipherService.getCipherCount();
+      // Load all ciphers from SQLite (they're local, so should be fast)
+      _useMemoryFiltering = true;
+      _ciphers = await _cipherRepository.getAllCiphers();
+      _filterCiphers();
       
-      if (totalCount <= _memoryThreshold) {
-        // Load all ciphers into memory for instant filtering
-        _useMemoryFiltering = true;
-        _ciphers = await CipherService.getAllCiphers();
-        _filterCiphers();
-        
-        if (kDebugMode) {
-          print('Loaded $totalCount ciphers into memory');
-        }
-      } else {
-        // Use database filtering for large datasets
-        _useMemoryFiltering = false;
-        _filteredCiphers = await CipherService.getCiphers(limit: 100);
-        
-        if (kDebugMode) {
-          print('Using database filtering for $totalCount ciphers');
-        }
+      if (kDebugMode) {
+        print('Loaded ${_ciphers.length} ciphers from SQLite');
       }
     } catch (e) {
       _error = e.toString();
@@ -116,10 +106,10 @@ class CipherProvider extends ChangeNotifier {
   Future<void> _searchInDatabase(String term) async {
     try {
       if (term.isEmpty) {
-        _filteredCiphers = await CipherService.getCiphers(limit: 100);
+        _filteredCiphers = await _cipherRepository.getAllCiphers();
       } else {
-        // SQLite FTS (Full-Text Search) is very efficient for local queries
-        _filteredCiphers = await CipherService.searchCiphers(term);
+        // SQLite search with repository
+        _filteredCiphers = await _cipherRepository.searchCiphers(term);
       }
       notifyListeners();
     } catch (e) {

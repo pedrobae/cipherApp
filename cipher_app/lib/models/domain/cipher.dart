@@ -1,5 +1,5 @@
 class Cipher {
-  final String id;
+  final int id;
   final String title;
   final String author;
   final String tempo;
@@ -28,7 +28,7 @@ class Cipher {
   // From JSON constructor for Firestore
   factory Cipher.fromJson(Map<String, dynamic> json) {
     return Cipher(
-      id: json['id'] as String,
+      id: json['id'] as int,
       title: json['title'] as String,
       author: json['author'] as String,
       tempo: json['tempo'] as String,

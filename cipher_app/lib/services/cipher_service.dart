@@ -40,7 +40,7 @@ class CipherService {
     return [];
   }
 
-  static Future<void> addToPlaylist(String cipherId, String playlistId) async {
+  static Future<void> addToPlaylist(int cipherId, String playlistId) async {
     // TODO: Implement playlist functionality
   }
 

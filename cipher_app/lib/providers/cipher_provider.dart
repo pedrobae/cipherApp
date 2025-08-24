@@ -24,19 +24,15 @@ class CipherProvider extends ChangeNotifier {
   String? get error => _error;
   bool get useMemoryFiltering => _useMemoryFiltering;
 
-  // Add this getter for testing
-  CipherRepository get repository => _cipherRepository;
-
   // Load ciphers from local SQLite database
   Future<void> loadCiphers() async {
-    if (_isLoading) return; // Prevent multiple simultaneous loads
+    if (_isLoading) return;
 
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      // Load all ciphers from SQLite (they're local, so should be fast)
       _useMemoryFiltering = true;
       _ciphers = await _cipherRepository.getAllCiphers();
       _filterCiphers();
@@ -63,7 +59,7 @@ class CipherProvider extends ChangeNotifier {
       // Instant memory filtering
       _filterCiphers();
     } else {
-      // SQLite query with debouncing maybe implement
+      // SQLite query with debouncing maybe implement later
     }
   }
 
@@ -75,7 +71,7 @@ class CipherProvider extends ChangeNotifier {
           .where((cipher) =>
               cipher.title.toLowerCase().contains(_searchTerm) ||
               cipher.author.toLowerCase().contains(_searchTerm) ||
-              cipher.tags.any((tag) => tag.toLowerCase().contains(_searchTerm))) // Add this line
+              cipher.tags.any((tag) => tag.toLowerCase().contains(_searchTerm)))
           .toList();
     }
     notifyListeners();

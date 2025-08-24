@@ -17,13 +17,76 @@ class DatabaseHelper {
 
   Future<Database> _initDatabase() async {
     String path = join(await getDatabasesPath(), 'cipher_app.db');
+
+    bool isNewDatabase = !await databaseFactory.databaseExists(path);
     
-    return await openDatabase(
+    final db = await openDatabase(
       path,
       version: 1,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
+
+     if (isNewDatabase) {
+      await _seedDatabase(db);
+    }
+
+    return db;
+  }
+
+  Future<void> _seedDatabase(Database db) async {
+    await db.transaction((txn) async {
+      // Insert initial ciphers
+      int hymn1Id = await txn.insert('cipher', {
+        'title': 'Amazing Grace',
+        'author': 'John Newton',
+        'tempo': 'Slow',
+        'music_key': 'G',
+        'language': 'en',
+        'created_at': DateTime.now().toIso8601String(),
+        'updated_at': DateTime.now().toIso8601String(),
+      });
+      
+      int hymn2Id = await txn.insert('cipher', {
+        'title': 'How Great Thou Art',
+        'author': 'Carl Boberg',
+        'tempo': 'Medium',
+        'music_key': 'D',
+        'language': 'en',
+        'created_at': DateTime.now().toIso8601String(),
+        'updated_at': DateTime.now().toIso8601String(),
+      });
+      
+      // Insert initial tags
+      int classicTagId = await txn.insert('tag', {
+        'title': 'Classic', 
+        'created_at': DateTime.now().toIso8601String()
+      });
+      
+      int popularTagId = await txn.insert('tag', {
+        'title': 'Popular', 
+        'created_at': DateTime.now().toIso8601String()
+      });
+      
+      // Link tags to ciphers
+      await txn.insert('cipher_tags', {
+        'cipher_id': hymn1Id,
+        'tag_id': classicTagId,
+        'created_at': DateTime.now().toIso8601String(),
+      });
+      
+      await txn.insert('cipher_tags', {
+        'cipher_id': hymn1Id,
+        'tag_id': popularTagId,
+        'created_at': DateTime.now().toIso8601String(),
+      });
+      
+      await txn.insert('cipher_tags', {
+        'cipher_id': hymn2Id,
+        'tag_id': classicTagId,
+        'created_at': DateTime.now().toIso8601String(),
+      });
+    });
   }
 
   Future<void> _onCreate(Database db, int version) async {
@@ -199,13 +262,12 @@ class DatabaseHelper {
       
       // Delete the database file completely
       await databaseFactory.deleteDatabase(path);
+
+      // Re-initialize database
+      await database;
       
     } catch (e) {
       rethrow;
     }
-  }
-
-  void clearInstance() {
-    _database = null;
   }
 }

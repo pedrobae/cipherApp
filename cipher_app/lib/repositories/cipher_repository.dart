@@ -127,8 +127,8 @@ class CipherRepository {
       updatedAt: DateTime.parse(map['updated_at']),
       isLocal: true, // Since it's from local database
       maps: [], // Empty for now, you can populate this later
-      // You'll need to add sections loading here when you implement the content system
-      // sections: await _getSectionsForCipher(map['id']),
+      // You'll need to add musicMaps loading here when you implement the content system
+      // maps: await _getMapsForCipher(map['id']),
     );
   }
 

@@ -3,6 +3,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:cipher_app/repositories/cipher_repository.dart';
 import 'package:cipher_app/models/domain/cipher.dart';
 
+
 void main() {
   setUpAll(() {
     sqfliteFfiInit();
@@ -99,3 +100,4 @@ void main() {
     });
   });
 }
+

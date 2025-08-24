@@ -46,7 +46,6 @@ class DatabaseHelper {
         music_key TEXT,
         language TEXT DEFAULT 'por',
         is_deleted BOOLEAN DEFAULT 0,
-        deleted_at TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
@@ -187,9 +186,26 @@ class DatabaseHelper {
   }
 
   // Helper method to reset database (for development)
-  Future<void> deleteDatabase() async {
-    String path = join(await getDatabasesPath(), 'cipher_app.db');
-    await databaseFactory.deleteDatabase(path);
+  Future<void> resetDatabase() async {
+    try {
+      // First close any existing database connection
+      if (_database != null) {
+        await _database!.close();
+        _database = null;
+      }
+
+      // Get the database path
+      String path = join(await getDatabasesPath(), 'cipher_app.db');
+      
+      // Delete the database file completely
+      await databaseFactory.deleteDatabase(path);
+      
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  void clearInstance() {
     _database = null;
   }
 }

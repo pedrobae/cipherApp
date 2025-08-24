@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:cipher_app/repositories/cipher_repository.dart';
 import 'package:cipher_app/models/domain/cipher.dart';
-
+import 'package:cipher_app/database/database_helper.dart';
 
 void main() {
   setUpAll(() {
@@ -12,9 +12,20 @@ void main() {
 
   group('CipherRepository Tests', () {
     late CipherRepository repository;
+    late DatabaseHelper dbHelper;
 
-    setUp(() {
+    setUp(() async {
+      // Create a fresh database for each test
+      dbHelper = DatabaseHelper();
+      await dbHelper.resetDatabase();
+      
+      // Create repository after database is reset
       repository = CipherRepository();
+    });
+
+    tearDown(() async {
+      // Clean up after each test
+      await dbHelper.resetDatabase();
     });
 
     test('should start with empty database', () async {

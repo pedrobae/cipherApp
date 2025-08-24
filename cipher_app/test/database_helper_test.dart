@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'package:cipher_app/database/database_helper.dart';
+import 'package:cipher_app/helpers/database_helper.dart';
 
 void main() {
   // Initialize database factory for tests

@@ -1,5 +1,5 @@
 import 'package:sqflite/sqflite.dart';
-import '../database/database_helper.dart';
+import '../helpers/database_helper.dart';
 import '../models/domain/cipher.dart';
 
 class CipherRepository {

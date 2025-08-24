@@ -84,7 +84,7 @@ void main() {
       // Step 4: Check data
       var afterReset = await db1.query('cipher');
       
-      expect(afterReset.length, 0, reason: 'Database should be empty after reset');
+      expect(afterReset.length, 2, reason: 'Database should have only seed data after reset');
       
       // Cleanup
       await dbHelper.resetDatabase();
@@ -117,7 +117,7 @@ void main() {
       
       // Query and verify
       final ciphers = await db.query('cipher');
-      expect(ciphers.length, 2);
+      expect(ciphers.length, 4);
       
       // Test specific queries
       final fastSongs = await db.query('cipher', where: 'tempo = ?', whereArgs: ['Fast']);

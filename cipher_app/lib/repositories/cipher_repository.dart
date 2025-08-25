@@ -1,3 +1,4 @@
+import 'package:sqflite/sqflite.dart';
 import '../helpers/database_helper.dart';
 import '../models/domain/cipher.dart';
 
@@ -122,11 +123,80 @@ class CipherRepository {
     await db.delete('map_content', where: 'id = ?', whereArgs: [id]);
   }
 
+  // === TAG OPERATIONS ===
+
+  Future<List<String>> getCipherTags(int cipherId) async {
+    final db = await _databaseHelper.database;
+    final results = await db.rawQuery(
+      '''
+      SELECT t.title 
+      FROM tag t
+      JOIN cipher_tags ct ON t.id = ct.tag_id
+      WHERE ct.cipher_id = ?
+    ''',
+      [cipherId],
+    );
+
+    return results.map((row) => row['title'] as String).toList();
+  }
+
+  Future<void> addTagToCipher(int cipherId, String tagTitle) async {
+    final db = await _databaseHelper.database;
+
+    await db.transaction((txn) async {
+      // Get or create tag
+      var tags = await txn.query(
+        'tag',
+        where: 'title = ?',
+        whereArgs: [tagTitle],
+      );
+
+      int tagId;
+      if (tags.isEmpty) {
+        tagId = await txn.insert('tag', {
+          'title': tagTitle,
+          'created_at': DateTime.now().toIso8601String(),
+        });
+      } else {
+        tagId = tags.first['id'] as int;
+      }
+
+      // Link to cipher (ignore if already exists)
+      await txn.insert('cipher_tags', {
+        'tag_id': tagId,
+        'cipher_id': cipherId,
+        'created_at': DateTime.now().toIso8601String(),
+      }, conflictAlgorithm: ConflictAlgorithm.ignore);
+    });
+  }
+
+  Future<void> removeTagFromCipher(int cipherId, String tagTitle) async {
+    final db = await _databaseHelper.database;
+
+    await db.rawDelete(
+      '''
+      DELETE FROM cipher_tags 
+      WHERE cipher_id = ? AND tag_id = (
+        SELECT id FROM tag WHERE title = ?
+      )
+    ''',
+      [cipherId, tagTitle],
+    );
+  }
+
+  Future<List<String>> getAllTags() async {
+    final db = await _databaseHelper.database;
+    final results = await db.query('tag', orderBy: 'title');
+    return results.map((row) => row['title'] as String).toList();
+  }
+
   // === PRIVATE HELPERS ===
 
   Future<Cipher> _buildCipher(Map<String, dynamic> row) async {
     final maps = await getCipherMaps(row['id']);
-    return Cipher.fromJson(row).copyWith(maps: maps);
+    final tags = await getCipherTags(row['id']);
+
+    return Cipher.fromJson(row).copyWith(maps: maps, tags: tags);
   }
 
   Future<CipherMap> _buildCipherMap(Map<String, dynamic> row) async {

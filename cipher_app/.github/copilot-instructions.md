@@ -33,22 +33,27 @@ Database automatically seeds with sample data on first creation via two mechanis
 See `lib/helpers/seed_database.dart` for initial hymns with ChordPro formatted content.
 
 ### Database Factory Initialization
-Main app requires explicit database factory initialization for cross-platform support:
+Cross-platform database initialization is handled by `DatabaseFactoryHelper`:
+
 ```dart
-// Platform-specific database factory setup
+// In main.dart
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await _initializeDatabaseFactory(); // Critical for Windows/Desktop
+  await DatabaseFactoryHelper.initialize(); // Platform-specific setup
   runApp(const MyApp());
 }
+
+// In tests
+setUpAll(() {
+  DatabaseFactoryHelper.initializeForTesting(); // Always uses FFI
+});
 ```
 
 **Platform Support:**
 - **Mobile (iOS/Android)**: Uses native sqflite
 - **Desktop (Windows/Linux/macOS)**: Uses `sqflite_common_ffi`
-- **Web**: Not supported - throws UnsupportedError
-
-Tests use `sqflite_common_ffi` for all platforms.
+- **Web**: Throws UnsupportedError with suggestions for alternatives
+- **Tests**: Always use FFI for consistency
 
 ### Testing Database Reset
 ```dart

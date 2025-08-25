@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'seed_database.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
@@ -19,7 +20,7 @@ class DatabaseHelper {
     String path = join(await getDatabasesPath(), 'cipher_app.db');
 
     bool isNewDatabase = !await databaseFactory.databaseExists(path);
-    
+
     final db = await openDatabase(
       path,
       version: 1,
@@ -27,66 +28,11 @@ class DatabaseHelper {
       onUpgrade: _onUpgrade,
     );
 
-     if (isNewDatabase) {
-      await _seedDatabase(db);
+    if (isNewDatabase) {
+      await seedDatabase(db);
     }
 
     return db;
-  }
-
-  Future<void> _seedDatabase(Database db) async {
-    await db.transaction((txn) async {
-      // Insert initial ciphers
-      int hymn1Id = await txn.insert('cipher', {
-        'title': 'Amazing Grace',
-        'author': 'John Newton',
-        'tempo': 'Slow',
-        'music_key': 'G',
-        'language': 'en',
-        'created_at': DateTime.now().toIso8601String(),
-        'updated_at': DateTime.now().toIso8601String(),
-      });
-      
-      int hymn2Id = await txn.insert('cipher', {
-        'title': 'How Great Thou Art',
-        'author': 'Carl Boberg',
-        'tempo': 'Medium',
-        'music_key': 'D',
-        'language': 'en',
-        'created_at': DateTime.now().toIso8601String(),
-        'updated_at': DateTime.now().toIso8601String(),
-      });
-      
-      // Insert initial tags
-      int classicTagId = await txn.insert('tag', {
-        'title': 'Classic', 
-        'created_at': DateTime.now().toIso8601String()
-      });
-      
-      int popularTagId = await txn.insert('tag', {
-        'title': 'Popular', 
-        'created_at': DateTime.now().toIso8601String()
-      });
-      
-      // Link tags to ciphers
-      await txn.insert('cipher_tags', {
-        'cipher_id': hymn1Id,
-        'tag_id': classicTagId,
-        'created_at': DateTime.now().toIso8601String(),
-      });
-      
-      await txn.insert('cipher_tags', {
-        'cipher_id': hymn1Id,
-        'tag_id': popularTagId,
-        'created_at': DateTime.now().toIso8601String(),
-      });
-      
-      await txn.insert('cipher_tags', {
-        'cipher_id': hymn2Id,
-        'tag_id': classicTagId,
-        'created_at': DateTime.now().toIso8601String(),
-      });
-    });
   }
 
   Future<void> _onCreate(Database db, int version) async {
@@ -132,7 +78,7 @@ class DatabaseHelper {
       CREATE TABLE cipher_map (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         cipher_id INTEGER NOT NULL,
-        map_order TEXT NOT NULL,
+        song_structure TEXT NOT NULL,
         transposed_key TEXT,
         version_name TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -220,22 +166,44 @@ class DatabaseHelper {
     ''');
 
     // Create indexes for better performance
-    await db.execute('CREATE INDEX idx_cipher_tags_cipher_id ON cipher_tags(cipher_id)');
-    await db.execute('CREATE INDEX idx_cipher_tags_tag_id ON cipher_tags(tag_id)');
-    await db.execute('CREATE INDEX idx_cipher_map_cipher_id ON cipher_map(cipher_id)');
-    await db.execute('CREATE INDEX idx_map_content_map_id ON map_content(map_id)');
-    await db.execute('CREATE INDEX idx_playlist_author_id ON playlist(author_id)');
-    await db.execute('CREATE INDEX idx_playlist_cipher_playlist_id ON playlist_cipher(playlist_id)');
-    await db.execute('CREATE INDEX idx_playlist_cipher_cipher_id ON playlist_cipher(cipher_id)');
+    await db.execute(
+      'CREATE INDEX idx_cipher_tags_cipher_id ON cipher_tags(cipher_id)',
+    );
+    await db.execute(
+      'CREATE INDEX idx_cipher_tags_tag_id ON cipher_tags(tag_id)',
+    );
+    await db.execute(
+      'CREATE INDEX idx_cipher_map_cipher_id ON cipher_map(cipher_id)',
+    );
+    await db.execute(
+      'CREATE INDEX idx_map_content_map_id ON map_content(map_id)',
+    );
+    await db.execute(
+      'CREATE INDEX idx_playlist_author_id ON playlist(author_id)',
+    );
+    await db.execute(
+      'CREATE INDEX idx_playlist_cipher_playlist_id ON playlist_cipher(playlist_id)',
+    );
+    await db.execute(
+      'CREATE INDEX idx_playlist_cipher_cipher_id ON playlist_cipher(cipher_id)',
+    );
     await db.execute('CREATE INDEX idx_app_info_type ON app_info(type)');
-    await db.execute('CREATE INDEX idx_app_info_published_at ON app_info(published_at)');
-    await db.execute('CREATE INDEX idx_app_info_expires_at ON app_info(expires_at)');
-    await db.execute('CREATE INDEX idx_app_info_priority ON app_info(priority)');
+    await db.execute(
+      'CREATE INDEX idx_app_info_published_at ON app_info(published_at)',
+    );
+    await db.execute(
+      'CREATE INDEX idx_app_info_expires_at ON app_info(expires_at)',
+    );
+    await db.execute(
+      'CREATE INDEX idx_app_info_priority ON app_info(priority)',
+    );
     // For user lookups
     await db.execute('CREATE INDEX idx_user_google_id ON user(google_id)');
     await db.execute('CREATE INDEX idx_user_mail ON user(mail)');
     // For content queries
-    await db.execute('CREATE INDEX idx_map_content_type ON map_content(content_type)');
+    await db.execute(
+      'CREATE INDEX idx_map_content_type ON map_content(content_type)',
+    );
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -259,13 +227,12 @@ class DatabaseHelper {
 
       // Get the database path
       String path = join(await getDatabasesPath(), 'cipher_app.db');
-      
+
       // Delete the database file completely
       await databaseFactory.deleteDatabase(path);
 
       // Re-initialize database
       await database;
-      
     } catch (e) {
       rethrow;
     }

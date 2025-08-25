@@ -5,7 +5,6 @@ class DatetimeHelper {
       try {
         return DateTime.parse(value);
       } catch (e) {
-        print('Error parsing date: $value - $e');
         return null;
       }
     }

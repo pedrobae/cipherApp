@@ -98,7 +98,7 @@ Was [G]blind, but [D]now I [G]see''',
     await txn.insert('map_content', {
       'map_id': amazingGraceMap1Id,
       'content_type': 'V2',
-      'content_text': '''\'Twas [G]grace that [G7]taught my [C]heart to [G]fear
+      'content_text': ''''Twas [G]grace that [G7]taught my [C]heart to [G]fear
 And [G]grace my [D]fears re[G]lieved
 How [G]precious [G7]did that [C]grace ap[G]pear
 The [G]hour I [D]first be[G]lieved''',
@@ -109,16 +109,16 @@ The [G]hour I [D]first be[G]lieved''',
       'content_type': 'V3',
       'content_text': '''Through [G]many [G7]dangers, [C]toils and [G]snares
 I [G]have al[D]ready [G]come
-\'Tis [G]grace hath [G7]brought me [C]safe thus [G]far
+'Tis [G]grace hath [G7]brought me [C]safe thus [G]far
 And [G]grace will [D]lead me [G]home''',
     });
 
     await txn.insert('map_content', {
       'map_id': amazingGraceMap1Id,
       'content_type': 'V4',
-      'content_text': '''When [G]we\'ve been [G7]there ten [C]thousand [G]years
+      'content_text': '''When [G]we've been [G7]there ten [C]thousand [G]years
 Bright [G]shining [D]as the [G]sun
-We\'ve [G]no less [G7]days to [C]sing God\'s [G]praise
+We've [G]no less [G7]days to [C]sing God's [G]praise
 Than [G]when we [D]first be[G]gun''',
     });
 
@@ -137,16 +137,16 @@ Was [D]blind, but [A]now I [D]see''',
       'content_type': 'V3',
       'content_text': '''Through [D]many [D7]dangers, [G]toils and [D]snares
 I [D]have al[A]ready [D]come
-\'Tis [D]grace hath [D7]brought me [G]safe thus [D]far
+'Tis [D]grace hath [D7]brought me [G]safe thus [D]far
 And [D]grace will [A]lead me [D]home''',
     });
 
     await txn.insert('map_content', {
       'map_id': amazingGraceMap2Id,
       'content_type': 'V4',
-      'content_text': '''When [D]we\'ve been [D7]there ten [G]thousand [D]years
+      'content_text': '''When [D]we've been [D7]there ten [G]thousand [D]years
 Bright [D]shining [A]as the [D]sun
-We\'ve [D]no less [D7]days to [G]sing God\'s [D]praise
+We've [D]no less [D7]days to [G]sing God's [D]praise
 Than [D]when we [A]first be[D]gun''',
     });
 

@@ -1,15 +1,17 @@
+import '../../helpers/datetime_helper.dart';
+
 class Cipher {
   final int? id;
   final String title;
   final String author;
   final String tempo;
-  final List<String> tags;
   final String musicKey;
   final String language;
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final bool isLocal;
-  final List<CipherMap> maps; // Changed from musicStruct
+  final List<String> tags;
+  final List<CipherMap> maps;
 
   const Cipher({
     this.id,
@@ -28,16 +30,20 @@ class Cipher {
   // From JSON constructor for Firestore
   factory Cipher.fromJson(Map<String, dynamic> json) {
     return Cipher(
-      id: json['id'] as int,
-      title: json['title'] as String,
-      author: json['author'] as String,
-      tempo: json['tempo'] as String,
+      id: json['id'] as int?,
+      title: json['title'] as String? ?? '',
+      author: json['author'] as String? ?? '',
+      tempo: json['tempo'] as String? ?? '',
       tags: json['tags'] != null ? List<String>.from(json['tags']) : const [],
-      musicKey: json['music_key'] as String,
-      language: json['language'] as String,
-      createdAt: DateTime.parse(json['created_at'] as String), // Fixed
-      updatedAt: DateTime.parse(json['updated_at'] as String), // Fixed
-      isLocal: true, // Default for local data
+      musicKey: json['musicKey'] as String,
+      language: json['language'] as String? ?? '',
+      createdAt: DatetimeHelper.parseDateTime(
+        json['created_at'] ?? json['createdAt'],
+      ),
+      updatedAt: DatetimeHelper.parseDateTime(
+        json['updated_at'] ?? json['updatedAt'],
+      ),
+      isLocal: json['isLocal'] as bool? ?? false,
       maps: json['maps'] != null
           ? (json['maps'] as List).map((m) => CipherMap.fromJson(m)).toList()
           : const [],
@@ -80,14 +86,14 @@ class Cipher {
 }
 
 class CipherMap {
-  final int id;
+  final int? id;
   final String mapOrder;
   final String? transposedKey;
   final String? versionName;
   final List<MapContent> content;
 
   const CipherMap({
-    required this.id,
+    this.id,
     required this.mapOrder,
     this.transposedKey,
     this.versionName,
@@ -96,8 +102,8 @@ class CipherMap {
 
   factory CipherMap.fromJson(Map<String, dynamic> json) {
     return CipherMap(
-      id: json['id'] as int,
-      mapOrder: json['map_order'] as String,
+      id: json['id'] as int?,
+      mapOrder: json['map_order'] as String? ?? '',
       transposedKey: json['transposed_key'] as String?,
       versionName: json['version_name'] as String?,
       content: json['content'] != null

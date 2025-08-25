@@ -3,21 +3,21 @@ import 'package:provider/provider.dart';
 import '../providers/cipher_provider.dart';
 import '../models/domain/cipher.dart';
 
-class AddCipher extends StatefulWidget {
+class EditCipher extends StatefulWidget {
   final Cipher? cipher; // Null for create, populated for edit
 
-  const AddCipher({super.key, this.cipher});
+  const EditCipher({super.key, this.cipher});
 
   @override
-  State<AddCipher> createState() => _AddCipherState();
+  State<EditCipher> createState() => _EditCipherState();
 }
 
-class _AddCipherState extends State<AddCipher> {
+class _EditCipherState extends State<EditCipher> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _authorController = TextEditingController();
   final _tempoController = TextEditingController();
-  final _keyController = TextEditingController();
+  final _musicKeyController = TextEditingController();
   final _languageController = TextEditingController();
   final _tagsController = TextEditingController();
 
@@ -36,7 +36,7 @@ class _AddCipherState extends State<AddCipher> {
       _titleController.text = cipher.title;
       _authorController.text = cipher.author;
       _tempoController.text = cipher.tempo;
-      _keyController.text = cipher.musicKey;
+      _musicKeyController.text = cipher.musicKey;
       _languageController.text = cipher.language;
       _tagsController.text = cipher.tags.join(', ');
     }
@@ -47,7 +47,7 @@ class _AddCipherState extends State<AddCipher> {
     _titleController.dispose();
     _authorController.dispose();
     _tempoController.dispose();
-    _keyController.dispose();
+    _musicKeyController.dispose();
     _languageController.dispose();
     _tagsController.dispose();
     super.dispose();
@@ -102,7 +102,7 @@ class _AddCipherState extends State<AddCipher> {
                 children: [
                   Expanded(
                     child: _buildTextField(
-                      controller: _keyController,
+                      controller: _musicKeyController,
                       label: 'Tom',
                       hint: 'Ex: C, G, Am',
                       validator: (value) =>
@@ -227,7 +227,7 @@ class _AddCipherState extends State<AddCipher> {
         title: _titleController.text.trim(),
         author: _authorController.text.trim(),
         tempo: _tempoController.text.trim(),
-        musicKey: _keyController.text.trim(),
+        musicKey: _musicKeyController.text.trim(),
         language: _languageController.text.trim(),
         isLocal: true,
         tags: tags,
@@ -246,7 +246,7 @@ class _AddCipherState extends State<AddCipher> {
           );
         }
       } else {
-        await cipherProvider.addCipher(cipherData);
+        await cipherProvider.createCipher(cipherData);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

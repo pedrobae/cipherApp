@@ -87,7 +87,7 @@ class CipherProvider extends ChangeNotifier {
     await loadCiphers();
   }
 
-  Future<void> addCipher(Cipher cipher) async {
+  Future<void> createCipher(Cipher cipher) async {
     if (_isSaving) return;
 
     _isSaving = true;
@@ -110,7 +110,26 @@ class CipherProvider extends ChangeNotifier {
   }
 
   Future<void> updateCipher(Cipher cipher) async {
-    // TODO
+    if (_isSaving) return;
+
+    _isSaving = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _cipherRepository.updateCipher(cipher);
+
+      final index = _ciphers.indexWhere((c) => c.id == cipher.id);
+      if (index != -1) {
+        _ciphers[index] = cipher;
+        _filteredCiphers = List.from(_ciphers);
+      }
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isSaving = false;
+      notifyListeners();
+    }
   }
 
   Future<void> deleteCipher(int cipherID) async {

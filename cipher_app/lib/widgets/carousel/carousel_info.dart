@@ -47,9 +47,7 @@ class CarouselInfo extends StatelessWidget {
                 color: Colors.grey[200],
                 borderRadius: BorderRadius.circular(8.0),
               ),
-              child: const Center(
-                child: Text('Error loading item'),
-              ),
+              child: const Center(child: Text('Error loading item')),
             );
           }
         },

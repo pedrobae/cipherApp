@@ -15,9 +15,7 @@ class MainScreen extends StatelessWidget {
     return Consumer<NavigationProvider>(
       builder: (context, navigationProvider, child) {
         return Scaffold(
-          appBar: AppBar(
-            title: Text((navigationProvider.routeTitle)),
-          ),
+          appBar: AppBar(title: Text((navigationProvider.routeTitle))),
           drawer: const AppDrawer(),
           body: IndexedStack(
             index: navigationProvider.selectedIndex,

@@ -4,6 +4,7 @@ import '../widgets/search_app_bar.dart';
 import '../widgets/cipher/cipher_card.dart';
 import '../providers/search_provider.dart';
 import '../providers/cipher_provider.dart';
+import './edit_cipher.dart';
 
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
@@ -99,10 +100,14 @@ class _LibraryScreenState extends State<LibraryScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          Navigator.pushNamed(context, 'add-cipher');
+          Navigator.of(
+            context,
+            rootNavigator: true,
+          ).push(MaterialPageRoute(builder: (context) => const EditCipher()));
         },
         icon: const Icon(Icons.add),
         label: const Text('Add Cipher'),
+        heroTag: 'library_fab',
       ),
     );
   }

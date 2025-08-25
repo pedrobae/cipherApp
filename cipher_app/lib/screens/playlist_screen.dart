@@ -20,6 +20,7 @@ class PlaylistScreen extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'playlist_fab',
         onPressed: () {
           // TODO: Implement new playlist creation
         },

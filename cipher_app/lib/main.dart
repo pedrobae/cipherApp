@@ -4,6 +4,7 @@ import 'providers/navigation_provider.dart';
 import 'providers/search_provider.dart';
 import 'providers/cipher_provider.dart';
 import 'providers/info_provider.dart';
+import 'routes/app_routes.dart';
 
 void main() {
   runApp(const MyApp());
@@ -40,6 +41,8 @@ class MyApp extends StatelessWidget {
           ),
           appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
         ),
+        initialRoute: AppRoutes.home,
+        routes: AppRoutes.routes,
       ),
     );
   }

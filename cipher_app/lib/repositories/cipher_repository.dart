@@ -7,8 +7,9 @@ class CipherRepository {
 
   // Get all ciphers
   Future<List<Cipher>> getAllCiphers() async {
+    print('------------GetAllCiphers-Repo---------------');
     final db = await _databaseHelper.database;
-    
+
     final List<Map<String, dynamic>> maps = await db.query(
       'cipher',
       orderBy: 'created_at DESC',
@@ -26,7 +27,7 @@ class CipherRepository {
   // Get cipher by ID
   Future<Cipher?> getCipherById(int id) async {
     final db = await _databaseHelper.database;
-    
+
     final List<Map<String, dynamic>> maps = await db.query(
       'cipher',
       where: 'id = ?',
@@ -42,7 +43,7 @@ class CipherRepository {
   // Insert a new cipher
   Future<int> insertCipher(Cipher cipher) async {
     final db = await _databaseHelper.database;
-    
+
     return await db.transaction((txn) async {
       // Insert cipher
       final cipherId = await txn.insert('cipher', {
@@ -60,6 +61,11 @@ class CipherRepository {
         await _insertOrGetTagId(txn, tag, cipherId);
       }
 
+      // Insert map
+      // for (CipherMap map in cipher.maps) {
+      //   await _insertOrGetMapId(txn, map, cipherId);
+      // }
+
       return cipherId;
     });
   }
@@ -67,7 +73,7 @@ class CipherRepository {
   // Update cipher
   Future<int> updateCipher(Cipher cipher) async {
     final db = await _databaseHelper.database;
-    
+
     return await db.transaction((txn) async {
       // Update cipher
       final result = await txn.update(
@@ -85,7 +91,11 @@ class CipherRepository {
       );
 
       // Delete existing tags
-      await txn.delete('cipher_tags', where: 'cipher_id = ?', whereArgs: [cipher.id]);
+      await txn.delete(
+        'cipher_tags',
+        where: 'cipher_id = ?',
+        whereArgs: [cipher.id],
+      );
 
       // Insert new tags
       for (String tag in cipher.tags) {
@@ -105,13 +115,16 @@ class CipherRepository {
   // Helper method to build Cipher object from database map
   Future<Cipher> _buildCipherFromMap(Map<String, dynamic> map) async {
     final db = await _databaseHelper.database;
-    
+
     // Get tags for this cipher
-    final tagMaps = await db.rawQuery('''
+    final tagMaps = await db.rawQuery(
+      '''
       SELECT t.title FROM tag t
       INNER JOIN cipher_tags ct ON t.id = ct.tag_id
       WHERE ct.cipher_id = ?
-    ''', [map['id']]);
+    ''',
+      [map['id']],
+    );
 
     final tags = tagMaps.map((tagMap) => tagMap['title'] as String).toList();
 
@@ -133,10 +146,18 @@ class CipherRepository {
   }
 
   // Helper method to insert or get existing tag
-  Future<void> _insertOrGetTagId(Transaction txn, String tagTitle, int cipherId) async {
+  Future<void> _insertOrGetTagId(
+    Transaction txn,
+    String tagTitle,
+    int cipherId,
+  ) async {
     // Check if tag exists
-    final existingTags = await txn.query('tag', where: 'title = ?', whereArgs: [tagTitle]);
-    
+    final existingTags = await txn.query(
+      'tag',
+      where: 'title = ?',
+      whereArgs: [tagTitle],
+    );
+
     int tagId;
     if (existingTags.isNotEmpty) {
       tagId = existingTags.first['id'] as int;

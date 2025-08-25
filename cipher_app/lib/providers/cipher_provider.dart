@@ -6,11 +6,12 @@ import '../repositories/cipher_repository.dart';
 class CipherProvider extends ChangeNotifier {
   final CipherRepository _cipherRepository = CipherRepository();
 
-  CipherProvider(); 
-  
+  CipherProvider();
+
   List<Cipher> _ciphers = [];
   List<Cipher> _filteredCiphers = [];
   bool _isLoading = false;
+  bool _isSaving = false;
   String? _error;
   String _searchTerm = '';
   bool _useMemoryFiltering = true;
@@ -26,6 +27,7 @@ class CipherProvider extends ChangeNotifier {
 
   // Load ciphers from local SQLite database
   Future<void> loadCiphers() async {
+    print('------LoadCiphers_Provider-----------');
     if (_isLoading) return;
 
     _isLoading = true;
@@ -36,7 +38,7 @@ class CipherProvider extends ChangeNotifier {
       _useMemoryFiltering = true;
       _ciphers = await _cipherRepository.getAllCiphers();
       _filterCiphers();
-      
+
       if (kDebugMode) {
         print('Loaded ${_ciphers.length} ciphers from SQLite');
       }
@@ -54,7 +56,7 @@ class CipherProvider extends ChangeNotifier {
   // Search functionality
   Future<void> searchCiphers(String term) async {
     _searchTerm = term.toLowerCase();
-    
+
     if (_useMemoryFiltering) {
       // Instant memory filtering
       _filterCiphers();
@@ -68,10 +70,14 @@ class CipherProvider extends ChangeNotifier {
       _filteredCiphers = List.from(_ciphers);
     } else {
       _filteredCiphers = _ciphers
-          .where((cipher) =>
-              cipher.title.toLowerCase().contains(_searchTerm) ||
-              cipher.author.toLowerCase().contains(_searchTerm) ||
-              cipher.tags.any((tag) => tag.toLowerCase().contains(_searchTerm)))
+          .where(
+            (cipher) =>
+                cipher.title.toLowerCase().contains(_searchTerm) ||
+                cipher.author.toLowerCase().contains(_searchTerm) ||
+                cipher.tags.any(
+                  (tag) => tag.toLowerCase().contains(_searchTerm),
+                ),
+          )
           .toList();
     }
     notifyListeners();
@@ -80,6 +86,28 @@ class CipherProvider extends ChangeNotifier {
   // Refresh data
   Future<void> refresh() async {
     await loadCiphers();
+  }
+
+  Future<void> addCipher(Cipher cipher) async {
+    if (_isSaving) return;
+
+    _isSaving = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      _cipherRepository.insertCipher(cipher);
+      notifyListeners();
+    } catch (e) {
+      _error = e.toString();
+      if (kDebugMode) {
+        print(_error);
+      }
+    } finally {
+      _isSaving = false;
+    }
+
+    notifyListeners();
   }
 
   @override

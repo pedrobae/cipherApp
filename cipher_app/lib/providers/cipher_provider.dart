@@ -27,7 +27,6 @@ class CipherProvider extends ChangeNotifier {
 
   // Load ciphers from local SQLite database
   Future<void> loadCiphers() async {
-    print('------LoadCiphers_Provider-----------');
     if (_isLoading) return;
 
     _isLoading = true;
@@ -108,6 +107,14 @@ class CipherProvider extends ChangeNotifier {
     }
 
     notifyListeners();
+  }
+
+  Future<void> updateCipher(Cipher cipher) async {
+    // TODO
+  }
+
+  Future<void> deleteCipher(int cipherID) async {
+    // TODO
   }
 
   @override

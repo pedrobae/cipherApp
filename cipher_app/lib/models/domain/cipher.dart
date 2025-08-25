@@ -1,26 +1,26 @@
 class Cipher {
-  final int id;
+  final int? id;
   final String title;
   final String author;
   final String tempo;
   final List<String> tags;
   final String musicKey;
   final String language;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
   final bool isLocal;
   final List<CipherMap> maps; // Changed from musicStruct
 
   const Cipher({
-    required this.id,
+    this.id,
     required this.title,
     required this.author,
     required this.tempo,
     this.tags = const [],
     required this.musicKey,
     required this.language,
-    required this.createdAt,
-    required this.updatedAt,
+    this.createdAt,
+    this.updatedAt,
     required this.isLocal,
     this.maps = const [],
   });
@@ -38,9 +38,9 @@ class Cipher {
       createdAt: DateTime.parse(json['created_at'] as String), // Fixed
       updatedAt: DateTime.parse(json['updated_at'] as String), // Fixed
       isLocal: true, // Default for local data
-      maps: json['maps'] != null 
-        ? (json['maps'] as List).map((m) => CipherMap.fromJson(m)).toList()
-        : const [],
+      maps: json['maps'] != null
+          ? (json['maps'] as List).map((m) => CipherMap.fromJson(m)).toList()
+          : const [],
     );
   }
 
@@ -51,32 +51,32 @@ class Cipher {
   }
 
   Cipher copyWith({
-  int? id,
-  String? title,
-  String? author,
-  String? tempo,
-  List<String>? tags,
-  String? musicKey,
-  String? language,
-  DateTime? createdAt,
-  DateTime? updatedAt,
-  bool? isLocal,
-  List<CipherMap>? maps,
-}) {
-  return Cipher(
-    id: id ?? this.id,
-    title: title ?? this.title,
-    author: author ?? this.author,
-    tempo: tempo ?? this.tempo,
-    tags: tags ?? this.tags,
-    musicKey: musicKey ?? this.musicKey,
-    language: language ?? this.language,
-    createdAt: createdAt ?? this.createdAt,
-    updatedAt: updatedAt ?? this.updatedAt,
-    isLocal: isLocal ?? this.isLocal,
-    maps: maps ?? this.maps,
-  );
-}
+    int? id,
+    String? title,
+    String? author,
+    String? tempo,
+    List<String>? tags,
+    String? musicKey,
+    String? language,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    bool? isLocal,
+    List<CipherMap>? maps,
+  }) {
+    return Cipher(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      author: author ?? this.author,
+      tempo: tempo ?? this.tempo,
+      tags: tags ?? this.tags,
+      musicKey: musicKey ?? this.musicKey,
+      language: language ?? this.language,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      isLocal: isLocal ?? this.isLocal,
+      maps: maps ?? this.maps,
+    );
+  }
 }
 
 class CipherMap {
@@ -101,8 +101,10 @@ class CipherMap {
       transposedKey: json['transposed_key'] as String?,
       versionName: json['version_name'] as String?,
       content: json['content'] != null
-        ? (json['content'] as List).map((c) => MapContent.fromJson(c)).toList()
-        : const [],
+          ? (json['content'] as List)
+                .map((c) => MapContent.fromJson(c))
+                .toList()
+          : const [],
     );
   }
 
@@ -119,10 +121,7 @@ class MapContent {
   final String contentType;
   final String contentText;
 
-  const MapContent({
-    required this.contentType,
-    required this.contentText,
-  });
+  const MapContent({required this.contentType, required this.contentText});
 
   factory MapContent.fromJson(Map<String, dynamic> json) {
     return MapContent(

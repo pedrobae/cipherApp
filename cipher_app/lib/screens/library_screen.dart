@@ -39,7 +39,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
     return Scaffold(
       appBar: SearchAppBar(
         searchController: _searchController,
-        // When Searching something
         onSearchChanged: (value) {
           context.read<SearchProvider>().setSearchTerm(value);
           context.read<CipherProvider>().searchCiphers(value);
@@ -97,6 +96,13 @@ class _LibraryScreenState extends State<LibraryScreen> {
             },
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.pushNamed(context, 'add-cipher');
+        },
+        icon: const Icon(Icons.add),
+        label: const Text('Add Cipher'),
       ),
     );
   }

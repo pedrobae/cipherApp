@@ -7,7 +7,6 @@ class CipherRepository {
 
   // Get all ciphers
   Future<List<Cipher>> getAllCiphers() async {
-    print('------------GetAllCiphers-Repo---------------');
     final db = await _databaseHelper.database;
 
     final List<Map<String, dynamic>> maps = await db.query(
@@ -99,7 +98,7 @@ class CipherRepository {
 
       // Insert new tags
       for (String tag in cipher.tags) {
-        await _insertOrGetTagId(txn, tag, cipher.id);
+        await _insertOrGetTagId(txn, tag, cipher.id!);
       }
 
       return result;

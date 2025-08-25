@@ -32,17 +32,48 @@ class CipherRepository {
 
   Future<int> insertCipher(Cipher cipher) async {
     final db = await _databaseHelper.database;
-    return await db.insert('cipher', cipher.toJson());
+    
+    return await db.transaction((txn) async {
+      // Insert the cipher
+      final cipherId = await txn.insert('cipher', cipher.toJson());
+      
+      // Insert tags if any
+      if (cipher.tags.isNotEmpty) {
+        for (final tagTitle in cipher.tags) {
+          await _addTagToCipherInTransaction(txn, cipherId, tagTitle);
+        }
+      }
+      
+      return cipherId;
+    });
   }
 
   Future<void> updateCipher(Cipher cipher) async {
     final db = await _databaseHelper.database;
-    await db.update(
-      'cipher',
-      cipher.toJson()..['updated_at'] = DateTime.now().toIso8601String(),
-      where: 'id = ?',
-      whereArgs: [cipher.id],
-    );
+    
+    await db.transaction((txn) async {
+      // Update the cipher
+      await txn.update(
+        'cipher',
+        cipher.toJson()..['updated_at'] = DateTime.now().toIso8601String(),
+        where: 'id = ?',
+        whereArgs: [cipher.id],
+      );
+      
+      // Clear existing tags
+      await txn.delete(
+        'cipher_tags',
+        where: 'cipher_id = ?',
+        whereArgs: [cipher.id],
+      );
+      
+      // Insert new tags
+      if (cipher.tags.isNotEmpty) {
+        for (final tagTitle in cipher.tags) {
+          await _addTagToCipherInTransaction(txn, cipher.id!, tagTitle);
+        }
+      }
+    });
   }
 
   Future<void> deleteCipher(int id) async {
@@ -202,5 +233,32 @@ class CipherRepository {
   Future<CipherMap> _buildCipherMap(Map<String, dynamic> row) async {
     final content = await getMapContent(row['id']);
     return CipherMap.fromJson(row).copyWith(content: content);
+  }
+
+  // Helper method to add tags within a transaction
+  Future<void> _addTagToCipherInTransaction(Transaction txn, int cipherId, String tagTitle) async {
+    // Get or create tag
+    var tags = await txn.query(
+      'tag',
+      where: 'title = ?',
+      whereArgs: [tagTitle],
+    );
+
+    int tagId;
+    if (tags.isEmpty) {
+      tagId = await txn.insert('tag', {
+        'title': tagTitle,
+        'created_at': DateTime.now().toIso8601String(),
+      });
+    } else {
+      tagId = tags.first['id'] as int;
+    }
+
+    // Link to cipher (ignore if already exists)
+    await txn.insert('cipher_tags', {
+      'tag_id': tagId,
+      'cipher_id': cipherId,
+      'created_at': DateTime.now().toIso8601String(),
+    }, conflictAlgorithm: ConflictAlgorithm.ignore);
   }
 }

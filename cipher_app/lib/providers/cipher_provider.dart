@@ -22,6 +22,7 @@ class CipherProvider extends ChangeNotifier {
   // Getters
   List<Cipher> get ciphers => _filteredCiphers;
   bool get isLoading => _isLoading;
+  bool get isSaving => _isSaving;
   String? get error => _error;
   bool get useMemoryFiltering => _useMemoryFiltering;
 
@@ -95,18 +96,18 @@ class CipherProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _cipherRepository.insertCipher(cipher);
-      notifyListeners();
+      await _cipherRepository.insertCipher(cipher);
+      // Reload all ciphers to get the complete data with relationships
+      await loadCiphers();
     } catch (e) {
       _error = e.toString();
       if (kDebugMode) {
-        print(_error);
+        print('Error creating cipher: $e');
       }
     } finally {
       _isSaving = false;
+      notifyListeners();
     }
-
-    notifyListeners();
   }
 
   Future<void> updateCipher(Cipher cipher) async {
@@ -118,14 +119,13 @@ class CipherProvider extends ChangeNotifier {
 
     try {
       await _cipherRepository.updateCipher(cipher);
-
-      final index = _ciphers.indexWhere((c) => c.id == cipher.id);
-      if (index != -1) {
-        _ciphers[index] = cipher;
-        _filteredCiphers = List.from(_ciphers);
-      }
+      // Reload all ciphers to get the updated data with relationships
+      await loadCiphers();
     } catch (e) {
       _error = e.toString();
+      if (kDebugMode) {
+        print('Error updating cipher: $e');
+      }
     } finally {
       _isSaving = false;
       notifyListeners();
@@ -133,7 +133,25 @@ class CipherProvider extends ChangeNotifier {
   }
 
   Future<void> deleteCipher(int cipherID) async {
-    // TODO
+    if (_isSaving) return;
+
+    _isSaving = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _cipherRepository.deleteCipher(cipherID);
+      // Reload all ciphers to reflect the deletion
+      await loadCiphers();
+    } catch (e) {
+      _error = e.toString();
+      if (kDebugMode) {
+        print('Error deleting cipher: $e');
+      }
+    } finally {
+      _isSaving = false;
+      notifyListeners();
+    }
   }
 
   @override

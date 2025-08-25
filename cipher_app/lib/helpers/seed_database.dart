@@ -198,4 +198,5 @@ Then I shall [D]bow in [G]humble adora[D]tion
 And there pro[D]claim, my [A]God, how great Thou [D]art''',
     });
   });
+  print('seeded database');
 }

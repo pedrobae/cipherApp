@@ -21,7 +21,6 @@ class _EditCipherState extends State<EditCipher> {
   final _languageController = TextEditingController();
   final _tagsController = TextEditingController();
 
-  bool _isLoading = false;
   bool get _isEditMode => widget.cipher != null;
 
   @override
@@ -145,8 +144,8 @@ class _EditCipherState extends State<EditCipher> {
               const SizedBox(height: 32),
 
               FilledButton.icon(
-                onPressed: _isLoading ? null : _saveCipher,
-                icon: _isLoading
+                onPressed: context.watch<CipherProvider>().isSaving ? null : _saveCipher,
+                icon: context.watch<CipherProvider>().isSaving
                     ? SizedBox(
                         width: 16,
                         height: 16,
@@ -213,8 +212,6 @@ class _EditCipherState extends State<EditCipher> {
   void _saveCipher() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _isLoading = true);
-
     try {
       // Parse tags
       final tags = _tagsController.text
@@ -224,6 +221,7 @@ class _EditCipherState extends State<EditCipher> {
           .toList();
 
       final cipherData = Cipher(
+        id: _isEditMode ? widget.cipher!.id : null, // Include ID for updates
         title: _titleController.text.trim(),
         author: _authorController.text.trim(),
         tempo: _tempoController.text.trim(),
@@ -267,8 +265,6 @@ class _EditCipherState extends State<EditCipher> {
           ),
         );
       }
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
     }
   }
 

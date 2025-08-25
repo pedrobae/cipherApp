@@ -1,178 +1,136 @@
-import 'package:sqflite/sqflite.dart';
 import '../helpers/database_helper.dart';
 import '../models/domain/cipher.dart';
 
 class CipherRepository {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
 
-  // Get all ciphers
+  // === CORE CIPHER OPERATIONS ===
+
   Future<List<Cipher>> getAllCiphers() async {
     final db = await _databaseHelper.database;
-
-    final List<Map<String, dynamic>> maps = await db.query(
+    final results = await db.query(
       'cipher',
+      where: 'is_deleted = 0',
       orderBy: 'created_at DESC',
     );
 
-    List<Cipher> ciphers = [];
-    for (var map in maps) {
-      final cipher = await _buildCipherFromMap(map);
-      ciphers.add(cipher);
-    }
-
-    return ciphers;
+    return Future.wait(results.map((row) => _buildCipher(row)));
   }
 
-  // Get cipher by ID
   Future<Cipher?> getCipherById(int id) async {
     final db = await _databaseHelper.database;
-
-    final List<Map<String, dynamic>> maps = await db.query(
+    final results = await db.query(
       'cipher',
-      where: 'id = ?',
+      where: 'id = ? AND is_deleted = 0',
       whereArgs: [id],
     );
 
-    if (maps.isNotEmpty) {
-      return await _buildCipherFromMap(maps.first);
-    }
-    return null;
+    if (results.isEmpty) return null;
+    return _buildCipher(results.first);
   }
 
-  // Insert a new cipher
   Future<int> insertCipher(Cipher cipher) async {
     final db = await _databaseHelper.database;
-
-    return await db.transaction((txn) async {
-      // Insert cipher
-      final cipherId = await txn.insert('cipher', {
-        'title': cipher.title,
-        'author': cipher.author,
-        'tempo': cipher.tempo,
-        'music_key': cipher.musicKey,
-        'language': cipher.language,
-        'created_at': DateTime.now().toIso8601String(),
-        'updated_at': DateTime.now().toIso8601String(),
-      });
-
-      // Insert tags
-      for (String tag in cipher.tags) {
-        await _insertOrGetTagId(txn, tag, cipherId);
-      }
-
-      // Insert map
-      // for (CipherMap map in cipher.maps) {
-      //   await _insertOrGetMapId(txn, map, cipherId);
-      // }
-
-      return cipherId;
-    });
+    return await db.insert('cipher', cipher.toJson());
   }
 
-  // Update cipher
-  Future<int> updateCipher(Cipher cipher) async {
+  Future<void> updateCipher(Cipher cipher) async {
     final db = await _databaseHelper.database;
-
-    return await db.transaction((txn) async {
-      // Update cipher
-      final result = await txn.update(
-        'cipher',
-        {
-          'title': cipher.title,
-          'author': cipher.author,
-          'tempo': cipher.tempo,
-          'music_key': cipher.musicKey,
-          'language': cipher.language,
-          'updated_at': DateTime.now().toIso8601String(),
-        },
-        where: 'id = ?',
-        whereArgs: [cipher.id],
-      );
-
-      // Delete existing tags
-      await txn.delete(
-        'cipher_tags',
-        where: 'cipher_id = ?',
-        whereArgs: [cipher.id],
-      );
-
-      // Insert new tags
-      for (String tag in cipher.tags) {
-        await _insertOrGetTagId(txn, tag, cipher.id!);
-      }
-
-      return result;
-    });
-  }
-
-  // Delete cipher
-  Future<int> deleteCipher(int id) async {
-    final db = await _databaseHelper.database;
-    return await db.delete('cipher', where: 'id = ?', whereArgs: [id]);
-  }
-
-  // Helper method to build Cipher object from database map
-  Future<Cipher> _buildCipherFromMap(Map<String, dynamic> map) async {
-    final db = await _databaseHelper.database;
-
-    // Get tags for this cipher
-    final tagMaps = await db.rawQuery(
-      '''
-      SELECT t.title FROM tag t
-      INNER JOIN cipher_tags ct ON t.id = ct.tag_id
-      WHERE ct.cipher_id = ?
-    ''',
-      [map['id']],
-    );
-
-    final tags = tagMaps.map((tagMap) => tagMap['title'] as String).toList();
-
-    return Cipher(
-      id: map['id'],
-      title: map['title'],
-      author: map['author'],
-      tempo: map['tempo'],
-      musicKey: map['music_key'],
-      language: map['language'],
-      tags: tags,
-      createdAt: DateTime.parse(map['created_at']),
-      updatedAt: DateTime.parse(map['updated_at']),
-      isLocal: true, // Since it's from local database
-      maps: [], // Empty for now, you can populate this later
-      // You'll need to add musicMaps loading here when you implement the content system
-      // maps: await _getMapsForCipher(map['id']),
+    await db.update(
+      'cipher',
+      cipher.toJson()..['updated_at'] = DateTime.now().toIso8601String(),
+      where: 'id = ?',
+      whereArgs: [cipher.id],
     );
   }
 
-  // Helper method to insert or get existing tag
-  Future<void> _insertOrGetTagId(
-    Transaction txn,
-    String tagTitle,
-    int cipherId,
-  ) async {
-    // Check if tag exists
-    final existingTags = await txn.query(
-      'tag',
-      where: 'title = ?',
-      whereArgs: [tagTitle],
+  Future<void> deleteCipher(int id) async {
+    final db = await _databaseHelper.database;
+    await db.update(
+      'cipher',
+      {'is_deleted': 1, 'updated_at': DateTime.now().toIso8601String()},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  // === CIPHER MAP OPERATIONS ===
+
+  Future<List<CipherMap>> getCipherMaps(int cipherId) async {
+    final db = await _databaseHelper.database;
+    final results = await db.query(
+      'cipher_map',
+      where: 'cipher_id = ?',
+      whereArgs: [cipherId],
+      orderBy: 'id',
     );
 
-    int tagId;
-    if (existingTags.isNotEmpty) {
-      tagId = existingTags.first['id'] as int;
-    } else {
-      // Insert new tag
-      tagId = await txn.insert('tag', {
-        'title': tagTitle,
-        'created_at': DateTime.now().toIso8601String(),
-      });
-    }
+    return Future.wait(results.map((row) => _buildCipherMap(row)));
+  }
 
-    // Link tag to cipher
-    await txn.insert('cipher_tags', {
-      'tag_id': tagId,
-      'cipher_id': cipherId,
-      'created_at': DateTime.now().toIso8601String(),
-    });
+  Future<int> insertCipherMap(CipherMap map) async {
+    final db = await _databaseHelper.database;
+    return await db.insert('cipher_map', map.toJson());
+  }
+
+  Future<void> updateCipherMap(CipherMap map) async {
+    final db = await _databaseHelper.database;
+    await db.update(
+      'cipher_map',
+      map.toJson(),
+      where: 'id = ?',
+      whereArgs: [map.id],
+    );
+  }
+
+  Future<void> deleteCipherMap(int id) async {
+    final db = await _databaseHelper.database;
+    await db.delete('cipher_map', where: 'id = ?', whereArgs: [id]);
+  }
+
+  // === MAP CONTENT OPERATIONS ===
+
+  Future<List<MapContent>> getMapContent(int mapId) async {
+    final db = await _databaseHelper.database;
+    final results = await db.query(
+      'map_content',
+      where: 'map_id = ?',
+      whereArgs: [mapId],
+      orderBy: 'content_type',
+    );
+
+    return results.map((row) => MapContent.fromJson(row)).toList();
+  }
+
+  Future<int> insertMapContent(MapContent content) async {
+    final db = await _databaseHelper.database;
+    return await db.insert('map_content', content.toJson());
+  }
+
+  Future<void> updateMapContent(MapContent content) async {
+    final db = await _databaseHelper.database;
+    await db.update(
+      'map_content',
+      content.toJson(),
+      where: 'id = ?',
+      whereArgs: [content.id],
+    );
+  }
+
+  Future<void> deleteMapContent(int id) async {
+    final db = await _databaseHelper.database;
+    await db.delete('map_content', where: 'id = ?', whereArgs: [id]);
+  }
+
+  // === PRIVATE HELPERS ===
+
+  Future<Cipher> _buildCipher(Map<String, dynamic> row) async {
+    final maps = await getCipherMaps(row['id']);
+    return Cipher.fromJson(row).copyWith(maps: maps);
+  }
+
+  Future<CipherMap> _buildCipherMap(Map<String, dynamic> row) async {
+    final content = await getMapContent(row['id']);
+    return CipherMap.fromJson(row).copyWith(content: content);
   }
 }

@@ -26,7 +26,29 @@ final db = await dbHelper.database;
 ```
 
 ### Automatic Seeding
-Database automatically seeds with sample data on first creation. See `lib/helpers/seed_database.dart` for initial hymns with ChordPro formatted content.
+Database automatically seeds with sample data on first creation via two mechanisms:
+1. **Primary**: `_onCreate` callback seeds immediately after table creation
+2. **Fallback**: `_initDatabase` checks for empty database and seeds if needed
+
+See `lib/helpers/seed_database.dart` for initial hymns with ChordPro formatted content.
+
+### Database Factory Initialization
+Main app requires explicit database factory initialization for cross-platform support:
+```dart
+// Platform-specific database factory setup
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await _initializeDatabaseFactory(); // Critical for Windows/Desktop
+  runApp(const MyApp());
+}
+```
+
+**Platform Support:**
+- **Mobile (iOS/Android)**: Uses native sqflite
+- **Desktop (Windows/Linux/macOS)**: Uses `sqflite_common_ffi`
+- **Web**: Not supported - throws UnsupportedError
+
+Tests use `sqflite_common_ffi` for all platforms.
 
 ### Testing Database Reset
 ```dart

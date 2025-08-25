@@ -14,6 +14,7 @@ dependencies:
   carousel_slider_plus: ^7.1.1
   flutter_chord: ^0.1.2
   sqflite: ^2.3.0
+  sqflite_common_ffi: ^2.3.0  # For desktop support
   path: ^1.8.3
   cupertino_icons: ^1.0.8
 
@@ -22,7 +23,6 @@ dev_dependencies:
     sdk: flutter
   mockito: ^5.4.4
   build_runner: ^2.4.9
-  sqflite_common_ffi: ^2.3.0
   flutter_lints: ^6.0.0
 
 

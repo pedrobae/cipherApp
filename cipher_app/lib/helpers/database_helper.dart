@@ -17,22 +17,36 @@ class DatabaseHelper {
   }
 
   Future<Database> _initDatabase() async {
-    String path = join(await getDatabasesPath(), 'cipher_app.db');
+    try {
+      String path = join(await getDatabasesPath(), 'cipher_app.db');
 
-    bool isNewDatabase = !await databaseFactory.databaseExists(path);
+      bool isNewDatabase = !await databaseFactory.databaseExists(path);
 
-    final db = await openDatabase(
-      path,
-      version: 1,
-      onCreate: _onCreate,
-      onUpgrade: _onUpgrade,
-    );
+      final db = await openDatabase(
+        path,
+        version: 1,
+        onCreate: _onCreate, // This will seed the database
+        onUpgrade: _onUpgrade,
+      );
 
-    if (isNewDatabase) {
-      await seedDatabase(db);
+      // Only seed if database existed but is empty (edge case)
+      if (!isNewDatabase) {
+        final cipherCount = await db.rawQuery('SELECT COUNT(*) as count FROM cipher');
+        final count = cipherCount.first['count'] as int;
+        
+        if (count == 0) {
+          print('Database exists but is empty, seeding with initial data...');
+          await seedDatabase(db);
+          print('Database seeded successfully');
+        }
+      }
+
+      return db;
+    } catch (e) {
+      print('Error initializing database: $e');
+      print('Make sure database factory is properly initialized in main()');
+      rethrow;
     }
-
-    return db;
   }
 
   Future<void> _onCreate(Database db, int version) async {
@@ -204,6 +218,11 @@ class DatabaseHelper {
     await db.execute(
       'CREATE INDEX idx_map_content_type ON map_content(content_type)',
     );
+    
+    // Seed the database with initial data
+    print('Tables created, seeding database...');
+    await seedDatabase(db);
+    print('Database seeded successfully');
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {

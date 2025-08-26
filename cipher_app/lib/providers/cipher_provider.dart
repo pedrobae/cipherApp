@@ -83,11 +83,6 @@ class CipherProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Refresh data
-  Future<void> refresh() async {
-    await loadCiphers();
-  }
-
   Future<void> createCipher(Cipher cipher) async {
     if (_isSaving) return;
 

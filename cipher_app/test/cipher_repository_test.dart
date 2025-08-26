@@ -25,7 +25,7 @@ void main() {
     test('should load seeded ciphers', () async {
       final ciphers = await repository.getAllCiphers();
       
-      expect(ciphers.length, 2); // Amazing Grace + How Great Thou Art
+      expect(ciphers.length, 4); // Amazing Grace + How Great Thou Art + Holy Holy Holy + Be Thou My Vision
       expect(ciphers.any((c) => c.title == 'Amazing Grace'), true);
       expect(ciphers.any((c) => c.title == 'How Great Thou Art'), true);
     });
@@ -49,7 +49,7 @@ void main() {
       await repository.deleteCipher(cipherId);
       
       final remainingCiphers = await repository.getAllCiphers();
-      expect(remainingCiphers.length, 1); // One less cipher
+      expect(remainingCiphers.length, 3); // One less cipher (4-1=3)
       expect(remainingCiphers.any((c) => c.id == cipherId), false);
     });
 
@@ -66,7 +66,7 @@ void main() {
 
     test('should get map content', () async {
       final ciphers = await repository.getAllCiphers();
-      final cipher = ciphers.first;
+      final cipher = ciphers.firstWhere((c) => c.title == 'Amazing Grace');
       final maps = await repository.getCipherMaps(cipher.id!);
       
       final content = await repository.getMapContent(maps.first.id!);

@@ -201,5 +201,115 @@ And there pro[D]claim, my [A]God, how great Thou [D]art''',
 
     // Seed info items after cipher data
     await seedInfoDatabase(db);
+
+    // === PLAYLIST SEED DATA ===
+    
+    // Create a test user first
+    int testUserId = await txn.insert('user', {
+      'username': 'testuser',
+      'mail': 'test@example.com',
+      'created_at': DateTime.now().toIso8601String(),
+      'updated_at': DateTime.now().toIso8601String(),
+      'is_active': 1,
+    });
+
+    // Create sample playlists
+    int worshipPlaylistId = await txn.insert('playlist', {
+      'name': 'Culto Dominical',
+      'description': 'Músicas para o culto de domingo',
+      'author_id': testUserId,
+      'is_public': 0,
+      'created_at': DateTime.now().toIso8601String(),
+      'updated_at': DateTime.now().toIso8601String(),
+    });
+
+    int eveningPlaylistId = await txn.insert('playlist', {
+      'name': 'Culto da Noite',
+      'description': 'Seleção especial para cultos noturnos',
+      'author_id': testUserId,
+      'is_public': 1,
+      'created_at': DateTime.now().toIso8601String(),
+      'updated_at': DateTime.now().toIso8601String(),
+    });
+
+    // Add additional ciphers for variety
+    int hymn3Id = await txn.insert('cipher', {
+      'title': 'Holy Holy Holy',
+      'author': 'Reginald Heber',
+      'tempo': 'Medium',
+      'music_key': 'F',
+      'language': 'en',
+      'created_at': DateTime.now().toIso8601String(),
+      'updated_at': DateTime.now().toIso8601String(),
+    });
+
+    int hymn4Id = await txn.insert('cipher', {
+      'title': 'Be Thou My Vision',
+      'author': 'Eleanor Hull',
+      'tempo': 'Slow',
+      'music_key': 'C',
+      'language': 'en',
+      'created_at': DateTime.now().toIso8601String(),
+      'updated_at': DateTime.now().toIso8601String(),
+    });
+
+    // Link cipher maps to worship playlist (instead of raw ciphers)
+    await txn.insert('playlist_cipher_map', {
+      'cipher_map_id': amazingGraceMap1Id, // Using cipher map ID
+      'playlist_id': worshipPlaylistId,
+      'includer_id': testUserId,
+      'position': 0,
+      'included_at': DateTime.now().toIso8601String(),
+    });
+
+    await txn.insert('playlist_cipher_map', {
+      'cipher_map_id': howGreatMap1Id, // Using cipher map ID
+      'playlist_id': worshipPlaylistId,
+      'includer_id': testUserId,
+      'position': 1,
+      'included_at': DateTime.now().toIso8601String(),
+    });
+
+    // Create additional cipher maps for variety
+    int holyMap1Id = await txn.insert('cipher_map', {
+      'cipher_id': hymn3Id,
+      'song_structure': 'V1 C V2 C V3 C V4 C',
+      'transposed_key': 'F',
+      'version_name': 'Standard Version',
+      'created_at': DateTime.now().toIso8601String(),
+    });
+
+    int visionMap1Id = await txn.insert('cipher_map', {
+      'cipher_id': hymn4Id,
+      'song_structure': 'V1 V2 V3 V4',
+      'transposed_key': 'C',
+      'version_name': 'Simple Version',
+      'created_at': DateTime.now().toIso8601String(),
+    });
+
+    await txn.insert('playlist_cipher_map', {
+      'cipher_map_id': holyMap1Id,
+      'playlist_id': worshipPlaylistId,
+      'includer_id': testUserId,
+      'position': 2,
+      'included_at': DateTime.now().toIso8601String(),
+    });
+
+    // Link cipher maps to evening playlist
+    await txn.insert('playlist_cipher_map', {
+      'cipher_map_id': howGreatMap1Id,
+      'playlist_id': eveningPlaylistId,
+      'includer_id': testUserId,
+      'position': 0,
+      'included_at': DateTime.now().toIso8601String(),
+    });
+
+    await txn.insert('playlist_cipher_map', {
+      'cipher_map_id': visionMap1Id,
+      'playlist_id': eveningPlaylistId,
+      'includer_id': testUserId,
+      'position': 1,
+      'included_at': DateTime.now().toIso8601String(),
+    });
   });
 }

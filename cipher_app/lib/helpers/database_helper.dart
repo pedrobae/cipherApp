@@ -135,19 +135,19 @@ class DatabaseHelper {
       )
     ''');
 
-    // Create playlist_cipher table
+    // Create playlist_cipher_map table (playlists contain specific cipher versions)
     await db.execute('''
-      CREATE TABLE playlist_cipher (
+      CREATE TABLE playlist_cipher_map (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        cipher_id INTEGER NOT NULL,
+        cipher_map_id INTEGER NOT NULL,
         playlist_id INTEGER NOT NULL,
         includer_id INTEGER NOT NULL,
         position INTEGER NOT NULL,
         included_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (cipher_id) REFERENCES cipher (id) ON DELETE CASCADE,
+        FOREIGN KEY (cipher_map_id) REFERENCES cipher_map (id) ON DELETE CASCADE,
         FOREIGN KEY (playlist_id) REFERENCES playlist (id) ON DELETE CASCADE,
         FOREIGN KEY (includer_id) REFERENCES user (id) ON DELETE CASCADE,
-        UNIQUE(playlist_id, cipher_id),
+        UNIQUE(playlist_id, cipher_map_id),
         UNIQUE(playlist_id, position)
       )
     ''');
@@ -208,10 +208,10 @@ class DatabaseHelper {
       'CREATE INDEX idx_playlist_author_id ON playlist(author_id)',
     );
     await db.execute(
-      'CREATE INDEX idx_playlist_cipher_playlist_id ON playlist_cipher(playlist_id)',
+      'CREATE INDEX idx_playlist_cipher_map_playlist_id ON playlist_cipher_map(playlist_id)',
     );
     await db.execute(
-      'CREATE INDEX idx_playlist_cipher_cipher_id ON playlist_cipher(cipher_id)',
+      'CREATE INDEX idx_playlist_cipher_map_cipher_map_id ON playlist_cipher_map(cipher_map_id)',
     );
     await db.execute(
       'CREATE INDEX idx_user_playlist_user_id ON user_playlist(user_id)',

@@ -3,6 +3,17 @@ import '../models/domain/playlist.dart';
 
 class PlaylistRepository {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
+  static int? _currentUserId;
+
+  // Static method to set current user ID (for testing and app initialization)
+  static void setCurrentUserId(int userId) {
+    _currentUserId = userId;
+  }
+
+  // Static method to get current user ID
+  static int? getCurrentUserId() {
+    return _currentUserId;
+  }
 
   // ===== PLAYLIST CRUD =====
   // Creates a new playlist, as well as the playlist_cipher, and user_playlist relational objects
@@ -13,13 +24,13 @@ class PlaylistRepository {
       // 1. Insert the playlist (basic info only)
       final playlistId = await txn.insert('playlist', playlist.toDatabaseJson());
       
-      // 2. Insert cipher relationships if any
-      if (playlist.cipherIds.isNotEmpty) {
-        for (int i = 0; i < playlist.cipherIds.length; i++) {
-          await txn.insert('playlist_cipher', {
-            'cipher_id': playlist.cipherIds[i],
+      // 2. Insert cipher map relationships if any
+      if (playlist.cipherMapIds.isNotEmpty) {
+        for (int i = 0; i < playlist.cipherMapIds.length; i++) {
+          await txn.insert('playlist_cipher_map', {
+            'cipher_map_id': playlist.cipherMapIds[i],
             'playlist_id': playlistId,
-            'includer_id': int.parse(playlist.createdBy), // Creator adds initial ciphers
+            'includer_id': int.parse(playlist.createdBy), // Creator adds initial cipher maps
             'position': i,
             'included_at': DateTime.now().toIso8601String(),
           });
@@ -44,30 +55,28 @@ class PlaylistRepository {
   }
 
   // Get all playlists for a user (owned + collaborated)
-  Future<List<Playlist>> getUserPlaylists(int userId) async {
+  Future<List<Playlist>> getAllPlaylists() async {
     final db = await _databaseHelper.database;
     
-    // Get playlists where user is owner or collaborator
+    // Get playlists
     final playlistResults = await db.rawQuery('''
-      SELECT DISTINCT p.* FROM playlist p
-      LEFT JOIN user_playlist up ON p.id = up.playlist_id
-      WHERE p.author_id = ? OR up.user_id = ?
+      SELECT p.* FROM playlist p
       ORDER BY p.updated_at DESC
-    ''', [userId, userId]);
+    ''');
     
     List<Playlist> playlists = [];
     
     for (Map<String, dynamic> playlistData in playlistResults) {
-      // Get cipher IDs for this playlist
-      final cipherResults = await db.rawQuery('''
-        SELECT cipher_id FROM playlist_cipher 
-        WHERE playlist_id = ? 
-        ORDER BY position
-      ''', [playlistData['id']]);
-      
-      final cipherIds = cipherResults.map((row) => row['cipher_id'] as int).toList();
-      
-      // Get collaborator IDs for this playlist
+        // Get cipher map IDs for this playlist
+        final cipherMapResults = await db.rawQuery('''
+          SELECT cipher_map_id FROM playlist_cipher_map 
+          WHERE playlist_id = ? 
+          ORDER BY position
+        ''', [playlistData['id']]);
+        
+        final cipherMapIds = cipherMapResults.map((row) => row['cipher_map_id'] as int).toList();
+        
+        // Get collaborator IDs for this playlist
       final collaboratorResults = await db.rawQuery('''
         SELECT user_id FROM user_playlist 
         WHERE playlist_id = ?
@@ -75,19 +84,17 @@ class PlaylistRepository {
       
       final collaborators = collaboratorResults.map((row) => row['user_id'].toString()).toList();
       
-      // Build complete playlist object
-      final playlist = Playlist(
-        id: playlistData['id'] as int,
-        name: playlistData['name'] as String,
-        description: playlistData['description'] as String?,
-        createdBy: playlistData['author_id'].toString(),
-        createdAt: DateTime.parse(playlistData['created_at'] as String),
-        updatedAt: DateTime.parse(playlistData['updated_at'] as String),
-        cipherIds: cipherIds,
-        collaborators: collaborators,
-      );
-      
-      playlists.add(playlist);
+        // Build complete playlist object
+        final playlist = Playlist(
+          id: playlistData['id'] as int,
+          name: playlistData['name'] as String,
+          description: playlistData['description'] as String?,
+          createdBy: playlistData['author_id'].toString(),
+          createdAt: DateTime.parse(playlistData['created_at'] as String),
+          updatedAt: DateTime.parse(playlistData['updated_at'] as String),
+          cipherMapIds: cipherMapIds,
+          collaborators: collaborators,
+        );      playlists.add(playlist);
     }
     
     return playlists;
@@ -107,14 +114,14 @@ class PlaylistRepository {
     
     final playlistData = playlistResults.first;
     
-    // Get cipher IDs
-    final cipherResults = await db.rawQuery('''
-      SELECT cipher_id FROM playlist_cipher 
+    // Get cipher map IDs
+    final cipherMapResults = await db.rawQuery('''
+      SELECT cipher_map_id FROM playlist_cipher_map 
       WHERE playlist_id = ? 
       ORDER BY position
     ''', [playlistId]);
     
-    final cipherIds = cipherResults.map((row) => row['cipher_id'] as int).toList();
+    final cipherMapIds = cipherMapResults.map((row) => row['cipher_map_id'] as int).toList();
     
     // Get collaborators
     final collaboratorResults = await db.rawQuery('''
@@ -131,7 +138,7 @@ class PlaylistRepository {
       createdBy: playlistData['author_id'].toString(),
       createdAt: DateTime.parse(playlistData['created_at'] as String),
       updatedAt: DateTime.parse(playlistData['updated_at'] as String),
-      cipherIds: cipherIds,
+      cipherMapIds: cipherMapIds,
       collaborators: collaborators,
     );
   }
@@ -160,9 +167,9 @@ class PlaylistRepository {
     final db = await _databaseHelper.database;
     
     await db.transaction((txn) async {
-      // Delete all cipher relationships (handled by CASCADE, but explicit for clarity)
+      // Delete all cipher map relationships (handled by CASCADE, but explicit for clarity)
       await txn.delete(
-        'playlist_cipher',
+        'playlist_cipher_map',
         where: 'playlist_id = ?',
         whereArgs: [playlistId],
       );
@@ -183,25 +190,26 @@ class PlaylistRepository {
     });
   }
 
-  // ===== CIPHER MANAGEMENT =====
-  Future<void> addCipherToPlaylist(int playlistId, int cipherId, int includerId) async {
+  // ===== CIPHER MAP MANAGEMENT =====
+  Future<void> addCipherMapToPlaylist(int playlistId, int cipherMapId, {int? includerId}) async {
     final db = await _databaseHelper.database;
+    final effectiveIncluderId = includerId ?? _currentUserId ?? 1;
     
     await db.transaction((txn) async {
       // Get current max position
       final positionResult = await txn.rawQuery('''
         SELECT COALESCE(MAX(position), -1) + 1 as next_position 
-        FROM playlist_cipher 
+        FROM playlist_cipher_map 
         WHERE playlist_id = ?
       ''', [playlistId]);
       
       final nextPosition = positionResult.first['next_position'] as int;
       
-      // Insert cipher relationship
-      await txn.insert('playlist_cipher', {
-        'cipher_id': cipherId,
+      // Insert cipher map relationship
+      await txn.insert('playlist_cipher_map', {
+        'cipher_map_id': cipherMapId,
         'playlist_id': playlistId,
-        'includer_id': includerId,
+        'includer_id': effectiveIncluderId,
         'position': nextPosition,
         'included_at': DateTime.now().toIso8601String(),
       });
@@ -216,15 +224,15 @@ class PlaylistRepository {
     });
   }
 
-  Future<void> removeCipherFromPlaylist(int playlistId, int cipherId) async {
+  Future<void> removeCipherMapFromPlaylist(int playlistId, int cipherMapId) async {
     final db = await _databaseHelper.database;
     
     await db.transaction((txn) async {
-      // Remove cipher relationship
+      // Remove cipher map relationship
       await txn.delete(
-        'playlist_cipher',
-        where: 'playlist_id = ? AND cipher_id = ?',
-        whereArgs: [playlistId, cipherId],
+        'playlist_cipher_map',
+        where: 'playlist_id = ? AND cipher_map_id = ?',
+        whereArgs: [playlistId, cipherMapId],
       );
       
       // Update playlist timestamp
@@ -237,17 +245,24 @@ class PlaylistRepository {
     });
   }
 
-  Future<void> reorderPlaylistCiphers(int playlistId, List<int> newCipherOrder) async {
+  Future<void> reorderPlaylistCipherMaps(int playlistId, List<int> newCipherMapOrder) async {
     final db = await _databaseHelper.database;
     
     await db.transaction((txn) async {
-      // Update positions for all ciphers
-      for (int i = 0; i < newCipherOrder.length; i++) {
+      // First, set all positions to negative values to avoid constraint conflicts
+      await txn.rawUpdate('''
+        UPDATE playlist_cipher_map 
+        SET position = -position - 1000 
+        WHERE playlist_id = ?
+      ''', [playlistId]);
+      
+      // Now update positions for all cipher maps in order
+      for (int i = 0; i < newCipherMapOrder.length; i++) {
         await txn.update(
-          'playlist_cipher',
+          'playlist_cipher_map',
           {'position': i},
-          where: 'playlist_id = ? AND cipher_id = ?',
-          whereArgs: [playlistId, newCipherOrder[i]],
+          where: 'playlist_id = ? AND cipher_map_id = ?',
+          whereArgs: [playlistId, newCipherMapOrder[i]],
         );
       }
       
@@ -282,5 +297,10 @@ class PlaylistRepository {
       where: 'playlist_id = ? AND user_id = ?',
       whereArgs: [playlistId, userId],
     );
+  }
+
+  // Sets local user id
+  void setLocalUser(int userId) {
+    _currentUserId = userId;
   }
 }

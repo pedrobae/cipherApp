@@ -30,7 +30,7 @@ void main() {
       expect(tableNames, contains('cipher_tags'));
       expect(tableNames, contains('user'));
       expect(tableNames, contains('playlist'));
-      expect(tableNames, contains('playlist_cipher'));
+      expect(tableNames, contains('playlist_cipher_map'));
       expect(tableNames, contains('app_info'));
 
       // Clean up this test
@@ -84,7 +84,7 @@ void main() {
 
       expect(
         afterReset.length,
-        2,
+        4,
         reason: 'Database should have only seed data after reset',
       );
 
@@ -119,7 +119,7 @@ void main() {
 
       // Query and verify
       final ciphers = await db.query('cipher');
-      expect(ciphers.length, 4);
+      expect(ciphers.length, 6);
 
       // Test specific queries
       final fastSongs = await db.query(
@@ -142,7 +142,7 @@ void main() {
 
       // Check if cipher_map records were seeded
       final cipherMaps = await db.query('cipher_map');
-      expect(cipherMaps.length, 3, reason: 'Should have 3 cipher maps seeded');
+      expect(cipherMaps.length, 5, reason: 'Should have 5 cipher maps seeded');
 
       // Verify Amazing Grace maps
       final amazingGraceMaps = await db.query(

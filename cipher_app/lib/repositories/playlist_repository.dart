@@ -54,7 +54,7 @@ class PlaylistRepository {
     });
   }
 
-  // Get all playlists for a user (owned + collaborated)
+  // Get all playlists stored in the database
   Future<List<Playlist>> getAllPlaylists() async {
     final db = await _databaseHelper.database;
     
@@ -166,28 +166,11 @@ class PlaylistRepository {
   Future<void> deletePlaylist(int playlistId) async {
     final db = await _databaseHelper.database;
     
-    await db.transaction((txn) async {
-      // Delete all cipher map relationships (handled by CASCADE, but explicit for clarity)
-      await txn.delete(
-        'playlist_cipher_map',
-        where: 'playlist_id = ?',
-        whereArgs: [playlistId],
-      );
-      
-      // Delete all collaborator relationships (handled by CASCADE, but explicit for clarity)
-      await txn.delete(
-        'user_playlist',
-        where: 'playlist_id = ?',
-        whereArgs: [playlistId],
-      );
-      
-      // Delete the playlist itself
-      await txn.delete(
-        'playlist',
-        where: 'id = ?',
-        whereArgs: [playlistId],
-      );
-    });
+    await db.delete(
+      'playlist',
+      where: 'id = ?',
+      whereArgs: [playlistId]
+    );
   }
 
   // ===== CIPHER MAP MANAGEMENT =====
@@ -277,8 +260,9 @@ class PlaylistRepository {
   }
 
   // ===== COLLABORATOR MANAGEMENT =====
-  Future<void> addCollaboratorToPlaylist(int playlistId, int userId, int addedBy) async {
+  Future<void> addCollaboratorToPlaylist(int playlistId, int userId, {int? addedBy}) async {
     final db = await _databaseHelper.database;
+    addedBy ?? _currentUserId;
     
     await db.insert('user_playlist', {
       'user_id': userId,

@@ -19,6 +19,8 @@ class PlaylistProvider extends ChangeNotifier {
   bool get isSaving => _isSaving;
   String? get error => _error;
   
+
+  // ===== READ =====
   // Load Playlists from local SQLite database
   Future<void> loadPlaylists() async {
     if (_isLoading) return;
@@ -63,6 +65,7 @@ class PlaylistProvider extends ChangeNotifier {
     }
   }
 
+  // ===== CREATE =====
   // Create a new playlist from scratch
   Future<void> createPlaylist(Playlist playlist) async {
     if (_isSaving) return;
@@ -82,6 +85,7 @@ class PlaylistProvider extends ChangeNotifier {
     }
   }
 
+  // ===== UPDATE =====
   // Update a Playlist with new data (name/description)
   Future<void> updatePlaylistInfo(int id, String? name, String? description) async {
     await _playlistRepository.updatePlaylist(id, name: name, description: description);
@@ -89,14 +93,20 @@ class PlaylistProvider extends ChangeNotifier {
   }
 
   // Update a Playlist with a new Cipher Map
-  Future<void> addCipherMapToPlaylist(int playlistId, int cipherMapId) async { 
+  Future<void> addCipherMap(int playlistId, int cipherMapId) async { 
     await _playlistRepository.addCipherMapToPlaylist(playlistId, cipherMapId);
-    await _loadPlaylist(playlistId); // Reload the playlist to reflect changes
+    await _loadPlaylist(playlistId);
    }
 
   // Update a Playlist with a new Order, but same cipher maps
   Future<void> reorderPlaylistCipherMaps(int playlistId, List<int> newOrder) async { 
     await _playlistRepository.reorderPlaylistCipherMaps(playlistId, newOrder);
-    await _loadPlaylist(playlistId); // Reload the playlist to reflect changes
+    await _loadPlaylist(playlistId);
    }
+
+  // Update a Playlist with a new collaborator
+  Future<void> addCollaborator(int playlistId, int collaboratorId) async {
+    await _playlistRepository.addCollaboratorToPlaylist(playlistId, collaboratorId);
+    await _loadPlaylist(playlistId);
+  }
 }

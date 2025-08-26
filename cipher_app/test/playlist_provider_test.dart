@@ -178,7 +178,7 @@ void main() {
         final initialCipherCount = testPlaylist.cipherMapIds.length;
 
         // Act
-        await provider.addCipherMapToPlaylist(testPlaylist.id, 1);
+        await provider.addCipherMap(testPlaylist.id, 1);
 
         // Assert - Note: Current provider doesn't reload playlist automatically
         // So we need to reload manually to see changes
@@ -211,9 +211,9 @@ void main() {
 
       test('should reorder playlist cipher maps', () async {
         // Arrange
-        await provider.addCipherMapToPlaylist(testPlaylist.id, 1);
-        await provider.addCipherMapToPlaylist(testPlaylist.id, 2);
-        await provider.addCipherMapToPlaylist(testPlaylist.id, 3);
+        await provider.addCipherMap(testPlaylist.id, 1);
+        await provider.addCipherMap(testPlaylist.id, 2);
+        await provider.addCipherMap(testPlaylist.id, 3);
 
         // Act - Reorder from [1,2,3] to [3,1,2]
         await provider.reorderPlaylistCipherMaps(testPlaylist.id, [3, 1, 2]);
@@ -247,18 +247,42 @@ void main() {
       });
 
       // TODO: Implement collaborator management methods in provider
-      // test('should add collaborator to playlist', () async {
-      //   // Act
-      //   await provider.addCollaboratorToPlaylist(testPlaylist.id, 2);
+    group('Cipher Management', () {
+      late Playlist testPlaylist;
 
-      //   // Assert
-      //   final updatedPlaylist = provider.playlists.firstWhere(
-      //     (p) => p.id == testPlaylist.id,
-      //   );
-      //   expect(updatedPlaylist.collaborators, contains('2'));
-      //   expect(provider.error, isNull);
-      // });
+      setUp(() async {
+        await provider.loadPlaylists();
+        
+        // Create a test playlist for cipher operations
+        final newPlaylist = Playlist(
+          id: 0,
+          name: 'Teste Cifras',
+          description: 'Para testar operações de cifras',
+          createdBy: '1',
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+          cipherMapIds: [],
+          collaborators: [],
+        );
+        
+        await provider.createPlaylist(newPlaylist);
+        testPlaylist = provider.playlists.firstWhere(
+          (p) => p.name == 'Teste Cifras',
+        );
+      });
 
+      test('should add collaborator to playlist', () async {
+        // Act
+        await provider.addCollaborator(testPlaylist.id, 2);
+
+        // Assert
+        final updatedPlaylist = provider.playlists.firstWhere(
+          (p) => p.id == testPlaylist.id,
+        );
+        expect(updatedPlaylist.collaborators, contains('2'));
+        expect(provider.error, isNull);
+      });
+    });
       // test('should remove collaborator from playlist', () async {
       //   // Arrange
       //   await provider.addCollaboratorToPlaylist(testPlaylist.id, 2);
@@ -325,7 +349,7 @@ void main() {
           (p) => p.name == 'Teste Estado',
         );
         
-        await provider.addCipherMapToPlaylist(createdPlaylist.id, 2);
+        await provider.addCipherMap(createdPlaylist.id, 2);
 
         // Assert
         expect(provider.playlists.length, equals(initialCount + 1));

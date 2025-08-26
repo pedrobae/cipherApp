@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import '../lib/providers/playlist_provider.dart';
-import '../lib/models/domain/playlist.dart';
-import '../lib/helpers/database_helper.dart';
-import '../lib/repositories/playlist_repository.dart';
+import 'package:cipher_app/providers/playlist_provider.dart';
+import 'package:cipher_app/models/domain/playlist.dart';
+import 'package:cipher_app/helpers/database_helper.dart';
+import 'package:cipher_app/repositories/playlist_repository.dart';
 
 void main() {
   group('PlaylistProvider', () {

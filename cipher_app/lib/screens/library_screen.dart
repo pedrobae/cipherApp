@@ -59,11 +59,11 @@ class _LibraryScreenState extends State<LibraryScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Error: ${cipherProvider.error}'),
+                  Text('Erro: ${cipherProvider.error}'),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => cipherProvider.loadCiphers(),
-                    child: const Text('Retry'),
+                    child: const Text('Tentar Novamente'),
                   ),
                 ],
               ),
@@ -72,7 +72,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
           // Handle empty state
           if (cipherProvider.ciphers.isEmpty) {
-            return const Center(child: Text('No ciphers found'));
+            return const Center(child: Text('Nenhuma cifra encontrada'));
           }
 
           // Display ciphers
@@ -106,7 +106,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
           ).push(MaterialPageRoute(builder: (context) => const EditCipher()));
         },
         icon: const Icon(Icons.add),
-        label: const Text('Add Cipher'),
+        label: const Text('Adicionar Cifra'),
         heroTag: 'library_fab',
       ),
     );

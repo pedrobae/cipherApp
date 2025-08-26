@@ -12,7 +12,7 @@ class PlaylistScreen extends StatelessWidget {
           return ListTile(
             leading: const Icon(Icons.playlist_play),
             title: Text('Playlist ${index + 1}'),
-            subtitle: Text('${index * 3 + 1} items'),
+            subtitle: Text('${index * 3 + 1} itens'),
             onTap: () {
               // TODO: Implement playlist selection
             },

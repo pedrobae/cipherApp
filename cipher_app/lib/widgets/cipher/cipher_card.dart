@@ -40,7 +40,7 @@ class CipherCard extends StatelessWidget {
                     ),
                     Row(
                       children: [
-                        Text('Key: ${cipher.musicKey}'),
+                        Text('Tom: ${cipher.musicKey}'),
                         const SizedBox(width: 8),
                         Text('Tempo: ${cipher.tempo}'),
                       ],
@@ -59,7 +59,7 @@ class CipherCard extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.playlist_add),
                 onPressed: onAddToPlaylist,
-                tooltip: 'Add to playlist',
+                tooltip: 'Adicionar à playlist',
               ),
             ],
           ),

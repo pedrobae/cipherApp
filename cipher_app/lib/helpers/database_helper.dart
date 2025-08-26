@@ -35,16 +35,12 @@ class DatabaseHelper {
         final count = cipherCount.first['count'] as int;
         
         if (count == 0) {
-          print('Database exists but is empty, seeding with initial data...');
           await seedDatabase(db);
-          print('Database seeded successfully');
         }
       }
 
       return db;
     } catch (e) {
-      print('Error initializing database: $e');
-      print('Make sure database factory is properly initialized in main()');
       rethrow;
     }
   }
@@ -220,9 +216,7 @@ class DatabaseHelper {
     );
     
     // Seed the database with initial data
-    print('Tables created, seeding database...');
     await seedDatabase(db);
-    print('Database seeded successfully');
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {

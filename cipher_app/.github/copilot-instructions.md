@@ -1,5 +1,49 @@
 # GitHub Copilot Instructions for Cipher App
 
+## ✅ Language Configuration - PORTUGUESE UI
+
+**IMPORTANT: The default user interface (UI) language is PORTUGUESE BRAZILIAN.**
+
+✅ **STATUS: SUCCESSFULLY IMPLEMENTED - All user interface has been translated to Brazilian Portuguese.**
+
+### UI Text Guidelines:
+
+1. **All user-visible text must be in Brazilian Portuguese**
+2. **Screen titles and buttons must use Portuguese**
+3. **Error messages and feedback must be in Portuguese**
+4. **Tooltips and labels must be in Portuguese**
+
+### Translation Examples Already Implemented:
+
+- "Cipher App" → "App de Cifras"
+- "Library" → "Biblioteca"
+- "Playlists" → "Playlists"
+- "Settings" → "Configurações"
+- "Information" → "Informações"
+- "Add Cipher" → "Adicionar Cifra"
+- "Edit Cipher" → "Editar Cifra"
+- "New Cipher" → "Nova Cifra"
+- "Delete Cipher" → "Excluir Cifra"
+- "Save Changes" → "Salvar Alterações"
+- "Create Cipher" → "Criar Cifra"
+- "Cancel" → "Cancelar"
+- "Error" → "Erro"
+- "Retry" → "Tentar Novamente"
+- "No ciphers found" → "Nenhuma cifra encontrada"
+- "Search Ciphers..." → "Procure Cifras..."
+- "Add to playlist" → "Adicionar à playlist"
+- "Key" → "Tom"
+- "Author" → "Autor"
+- "Title" → "Título"
+- "Language" → "Idioma"
+
+### Coding Conventions:
+
+1. Comments can be in English (for developers)
+2. Variable and function names should remain in English
+3. Strings shown to users MUST be in Portuguese
+4. Documentation and README can be in Portuguese or English
+
 ## Architecture Overview
 
 This is a Flutter app for managing musical ciphers (chord charts) using a layered architecture:

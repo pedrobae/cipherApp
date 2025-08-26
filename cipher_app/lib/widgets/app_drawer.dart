@@ -30,7 +30,7 @@ class AppDrawer extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  'Cipher App',
+                  'App de Cifras',
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.onPrimary,
                     fontSize: 24,

@@ -44,10 +44,10 @@ class _InfoScreenState extends State<InfoScreen> with AutomaticKeepAliveClientMi
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('Error: ${infoProvider.error}'),
+                Text('Erro: ${infoProvider.error}'),
                 ElevatedButton(
                   onPressed: () => infoProvider.refresh(), 
-                  child: const Text('Retry'),
+                  child: const Text('Tentar Novamente'),
                 )
               ],
             ),

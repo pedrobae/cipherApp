@@ -57,9 +57,9 @@ class NavigationProvider extends ChangeNotifier {
       case infoRoute:
         return 'Informações';
       case cipherViewerRoute:
-        return 'Cipher Viewer';
+        return 'Visualizador de Cifra';
       default:
-        return 'Cipher App';
+        return 'App de Cifras';
     }
   }
 }

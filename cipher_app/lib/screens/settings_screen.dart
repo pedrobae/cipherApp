@@ -65,7 +65,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 icon: Icons.storage,
                 title: 'Informações do Banco',
                 subtitle: 'Ver estatísticas e tabelas',
-                onTap: () => _showDatabaseInfo(context),
+                onTap: () => _showDatabaseInfo(),
               ),
               
               const SizedBox(height: 32),
@@ -141,7 +141,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final colorScheme = Theme.of(context).colorScheme;
     
     return Card(
-      color: colorScheme.errorContainer.withOpacity(0.1),
+      color: colorScheme.errorContainer.withValues(alpha: 0.9),
       child: ListTile(
         leading: isLoading 
           ? SizedBox(
@@ -203,32 +203,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
       final dbHelper = DatabaseHelper();
       await dbHelper.resetDatabase();
       
+      // Check if widget is still mounted before using context
+      if (!mounted) return;
+      
       // Refresh the cipher provider data
-      if (mounted) {
-        await context.read<CipherProvider>().loadCiphers();
-        
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Row(
-              children: [
-                Icon(Icons.check_circle, color: Colors.white),
-                SizedBox(width: 8),
-                Text('Banco de dados resetado com sucesso!'),
-              ],
-            ),
-            backgroundColor: Theme.of(context).colorScheme.primary,
+      await context.read<CipherProvider>().loadCiphers();
+      
+      // Check mounted again after second async operation
+      if (!mounted) return;
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Row(
+            children: [
+              Icon(Icons.check_circle, color: Colors.white),
+              SizedBox(width: 8),
+              Text('Banco de dados resetado com sucesso!'),
+            ],
           ),
-        );
-      }
+          backgroundColor: Theme.of(context).colorScheme.primary,
+        ),
+      );
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erro ao resetar banco: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
-      }
+      if (!mounted) return;
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro ao resetar banco: $e'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
     } finally {
       if (mounted) {
         setState(() => _isResettingDb = false);
@@ -236,7 +240,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  Future<void> _showDatabaseInfo(BuildContext context) async {
+  Future<void> _showDatabaseInfo() async {
     try {
       final dbHelper = DatabaseHelper();
       final db = await dbHelper.database;
@@ -254,58 +258,59 @@ class _SettingsScreenState extends State<SettingsScreen> {
         }
       }
       
-      if (mounted) {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Informações do Banco de Dados'),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Registros por tabela:', style: TextStyle(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 8),
-                  ...tableCounts.entries.map((entry) {
-                    final count = entry.value;
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 2),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(entry.key),
-                          Text(
-                            count == -1 ? 'Erro' : count.toString(),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: count == -1 ? Theme.of(context).colorScheme.error : null,
-                            ),
+      // Check mounted after async operations
+      if (!mounted) return;
+      
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Informações do Banco de Dados'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Registros por tabela:', style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                ...tableCounts.entries.map((entry) {
+                  final count = entry.value;
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 2),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(entry.key),
+                        Text(
+                          count == -1 ? 'Erro' : count.toString(),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: count == -1 ? Theme.of(context).colorScheme.error : null,
                           ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                ],
-              ),
+                        ),
+                      ],
+                    ),
+                  );
+                })
+              ],
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Fechar'),
-              ),
-            ],
           ),
-        );
-      }
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Fechar'),
+            ),
+          ],
+        ),
+      );
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erro ao acessar banco: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
-      }
+      if (!mounted) return;
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro ao acessar banco: $e'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
     }
   }
 
@@ -320,7 +325,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _showAboutDialog(BuildContext context) {
     showAboutDialog(
       context: context,
-      applicationName: 'Cipher App',
+      applicationName: 'App de Cifras',
       applicationVersion: '1.0.0+1',
       applicationIcon: const Icon(Icons.music_note, size: 48),
       children: [

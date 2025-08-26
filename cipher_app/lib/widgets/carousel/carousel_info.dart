@@ -20,7 +20,7 @@ class CarouselInfo extends StatelessWidget {
             children: [
               Icon(Icons.info_outline, size: 48, color: Colors.grey),
               SizedBox(height: 8),
-              Text('No information available'),
+              Text('Nenhuma informação disponível'),
             ],
           ),
         ),
@@ -47,7 +47,7 @@ class CarouselInfo extends StatelessWidget {
                 color: Colors.grey[200],
                 borderRadius: BorderRadius.circular(8.0),
               ),
-              child: const Center(child: Text('Error loading item')),
+              child: const Center(child: Text('Erro ao carregar item')),
             );
           }
         },

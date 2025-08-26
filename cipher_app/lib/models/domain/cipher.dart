@@ -35,7 +35,7 @@ class Cipher {
       author: json['author'] as String? ?? '',
       tempo: json['tempo'] as String? ?? '',
       tags: json['tags'] != null ? List<String>.from(json['tags']) : const [],
-      musicKey: json['music_key'] as String? ?? '', // Fixed: use database column name
+      musicKey: json['music_key'] as String? ?? '',
       language: json['language'] as String? ?? 'por',
       createdAt: DatetimeHelper.parseDateTime(json['created_at']),
       updatedAt: DatetimeHelper.parseDateTime(json['updated_at']),
@@ -53,14 +53,13 @@ class Cipher {
       'title': title,
       'author': author,
       'tempo': tempo,
-      'music_key': musicKey, // Fixed: use database column name
+      'music_key': musicKey,
       'language': language,
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
     };
   }
 
-  // Backward compatibility - get musicStruct from first map
   Map<String, String> get musicStruct {
     if (maps.isEmpty) return {};
     return maps.first.getContentAsStruct();

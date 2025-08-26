@@ -206,14 +206,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
       
       
       // Check if widget is still mounted before using context
-      if (!mounted) return;
-      
-      // Refresh the cipher provider data
-      await context.read<CipherProvider>().loadCiphers();
-      
-      // Refresh the playlist provider data
-      await context.read<PlaylistProvider>().loadPlaylists();
-      
+      if (mounted) await context.read<CipherProvider>().loadCiphers();
+
+      if (mounted) await context.read<PlaylistProvider>().loadPlaylists();
+            
       // Check mounted again after async operations
       if (!mounted) return;
       

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../screens/main_screen.dart';
 import '../screens/library_screen.dart';
 import '../screens/edit_cipher.dart';
-import '../screens/cipher_viewer.dart';
 import '../screens/info_screen.dart';
 import '../screens/playlist_screen.dart';
 import '../screens/settings_screen.dart';
@@ -20,7 +19,8 @@ class AppRoutes {
     home: (context) => const MainScreen(),
     library: (context) => const LibraryScreen(),
     editCipher: (context) => const EditCipher(),
-    cipherViewer: (context) => const CipherViewer(),
+    // Note: CipherViewer now requires a cipher parameter, so direct route navigation 
+    // should use Navigator.push with MaterialPageRoute instead of named routes
     info: (context) => const InfoScreen(),
     playlists: (context) => const PlaylistScreen(),
     settings: (context) => const SettingsScreen(),

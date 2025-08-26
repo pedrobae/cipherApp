@@ -1,4 +1,4 @@
-import 'package:cipher_app/screens/edit_cipher.dart';
+import 'package:cipher_app/screens/cipher_viewer.dart';
 import 'package:flutter/material.dart';
 import '../../models/domain/cipher.dart';
 import 'tag_chip.dart';
@@ -13,7 +13,7 @@ class CipherCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () => Navigator.of(context, rootNavigator: true).push(
-        MaterialPageRoute(builder: (context) => EditCipher(cipher: cipher)),
+        MaterialPageRoute(builder: (context) => CipherViewer(cipher: cipher)),
       ),
       child: Card(
         color: Theme.of(context).colorScheme.surfaceContainerHighest,

@@ -152,6 +152,22 @@ class DatabaseHelper {
       )
     ''');
 
+    // Create user_playlist table for collaborators
+    await db.execute('''
+      CREATE TABLE user_playlist (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        playlist_id INTEGER NOT NULL,
+        role TEXT NOT NULL DEFAULT 'collaborator',
+        added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        added_by INTEGER NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES user (id) ON DELETE CASCADE,
+        FOREIGN KEY (playlist_id) REFERENCES playlist (id) ON DELETE CASCADE,
+        FOREIGN KEY (added_by) REFERENCES user (id) ON DELETE CASCADE,
+        UNIQUE(user_id, playlist_id)
+      )
+    ''');
+
     // Create app_info table for cached announcements/news
     await db.execute('''
       CREATE TABLE app_info (
@@ -196,6 +212,12 @@ class DatabaseHelper {
     );
     await db.execute(
       'CREATE INDEX idx_playlist_cipher_cipher_id ON playlist_cipher(cipher_id)',
+    );
+    await db.execute(
+      'CREATE INDEX idx_user_playlist_user_id ON user_playlist(user_id)',
+    );
+    await db.execute(
+      'CREATE INDEX idx_user_playlist_playlist_id ON user_playlist(playlist_id)',
     );
     await db.execute('CREATE INDEX idx_app_info_type ON app_info(type)');
     await db.execute(

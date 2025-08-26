@@ -51,6 +51,18 @@ class Playlist {
     };
   }
 
+  // Database-specific serialization (excludes relational data)
+  Map<String, dynamic> toDatabaseJson() {
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+      'author_id': int.parse(createdBy), // Assuming createdBy is user ID as string
+      'created_at': createdAt?.toIso8601String(),
+      'updated_at': updatedAt?.toIso8601String(),
+    };
+  }
+
   Playlist copyWith({
    int? id,
    String? name,

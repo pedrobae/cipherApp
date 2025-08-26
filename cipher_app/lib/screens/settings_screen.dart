@@ -246,7 +246,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       final db = await dbHelper.database;
       
       // Get table counts
-      final tables = ['cipher', 'tag', 'cipher_tags', 'cipher_map', 'map_content', 'user', 'playlist', 'playlist_cipher', 'app_info'];
+      final tables = ['cipher', 'tag', 'cipher_tags', 'cipher_map', 'map_content', 'user', 'playlist', 'playlist_cipher', 'user_playlist', 'app_info'];
       final Map<String, int> tableCounts = {};
       
       for (final table in tables) {

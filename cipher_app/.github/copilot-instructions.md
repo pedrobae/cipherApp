@@ -48,11 +48,14 @@
 
 This is a Flutter app for managing musical ciphers (chord charts) using a layered architecture:
 
-- **Models**: Domain models (`Cipher`, `CipherMap`, `MapContent`) in `lib/models/domain/`
+- **Models**: Domain models (`Cipher`, `CipherMap`, `MapContent`, `InfoItem`) in `lib/models/domain/`
 - **Database Layer**: `DatabaseHelper` (singleton) manages SQLite with automatic seeding
-- **Repository Layer**: `CipherRepository` abstracts data access and builds complete domain objects
-- **Provider Layer**: State management using `ChangeNotifier` pattern (e.g., `CipherProvider`)
+- **Repository Layer**: `CipherRepository`, `InfoRepository` abstract data access and build complete domain objects
+- **Provider Layer**: State management using `ChangeNotifier` pattern (e.g., `CipherProvider`, `InfoProvider`)
 - **UI Layer**: Screens consume providers, widgets are reusable components
+
+**Important**: Both CipherProvider and InfoProvider follow the same architectural pattern:
+`Repository → Provider → UI` (no service layer in between for consistency)
 
 ## Critical Database Patterns
 
@@ -61,6 +64,7 @@ The app uses a complex relational schema:
 - `cipher` → `cipher_map` (1:many, different versions/keys of same song)
 - `cipher_map` → `map_content` (1:many, verses/chorus blocks in ChordPro format)
 - `cipher` ↔ `tag` (many:many via `cipher_tags` junction table)
+- `app_info` - Standalone table for announcements, news, and events
 
 ### Database Helper Singleton
 ```dart
@@ -75,6 +79,7 @@ Database automatically seeds with sample data on first creation via two mechanis
 2. **Fallback**: `_initDatabase` checks for empty database and seeds if needed
 
 See `lib/helpers/seed_database.dart` for initial hymns with ChordPro formatted content.
+See `lib/helpers/seed_info.dart` for initial church announcements, events, and news.
 
 ### Database Factory Initialization
 Cross-platform database initialization is handled by `DatabaseFactoryHelper`:
@@ -113,10 +118,24 @@ final cipher = await repository.getCipherById(id);
 expect(cipher.maps.first.content.isNotEmpty, true);
 ```
 
+`InfoRepository` handles church information data with search and filtering:
+```dart
+// Load all info items (announcements, events, news)
+final infoItems = await repository.getAllInfo();
+
+// Filter by type
+final announcements = await repository.getInfoByType('announcement');
+
+// Search with query
+final results = await repository.searchInfo('oração');
+```
+
 Key methods always include related data:
 - `getAllCiphers()` - includes tags
 - `getCipherById(id)` - includes maps and map content
 - `getCipherMaps(cipherId)` - includes content blocks
+- `getAllInfo()` - includes metadata and highlights
+- `getInfoByType(type)` - filtered by InfoType (news, announcement, event)
 
 ### Tags Handling Pattern
 Tags require special handling since they're stored in a many-to-many relationship:
@@ -148,7 +167,7 @@ All CRUD operations in providers should:
 1. Check if already saving/loading (`if (_isSaving) return;`)
 2. Set loading state and clear errors
 3. Perform the repository operation with `await`
-4. Always call `await loadCiphers()` after create/update/delete to refresh data
+4. Always call `await loadCiphers()` or `await loadInfo()` after create/update/delete to refresh data
 5. Handle errors and update state in finally block
 
 ```dart
@@ -165,7 +184,8 @@ try {
 ```
 
 ### Memory vs Database Filtering
-`CipherProvider` uses in-memory filtering for instant search results rather than SQL queries.
+- `CipherProvider` uses in-memory filtering for instant search results rather than SQL queries
+- `InfoProvider` supports both in-memory and database filtering with search functionality
 
 ## Testing Requirements
 
@@ -208,16 +228,22 @@ void _loadDataIfNeeded() {
 
 ## Key Files for Understanding
 - `lib/helpers/database_helper.dart` - Database schema and singleton management
-- `lib/helpers/seed_database.dart` - Initial data structure and ChordPro format
+- `lib/helpers/seed_database.dart` - Initial cipher data structure and ChordPro format
+- `lib/helpers/seed_info.dart` - Initial church info data (announcements, events, news)
 - `lib/repositories/cipher_repository.dart` - Data access patterns and relationship building
+- `lib/repositories/info_repository.dart` - Info data access with search and filtering
 - `lib/providers/cipher_provider.dart` - State management and filtering logic
+- `lib/providers/info_provider.dart` - Info state management with search functionality
 - `test/database_helper_test.dart` - Testing patterns and database verification
 - `test/cipher_repository_test.dart` - Repository testing with seed data expectations
+- `test/info_test.dart` - Info functionality testing with seeded data
 
 ## Development Commands
 ```bash
 flutter test                    # Run all tests
 flutter test test/database_helper_test.dart  # Database-specific tests
+flutter test test/cipher_repository_test.dart # Cipher functionality tests
+flutter test test/info_test.dart # Info functionality tests
 flutter run                     # Start app (requires mobile emulator/device)
 ```
 
@@ -225,5 +251,7 @@ flutter run                     # Start app (requires mobile emulator/device)
 - Always use `await dbHelper.resetDatabase()` in test setUp
 - Repository methods return complete domain objects with relationships
 - Providers handle loading states and error handling consistently
-- Database uses soft deletes (`is_deleted` flag) rather than hard deletes
+- Database uses soft deletes (`is_deleted` flag) rather than hard deletes for ciphers
+- Info items support expiration dates and cache management
 - ChordPro format for musical content with chord notation like `[G]Amazing [D]Grace`
+- Portuguese UI text with technical terms remaining in English

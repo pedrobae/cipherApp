@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:sqflite/sqflite.dart';
+import 'seed_info.dart';
 
 Future<void> seedDatabase(Database db) async {
   await db.transaction((txn) async {
@@ -197,5 +198,8 @@ And take me [D]home, what [A]joy shall fill my [D]heart
 Then I shall [D]bow in [G]humble adora[D]tion
 And there pro[D]claim, my [A]God, how great Thou [D]art''',
     });
+
+    // Seed info items after cipher data
+    await seedInfoDatabase(db);
   });
 }

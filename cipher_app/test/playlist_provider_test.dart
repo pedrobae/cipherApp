@@ -191,23 +191,22 @@ void main() {
         expect(provider.error, isNull);
       });
 
-      // TODO: Implement removeCipherFromPlaylist method in provider
-      // test('should remove cipher from playlist', () async {
-      //   // Arrange - Add cipher first
-      //   await provider.addCipherToPlaylist(testPlaylist.id, 1);
-      //   await provider.addCipherToPlaylist(testPlaylist.id, 2);
+      test('should remove cipher from playlist', () async {
+        // Arrange - Add cipher first
+        await provider.addCipherMap(testPlaylist.id, 1);
+        await provider.addCipherMap(testPlaylist.id, 2);
 
-      //   // Act
-      //   await provider.removeCipherFromPlaylist(testPlaylist.id, 1);
+        // Act
+        await provider.removeCipherMapFromPlaylist(testPlaylist.id, 1);
 
-      //   // Assert
-      //   final updatedPlaylist = provider.playlists.firstWhere(
-      //     (p) => p.id == testPlaylist.id,
-      //   );
-      //   expect(updatedPlaylist.cipherIds, isNot(contains(1)));
-      //   expect(updatedPlaylist.cipherIds, contains(2));
-      //   expect(provider.error, isNull);
-      // });
+        // Assert
+        final updatedPlaylist = provider.playlists.firstWhere(
+          (p) => p.id == testPlaylist.id,
+        );
+        expect(updatedPlaylist.cipherMapIds, isNot(contains(1)));
+        expect(updatedPlaylist.cipherMapIds, contains(2));
+        expect(provider.error, isNull);
+      });
 
       test('should reorder playlist cipher maps', () async {
         // Arrange
@@ -246,8 +245,6 @@ void main() {
         await provider.createPlaylist(newPlaylist);
       });
 
-      // TODO: Implement collaborator management methods in provider
-    group('Cipher Management', () {
       late Playlist testPlaylist;
 
       setUp(() async {
@@ -270,7 +267,6 @@ void main() {
           (p) => p.name == 'Teste Cifras',
         );
       });
-
       test('should add collaborator to playlist', () async {
         // Act
         await provider.addCollaborator(testPlaylist.id, 2);
@@ -282,21 +278,20 @@ void main() {
         expect(updatedPlaylist.collaborators, contains('2'));
         expect(provider.error, isNull);
       });
-    });
-      // test('should remove collaborator from playlist', () async {
-      //   // Arrange
-      //   await provider.addCollaboratorToPlaylist(testPlaylist.id, 2);
+      test('should remove collaborator from playlist', () async {
+        // Arrange
+        await provider.addCollaborator(testPlaylist.id, 2);
 
-      //   // Act
-      //   await provider.removeCollaboratorFromPlaylist(testPlaylist.id, 2);
+        // Act
+        await provider.removeCollaboratorFromPlaylist(testPlaylist.id, 2);
 
-      //   // Assert
-      //   final updatedPlaylist = provider.playlists.firstWhere(
-      //     (p) => p.id == testPlaylist.id,
-      //   );
-      //   expect(updatedPlaylist.collaborators, isNot(contains('2')));
-      //   expect(provider.error, isNull);
-      // });
+        // Assert
+        final updatedPlaylist = provider.playlists.firstWhere(
+          (p) => p.id == testPlaylist.id,
+        );
+        expect(updatedPlaylist.collaborators, isNot(contains('2')));
+        expect(provider.error, isNull);
+      });
     });
 
     group('Error Handling', () {

@@ -260,7 +260,7 @@ class PlaylistRepository {
   }
 
   // ===== COLLABORATOR MANAGEMENT =====
-  Future<void> addCollaboratorToPlaylist(int playlistId, int userId, {int? addedBy}) async {
+  Future<void> addCollaborator(int playlistId, int userId, {int? addedBy}) async {
     final db = await _databaseHelper.database;
     addedBy ?? _currentUserId;
     
@@ -273,7 +273,7 @@ class PlaylistRepository {
     });
   }
 
-  Future<void> removeCollaboratorFromPlaylist(int playlistId, int userId) async {
+  Future<void> removeCollaborator(int playlistId, int userId) async {
     final db = await _databaseHelper.database;
     
     await db.delete(

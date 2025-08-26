@@ -11,12 +11,14 @@ class PlaylistProvider extends ChangeNotifier {
   List<Playlist> _playlists = [];
   bool _isLoading = false;
   bool _isSaving = false;
+  bool _isDeleting = false;
   String? _error;
 
   // Getters
   List<Playlist> get playlists => _playlists;
   bool get isLoading => _isLoading;
   bool get isSaving => _isSaving;
+  bool get isDeleting => _isDeleting;
   String? get error => _error;
   
 
@@ -104,9 +106,42 @@ class PlaylistProvider extends ChangeNotifier {
     await _loadPlaylist(playlistId);
    }
 
-  // Update a Playlist with a new collaborator
+  // Update a Playlist with a new Collaborator
   Future<void> addCollaborator(int playlistId, int collaboratorId) async {
-    await _playlistRepository.addCollaboratorToPlaylist(playlistId, collaboratorId);
+    await _playlistRepository.addCollaborator(playlistId, collaboratorId);
+    await _loadPlaylist(playlistId);
+  }
+
+  // ===== DELETE =====
+  // Delete a playlist
+  Future<void> deletePlaylist(int playlistId) async {
+    if (_isSaving) return;
+
+    _isDeleting = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _playlistRepository.deletePlaylist(playlistId);
+      int i =_playlists.indexWhere((p) => p.id == playlistId);
+      _playlists.removeAt(i);
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isDeleting = false;
+      notifyListeners();
+    }
+  }
+
+  // Remove a Cipher Map from a Playlist
+  Future<void> removeCipherMapFromPlaylist(int playlistId, int cipherMapId) async {
+    await _playlistRepository.removeCipherMapFromPlaylist(playlistId, cipherMapId);
+    await _loadPlaylist(playlistId);
+  }
+
+  // Remove a Collaborator from a Playlist
+  Future<void> removeCollaboratorFromPlaylist(int playlistId, int collaboratorId) async {
+    await _playlistRepository.removeCollaborator(playlistId, collaboratorId);
     await _loadPlaylist(playlistId);
   }
 }

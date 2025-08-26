@@ -239,7 +239,7 @@ void main() {
 
       test('should add collaborator to playlist', () async {
         // Act
-        await repository.addCollaboratorToPlaylist(testPlaylistId, 2, addedBy: 1);
+        await repository.addCollaborator(testPlaylistId, 2, addedBy: 1);
 
         // Assert
         final playlist = await repository.getPlaylistById(testPlaylistId);
@@ -248,10 +248,10 @@ void main() {
 
       test('should remove collaborator from playlist', () async {
         // Arrange
-        await repository.addCollaboratorToPlaylist(testPlaylistId, 2, addedBy: 1);
+        await repository.addCollaborator(testPlaylistId, 2, addedBy: 1);
 
         // Act
-        await repository.removeCollaboratorFromPlaylist(testPlaylistId, 2);
+        await repository.removeCollaborator(testPlaylistId, 2);
 
         // Assert
         final playlist = await repository.getPlaylistById(testPlaylistId);

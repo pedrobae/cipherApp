@@ -4,6 +4,7 @@ import 'providers/navigation_provider.dart';
 import 'providers/search_provider.dart';
 import 'providers/cipher_provider.dart';
 import 'providers/info_provider.dart';
+import 'providers/playlist_provider.dart';
 import 'routes/app_routes.dart';
 import 'helpers/database_factory_helper.dart';
 
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => SearchProvider()),
         ChangeNotifierProvider(create: (_) => CipherProvider()),
         ChangeNotifierProvider(create: (_) => InfoProvider()),
+        ChangeNotifierProvider(create: (_) => PlaylistProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

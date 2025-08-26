@@ -262,13 +262,13 @@ class PlaylistRepository {
   // ===== COLLABORATOR MANAGEMENT =====
   Future<void> addCollaborator(int playlistId, int userId, {int? addedBy}) async {
     final db = await _databaseHelper.database;
-    addedBy ?? _currentUserId;
+    final effectiveIncluderId = addedBy ?? _currentUserId ?? 1;
     
     await db.insert('user_playlist', {
       'user_id': userId,
       'playlist_id': playlistId,
       'role': 'collaborator',
-      'added_by': addedBy,
+      'added_by': effectiveIncluderId,
       'added_at': DateTime.now().toIso8601String(),
     });
   }
@@ -281,10 +281,5 @@ class PlaylistRepository {
       where: 'playlist_id = ? AND user_id = ?',
       whereArgs: [playlistId, userId],
     );
-  }
-
-  // Sets local user id
-  void setLocalUser(int userId) {
-    _currentUserId = userId;
   }
 }

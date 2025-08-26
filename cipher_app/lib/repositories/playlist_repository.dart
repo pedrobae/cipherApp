@@ -5,6 +5,7 @@ class PlaylistRepository {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
 
   // ===== PLAYLIST CRUD =====
+  // Creates a new playlist, as well as the playlist_cipher, and user_playlist relational objects
   Future<int> createPlaylist(Playlist playlist) async {
     final db = await _databaseHelper.database;
     
@@ -133,6 +134,53 @@ class PlaylistRepository {
       cipherIds: cipherIds,
       collaborators: collaborators,
     );
+  }
+
+  // Update playlist, for name and description
+  Future<void> updatePlaylist(int playlistId, {String? name, String? description}) async {
+      final db = await _databaseHelper.database;
+      
+      Map<String, dynamic> updates = {
+        'updated_at': DateTime.now().toIso8601String(),
+      };
+      
+      if (name != null) updates['name'] = name;
+      if (description != null) updates['description'] = description;
+      
+      await db.update(
+        'playlist',
+        updates,
+        where: 'id = ?',
+        whereArgs: [playlistId],
+      );
+    }
+
+  // Delete playlist
+  Future<void> deletePlaylist(int playlistId) async {
+    final db = await _databaseHelper.database;
+    
+    await db.transaction((txn) async {
+      // Delete all cipher relationships (handled by CASCADE, but explicit for clarity)
+      await txn.delete(
+        'playlist_cipher',
+        where: 'playlist_id = ?',
+        whereArgs: [playlistId],
+      );
+      
+      // Delete all collaborator relationships (handled by CASCADE, but explicit for clarity)
+      await txn.delete(
+        'user_playlist',
+        where: 'playlist_id = ?',
+        whereArgs: [playlistId],
+      );
+      
+      // Delete the playlist itself
+      await txn.delete(
+        'playlist',
+        where: 'id = ?',
+        whereArgs: [playlistId],
+      );
+    });
   }
 
   // ===== CIPHER MANAGEMENT =====

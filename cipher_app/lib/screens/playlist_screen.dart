@@ -10,14 +10,30 @@ class PlaylistScreen extends StatefulWidget {
   State<PlaylistScreen> createState() => _PlaylistScreenState();
 }
 
-class _PlaylistScreenState extends State<PlaylistScreen> {
+class _PlaylistScreenState extends State<PlaylistScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     // Load playlists when screen initializes
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<PlaylistProvider>().loadPlaylists();
     });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    // Refresh data when app resumes (in case database was reset from settings)
+    if (state == AppLifecycleState.resumed) {
+      context.read<PlaylistProvider>().loadPlaylists();
+    }
   }
 
   @override

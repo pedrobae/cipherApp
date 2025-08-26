@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
         title: 'App de Cifras',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 76, 0, 255),
+            seedColor: const Color.fromARGB(255, 15, 179, 29),
             brightness: Brightness.light,
             dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
           ),

@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import '../helpers/database_helper.dart';
 import '../providers/cipher_provider.dart';
+import '../providers/playlist_provider.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -203,13 +204,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
       final dbHelper = DatabaseHelper();
       await dbHelper.resetDatabase();
       
+      
       // Check if widget is still mounted before using context
       if (!mounted) return;
       
       // Refresh the cipher provider data
       await context.read<CipherProvider>().loadCiphers();
       
-      // Check mounted again after second async operation
+      // Refresh the playlist provider data
+      await context.read<PlaylistProvider>().loadPlaylists();
+      
+      // Check mounted again after async operations
       if (!mounted) return;
       
       ScaffoldMessenger.of(context).showSnackBar(

@@ -144,4 +144,15 @@ class PlaylistProvider extends ChangeNotifier {
     await _playlistRepository.removeCollaborator(playlistId, collaboratorId);
     await _loadPlaylist(playlistId);
   }
+
+  // ===== UTILITY =====
+  // Clear cached data and reset state
+  void clearCache() {
+    _playlists.clear();
+    _error = null;
+    _isLoading = false;
+    _isSaving = false;
+    _isDeleting = false;
+    notifyListeners();
+  }
 }

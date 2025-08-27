@@ -129,24 +129,24 @@ void main() {
         expect(provider.error, isNull);
       });
 
-      // TODO: Implement deletePlaylist method in provider
-      // test('should delete playlist', () async {
-      //   // Arrange
-      //   final initialCount = provider.playlists.length;
-      //   final playlistToDelete = provider.playlists.first;
 
-      //   // Act
-      //   await provider.deletePlaylist(playlistToDelete.id);
+      test('should delete playlist', () async {
+        // Arrange
+        final initialCount = provider.playlists.length;
+        final playlistToDelete = provider.playlists.first;
 
-      //   // Assert
-      //   expect(provider.playlists.length, equals(initialCount - 1));
-      //   expect(provider.error, isNull);
+        // Act
+        await provider.deletePlaylist(playlistToDelete.id);
+
+        // Assert
+        expect(provider.playlists.length, equals(initialCount - 1));
+        expect(provider.error, isNull);
         
-      //   final deletedPlaylistExists = provider.playlists.any(
-      //     (p) => p.id == playlistToDelete.id,
-      //   );
-      //   expect(deletedPlaylistExists, isFalse);
-      // });
+        final deletedPlaylistExists = provider.playlists.any(
+          (p) => p.id == playlistToDelete.id,
+        );
+        expect(deletedPlaylistExists, isFalse);
+      });
     });
 
     group('Cipher Management', () {

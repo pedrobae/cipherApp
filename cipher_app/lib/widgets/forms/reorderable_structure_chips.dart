@@ -1,11 +1,5 @@
 import 'package:flutter/material.dart';
-
-class SectionType {
-  final String name;
-  final Color color;
-
-  const SectionType(this.name, this.color);
-}
+import '../../utils/section_color_manager.dart';
 
 class ReorderableStructureChips extends StatelessWidget {
   final List<String> songStructure;

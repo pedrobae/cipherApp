@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import '../../models/domain/cipher.dart';
+import '../../utils/section_color_manager.dart';
 import 'reorderable_structure_chips.dart';
 
 class CipherContentForm extends StatefulWidget {
@@ -18,26 +19,6 @@ class CipherContentForm extends StatefulWidget {
 }
 
 class _CipherContentFormState extends State<CipherContentForm> {
-  // Predefined section types with display names and colors
-  static const Map<String, SectionType> _sectionTypes = {
-    'I': SectionType('Intro', Colors.purple),
-    'V1': SectionType('Verso 1', Colors.blue),
-    'V2': SectionType('Verso 2', Colors.blue),
-    'V3': SectionType('Verso 3', Colors.blue),
-    'C': SectionType('Refrão', Colors.red),
-    'C1': SectionType('Refrão 1', Colors.red),
-    'C2': SectionType('Refrão 2', Colors.red),
-    'PC': SectionType('Pré-Refrão', Colors.orange),
-    'B': SectionType('Ponte', Colors.green),
-    'B1': SectionType('Ponte 1', Colors.green),
-    'B2': SectionType('Ponte 2', Colors.green),
-    'S': SectionType('Solo', Colors.amber),
-    'O': SectionType('Outro', Colors.brown),
-    'F': SectionType('Final', Colors.indigo),
-    'N': SectionType('Notas', Colors.grey),
-    'T': SectionType('Tag', Colors.teal),
-  };
-
   List<String> _songStructure = [];
   final Map<String, TextEditingController> _contentControllers = {};
   Map<String, String> _currentContent = {};
@@ -134,14 +115,14 @@ class _CipherContentFormState extends State<CipherContentForm> {
   }
 
   SectionType _getSectionType(String key) {
-    return _customSections[key] ?? _sectionTypes[key] ?? SectionType(key, Colors.grey);
+    return SectionColorManager.getSectionType(key, _customSections);
   }
 
   void _showPresetSectionsDialog() {
     showDialog(
       context: context,
       builder: (context) => _PresetSectionsDialog(
-        sectionTypes: _sectionTypes,
+        sectionTypes: SectionColorManager.predefinedSectionTypes,
         usedSections: _songStructure.toSet(),
         onAdd: (sectionKey) => _addSection(sectionKey),
       ),
@@ -181,7 +162,7 @@ class _CipherContentFormState extends State<CipherContentForm> {
                 // Draggable Section Chips
                 ReorderableStructureChips(
                   songStructure: _songStructure,
-                  sectionTypes: _sectionTypes,
+                  sectionTypes: SectionColorManager.predefinedSectionTypes,
                   customSections: _customSections,
                   onReorder: _reorderSection,
                   onRemoveSection: _removeSection,
@@ -358,21 +339,6 @@ class _CustomSectionDialogState extends State<_CustomSectionDialog> {
   final _nameController = TextEditingController();
   Color _selectedColor = Colors.blue;
 
-  final List<Color> _availableColors = [
-    Colors.blue,
-    Colors.red,
-    Colors.green,
-    Colors.orange,
-    Colors.purple,
-    Colors.amber,
-    Colors.teal,
-    Colors.brown,
-    Colors.indigo,
-    Colors.pink,
-    Colors.cyan,
-    Colors.lime,
-  ];
-
   @override
   void dispose() {
     _keyController.dispose();
@@ -413,7 +379,7 @@ class _CustomSectionDialogState extends State<_CustomSectionDialog> {
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
-                children: _availableColors.map((color) {
+                children: SectionColorManager.availableColors.map((color) {
                   final isSelected = color == _selectedColor;
                   return GestureDetector(
                     onTap: () => setState(() => _selectedColor = color),

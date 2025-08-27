@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../utils/section_color_manager.dart';
 
 class CipherContentCard extends StatelessWidget{
   final String contentType;
@@ -12,25 +13,41 @@ class CipherContentCard extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
+    // Get the section color for this content type
+    final sectionColor = SectionColorManager.getSectionColor(contentType, null);
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          contentType,
-          style: Theme.of(context).textTheme.labelMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.secondary,
-          ),
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: sectionColor,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                contentType,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 8),
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
+            color: sectionColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.8),
+              color: sectionColor.withValues(alpha: 0.3),
+              width: 1,
             ),
           ),
           child: Text(
@@ -42,7 +59,7 @@ class CipherContentCard extends StatelessWidget{
             ),
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 12),
       ]
     );
   }

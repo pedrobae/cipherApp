@@ -13,19 +13,13 @@ class CipherViewer extends StatefulWidget {
 }
 
 class _CipherViewerState extends State<CipherViewer> {
-  late CipherMap _currentVersion;
+  CipherMap? _currentVersion;
   
   @override
   void initState() {
     super.initState();
-    // Default to first version or create a default one
-    _currentVersion = widget.cipher.maps.isNotEmpty 
-        ? widget.cipher.maps.first 
-        : CipherMap(
-            cipherId: widget.cipher.id ?? 0,
-            songStructure: '',
-            versionName: 'Original',
-          );
+    // Use first version if available, otherwise null (empty state)
+    _currentVersion = widget.cipher.maps.isNotEmpty ? widget.cipher.maps.first : null;
   }
 
   void _selectVersion(CipherMap version) {
@@ -47,13 +41,19 @@ class _CipherViewerState extends State<CipherViewer> {
       if (result == true) {
         // Refresh the cipher data - you might want to reload from provider
         setState(() {
-          // The cipher would be updated through provider
+          // Update to use the first version after creation
+          if (widget.cipher.maps.isNotEmpty) {
+            _currentVersion = widget.cipher.maps.first;
+          }
         });
       }
     });
   }
 
   void _editCurrentVersion() {
+    // Only allow editing if there's a current version
+    if (_currentVersion == null) return;
+    
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => EditCipher(
@@ -72,11 +72,14 @@ class _CipherViewerState extends State<CipherViewer> {
   }
 
   void _showVersionSelector() {
+    // Only show version selector if there are versions and a current version is selected
+    if (widget.cipher.maps.isEmpty || _currentVersion == null) return;
+    
     showModalBottomSheet(
       context: context,
       builder: (context) => _VersionSelectorBottomSheet(
         versions: widget.cipher.maps,
-        currentVersion: _currentVersion,
+        currentVersion: _currentVersion!,
         onVersionSelected: _selectVersion,
         onNewVersion: _addNewVersion,
       ),
@@ -99,7 +102,7 @@ class _CipherViewerState extends State<CipherViewer> {
           ),
           const SizedBox(width: 8),
           Text(
-            _currentVersion.versionName ?? 'Versão sem nome',
+            _currentVersion?.versionName ?? 'Versão sem nome',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Theme.of(context).colorScheme.onPrimaryContainer,
               fontWeight: FontWeight.w500,
@@ -112,7 +115,7 @@ class _CipherViewerState extends State<CipherViewer> {
 
   @override
   Widget build(BuildContext context) {
-    final hasMultipleVersions = widget.cipher.maps.length > 1;
+    final hasVersions = widget.cipher.maps.isNotEmpty;
     
     return Scaffold(
       appBar: AppBar(
@@ -134,57 +137,81 @@ class _CipherViewerState extends State<CipherViewer> {
         ),
         centerTitle: true,
         actions: [
-          if (hasMultipleVersions)
+          if (hasVersions) ...[
             IconButton(
               icon: const Icon(Icons.library_music),
               tooltip: 'Versões',
               onPressed: _showVersionSelector,
             ),
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert),
-            onSelected: (value) {
-              switch (value) {
-                case 'edit':
-                  _editCurrentVersion();
-                  break;
-                case 'new_version':
-                  _addNewVersion();
-                  break;
-              }
-            },
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'edit',
-                child: ListTile(
-                  leading: Icon(Icons.edit),
-                  title: Text('Editar Versão'),
-                  contentPadding: EdgeInsets.zero,
-                ),
-              ),
-              const PopupMenuItem(
-                value: 'new_version',
-                child: ListTile(
-                  leading: Icon(Icons.add_circle_outline),
-                  title: Text('Nova Versão'),
-                  contentPadding: EdgeInsets.zero,
-                ),
-              ),
-            ],
-          ),
+            IconButton(
+              icon: const Icon(Icons.edit),
+              tooltip: 'Edit',
+              onPressed: _editCurrentVersion,
+            ),
+          ] else
+            IconButton(
+              icon: const Icon(Icons.add),
+              tooltip: 'Criar primeira versão',
+              onPressed: _addNewVersion,
+            ),
         ],
       ),
-      body: SingleChildScrollView(
+      body: hasVersions ? SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Version selector (if multiple versions exist)
-            if (hasMultipleVersions) ...[
+            // Version selector (show for all versions, not just multiple)
+            if (hasVersions) ...[
               _buildVersionSelector(),
             ],
             // Cipher content section
             CipherContentSection(
               cipher: widget.cipher,
               currentVersion: _currentVersion,
+            ),
+          ],
+        ),
+      ) : _buildEmptyState(),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.music_note_outlined,
+              size: 80,
+              color: Colors.grey[400],
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Nenhuma versão disponível',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                color: Colors.grey[600],
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Esta cifra ainda não possui conteúdo.\nCrie a primeira versão para começar.',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: Colors.grey[500],
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 32),
+            FilledButton.icon(
+              onPressed: _addNewVersion,
+              icon: const Icon(Icons.add),
+              label: const Text('Criar primeira versão'),
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              ),
             ),
           ],
         ),

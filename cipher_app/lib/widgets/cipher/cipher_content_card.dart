@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import '../../models/domain/cipher.dart';
 
 class CipherContentCard extends StatelessWidget{
-  final MapContent cipherContent;
+  final String contentType;
+  final String contentText;
 
   const CipherContentCard({
     super.key,
-    required this.cipherContent
+    required this.contentType,
+    required this.contentText,
   });
 
   @override
@@ -14,9 +15,8 @@ class CipherContentCard extends StatelessWidget{
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (cipherContent.contentType.isNotEmpty)
           Text(
-            cipherContent.contentType,
+            contentType,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.secondary,
@@ -34,7 +34,7 @@ class CipherContentCard extends StatelessWidget{
             ),
           ),
           child: Text(
-            cipherContent.contentText,
+            contentText,
             style: const TextStyle(
               fontFamily: 'monospace',
               fontSize: 14,

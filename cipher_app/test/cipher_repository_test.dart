@@ -72,8 +72,8 @@ void main() {
       final content = await repository.getMapContent(maps.first.id!);
       
       expect(content.isNotEmpty, true);
-      expect(content.any((c) => c.contentType == 'V1'), true);
-      expect(content.first.contentText.contains('['), true); // Has chords
+      expect(content.containsKey('V1'), true);
+      expect(content['V1']?.contains('['), true); // Has chords
     });
   });
 }

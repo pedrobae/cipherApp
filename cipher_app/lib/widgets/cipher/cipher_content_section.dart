@@ -88,11 +88,22 @@ class CipherContentSection extends StatelessWidget {
         ],
         
         if (map.content.isNotEmpty)
-          ...map.content.map((content) => Padding(
-            padding: const EdgeInsets.only(bottom: 9),
-            child: 
-                CipherContentCard(cipherContent: content)
-          ))
+          // Use song structure to display content in correct order
+          ...map.songStructure.split(',').map((sectionKey) {
+            final sectionKeyTrimmed = sectionKey.trim();
+            final contentText = map.content[sectionKeyTrimmed];
+            if (contentText != null) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: CipherContentCard(
+                  contentType: sectionKeyTrimmed,
+                  contentText: contentText,
+                ),
+              );
+            } else {
+              return const SizedBox.shrink();
+            }
+          })
         else
           Container(
             padding: const EdgeInsets.all(16),

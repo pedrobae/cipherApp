@@ -96,38 +96,41 @@ class Cipher {
 
 class CipherMap {
   final int? id;
-  final int cipherId; // Added: missing field
+  final int cipherId;
   final String songStructure;
   final String? transposedKey;
   final String? versionName;
   final DateTime? createdAt;
-  final List<MapContent> content;
+  final Map<String, String> content; // Changed from List<MapContent>
 
   const CipherMap({
     this.id,
-    required this.cipherId, // Added: required field
+    required this.cipherId,
     required this.songStructure,
     this.transposedKey,
     this.versionName,
     this.createdAt,
-    this.content = const [],
+    this.content = const {},
   });
 
   factory CipherMap.fromJson(Map<String, dynamic> json) {
+    // Convert List<MapContent> to Map<String, String> during loading
+    final contentList = json['content'] as List? ?? [];
+    final contentMap = <String, String>{};
+    for (var item in contentList) {
+      contentMap[item['content_type']] = item['content_text'];
+    }
+
     return CipherMap(
       id: json['id'] as int?,
       cipherId: json['cipher_id'] as int, // Added: from database
       songStructure: json['song_structure'] as String? ?? '', // Fixed: use correct column name
       transposedKey: json['transposed_key'] as String?,
       versionName: json['version_name'] as String?,
-      createdAt: json['created_at'] != null 
-          ? DateTime.parse(json['created_at']) 
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
           : null,
-      content: json['content'] != null
-          ? (json['content'] as List)
-                .map((c) => MapContent.fromJson(c))
-                .toList()
-          : const [],
+      content: contentMap,
     );
   }
 
@@ -144,11 +147,12 @@ class CipherMap {
   }
 
   Map<String, String> getContentAsStruct() {
-    Map<String, String> struct = {};
-    for (var content in this.content) {
-      struct[content.contentType] = content.contentText;
-    }
-    return struct;
+    return content;
+  }
+
+  bool hasAllSections() {
+    final requiredSections = songStructure.split(',').toSet();
+    return requiredSections.every((section) => content.containsKey(section));
   }
 
   CipherMap copyWith({
@@ -158,7 +162,7 @@ class CipherMap {
     String? transposedKey,
     String? versionName,
     DateTime? createdAt,
-    List<MapContent>? content,
+    Map<String, String>? content,
   }) {
     return CipherMap(
       id: id ?? this.id,
@@ -168,53 +172,6 @@ class CipherMap {
       versionName: versionName ?? this.versionName,
       createdAt: createdAt ?? this.createdAt,
       content: content ?? this.content,
-    );
-  }
-}
-
-class MapContent {
-  final int? id; // Added: missing field
-  final int mapId; // Added: missing field
-  final String contentType;
-  final String contentText;
-
-  const MapContent({
-    this.id, // Added: optional for new content
-    required this.mapId, // Added: required field
-    required this.contentType,
-    required this.contentText,
-  });
-
-  factory MapContent.fromJson(Map<String, dynamic> json) {
-    return MapContent(
-      id: json['id'] as int?, // Added: from database
-      mapId: json['map_id'] as int, // Added: from database
-      contentType: json['content_type'] as String,
-      contentText: json['content_text'] as String,
-    );
-  }
-
-  // To JSON for database
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'map_id': mapId,
-      'content_type': contentType,
-      'content_text': contentText,
-    };
-  }
-
-  MapContent copyWith({
-    int? id,
-    int? mapId,
-    String? contentType,
-    String? contentText,
-  }) {
-    return MapContent(
-      id: id ?? this.id,
-      mapId: mapId ?? this.mapId,
-      contentType: contentType ?? this.contentType,
-      contentText: contentText ?? this.contentText,
     );
   }
 }

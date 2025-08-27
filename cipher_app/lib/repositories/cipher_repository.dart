@@ -122,7 +122,7 @@ class CipherRepository {
 
   // === MAP CONTENT OPERATIONS ===
 
-  Future<List<MapContent>> getMapContent(int mapId) async {
+  Future<Map<String, String>> getMapContent(int mapId) async {
     final db = await _databaseHelper.database;
     final results = await db.query(
       'map_content',
@@ -131,21 +131,33 @@ class CipherRepository {
       orderBy: 'content_type',
     );
 
-    return results.map((row) => MapContent.fromJson(row)).toList();
+    final contentMap = <String, String>{};
+    for (var row in results) {
+      contentMap[row['content_type'] as String] = row['content_text'] as String;
+    }
+    return contentMap;
   }
 
-  Future<int> insertMapContent(MapContent content) async {
+  Future<int> insertMapContent(int mapId, String contentType, String contentText) async {
     final db = await _databaseHelper.database;
-    return await db.insert('map_content', content.toJson());
+    return await db.insert('map_content', {
+      'map_id': mapId,
+      'content_type': contentType,
+      'content_text': contentText,
+      'created_at': DateTime.now().toIso8601String(),
+    });
   }
 
-  Future<void> updateMapContent(MapContent content) async {
+  Future<void> updateMapContent(int mapId, String contentType, String contentText) async {
     final db = await _databaseHelper.database;
     await db.update(
       'map_content',
-      content.toJson(),
-      where: 'id = ?',
-      whereArgs: [content.id],
+      {
+        'content_text': contentText,
+        'updated_at': DateTime.now().toIso8601String(),
+      },
+      where: 'map_id = ? AND content_type = ?',
+      whereArgs: [mapId, contentType],
     );
   }
 

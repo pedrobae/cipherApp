@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/domain/cipher.dart';
+import 'cipher_content_card.dart';
 
 class CipherContentSection extends StatelessWidget {
   final Cipher cipher;
@@ -23,7 +24,6 @@ class CipherContentSection extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 16),
             
             // Check if cipher has maps and content
             if (cipher.maps.isNotEmpty) 
@@ -89,40 +89,9 @@ class CipherContentSection extends StatelessWidget {
         
         if (map.content.isNotEmpty)
           ...map.content.map((content) => Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (content.contentType.isNotEmpty)
-                  Text(
-                    content.contentType,
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
-                  ),
-                const SizedBox(height: 4),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.8),
-                    ),
-                  ),
-                  child: Text(
-                    content.contentText,
-                    style: const TextStyle(
-                      fontFamily: 'monospace',
-                      fontSize: 14,
-                      height: 1.4,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            padding: const EdgeInsets.only(bottom: 9),
+            child: 
+                CipherContentCard(cipherContent: content)
           ))
         else
           Container(

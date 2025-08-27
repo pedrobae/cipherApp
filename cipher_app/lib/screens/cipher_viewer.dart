@@ -34,7 +34,6 @@ class CipherViewer extends StatelessWidget {
           children: [
             // Header information
             CipherHeaderSection(cipher: cipher),
-            const SizedBox(height: 24),
             
             // Cipher content section
             CipherContentSection(cipher: cipher),

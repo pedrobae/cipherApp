@@ -14,17 +14,10 @@ class CipherContentSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Conteúdo da Cifra',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            
             // Check if cipher has maps and content
             if (cipher.maps.isNotEmpty) 
               ...cipher.maps.map((map) => _buildMapContent(context, map))
@@ -93,13 +86,10 @@ class CipherContentSection extends StatelessWidget {
             final sectionKeyTrimmed = sectionKey.trim();
             final contentText = map.content[sectionKeyTrimmed];
             if (contentText != null) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: CipherContentCard(
+              return CipherContentCard(
                   contentType: sectionKeyTrimmed,
                   contentText: contentText,
-                ),
-              );
+                );
             } else {
               return const SizedBox.shrink();
             }

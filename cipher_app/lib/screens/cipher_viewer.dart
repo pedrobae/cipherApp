@@ -13,7 +13,20 @@ class CipherViewer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(cipher.title),
+        title: Column(
+          children: [
+            Text(
+              cipher.title,
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold,),
+            ),
+            Text(
+              'por ${cipher.author}',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: Colors.grey[600],
+              ),
+            ),
+          ]
+        ),
         centerTitle: true,
         actions: [
           IconButton(
@@ -28,7 +41,7 @@ class CipherViewer extends StatelessWidget {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

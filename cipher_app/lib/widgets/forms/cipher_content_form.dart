@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import '../../models/domain/cipher.dart';
-
-class SectionType {
-  final String name;
-  final Color color;
-
-  const SectionType(this.name, this.color);
-}
+import 'reorderable_structure_chips.dart';
 
 class CipherContentForm extends StatefulWidget {
   final Cipher? cipher;
@@ -47,6 +42,7 @@ class _CipherContentFormState extends State<CipherContentForm> {
   final Map<String, TextEditingController> _contentControllers = {};
   Map<String, String> _currentContent = {};
   final Map<String, SectionType> _customSections = {};
+  Timer? _debounceTimer;
   
   @override
   void initState() {
@@ -74,6 +70,7 @@ class _CipherContentFormState extends State<CipherContentForm> {
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
     for (var controller in _contentControllers.values) {
       controller.dispose();
     }
@@ -140,16 +137,6 @@ class _CipherContentFormState extends State<CipherContentForm> {
     return _customSections[key] ?? _sectionTypes[key] ?? SectionType(key, Colors.grey);
   }
 
-  int _getTotalCharacterCount() {
-    return _contentControllers.values
-        .map((controller) => controller.text.length)
-        .fold(0, (sum, count) => sum + count);
-  }
-
-  int _getSectionCharacterCount(String section) {
-    return _contentControllers[section]?.text.length ?? 0;
-  }
-
   void _showPresetSectionsDialog() {
     showDialog(
       context: context,
@@ -184,116 +171,20 @@ class _CipherContentFormState extends State<CipherContentForm> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Estrutura da Música',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primaryContainer,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        '${_getTotalCharacterCount()} caracteres',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onPrimaryContainer,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
+                Text(
+                  'Estrutura da Música',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                const SizedBox(height: 16),
                 
                 // Draggable Section Chips
-                Container(
-                  height: 80,
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade300),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: _songStructure.isEmpty
-                      ? Center(
-                          child: Text(
-                            'Adicione seções usando os botões abaixo',
-                            style: TextStyle(color: Colors.grey.shade600),
-                          ),
-                        )
-                      : ReorderableListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: _songStructure.length,
-                          onReorder: _reorderSection,
-                          itemBuilder: (context, index) {
-                            final section = _songStructure[index];
-                            final sectionType = _getSectionType(section);
-                            final count = _songStructure.where((s) => s == section).length;
-                            
-                            return Container(
-                              key: ValueKey('$section-$index'),
-                              margin: const EdgeInsets.only(right: 8),
-                              child: Stack(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                    decoration: BoxDecoration(
-                                      color: sectionType.color.withValues(alpha: .8),
-                                      borderRadius: BorderRadius.circular(16),
-                                      border: Border.all(color: sectionType.color),
-                                    ),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          section,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                        if (count > 1)
-                                          Text(
-                                            '${count}x',
-                                            style: const TextStyle(
-                                              color: Colors.white70,
-                                              fontSize: 10,
-                                            ),
-                                          ),
-                                      ],
-                                    ),
-                                  ),
-                                  Positioned(
-                                    top: -4,
-                                    right: -4,
-                                    child: GestureDetector(
-                                      onTap: () => _removeSection(index),
-                                      child: Container(
-                                        width: 20,
-                                        height: 20,
-                                        decoration: BoxDecoration(
-                                          color: Colors.red,
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: const Icon(
-                                          Icons.close,
-                                          color: Colors.white,
-                                          size: 12,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
+                ReorderableStructureChips(
+                  songStructure: _songStructure,
+                  sectionTypes: _sectionTypes,
+                  customSections: _customSections,
+                  onReorder: _reorderSection,
+                  onRemoveSection: _removeSection,
                 ),
               ],
             ),
@@ -344,8 +235,6 @@ class _CipherContentFormState extends State<CipherContentForm> {
         else
           ...uniqueSections.map((section) {
             final sectionType = _getSectionType(section);
-            final charCount = _getSectionCharacterCount(section);
-            final occurrences = _songStructure.where((s) => s == section).length;
             
             return Card(
               margin: const EdgeInsets.only(bottom: 16),
@@ -381,22 +270,7 @@ class _CipherContentFormState extends State<CipherContentForm> {
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            if (occurrences > 1)
-                              Text(
-                                ' (${occurrences}x)',
-                                style: TextStyle(
-                                  color: Colors.grey.shade600,
-                                  fontStyle: FontStyle.italic,
-                                ),
-                              ),
                           ],
-                        ),
-                        Text(
-                          '$charCount chars',
-                          style: TextStyle(
-                            color: Colors.grey.shade600,
-                            fontSize: 12,
-                          ),
                         ),
                       ],
                     ),
@@ -407,10 +281,14 @@ class _CipherContentFormState extends State<CipherContentForm> {
                         hintText: 'Conteúdo da seção ${sectionType.name}',
                         border: const OutlineInputBorder(),
                       ),
-                      maxLines: 4,
+                      maxLines: null,
+                      keyboardType: TextInputType.multiline,
                       onChanged: (_) {
-                        _notifyContentChanged();
-                        setState(() {}); // Update character count
+                        _debounceTimer?.cancel();
+                        _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+                          _notifyContentChanged();
+                          if (mounted) setState(() {});
+                        });
                       },
                     ),
                   ],

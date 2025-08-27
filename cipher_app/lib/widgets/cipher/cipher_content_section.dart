@@ -4,23 +4,29 @@ import 'cipher_content_card.dart';
 
 class CipherContentSection extends StatelessWidget {
   final Cipher cipher;
+  final CipherMap? currentVersion;
 
   const CipherContentSection({
     super.key,
     required this.cipher,
+    this.currentVersion,
   });
 
   @override
   Widget build(BuildContext context) {
+    // Use the specified version or default to first map
+    final versionToDisplay = currentVersion ?? 
+        (cipher.maps.isNotEmpty ? cipher.maps.first : null);
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Check if cipher has maps and content
-            if (cipher.maps.isNotEmpty) 
-              ...cipher.maps.map((map) => _buildMapContent(context, map))
+            // Check if we have a version to display
+            if (versionToDisplay != null) 
+              _buildMapContent(context, versionToDisplay)
             else
               _buildEmptyContent(context),
           ],
@@ -70,13 +76,6 @@ class CipherContentSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (map.versionName != null && map.versionName!.isNotEmpty) ...[
-          Text(
-            map.versionName!,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-          ),
           const SizedBox(height: 8),
         ],
         
@@ -115,8 +114,6 @@ class CipherContentSection extends StatelessWidget {
               ],
             ),
           ),
-        
-        const SizedBox(height: 16),
       ],
     );
   }

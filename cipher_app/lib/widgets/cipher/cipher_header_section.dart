@@ -27,7 +27,6 @@ class CipherHeaderSection extends StatelessWidget {
               ],
             ),
             if (cipher.tags.isNotEmpty) ...[
-              const SizedBox(height: 12),
               Wrap(
                 spacing: 6,
                 runSpacing: 6,

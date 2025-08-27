@@ -2,18 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/cipher_provider.dart';
 import '../models/domain/cipher.dart';
+import '../widgets/forms/cipher_basic_info_form.dart';
+import '../widgets/forms/cipher_content_form.dart';
 
 class EditCipher extends StatefulWidget {
   final Cipher? cipher; // Null for create, populated for edit
+  final CipherMap? currentVersion; // Specific version to edit
+  final bool isNewVersion; // Creating a new version of existing cipher
 
-  const EditCipher({super.key, this.cipher});
+  const EditCipher({
+    super.key, 
+    this.cipher,
+    this.currentVersion,
+    this.isNewVersion = false,
+  });
 
   @override
   State<EditCipher> createState() => _EditCipherState();
 }
 
-class _EditCipherState extends State<EditCipher> {
+class _EditCipherState extends State<EditCipher>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
+  late TabController _tabController;
+
+  // Basic info controllers
   final _titleController = TextEditingController();
   final _authorController = TextEditingController();
   final _tempoController = TextEditingController();
@@ -21,11 +34,19 @@ class _EditCipherState extends State<EditCipher> {
   final _languageController = TextEditingController();
   final _tagsController = TextEditingController();
 
+  // Version-specific controllers
+  final _versionNameController = TextEditingController();
+
+  // Content data
+  Map<String, String> _cipherContent = {};
+
   bool get _isEditMode => widget.cipher != null;
+  bool get _isNewVersionMode => widget.isNewVersion;
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
     _initializeFields();
   }
 
@@ -38,17 +59,66 @@ class _EditCipherState extends State<EditCipher> {
       _musicKeyController.text = cipher.musicKey;
       _languageController.text = cipher.language;
       _tagsController.text = cipher.tags.join(', ');
+
+      // Initialize version-specific data
+      final versionToEdit = widget.currentVersion ?? 
+          (cipher.maps.isNotEmpty ? cipher.maps.first : null);
+      
+      if (versionToEdit != null) {
+        _versionNameController.text = versionToEdit.versionName ?? '';
+        _cipherContent = Map.from(versionToEdit.content);
+      }
+      
+      // If creating new version, suggest a default name
+      if (_isNewVersionMode) {
+        _versionNameController.text = _generateVersionName(cipher.maps.length + 1);
+      }
+    } else {
+      // Creating new cipher - set defaults
+      _versionNameController.text = 'Original';
     }
+  }
+
+  String _getSaveButtonText() {
+    if (_isNewVersionMode) {
+      return 'Criar Versão';
+    } else if (_isEditMode) {
+      return 'Salvar';
+    } else {
+      return 'Criar';
+    }
+  }
+
+  String _getAppBarTitle() {
+    if (_isNewVersionMode) {
+      return 'Nova Versão';
+    } else if (_isEditMode) {
+      return 'Editar Cifra';
+    } else {
+      return 'Nova Cifra';
+    }
+  }
+
+  String _generateVersionName(int versionNumber) {
+    final suggestions = [
+      'Versão $versionNumber',
+      'Nova Versão',
+      'Versão Alternativa',
+      'Versão ${DateTime.now().day}/${DateTime.now().month}',
+    ];
+    return suggestions.first;
   }
 
   @override
   void dispose() {
+    _tabController.dispose();
     _titleController.dispose();
     _authorController.dispose();
     _tempoController.dispose();
     _musicKeyController.dispose();
     _languageController.dispose();
     _tagsController.dispose();
+    _versionNameController.dispose();
     super.dispose();
   }
 
@@ -59,158 +129,129 @@ class _EditCipherState extends State<EditCipher> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditMode ? 'Editar Cifra' : 'Nova Cifra'),
+        title: Text(_getAppBarTitle()),
         backgroundColor: colorScheme.surface,
         foregroundColor: colorScheme.onSurface,
-        actions: [
-          if (_isEditMode)
-            IconButton(
-              icon: Icon(Icons.delete, color: colorScheme.error),
-              onPressed: _showDeleteDialog,
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: [
+            Tab(
+              text: _isNewVersionMode ? 'Informações da Cifra' : 'Informações', 
+              icon: const Icon(Icons.info_outline),
             ),
-        ],
+            const Tab(text: 'Conteúdo', icon: Icon(Icons.music_note)),
+          ],
+        ),
       ),
       body: Form(
         key: _formKey,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildTextField(
-                controller: _titleController,
-                label: 'Título',
-                hint: 'Nome da música',
-                validator: (value) =>
-                    value?.isEmpty == true ? 'Título é obrigatório' : null,
-                prefixIcon: Icons.music_note,
-              ),
-              const SizedBox(height: 16),
-
-              _buildTextField(
-                controller: _authorController,
-                label: 'Autor',
-                hint: 'Compositor ou artista',
-                validator: (value) =>
-                    value?.isEmpty == true ? 'Autor é obrigatório' : null,
-                prefixIcon: Icons.person,
-              ),
-              const SizedBox(height: 16),
-
-              Row(
+        child: TabBarView(
+          controller: _tabController,
+          children: [
+            // Basic Info Tab
+            SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
                 children: [
-                  Expanded(
-                    child: _buildTextField(
-                      controller: _musicKeyController,
-                      label: 'Tom',
-                      hint: 'Ex: C, G, Am',
-                      validator: (value) =>
-                          value?.isEmpty == true ? 'Tom é obrigatório' : null,
-                      prefixIcon: Icons.piano,
+                  // Version info section (if editing/creating version)
+                  if (_isEditMode) ...[
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Informações da Versão',
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            TextFormField(
+                              controller: _versionNameController,
+                              decoration: const InputDecoration(
+                                labelText: 'Nome da Versão',
+                                hintText: 'Ex: Original, Acústica, Tom de C',
+                                border: OutlineInputBorder(),
+                                prefixIcon: Icon(Icons.label),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return 'Nome da versão é obrigatório';
+                                }
+                                return null;
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _buildTextField(
-                      controller: _tempoController,
-                      label: 'Tempo',
-                      hint: 'Ex: Lento, Médio',
-                      validator: (value) =>
-                          value?.isEmpty == true ? 'Tempo é obrigatório' : null,
-                      prefixIcon: Icons.speed,
-                    ),
+                    const SizedBox(height: 16),
+                  ],
+                  
+                  // Basic cipher info
+                  CipherBasicInfoForm(
+                    titleController: _titleController,
+                    authorController: _authorController,
+                    tempoController: _tempoController,
+                    musicKeyController: _musicKeyController,
+                    languageController: _languageController,
+                    tagsController: _tagsController,
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
-
-              _buildTextField(
-                controller: _languageController,
-                label: 'Idioma',
-                hint: 'Ex: Português, Inglês',
-                validator: (value) =>
-                    value?.isEmpty == true ? 'Idioma é obrigatório' : null,
-                prefixIcon: Icons.language,
+            ),
+            // Content Tab
+            SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: CipherContentForm(
+                cipher: widget.cipher,
+                onContentChanged: (content) {
+                  _cipherContent = content;
+                },
               ),
-              const SizedBox(height: 16),
-
-              _buildTextField(
-                controller: _tagsController,
-                label: 'Tags (opcional)',
-                hint: 'Separe por vírgula: louvor, adoração, natal',
-                prefixIcon: Icons.tag,
-                maxLines: 2,
-              ),
-              const SizedBox(height: 32),
-
-              FilledButton.icon(
-                onPressed: context.watch<CipherProvider>().isSaving ? null : _saveCipher,
-                icon: context.watch<CipherProvider>().isSaving
-                    ? SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: colorScheme.onPrimary,
-                        ),
-                      )
-                    : Icon(_isEditMode ? Icons.save : Icons.add),
-                label: Text(_isEditMode ? 'Salvar Alterações' : 'Criar Cifra'),
-                style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-              ),
-
-              if (_isEditMode) ...[
-                const SizedBox(height: 16),
-                OutlinedButton.icon(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.cancel),
-                  label: const Text('Cancelar'),
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                ),
-              ],
-            ],
-          ),
+            ),
+          ],
         ),
       ),
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required String hint,
-    String? Function(String?)? validator,
-    IconData? prefixIcon,
-    int? maxLines = 1,
-  }) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return TextFormField(
-      controller: controller,
-      validator: validator,
-      maxLines: maxLines,
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: hint,
-        prefixIcon: prefixIcon != null
-            ? Icon(prefixIcon, color: colorScheme.primary)
-            : null,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: colorScheme.primary, width: 2),
-        ),
+      floatingActionButton: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (_isEditMode)
+            FloatingActionButton(
+              heroTag: 'delete',
+              onPressed: _showDeleteDialog,
+              backgroundColor: colorScheme.errorContainer,
+              child: Icon(Icons.delete, color: colorScheme.onErrorContainer),
+            ),
+          if (_isEditMode) const SizedBox(width: 8),
+          FloatingActionButton.extended(
+            heroTag: 'save',
+            onPressed: context.watch<CipherProvider>().isSaving ? null : _saveCipher,
+            icon: context.watch<CipherProvider>().isSaving
+                ? SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: colorScheme.onPrimary,
+                    ),
+                  )
+                : Icon(_isEditMode ? Icons.save : Icons.add),
+            label: Text(_getSaveButtonText()),
+          ),
+        ],
       ),
     );
   }
 
   void _saveCipher() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) {
+      // Switch to basic info tab if validation fails
+      _tabController.animateTo(0);
+      return;
+    }
 
     try {
       // Parse tags
@@ -220,8 +261,36 @@ class _EditCipherState extends State<EditCipher> {
           .where((tag) => tag.isNotEmpty)
           .toList();
 
+      // Create cipher map for this version
+      final cipherMap = CipherMap(
+        id: _isNewVersionMode ? null : (widget.currentVersion?.id ?? 
+            (widget.cipher?.maps.isNotEmpty == true ? widget.cipher!.maps.first.id : null)),
+        cipherId: _isEditMode ? widget.cipher!.id! : 0,
+        songStructure: _cipherContent.keys.join(','),
+        content: _cipherContent,
+        versionName: _versionNameController.text.trim().isNotEmpty 
+            ? _versionNameController.text.trim() 
+            : 'Versão sem nome',
+        transposedKey: null,
+        createdAt: _isNewVersionMode ? DateTime.now() : widget.currentVersion?.createdAt,
+      );
+
+      // Prepare cipher data
+      List<CipherMap> updatedMaps;
+      if (_isNewVersionMode) {
+        // Adding new version to existing cipher
+        updatedMaps = [...widget.cipher!.maps, cipherMap];
+      } else if (_isEditMode && widget.currentVersion != null) {
+        // Editing existing version
+        updatedMaps = widget.cipher!.maps.map((map) => 
+            map.id == widget.currentVersion!.id ? cipherMap : map).toList();
+      } else {
+        // Creating new cipher or editing cipher with no specific version
+        updatedMaps = _cipherContent.isNotEmpty ? [cipherMap] : [];
+      }
+
       final cipherData = Cipher(
-        id: _isEditMode ? widget.cipher!.id : null, // Include ID for updates
+        id: _isEditMode ? widget.cipher!.id : null,
         title: _titleController.text.trim(),
         author: _authorController.text.trim(),
         tempo: _tempoController.text.trim(),
@@ -229,6 +298,7 @@ class _EditCipherState extends State<EditCipher> {
         language: _languageController.text.trim(),
         isLocal: true,
         tags: tags,
+        maps: updatedMaps,
       );
 
       final cipherProvider = context.read<CipherProvider>();
@@ -238,7 +308,9 @@ class _EditCipherState extends State<EditCipher> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Cifra atualizada com sucesso!'),
+              content: Text(_isNewVersionMode 
+                  ? 'Nova versão criada com sucesso!' 
+                  : 'Cifra atualizada com sucesso!'),
               backgroundColor: Theme.of(context).colorScheme.primary,
             ),
           );

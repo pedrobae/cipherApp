@@ -18,13 +18,6 @@ class CipherHeaderSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              cipher.title,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
               'por ${cipher.author}',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 color: Colors.grey[600],

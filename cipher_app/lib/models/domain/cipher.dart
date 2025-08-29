@@ -60,11 +60,6 @@ class Cipher {
     };
   }
 
-  Map<String, String> get musicStruct {
-    if (maps.isEmpty) return {};
-    return maps.first.getContentAsStruct();
-  }
-
   Cipher copyWith({
     int? id,
     String? title,
@@ -124,7 +119,9 @@ class CipherMap {
     return CipherMap(
       id: json['id'] as int?,
       cipherId: json['cipher_id'] as int, // Added: from database
-      songStructure: json['song_structure'] as String? ?? '', // Fixed: use correct column name
+      songStructure:
+          json['song_structure'] as String? ??
+          '', // Fixed: use correct column name
       transposedKey: json['transposed_key'] as String?,
       versionName: json['version_name'] as String?,
       createdAt: json['created_at'] != null

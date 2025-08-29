@@ -5,6 +5,7 @@ import '../../utils/section_color_manager.dart';
 import 'reorderable_structure_chips.dart';
 
 class CipherContentForm extends StatefulWidget {
+  final TextEditingController? versionNameController;
   final Cipher? cipher;
   final CipherMap? currentVersion;
   final Function(Map<String, String>) onContentChanged;
@@ -12,6 +13,7 @@ class CipherContentForm extends StatefulWidget {
 
   const CipherContentForm({
     super.key,
+    this.versionNameController,
     this.cipher,
     this.currentVersion,
     required this.onContentChanged,
@@ -28,7 +30,7 @@ class _CipherContentFormState extends State<CipherContentForm> {
   Map<String, String> _currentContent = {};
   final Map<String, SectionType> _customSections = {};
   Timer? _debounceTimer;
-  
+
   @override
   void initState() {
     super.initState();
@@ -39,25 +41,26 @@ class _CipherContentFormState extends State<CipherContentForm> {
     // Always start with default empty state
     _songStructure = []; // Empty structure by default
     _currentContent = {};
-    
+
     // Only populate if editing an existing version
     if (widget.currentVersion != null) {
-      _songStructure = widget.currentVersion!.songStructure.split(',')
+      _songStructure = widget.currentVersion!.songStructure
+          .split(',')
           .map((s) => s.trim())
           .where((s) => s.isNotEmpty)
           .toList();
       _currentContent = Map.from(widget.currentVersion!.content);
-      
+
       // Initialize controllers for existing content
       _currentContent.forEach((key, value) {
         _contentControllers[key] = TextEditingController(text: value);
       });
     }
-    
+
     // Notify parent about initial structure and content
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.onStructureChanged?.call(_songStructure);
-      widget.onContentChanged(_currentContent);
+      _notifyContentChanged(); // Use the new method that includes version name
     });
   }
 
@@ -78,20 +81,53 @@ class _CipherContentFormState extends State<CipherContentForm> {
         _currentContent[key] = controller.text.trim();
       }
     });
-    
+
     // Notify parent with both content and structure
-    widget.onContentChanged(_currentContent);
+    _notifyContentChanged();
     widget.onStructureChanged?.call(_songStructure);
   }
 
-  void _addSection(String sectionKey, {String? customName, Color? customColor}) {
+  void _notifyContentChanged() {
+    // DEBUG: Print all section keys and their content before saving
+    for (final section in _songStructure) {
+      // Ensure controller exists for every section
+      if (!_contentControllers.containsKey(section)) {
+        _contentControllers[section] = TextEditingController();
+      }
+    }
+    // Collect all content from section controllers
+    _currentContent.clear();
+    for (final section in _songStructure) {
+      final controller = _contentControllers[section];
+      if (controller != null) {
+        _currentContent[section] = controller.text;
+      } else {
+        _currentContent[section] = '';
+      }
+    }
+
+    // Also include version name from the passed controller if available
+    if (widget.versionNameController != null &&
+        widget.versionNameController!.text.trim().isNotEmpty) {
+      _currentContent['versionName'] = widget.versionNameController!.text
+          .trim();
+    }
+
+    widget.onContentChanged(_currentContent);
+  }
+
+  void _addSection(
+    String sectionKey, {
+    String? customName,
+    Color? customColor,
+  }) {
     setState(() {
       _songStructure.add(sectionKey);
-      
+
       if (customName != null && customColor != null) {
         _customSections[sectionKey] = SectionType(customName, customColor);
       }
-      
+
       if (!_contentControllers.containsKey(sectionKey)) {
         _contentControllers[sectionKey] = TextEditingController(
           text: _currentContent[sectionKey] ?? '',
@@ -105,7 +141,7 @@ class _CipherContentFormState extends State<CipherContentForm> {
     setState(() {
       final sectionKey = _songStructure[index];
       _songStructure.removeAt(index);
-      
+
       // Only remove content if this section is not used elsewhere
       if (!_songStructure.contains(sectionKey)) {
         _contentControllers[sectionKey]?.dispose();
@@ -122,16 +158,6 @@ class _CipherContentFormState extends State<CipherContentForm> {
       if (newIndex > oldIndex) newIndex--;
       final item = _songStructure.removeAt(oldIndex);
       _songStructure.insert(newIndex, item);
-    });
-    _updateSongStructure();
-  }
-
-  void _notifyContentChanged() {
-    _currentContent.clear();
-    _contentControllers.forEach((key, controller) {
-      if (controller.text.trim().isNotEmpty) {
-        _currentContent[key] = controller.text.trim();
-      }
     });
     _updateSongStructure();
   }
@@ -155,7 +181,8 @@ class _CipherContentFormState extends State<CipherContentForm> {
     showDialog(
       context: context,
       builder: (context) => _CustomSectionDialog(
-        onAdd: (sectionKey, name, color) => _addSection(sectionKey, customName: name, customColor: color),
+        onAdd: (sectionKey, name, color) =>
+            _addSection(sectionKey, customName: name, customColor: color),
       ),
     );
   }
@@ -163,10 +190,43 @@ class _CipherContentFormState extends State<CipherContentForm> {
   @override
   Widget build(BuildContext context) {
     final uniqueSections = _songStructure.toSet().toList();
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Informações da Versão',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                TextFormField(
+                  controller: widget.versionNameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Nome da Versão',
+                    hintText: 'Ex: Original, Acústica, Tom de C',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.label),
+                  ),
+                  onChanged: (_) => _notifyContentChanged(),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Nome da versão é obrigatório';
+                    }
+                    return null;
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
         // Song Structure Section
         Card(
           child: Padding(
@@ -180,7 +240,7 @@ class _CipherContentFormState extends State<CipherContentForm> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                
+
                 // Draggable Section Chips
                 ReorderableStructureChips(
                   songStructure: _songStructure,
@@ -193,9 +253,9 @@ class _CipherContentFormState extends State<CipherContentForm> {
             ),
           ),
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         // Quick Add Buttons Row
         Row(
           children: [
@@ -222,9 +282,9 @@ class _CipherContentFormState extends State<CipherContentForm> {
             ),
           ],
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         // Content Section
         if (uniqueSections.isEmpty)
           const Padding(
@@ -238,7 +298,7 @@ class _CipherContentFormState extends State<CipherContentForm> {
         else
           ...uniqueSections.map((section) {
             final sectionType = _getSectionType(section);
-            
+
             return Card(
               margin: const EdgeInsets.only(bottom: 16),
               child: Padding(
@@ -252,7 +312,10 @@ class _CipherContentFormState extends State<CipherContentForm> {
                         Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
                                 color: sectionType.color,
                                 borderRadius: BorderRadius.circular(6),
@@ -269,9 +332,8 @@ class _CipherContentFormState extends State<CipherContentForm> {
                             const SizedBox(width: 8),
                             Text(
                               sectionType.name,
-                              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w600,
-                              ),
+                              style: Theme.of(context).textTheme.titleSmall
+                                  ?.copyWith(fontWeight: FontWeight.w600),
                             ),
                           ],
                         ),
@@ -288,10 +350,13 @@ class _CipherContentFormState extends State<CipherContentForm> {
                       keyboardType: TextInputType.multiline,
                       onChanged: (_) {
                         _debounceTimer?.cancel();
-                        _debounceTimer = Timer(const Duration(milliseconds: 300), () {
-                          _notifyContentChanged();
-                          if (mounted) setState(() {});
-                        });
+                        _debounceTimer = Timer(
+                          const Duration(milliseconds: 300),
+                          () {
+                            _notifyContentChanged();
+                            if (mounted) setState(() {});
+                          },
+                        );
                       },
                     ),
                   ],
@@ -432,10 +497,7 @@ class _CustomSectionDialogState extends State<_CustomSectionDialog> {
           onPressed: () => Navigator.pop(context),
           child: const Text('Cancelar'),
         ),
-        FilledButton(
-          onPressed: _addSection,
-          child: const Text('Adicionar'),
-        ),
+        FilledButton(onPressed: _addSection, child: const Text('Adicionar')),
       ],
     );
   }
@@ -443,7 +505,7 @@ class _CustomSectionDialogState extends State<_CustomSectionDialog> {
   void _addSection() {
     final key = _keyController.text.trim().toUpperCase();
     final name = _nameController.text.trim();
-    
+
     if (key.isNotEmpty && name.isNotEmpty) {
       widget.onAdd(key, name, _selectedColor);
       Navigator.pop(context);

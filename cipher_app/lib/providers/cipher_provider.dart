@@ -91,7 +91,12 @@ class CipherProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _cipherRepository.insertCipher(cipher);
+      // Insert basic cipher info and tags
+      final cipherId = await _cipherRepository.insertCipher(cipher);
+
+      // Insert cipher maps and their content
+      await _createCipherMapsAndContent(cipherId, cipher.maps);
+
       // Reload all ciphers to get the complete data with relationships
       await loadCiphers();
     } catch (e) {
@@ -105,6 +110,29 @@ class CipherProvider extends ChangeNotifier {
     }
   }
 
+  /// Handle creating cipher maps and their content for a new cipher
+  Future<void> _createCipherMapsAndContent(
+    int cipherId,
+    List<CipherMap> maps,
+  ) async {
+    for (final map in maps) {
+      // Create map with the correct cipher ID
+      final mapWithCipherId = map.copyWith(cipherId: cipherId);
+      final newMapId = await _cipherRepository.insertCipherMap(mapWithCipherId);
+
+      // Insert content for this map
+      for (final entry in map.content.entries) {
+        if (entry.value.trim().isNotEmpty) {
+          await _cipherRepository.insertMapContent(
+            newMapId,
+            entry.key,
+            entry.value,
+          );
+        }
+      }
+    }
+  }
+
   Future<void> updateCipher(Cipher cipher) async {
     if (_isSaving) return;
 
@@ -113,7 +141,12 @@ class CipherProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      // Update basic cipher info and tags
       await _cipherRepository.updateCipher(cipher);
+
+      // Update cipher maps and their content
+      await _updateCipherMapsAndContent(cipher);
+
       // Reload all ciphers to get the updated data with relationships
       await loadCiphers();
     } catch (e) {
@@ -124,6 +157,74 @@ class CipherProvider extends ChangeNotifier {
     } finally {
       _isSaving = false;
       notifyListeners();
+    }
+  }
+
+  /// Handle updating cipher maps and their content
+  Future<void> _updateCipherMapsAndContent(Cipher cipher) async {
+    if (cipher.id == null || cipher.maps.isEmpty) return;
+
+    // Get existing maps to determine which ones to update, create, or delete
+    final existingMaps = await _cipherRepository.getCipherMaps(cipher.id!);
+    final existingMapIds = existingMaps
+        .map((m) => m.id)
+        .where((id) => id != null)
+        .toSet();
+    final newMapIds = cipher.maps
+        .map((m) => m.id)
+        .where((id) => id != null)
+        .toSet();
+
+    // Delete maps that are no longer present
+    for (final existingMap in existingMaps) {
+      if (existingMap.id != null && !newMapIds.contains(existingMap.id)) {
+        await _cipherRepository.deleteCipherMap(existingMap.id!);
+      }
+    }
+
+    // Update or create maps
+    for (final map in cipher.maps) {
+      final mapWithCipherId = map.copyWith(cipherId: cipher.id!);
+
+      if (map.id != null && existingMapIds.contains(map.id)) {
+        // Update existing map
+        await _cipherRepository.updateCipherMap(mapWithCipherId);
+        await _updateMapContent(map.id!, map.content);
+      } else {
+        // Create new map
+        final newMapId = await _cipherRepository.insertCipherMap(
+          mapWithCipherId,
+        );
+        await _updateMapContent(newMapId, map.content);
+      }
+    }
+  }
+
+  /// Handle updating map content
+  Future<void> _updateMapContent(
+    int mapId,
+    Map<String, String> newContent,
+  ) async {
+    // Get existing content
+    final existingContent = await _cipherRepository.getMapContent(mapId);
+
+    // Delete content types that are no longer present
+    for (final contentType in existingContent.keys) {
+      if (!newContent.containsKey(contentType)) {
+        // Note: We need a method to delete by mapId and contentType
+        // For now, we'll delete all and recreate (simpler approach)
+      }
+    }
+
+    // For simplicity, delete all existing content and recreate
+    // This could be optimized later to only update changed content
+    await _cipherRepository.deleteAllMapContent(mapId);
+
+    // Insert new content
+    for (final entry in newContent.entries) {
+      if (entry.value.trim().isNotEmpty) {
+        await _cipherRepository.insertMapContent(mapId, entry.key, entry.value);
+      }
     }
   }
 
@@ -158,6 +259,86 @@ class CipherProvider extends ChangeNotifier {
     _error = null;
     _searchTerm = '';
     notifyListeners();
+  }
+
+  // === CIPHER MAP SPECIFIC OPERATIONS ===
+
+  /// Add a new version (CipherMap) to an existing cipher
+  Future<void> addCipherVersion(int cipherId, CipherMap cipherMap) async {
+    if (_isSaving) return;
+
+    _isSaving = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      // Create map with the correct cipher ID
+      final mapWithCipherId = cipherMap.copyWith(cipherId: cipherId);
+      final newMapId = await _cipherRepository.insertCipherMap(mapWithCipherId);
+
+      // Insert content for this map
+      await _updateMapContent(newMapId, cipherMap.content);
+
+      // Reload all ciphers to get the updated data
+      await loadCiphers();
+    } catch (e) {
+      _error = e.toString();
+      if (kDebugMode) {
+        print('Error adding cipher version: $e');
+      }
+    } finally {
+      _isSaving = false;
+      notifyListeners();
+    }
+  }
+
+  /// Update a specific cipher version (CipherMap)
+  Future<void> updateCipherVersion(CipherMap cipherMap) async {
+    if (_isSaving) return;
+
+    _isSaving = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _cipherRepository.updateCipherMap(cipherMap);
+      await _updateMapContent(cipherMap.id!, cipherMap.content);
+
+      // Reload all ciphers to get the updated data
+      await loadCiphers();
+    } catch (e) {
+      _error = e.toString();
+      if (kDebugMode) {
+        print('Error updating cipher version: $e');
+      }
+    } finally {
+      _isSaving = false;
+      notifyListeners();
+    }
+  }
+
+  /// Delete a specific cipher version (CipherMap)
+  Future<void> deleteCipherVersion(int mapId) async {
+    if (_isSaving) return;
+
+    _isSaving = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _cipherRepository.deleteCipherMap(mapId);
+
+      // Reload all ciphers to get the updated data
+      await loadCiphers();
+    } catch (e) {
+      _error = e.toString();
+      if (kDebugMode) {
+        print('Error deleting cipher version: $e');
+      }
+    } finally {
+      _isSaving = false;
+      notifyListeners();
+    }
   }
 
   @override

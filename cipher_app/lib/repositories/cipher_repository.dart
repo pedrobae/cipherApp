@@ -32,25 +32,25 @@ class CipherRepository {
 
   Future<int> insertCipher(Cipher cipher) async {
     final db = await _databaseHelper.database;
-    
+
     return await db.transaction((txn) async {
       // Insert the cipher
       final cipherId = await txn.insert('cipher', cipher.toJson());
-      
+
       // Insert tags if any
       if (cipher.tags.isNotEmpty) {
         for (final tagTitle in cipher.tags) {
           await _addTagToCipherInTransaction(txn, cipherId, tagTitle);
         }
       }
-      
+
       return cipherId;
     });
   }
 
   Future<void> updateCipher(Cipher cipher) async {
     final db = await _databaseHelper.database;
-    
+
     await db.transaction((txn) async {
       // Update the cipher
       await txn.update(
@@ -59,14 +59,14 @@ class CipherRepository {
         where: 'id = ?',
         whereArgs: [cipher.id],
       );
-      
+
       // Clear existing tags
       await txn.delete(
         'cipher_tags',
         where: 'cipher_id = ?',
         whereArgs: [cipher.id],
       );
-      
+
       // Insert new tags
       if (cipher.tags.isNotEmpty) {
         for (final tagTitle in cipher.tags) {
@@ -138,24 +138,28 @@ class CipherRepository {
     return contentMap;
   }
 
-  Future<int> insertMapContent(int mapId, String contentType, String contentText) async {
+  Future<int> insertMapContent(
+    int mapId,
+    String contentType,
+    String contentText,
+  ) async {
     final db = await _databaseHelper.database;
     return await db.insert('map_content', {
       'map_id': mapId,
       'content_type': contentType,
       'content_text': contentText,
-      'created_at': DateTime.now().toIso8601String(),
     });
   }
 
-  Future<void> updateMapContent(int mapId, String contentType, String contentText) async {
+  Future<void> updateMapContent(
+    int mapId,
+    String contentType,
+    String contentText,
+  ) async {
     final db = await _databaseHelper.database;
     await db.update(
       'map_content',
-      {
-        'content_text': contentText,
-        'updated_at': DateTime.now().toIso8601String(),
-      },
+      {'content_type': contentType, 'content_text': contentText},
       where: 'map_id = ? AND content_type = ?',
       whereArgs: [mapId, contentType],
     );
@@ -164,6 +168,11 @@ class CipherRepository {
   Future<void> deleteMapContent(int id) async {
     final db = await _databaseHelper.database;
     await db.delete('map_content', where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<void> deleteAllMapContent(int mapId) async {
+    final db = await _databaseHelper.database;
+    await db.delete('map_content', where: 'map_id = ?', whereArgs: [mapId]);
   }
 
   // === TAG OPERATIONS ===
@@ -248,7 +257,11 @@ class CipherRepository {
   }
 
   // Helper method to add tags within a transaction
-  Future<void> _addTagToCipherInTransaction(Transaction txn, int cipherId, String tagTitle) async {
+  Future<void> _addTagToCipherInTransaction(
+    Transaction txn,
+    int cipherId,
+    String tagTitle,
+  ) async {
     // Get or create tag
     var tags = await txn.query(
       'tag',

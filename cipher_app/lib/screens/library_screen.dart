@@ -4,7 +4,7 @@ import '../widgets/search_app_bar.dart';
 import '../widgets/cipher/cipher_card.dart';
 import '../providers/search_provider.dart';
 import '../providers/cipher_provider.dart';
-import './edit_cipher.dart';
+import 'cipher_editor.dart';
 
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});

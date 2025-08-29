@@ -149,6 +149,17 @@ class CipherProvider extends ChangeNotifier {
     }
   }
 
+  /// Clear cached data and reset state for debugging
+  void clearCache() {
+    _ciphers.clear();
+    _filteredCiphers.clear();
+    _isLoading = false;
+    _isSaving = false;
+    _error = null;
+    _searchTerm = '';
+    notifyListeners();
+  }
+
   @override
   void dispose() {
     _loadTimer?.cancel();

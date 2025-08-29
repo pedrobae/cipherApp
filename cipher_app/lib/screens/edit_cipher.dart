@@ -39,6 +39,7 @@ class _EditCipherState extends State<EditCipher>
 
   // Content data
   Map<String, String> _cipherContent = {};
+  List<String> _songStructure = [];
 
   bool get _isEditMode => widget.cipher != null;
   bool get _isNewVersionMode => widget.isNewVersion;
@@ -51,31 +52,30 @@ class _EditCipherState extends State<EditCipher>
   }
 
   void _initializeFields() {
+    // Always start with empty version name and content
+    _versionNameController.text = '';
+    _cipherContent = {};
+    _songStructure = []; // Empty structure by default
+    
     if (_isEditMode) {
       final cipher = widget.cipher!;
+      // Only populate basic cipher info for existing ciphers
       _titleController.text = cipher.title;
       _authorController.text = cipher.author;
       _tempoController.text = cipher.tempo;
       _musicKeyController.text = cipher.musicKey;
       _languageController.text = cipher.language;
       _tagsController.text = cipher.tags.join(', ');
-
-      // Initialize version-specific data
-      final versionToEdit = widget.currentVersion ?? 
-          (cipher.maps.isNotEmpty ? cipher.maps.first : null);
       
-      if (versionToEdit != null) {
-        _versionNameController.text = versionToEdit.versionName ?? '';
-        _cipherContent = Map.from(versionToEdit.content);
+      // Only populate version data if editing a specific version (not creating new)
+      if (!_isNewVersionMode && widget.currentVersion != null) {
+        _versionNameController.text = widget.currentVersion!.versionName ?? '';
+        _cipherContent = Map.from(widget.currentVersion!.content);
+        _songStructure = widget.currentVersion!.songStructure.split(',')
+            .map((s) => s.trim())
+            .where((s) => s.isNotEmpty)
+            .toList();
       }
-      
-      // If creating new version, suggest a default name
-      if (_isNewVersionMode) {
-        _versionNameController.text = _generateVersionName(cipher.maps.length + 1);
-      }
-    } else {
-      // Creating new cipher - set defaults
-      _versionNameController.text = 'Original';
     }
   }
 
@@ -97,16 +97,6 @@ class _EditCipherState extends State<EditCipher>
     } else {
       return 'Nova Cifra';
     }
-  }
-
-  String _generateVersionName(int versionNumber) {
-    final suggestions = [
-      'Versão $versionNumber',
-      'Nova Versão',
-      'Versão Alternativa',
-      'Versão ${DateTime.now().day}/${DateTime.now().month}',
-    ];
-    return suggestions.first;
   }
 
   @override
@@ -207,8 +197,12 @@ class _EditCipherState extends State<EditCipher>
               padding: const EdgeInsets.all(16.0),
               child: CipherContentForm(
                 cipher: widget.cipher,
+                currentVersion: widget.currentVersion,
                 onContentChanged: (content) {
                   _cipherContent = content;
+                },
+                onStructureChanged: (structure) {
+                  _songStructure = structure;
                 },
               ),
             ),
@@ -253,6 +247,18 @@ class _EditCipherState extends State<EditCipher>
       return;
     }
 
+    // Validate that version has content (except when creating cipher without content)
+    if (_cipherContent.isEmpty && (_isEditMode || _isNewVersionMode)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Adicione conteúdo à versão antes de salvar'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      _tabController.animateTo(1); // Switch to content tab
+      return;
+    }
+
     try {
       // Parse tags
       final tags = _tagsController.text
@@ -261,32 +267,34 @@ class _EditCipherState extends State<EditCipher>
           .where((tag) => tag.isNotEmpty)
           .toList();
 
-      // Create cipher map for this version
-      final cipherMap = CipherMap(
-        id: _isNewVersionMode ? null : (widget.currentVersion?.id ?? 
-            (widget.cipher?.maps.isNotEmpty == true ? widget.cipher!.maps.first.id : null)),
-        cipherId: _isEditMode ? widget.cipher!.id! : 0,
-        songStructure: _cipherContent.keys.join(','),
-        content: _cipherContent,
-        versionName: _versionNameController.text.trim().isNotEmpty 
-            ? _versionNameController.text.trim() 
-            : 'Versão sem nome',
-        transposedKey: null,
-        createdAt: _isNewVersionMode ? DateTime.now() : widget.currentVersion?.createdAt,
-      );
+      // Create cipher map for this version (only if has content)
+      CipherMap? cipherMap;
+      if (_cipherContent.isNotEmpty) {
+        cipherMap = CipherMap(
+          id: _isNewVersionMode ? null : widget.currentVersion?.id,
+          cipherId: _isEditMode ? widget.cipher!.id! : 0,
+          songStructure: _songStructure.join(','),
+          content: _cipherContent,
+          versionName: _versionNameController.text.trim().isNotEmpty 
+              ? _versionNameController.text.trim() 
+              : 'Versão sem nome',
+          transposedKey: null,
+          createdAt: _isNewVersionMode ? DateTime.now() : widget.currentVersion?.createdAt,
+        );
+      }
 
       // Prepare cipher data
       List<CipherMap> updatedMaps;
-      if (_isNewVersionMode) {
+      if (_isNewVersionMode && cipherMap != null) {
         // Adding new version to existing cipher
         updatedMaps = [...widget.cipher!.maps, cipherMap];
-      } else if (_isEditMode && widget.currentVersion != null) {
+      } else if (_isEditMode && widget.currentVersion != null && cipherMap != null) {
         // Editing existing version
         updatedMaps = widget.cipher!.maps.map((map) => 
-            map.id == widget.currentVersion!.id ? cipherMap : map).toList();
+            map.id == widget.currentVersion!.id ? cipherMap! : map).toList();
       } else {
-        // Creating new cipher or editing cipher with no specific version
-        updatedMaps = _cipherContent.isNotEmpty ? [cipherMap] : [];
+        // Creating new cipher
+        updatedMaps = cipherMap != null ? [cipherMap] : [];
       }
 
       final cipherData = Cipher(

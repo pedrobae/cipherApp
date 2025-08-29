@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../helpers/database_helper.dart';
 import '../providers/cipher_provider.dart';
 import '../providers/playlist_provider.dart';
+import '../providers/info_provider.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -14,6 +15,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _isResettingDb = false;
+  bool _isReloading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +62,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 subtitle: 'Apaga todos os dados e recria com dados iniciais',
                 isLoading: _isResettingDb,
                 onTap: _isResettingDb ? null : () => _showResetDatabaseDialog(context),
+              ),
+              
+              Card(
+                child: ListTile(
+                  leading: const Icon(Icons.cached),
+                  title: const Text('Recarregar Interface'),
+                  subtitle: const Text('Debug: Força recarga completa de dados e telas'),
+                  trailing: _isReloading 
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.refresh),
+                  onTap: _isReloading ? null : _reloadAllData,
+                ),
               ),
               
               _buildSettingsTile(
@@ -237,6 +255,54 @@ class _SettingsScreenState extends State<SettingsScreen> {
     } finally {
       if (mounted) {
         setState(() => _isResettingDb = false);
+      }
+    }
+  }
+
+  Future<void> _reloadAllData() async {
+    setState(() => _isReloading = true);
+    
+    try {
+      // Clear all provider caches first
+      context.read<CipherProvider>().clearCache();
+      context.read<PlaylistProvider>().clearCache();
+      context.read<InfoProvider>().clearCache();
+      
+      // Force reload all providers from database
+      await Future.wait([
+        context.read<CipherProvider>().loadCiphers(),
+        context.read<PlaylistProvider>().loadPlaylists(),
+        context.read<InfoProvider>().loadInfo(),
+      ]);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.white),
+                SizedBox(width: 8),
+                Text('Interface e dados recarregados completamente!'),
+              ],
+            ),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao recarregar: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isReloading = false);
       }
     }
   }

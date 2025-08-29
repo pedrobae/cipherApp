@@ -6,12 +6,16 @@ import 'reorderable_structure_chips.dart';
 
 class CipherContentForm extends StatefulWidget {
   final Cipher? cipher;
+  final CipherMap? currentVersion;
   final Function(Map<String, String>) onContentChanged;
+  final Function(List<String>)? onStructureChanged;
 
   const CipherContentForm({
     super.key,
     this.cipher,
+    this.currentVersion,
     required this.onContentChanged,
+    this.onStructureChanged,
   });
 
   @override
@@ -32,21 +36,29 @@ class _CipherContentFormState extends State<CipherContentForm> {
   }
 
   void _initializeContent() {
-    if (widget.cipher != null && widget.cipher!.maps.isNotEmpty) {
-      final cipherMap = widget.cipher!.maps.first;
-      _songStructure = cipherMap.songStructure.split(',')
+    // Always start with default empty state
+    _songStructure = []; // Empty structure by default
+    _currentContent = {};
+    
+    // Only populate if editing an existing version
+    if (widget.currentVersion != null) {
+      _songStructure = widget.currentVersion!.songStructure.split(',')
           .map((s) => s.trim())
           .where((s) => s.isNotEmpty)
           .toList();
-      _currentContent = Map.from(cipherMap.content);
+      _currentContent = Map.from(widget.currentVersion!.content);
       
       // Initialize controllers for existing content
       _currentContent.forEach((key, value) {
         _contentControllers[key] = TextEditingController(text: value);
       });
-    } else {
-      _songStructure = ['V1', 'C', 'V2', 'C', 'B']; // Default structure
     }
+    
+    // Notify parent about initial structure and content
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.onStructureChanged?.call(_songStructure);
+      widget.onContentChanged(_currentContent);
+    });
   }
 
   @override
@@ -59,7 +71,17 @@ class _CipherContentFormState extends State<CipherContentForm> {
   }
 
   void _updateSongStructure() {
-    widget.onContentChanged({'songStructure': _songStructure.join(','), ..._currentContent});
+    // Update current content without including songStructure as a key
+    _currentContent.clear();
+    _contentControllers.forEach((key, controller) {
+      if (controller.text.trim().isNotEmpty) {
+        _currentContent[key] = controller.text.trim();
+      }
+    });
+    
+    // Notify parent with both content and structure
+    widget.onContentChanged(_currentContent);
+    widget.onStructureChanged?.call(_songStructure);
   }
 
   void _addSection(String sectionKey, {String? customName, Color? customColor}) {

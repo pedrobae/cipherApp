@@ -183,4 +183,14 @@ class InfoProvider extends ChangeNotifier {
     _searchQuery = '';
     notifyListeners();
   }
+
+  /// Clear cached data and reset state for debugging
+  void clearCache() {
+    _infoItems.clear();
+    _isLoading = false;
+    _error = null;
+    _selectedType = null;
+    _searchQuery = '';
+    notifyListeners();
+  }
 }

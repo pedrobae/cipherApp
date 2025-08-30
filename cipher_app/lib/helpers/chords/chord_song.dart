@@ -6,7 +6,7 @@ class Song {
 
   Song(this.linesMap, this.chordsMap);
 
-  void calculateOffsets(double lineWidth, TextStyle? textStyle) {
+  void calculateOffsets(double lineWidth, TextStyle textStyle) {
     chordsMap.forEach((lineNumber, chords) {
       for (var chord in chords) {
         chord.saveOffsetForChord(textStyle, lineWidth);
@@ -22,7 +22,7 @@ class Chord {
 
   Chord(this.name, this.lyricsBefore, [this.xOffset = 0.0]);
 
-  double calculateOffsetForChord(TextStyle? textStyle, double lineWidth) {
+  double calculateOffsetForChord(TextStyle textStyle, double lineWidth) {
     final textPainter = TextPainter(
       text: TextSpan(text: lyricsBefore, style: textStyle),
       textDirection: TextDirection.ltr,
@@ -31,7 +31,7 @@ class Chord {
     return textPainter.width;
   }
 
-  void saveOffsetForChord(TextStyle? textStyle, double lineWidth) {
+  void saveOffsetForChord(TextStyle textStyle, double lineWidth) {
     xOffset = calculateOffsetForChord(textStyle, lineWidth);
   }
 }

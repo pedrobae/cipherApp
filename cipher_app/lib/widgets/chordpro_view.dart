@@ -6,8 +6,8 @@ import 'line_view.dart';
  class ChordProView extends StatelessWidget {
   final String song;
   final double maxWidth;
-  final TextStyle? lyricStyle;
-  final TextStyle? chordStyle;
+  final TextStyle lyricStyle;
+  final TextStyle chordStyle;
   final int transpose;
   final bool centerChords;
 
@@ -15,26 +15,30 @@ import 'line_view.dart';
     super.key,
     required this.song,
     required this.maxWidth,
-    this.lyricStyle,
-    this.chordStyle,
+    required this.lyricStyle,
+    required this.chordStyle,
     this.transpose = 0,
     this.centerChords = true,
   });
 
   @override
   Widget build(BuildContext context) {
-    Song parsedSong = parseChordPro(song);
-    parsedSong.calculateOffsets(maxWidth, lyricStyle);
+  Song parsedSong = parseChordPro(song);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        for (int i = 0; i < parsedSong.linesMap.length; i++) LineView(
-          chords: parsedSong.chordsMap[i] ?? [],
-          line: parsedSong.linesMap[i] ?? '',
-          lyricStyle: lyricStyle,
-          chordStyle: chordStyle,
-        ),
+        for (int i = 0; i < parsedSong.linesMap.length; i++) Column(
+          children: [
+            LineView(
+              chords: parsedSong.chordsMap[i] ?? [],
+              line: parsedSong.linesMap[i] ?? '',
+              lyricStyle: lyricStyle,
+              chordStyle: chordStyle,
+            ),
+            const SizedBox(height: 10,)
+          ],
+        )
       ],
     );
   }

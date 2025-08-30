@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../utils/section_color_manager.dart';
 import 'package:cipher_app/widgets/chordpro_view.dart';
+import '../../utils/cipher_text_styles.dart';
 
 class CipherContentCard extends StatelessWidget{
   final String contentType;
@@ -54,6 +55,8 @@ class CipherContentCard extends StatelessWidget{
           child: ChordProView(
             song: contentText,
             maxWidth: double.infinity,
+            lyricStyle: getLyricTextStyle(),
+            chordStyle: getChordTextStyle(),
           ),
         ),
         const SizedBox(height: 12),

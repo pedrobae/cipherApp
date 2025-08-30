@@ -52,12 +52,12 @@ class _EditCipherState extends State<EditCipher>
   }
 
   void _initializeFields() {
+    // Always start with blank state for new cipher/version
     _cipherContent = {};
-    _songStructure = []; // Empty structure by default
+    _songStructure = [];
 
     if (_isEditMode) {
       final cipher = widget.cipher!;
-      // Only populate basic cipher info for existing ciphers
       _titleController.text = cipher.title;
       _authorController.text = cipher.author;
       _tempoController.text = cipher.tempo;
@@ -65,7 +65,6 @@ class _EditCipherState extends State<EditCipher>
       _languageController.text = cipher.language;
       _tagsController.text = cipher.tags.join(', ');
 
-      // Only populate version data if editing a specific version (not creating new)
       if (!_isNewVersionMode && widget.currentVersion != null) {
         _cipherContent = Map.from(widget.currentVersion!.content);
         _songStructure = widget.currentVersion!.songStructure
@@ -73,7 +72,6 @@ class _EditCipherState extends State<EditCipher>
             .map((s) => s.trim())
             .where((s) => s.isNotEmpty)
             .toList();
-        // Initialize version name from existing version
         _versionNameController.text = widget.currentVersion!.versionName ?? '';
       }
     }

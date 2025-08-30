@@ -38,11 +38,10 @@ class _CipherContentFormState extends State<CipherContentForm> {
   }
 
   void _initializeContent() {
-    // Always start with default empty state
-    _songStructure = []; // Empty structure by default
+    // Always start with blank state for new version
+    _songStructure = [];
     _currentContent = {};
 
-    // Only populate if editing an existing version
     if (widget.currentVersion != null) {
       _songStructure = widget.currentVersion!.songStructure
           .split(',')
@@ -51,16 +50,14 @@ class _CipherContentFormState extends State<CipherContentForm> {
           .toList();
       _currentContent = Map.from(widget.currentVersion!.content);
 
-      // Initialize controllers for existing content
       _currentContent.forEach((key, value) {
         _contentControllers[key] = TextEditingController(text: value);
       });
     }
 
-    // Notify parent about initial structure and content
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.onStructureChanged?.call(_songStructure);
-      _notifyContentChanged(); // Use the new method that includes version name
+      _notifyContentChanged();
     });
   }
 

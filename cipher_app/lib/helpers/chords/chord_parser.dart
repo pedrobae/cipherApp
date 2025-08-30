@@ -28,7 +28,7 @@ Song parseChordPro(String chordProText) {
         String lyricsUpToMatch = line.substring(0, match.start).replaceAll(chordPattern, '');
         plainIndex = lyricsUpToMatch.length;
 
-        String lyricsBefore = plainLyrics.substring(0, plainIndex).trim();
+        String lyricsBefore = plainLyrics.substring(0, plainIndex);
 
         // Add the chord to the list
         chords.add(Chord(chordName, lyricsBefore));

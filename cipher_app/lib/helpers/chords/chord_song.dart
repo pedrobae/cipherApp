@@ -8,11 +8,8 @@ class Song {
 
   void calculateOffsets(double lineWidth, TextStyle? textStyle) {
     chordsMap.forEach((lineNumber, chords) {
-      double accumulatedOffset = 0;
       for (var chord in chords) {
-        double offset = chord.calculateOffsetForChord(textStyle, lineWidth, accumulatedOffset);
-        chord.xOffset = offset;
-        accumulatedOffset += offset;
+        chord.saveOffsetForChord(textStyle, lineWidth);
       }
     });
   }
@@ -25,11 +22,16 @@ class Chord {
 
   Chord(this.name, this.lyricsBefore, [this.xOffset = 0.0]);
 
-  double calculateOffsetForChord(TextStyle? textStyle, double lineWidth, double accumulatedOffset) {
+  double calculateOffsetForChord(TextStyle? textStyle, double lineWidth) {
     final textPainter = TextPainter(
       text: TextSpan(text: lyricsBefore, style: textStyle),
       textDirection: TextDirection.ltr,
     )..layout(maxWidth: lineWidth);
-    return textPainter.width + accumulatedOffset;
+
+    return textPainter.width;
+  }
+
+  void saveOffsetForChord(TextStyle? textStyle, double lineWidth) {
+    xOffset = calculateOffsetForChord(textStyle, lineWidth);
   }
 }

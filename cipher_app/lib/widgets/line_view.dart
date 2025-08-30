@@ -17,6 +17,7 @@ class LineView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double cumulativeOffset = 0;
     return Stack(
       children: [
         // Lyrics
@@ -30,8 +31,15 @@ class LineView extends StatelessWidget {
             builder: (context, constraints) {
               return Stack(
                 children: chords.map((chord) {
+                  
+
                   // Ensure xOffset respects the available width
-                  final chordOffset = chord.xOffset;
+                  final chordOffset = chord.xOffset + cumulativeOffset;
+
+                  cumulativeOffset += (TextPainter(
+                                        text: TextSpan(text: chord.name, style: chordStyle),
+                                        textDirection: TextDirection.ltr,
+                                      )..layout()).width;
                   return Positioned(
                     left: chordOffset,
                     top: -8, // Adjust the vertical position of chords

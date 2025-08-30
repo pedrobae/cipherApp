@@ -28,25 +28,29 @@ class LineView extends StatelessWidget {
         Positioned.fill(
           child: LayoutBuilder(
             builder: (context, constraints) {
-              return Row(
+              return Stack(
                 children: chords.map((chord) {
-                  return Transform.translate(
-                    offset: Offset(chord.xOffset, 0),
+                  // Ensure xOffset respects the available width
+                  final chordOffset = chord.xOffset;
+                  return Positioned(
+                    left: chordOffset,
+                    top: -8, // Adjust the vertical position of chords
                     child: Text(
                       chord.name,
                       style: chordStyle ??
-                        const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue,
-                        ),
+                          const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue,
+                          ),
                     ),
-                  )
-                }).toList()
-              )
-            })
-        )
-      ]
+                  );
+                }).toList(),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }

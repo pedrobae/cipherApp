@@ -15,16 +15,23 @@ Song parseChordPro(String chordProText) {
       final matches = chordPattern.allMatches(line);
 
       // Adds the plain lyric to the linesMap
-      linesMap[i] = line.replaceAll(chordPattern, '').trim();
+      String plainLyrics = line.replaceAll(chordPattern, '').trim();
+      linesMap[i] = plainLyrics;
 
       List<Chord> chords = [];
-      int lastMatchEnd = 0;
+      int plainIndex = 0; // Tracks the position in plainLyrics
+
       for (final match in matches) {
-        String chordName = match.group(1)!; //Actual Chord 
-        String lyricsBefore = line.substring(lastMatchEnd, match.start).trim(); // Lyrics before
-        
+        String chordName = match.group(1)!; // Actual Chord
+
+        // Extract the lyrics before the chord in plain text
+        String lyricsUpToMatch = line.substring(0, match.start).replaceAll(chordPattern, '');
+        plainIndex = lyricsUpToMatch.length;
+
+        String lyricsBefore = plainLyrics.substring(0, plainIndex).trim();
+
+        // Add the chord to the list
         chords.add(Chord(chordName, lyricsBefore));
-        lastMatchEnd = match.end;
       }
 
       // Add the list of chords to the map

@@ -24,8 +24,10 @@ import 'line_view.dart';
   @override
   Widget build(BuildContext context) {
     Song parsedSong = parseChordPro(song);
+    parsedSong.calculateOffsets(maxWidth, lyricStyle);
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         for (int i = 0; i < parsedSong.linesMap.length; i++) LineView(
           chords: parsedSong.chordsMap[i] ?? [],

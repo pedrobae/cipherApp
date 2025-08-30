@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:sqflite/sqflite.dart';
-import 'seed_data/info.dart';
-import 'seed_data/users.dart';
-import 'seed_data/tags.dart';
-import 'seed_data/ciphers.dart';
-import 'seed_data/cipher_maps.dart';
-import 'seed_data/map_contents.dart';
-import 'seed_data/playlists.dart';
+import 'info.dart';
+import 'users.dart';
+import 'tags.dart';
+import 'ciphers.dart';
+import 'cipher_maps.dart';
+import 'map_contents.dart';
+import 'playlists.dart';
 
 Future<void> seedDatabase(Database db) async {
   await db.transaction((txn) async {

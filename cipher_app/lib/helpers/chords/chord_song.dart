@@ -26,7 +26,7 @@ class Chord {
     final textPainter = TextPainter(
       text: TextSpan(text: lyricsBefore, style: textStyle),
       textDirection: TextDirection.ltr,
-    )..layout(maxWidth: lineWidth);
+    )..layout(maxWidth: lineWidth, minWidth: 0);
 
     return textPainter.width;
   }

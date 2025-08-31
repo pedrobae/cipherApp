@@ -5,6 +5,8 @@ TextStyle getLyricTextStyle() {
     fontSize: 16,
     fontFamily: 'Roboto',
     color: Colors.black,
+    height: 1.2,
+    letterSpacing: 0
   );
 }
 
@@ -14,5 +16,7 @@ TextStyle getChordTextStyle() {
     fontWeight: FontWeight.bold,
     fontFamily: 'Roboto',
     color: Colors.blue,
+    height: 1.2,
+    letterSpacing: 0
   );
 }

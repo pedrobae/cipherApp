@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cipher_app/helpers/chords/chord_song.dart';
+import 'package:cipher_app/utils/cipher_text_styles.dart';
 
 class LineView extends StatelessWidget {
   final List<Chord> chords;
@@ -35,7 +36,7 @@ class LineView extends StatelessWidget {
                 children: chords.map((chord) {
                   return Positioned(
                     left: chord.xOffset,
-                    top: -12,
+                    top: yOffset,
                     child: Text(
                       chord.name,
                       style: chordStyle,

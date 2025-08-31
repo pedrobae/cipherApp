@@ -36,7 +36,6 @@ import 'line_view.dart';
               lyricStyle: lyricStyle,
               chordStyle: chordStyle,
             ),
-            const SizedBox(height: 10,)
           ],
         )
       ],

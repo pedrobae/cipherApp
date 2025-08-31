@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
 
+
+const double yOffset = -8;
+
 TextStyle getLyricTextStyle() {
   return const TextStyle(
-    fontSize: 16,
-    fontFamily: 'Roboto',
+    fontSize: 20,
+    fontFamily: 'Asimovian',
     color: Colors.black,
-    height: 1.2,
+    height: 2.2,
     letterSpacing: 0
   );
 }
 
 TextStyle getChordTextStyle() {
   return const TextStyle(
-    fontSize: 14,
+    fontSize: 20,
     fontWeight: FontWeight.bold,
-    fontFamily: 'Roboto',
+    fontFamily: 'Asimovian',
     color: Colors.blue,
-    height: 1.2,
+    height: 1,
     letterSpacing: 0
   );
 }

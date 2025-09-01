@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/domain/cipher.dart';
 import 'cipher_content_card.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class CipherContentSection extends StatelessWidget {
   final Cipher cipher;
@@ -16,18 +17,25 @@ class CipherContentSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final contentCardList = currentVersion.songStructure.split(',').map((
+      sectionKey,
+    ) {
+      final contentText = currentVersion.content[sectionKey];
+      return CipherContentCard(
+        contentType: sectionKey,
+        contentText: contentText,
+      );
+    }).toList();
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: GridView.count(
+        child: MasonryGridView.count(
           crossAxisCount: columnCount,
-          children: currentVersion.songStructure.split(',').map((sectionKey) {
-            final contentText = currentVersion.content[sectionKey];
-            return CipherContentCard(
-              contentType: sectionKey,
-              contentText: contentText,
-            );
-          }).toList(),
+          mainAxisSpacing: 8,
+          crossAxisSpacing: 8,
+          itemCount: contentCardList.length,
+          itemBuilder: (context, index) => contentCardList[index],
         ),
       ),
     );

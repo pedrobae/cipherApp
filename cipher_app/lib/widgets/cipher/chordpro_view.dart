@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cipher_app/helpers/chords/chord_parser.dart';
 import 'package:cipher_app/helpers/chords/chord_song.dart';
-import 'line_view.dart';
+import '../line_view.dart';
 
 class ChordProView extends StatelessWidget {
   final String? song;

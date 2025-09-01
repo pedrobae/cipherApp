@@ -3,8 +3,8 @@ import 'package:cipher_app/helpers/chords/chord_parser.dart';
 import 'package:cipher_app/helpers/chords/chord_song.dart';
 import 'line_view.dart';
 
- class ChordProView extends StatelessWidget {
-  final String song;
+class ChordProView extends StatelessWidget {
+  final String? song;
   final double maxWidth;
   final TextStyle lyricStyle;
   final TextStyle chordStyle;
@@ -13,7 +13,7 @@ import 'line_view.dart';
 
   const ChordProView({
     super.key,
-    required this.song,
+    this.song,
     required this.maxWidth,
     required this.lyricStyle,
     required this.chordStyle,
@@ -23,21 +23,22 @@ import 'line_view.dart';
 
   @override
   Widget build(BuildContext context) {
-  Song parsedSong = parseChordPro(song);
+    Song parsedSong = parseChordPro(song);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        for (int i = 0; i < parsedSong.linesMap.length; i++) Column(
-          children: [
-            LineView(
-              chords: parsedSong.chordsMap[i] ?? [],
-              line: parsedSong.linesMap[i] ?? '',
-              lyricStyle: lyricStyle,
-              chordStyle: chordStyle,
-            ),
-          ],
-        )
+        for (int i = 0; i < parsedSong.linesMap.length; i++)
+          Column(
+            children: [
+              LineView(
+                chords: parsedSong.chordsMap[i] ?? [],
+                line: parsedSong.linesMap[i] ?? '',
+                lyricStyle: lyricStyle,
+                chordStyle: chordStyle,
+              ),
+            ],
+          ),
       ],
     );
   }

@@ -15,6 +15,7 @@ class CipherViewer extends StatefulWidget {
 }
 
 class _CipherViewerState extends State<CipherViewer> {
+  int columnCount = 1;
   CipherMap? _currentVersion;
 
   @override
@@ -75,7 +76,7 @@ class _CipherViewerState extends State<CipherViewer> {
     );
   }
 
-  Widget _buildVersionSelector() {
+  Widget _buildVersionName() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
@@ -165,11 +166,11 @@ class _CipherViewerState extends State<CipherViewer> {
       ),
       body: hasVersions
           ? SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: GridView.count(
+                crossAxisCount: 1,
                 children: [
                   // Version selector (show for all versions, not just multiple)
-                  if (hasVersions) ...[_buildVersionSelector()],
+                  if (hasVersions) ...[_buildVersionName()],
                   // Cipher content section
                   CipherContentSection(
                     cipher: currentCipher,

@@ -4,10 +4,7 @@ import '../../models/domain/cipher.dart';
 class CipherHeaderSection extends StatelessWidget {
   final Cipher cipher;
 
-  const CipherHeaderSection({
-    super.key,
-    required this.cipher,
-  });
+  const CipherHeaderSection({super.key, required this.cipher});
 
   @override
   Widget build(BuildContext context) {
@@ -30,15 +27,19 @@ class CipherHeaderSection extends StatelessWidget {
               Wrap(
                 spacing: 6,
                 runSpacing: 6,
-                children: cipher.tags.map((tag) => 
-                  Chip(
-                    label: Text(
-                      tag,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                    backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-                  ),
-                ).toList(),
+                children: cipher.tags
+                    .map(
+                      (tag) => Chip(
+                        label: Text(
+                          tag,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                        backgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.secondaryContainer,
+                      ),
+                    )
+                    .toList(),
               ),
             ],
           ],

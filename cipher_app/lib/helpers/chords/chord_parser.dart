@@ -1,10 +1,10 @@
 import 'chord_song.dart';
 
-
-Song parseChordPro(String chordProText) {
-  final linesRaw = chordProText.split('\n');
+Song parseChordPro(String? chordProText) {
   Map<int, String> linesMap = {};
   Map<int, List<Chord>> chordsMap = {};
+
+  final linesRaw = chordProText?.split('\n') ?? [];
 
   for (int i = 0; i < linesRaw.length; i++) {
     String line = linesRaw[i].trim();
@@ -25,7 +25,9 @@ Song parseChordPro(String chordProText) {
         String chordName = match.group(1)!; // Actual Chord
 
         // Extract the lyrics before the chord in plain text
-        String lyricsUpToMatch = line.substring(0, match.start).replaceAll(chordPattern, '');
+        String lyricsUpToMatch = line
+            .substring(0, match.start)
+            .replaceAll(chordPattern, '');
         plainIndex = lyricsUpToMatch.length;
 
         String lyricsBefore = plainLyrics.substring(0, plainIndex);

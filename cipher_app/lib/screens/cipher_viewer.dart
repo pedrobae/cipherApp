@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/domain/cipher.dart';
 import '../widgets/cipher/cipher_content_section.dart';
+import '../widgets/cipher/cipher_version_header.dart';
 import 'cipher_editor.dart';
 
 class CipherViewer extends StatefulWidget {
@@ -16,6 +17,7 @@ class CipherViewer extends StatefulWidget {
 
 class _CipherViewerState extends State<CipherViewer> {
   CipherMap? _currentVersion;
+  int? _columnCount;
 
   @override
   void initState() {
@@ -24,6 +26,7 @@ class _CipherViewerState extends State<CipherViewer> {
     _currentVersion = widget.cipher.maps.isNotEmpty
         ? widget.cipher.maps.first
         : null;
+    _columnCount = 1;
   }
 
   void _selectVersion(CipherMap version) {
@@ -71,33 +74,6 @@ class _CipherViewerState extends State<CipherViewer> {
         currentVersion: _currentVersion!,
         onVersionSelected: _selectVersion,
         onNewVersion: _addNewVersion,
-      ),
-    );
-  }
-
-  Widget _buildVersionSelector() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primaryContainer,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            Icons.music_note,
-            size: 16,
-            color: Theme.of(context).colorScheme.onPrimaryContainer,
-          ),
-          const SizedBox(width: 8),
-          Text(
-            _currentVersion?.versionName ?? 'Versão sem nome',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -164,19 +140,22 @@ class _CipherViewerState extends State<CipherViewer> {
         ],
       ),
       body: hasVersions
-          ? SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Version selector (show for all versions, not just multiple)
-                  if (hasVersions) ...[_buildVersionSelector()],
-                  // Cipher content section
-                  CipherContentSection(
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsetsGeometry.all(0),
+                  child: CipherVersionHeader(currentVersion: _currentVersion!),
+                ),
+                // Cipher content section
+                Expanded(
+                  child: CipherContentSection(
                     cipher: currentCipher,
-                    currentVersion: _currentVersion,
+                    currentVersion: _currentVersion!,
+                    columnCount: _columnCount!,
                   ),
-                ],
-              ),
+                ),
+              ],
             )
           : _buildEmptyState(),
     );

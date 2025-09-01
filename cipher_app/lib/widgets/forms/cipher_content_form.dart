@@ -224,34 +224,6 @@ class _CipherContentFormState extends State<CipherContentForm> {
             ),
           ),
         ),
-        // Song Structure Section
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Estrutura da Música',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-
-                // Draggable Section Chips
-                ReorderableStructureChips(
-                  songStructure: _songStructure,
-                  sectionTypes: SectionColorManager.predefinedSectionTypes,
-                  customSections: _customSections,
-                  onReorder: _reorderSection,
-                  onRemoveSection: _removeSection,
-                ),
-              ],
-            ),
-          ),
-        ),
-
-        const SizedBox(height: 16),
 
         // Quick Add Buttons Row
         Row(
@@ -278,6 +250,35 @@ class _CipherContentFormState extends State<CipherContentForm> {
               ),
             ),
           ],
+        ),
+
+        const SizedBox(height: 16),
+
+        // Song Structure Section
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Estrutura da Música',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                // Draggable Section Chips
+                ReorderableStructureChips(
+                  songStructure: _songStructure,
+                  sectionTypes: SectionColorManager.predefinedSectionTypes,
+                  customSections: _customSections,
+                  onReorder: _reorderSection,
+                  onRemoveSection: _removeSection,
+                ),
+              ],
+            ),
+          ),
         ),
 
         const SizedBox(height: 16),

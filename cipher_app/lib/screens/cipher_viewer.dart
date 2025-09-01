@@ -26,7 +26,7 @@ class _CipherViewerState extends State<CipherViewer> {
     _currentVersion = widget.cipher.maps.isNotEmpty
         ? widget.cipher.maps.first
         : null;
-    _columnCount = 2;
+    _columnCount = 1;
   }
 
   void _selectVersion(CipherMap version) {

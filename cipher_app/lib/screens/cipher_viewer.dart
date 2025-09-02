@@ -4,6 +4,7 @@ import '../models/domain/cipher.dart';
 import '../providers/cipher_provider.dart';
 import '../widgets/cipher/viewer/content_section.dart';
 import '../widgets/cipher/viewer/version_header.dart';
+import '../widgets/cipher/viewer/layout_settings.dart';
 import '../widgets/cipher/version_selector.dart';
 import 'cipher_editor.dart';
 
@@ -84,6 +85,9 @@ class _CipherViewerState extends State<CipherViewer> {
         onNewVersion: _addNewVersion,
       ),
     );
+  }
+
+  void _showLayoutSettings() {
   }
 
   @override

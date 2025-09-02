@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cipher_app/helpers/chords/chord_song.dart';
-import 'package:cipher_app/utils/cipher_text_styles.dart';
 
 class LineView extends StatelessWidget {
   final List<Chord> chords;
@@ -24,6 +23,13 @@ class LineView extends StatelessWidget {
         for (var chord in chords) {
           chord.saveOffsetForChord(lyricStyle, constraints.maxWidth);
         }
+        // Calculate yOffset dynamically based on chordStyle
+        final textPainter = TextPainter(
+          text: TextSpan(text: 'A', style: chordStyle),
+          textDirection: TextDirection.ltr,
+        )..layout();
+        final double yOffset = -textPainter.height /2 ;
+
         return Stack(
           children: [
             Text(

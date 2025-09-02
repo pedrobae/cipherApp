@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cipher_app/providers/layout_settings_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:cipher_app/providers/layout_settings_provider.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 
@@ -91,10 +91,10 @@ class LayoutSettings extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 32),
-                      DropdownButton<int>(
+                      DropdownButton<double>(
                         value: settings.fontSize,
                         items: List.generate(12, (i) {
-                          final size = 12 + i * 2;
+                          final double size = 12 + i * 2;
                           return DropdownMenuItem(
                             value: size,
                             child: Text(size.toString()),

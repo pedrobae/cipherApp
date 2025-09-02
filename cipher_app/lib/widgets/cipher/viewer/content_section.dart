@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import '../../../models/domain/cipher.dart';
 import 'content_card.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+
 
 class CipherContentSection extends StatelessWidget {
   final Cipher cipher;

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../utils/section_color_manager.dart';
 import 'package:cipher_app/widgets/cipher/viewer/chordpro_view.dart';
-import '../../../utils/cipher_text_styles.dart';
+import 'package:cipher_app/providers/layout_settings_provider.dart';
 
 class CipherContentCard extends StatelessWidget {
   final String contentType;
@@ -17,6 +18,7 @@ class CipherContentCard extends StatelessWidget {
   Widget build(BuildContext context) {
     // Get the section color for this content type
     final sectionColor = SectionColorManager.getSectionColor(contentType, null);
+    final layoutProvider = context.watch<LayoutSettingsProvider>();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -31,10 +33,10 @@ class CipherContentCard extends StatelessWidget {
               ),
               child: Text(
                 contentType,
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
-                  fontSize: 12,
+                  fontSize: layoutProvider.fontSize,
                 ),
               ),
             ),
@@ -55,8 +57,8 @@ class CipherContentCard extends StatelessWidget {
           child: ChordProView(
             song: contentText,
             maxWidth: double.infinity,
-            lyricStyle: getLyricTextStyle(),
-            chordStyle: getChordTextStyle(),
+            lyricStyle: layoutProvider.lyricTextStyle,
+            chordStyle: layoutProvider.chordTextStyle,
           ),
         ),
         const SizedBox(height: 12),

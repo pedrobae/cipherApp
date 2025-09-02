@@ -1,3 +1,4 @@
+import 'package:cipher_app/providers/layout_settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/domain/cipher.dart';
@@ -19,7 +20,6 @@ class CipherViewer extends StatefulWidget {
 
 class _CipherViewerState extends State<CipherViewer> {
   CipherMap? _currentVersion;
-  int? _columnCount;
   bool _hasShownVersionSelector = false;
 
   @override
@@ -28,7 +28,6 @@ class _CipherViewerState extends State<CipherViewer> {
     _currentVersion = widget.cipher.maps.isNotEmpty
         ? widget.cipher.maps.first
         : null;
-    _columnCount = 1;
 
     if (widget.cipher.maps.isNotEmpty && !_hasShownVersionSelector) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -117,6 +116,7 @@ class _CipherViewerState extends State<CipherViewer> {
   @override
   Widget build(BuildContext context) {
     final cipherProvider = context.watch<CipherProvider>();
+    final layoutProvider = context.watch<LayoutSettingsProvider>();
     final hasVersions = widget.cipher.maps.isNotEmpty;
 
     final currentCipher = cipherProvider.ciphers.firstWhere(
@@ -193,7 +193,7 @@ class _CipherViewerState extends State<CipherViewer> {
                   child: CipherContentSection(
                     cipher: currentCipher,
                     currentVersion: _currentVersion!,
-                    columnCount: _columnCount!,
+                    columnCount: layoutProvider.columnCount,
                   ),
                 ),
               ],

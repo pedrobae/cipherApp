@@ -11,6 +11,6 @@ workflows:
       - name: Get Flutter packages
         script: flutter packages get
       - name: Build iOS
-        script: flutter build ios --release --no-codesign
+        script: cd cipher_app || flutter build ios --release --no-codesign
     artifacts:
       - build/ios/iphoneos/*.app

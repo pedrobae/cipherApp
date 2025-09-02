@@ -4,7 +4,7 @@ const double yOffset = -8;
 
 TextStyle getLyricTextStyle() {
   return const TextStyle(
-    fontSize: 20,
+    fontSize: 16,
     fontFamily: 'OpenSans',
     color: Colors.black,
     height: 2.2,
@@ -14,7 +14,7 @@ TextStyle getLyricTextStyle() {
 
 TextStyle getChordTextStyle() {
   return const TextStyle(
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: FontWeight.bold,
     fontFamily: 'OpenSans',
     color: Colors.blue,

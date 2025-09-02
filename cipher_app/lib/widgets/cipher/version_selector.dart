@@ -24,14 +24,20 @@ class VersionSelectorBottomSheet extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: const Icon(Icons.library_music),
+              ),
               Text(
                 'Versões da Cifra',
                 style: Theme.of(
                   context,
                 ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
+              
+              const Spacer(),
               FilledButton.icon(
                 onPressed: () {
                   Navigator.pop(context);

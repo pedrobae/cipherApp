@@ -9,7 +9,7 @@ import 'cipher_editor.dart';
 
 class CipherViewer extends StatefulWidget {
   final Cipher cipher;
-
+  
   const CipherViewer({super.key, required this.cipher});
 
   @override
@@ -19,15 +19,22 @@ class CipherViewer extends StatefulWidget {
 class _CipherViewerState extends State<CipherViewer> {
   CipherMap? _currentVersion;
   int? _columnCount;
+  bool _hasShownVersionSelector = false;
 
   @override
   void initState() {
     super.initState();
-    // Use first version if available, otherwise null (empty state)
     _currentVersion = widget.cipher.maps.isNotEmpty
         ? widget.cipher.maps.first
         : null;
     _columnCount = 1;
+
+    if (widget.cipher.maps.isNotEmpty && !_hasShownVersionSelector) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showVersionSelector();
+      _hasShownVersionSelector = true;
+    });
+  }
   }
 
   void _selectVersion(CipherMap version) {

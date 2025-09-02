@@ -88,6 +88,30 @@ class _CipherViewerState extends State<CipherViewer> {
   }
 
   void _showLayoutSettings() {
+    showGeneralDialog(
+      context: context, 
+      barrierDismissible: true,
+      barrierLabel: 'Fechar',
+      transitionDuration: const Duration(milliseconds: 300),
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return Align(
+          alignment: Alignment.topCenter,
+          child: Material(
+            color: Colors.transparent,
+            child: LayoutSettings(),
+          ),
+        );
+      },
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        return SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0, -1),
+            end: Offset.zero,
+          ).animate(animation),
+          child: child,
+        );
+      },
+    );
   }
 
   @override
@@ -133,6 +157,11 @@ class _CipherViewerState extends State<CipherViewer> {
         centerTitle: true,
         actions: [
           if (hasVersions) ...[
+            IconButton(
+              onPressed: _showLayoutSettings, 
+              icon: const Icon(Icons.remove_red_eye),
+              tooltip: 'Layout Settings',
+            ),
             IconButton(
               icon: const Icon(Icons.library_music),
               tooltip: 'Versões',

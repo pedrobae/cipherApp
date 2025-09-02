@@ -15,5 +15,39 @@ class LayoutSettingsProvider extends ChangeNotifier {
     fontSize = value;
     notifyListeners();
   }
-  // ...other setters...
+  
+  void setFontFamily(String family) {
+    fontFamily = family;
+    notifyListeners();
+  }
+
+  void setChordColor(Color color) {
+    chordColor = color;
+    notifyListeners();
+  }
+
+  void setColumnCount(int count) {
+    columnCount = count;
+    notifyListeners();
+  }
+
+  void toggleChords() {
+    showChords = !showChords;
+    notifyListeners();
+  }
+
+  void toggleLyrics() {
+    showLyrics = !showLyrics;
+    notifyListeners();
+  }
+  
+  void toggleNotes() {
+    showNotes = !showNotes;
+    notifyListeners();
+  }
+
+  void toggleTransitions() {
+    showTransitions = !showTransitions;
+    notifyListeners();
+  }
 }

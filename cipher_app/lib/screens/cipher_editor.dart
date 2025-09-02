@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/cipher_provider.dart';
 import '../models/domain/cipher.dart';
-import '../widgets/forms/cipher_basic_info_form.dart';
-import '../widgets/forms/cipher_content_form.dart';
+import '../widgets/cipher/editor/cipher_basic_info_form.dart';
+import '../widgets/cipher/editor/cipher_content_form.dart';
 
 class EditCipher extends StatefulWidget {
   final Cipher? cipher; // Null for create, populated for edit

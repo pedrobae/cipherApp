@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import '../../models/domain/cipher.dart';
-import '../../utils/section_color_manager.dart';
+import '../../../models/domain/cipher.dart';
+import '../../../utils/section_color_manager.dart';
 import 'reorderable_structure_chips.dart';
 
 class CipherContentForm extends StatefulWidget {

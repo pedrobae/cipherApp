@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../utils/section_color_manager.dart';
-import 'package:cipher_app/widgets/custom_reorderable_delayed.dart';
+import '../../../utils/section_color_manager.dart';
+import 'package:cipher_app/widgets/cipher/editor/custom_reorderable_delayed.dart';
 
 class ReorderableStructureChips extends StatelessWidget {
   final List<String> songStructure;

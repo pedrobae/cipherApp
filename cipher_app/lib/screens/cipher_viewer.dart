@@ -1,14 +1,17 @@
-import 'package:cipher_app/providers/cipher_provider.dart';
+import 'package:cipher_app/providers/layout_settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/domain/cipher.dart';
-import '../widgets/cipher/cipher_content_section.dart';
-import '../widgets/cipher/cipher_version_header.dart';
+import '../providers/cipher_provider.dart';
+import '../widgets/cipher/viewer/content_section.dart';
+import '../widgets/cipher/viewer/version_header.dart';
+import '../widgets/cipher/viewer/layout_settings.dart';
+import '../widgets/cipher/version_selector.dart';
 import 'cipher_editor.dart';
 
 class CipherViewer extends StatefulWidget {
   final Cipher cipher;
-
+  
   const CipherViewer({super.key, required this.cipher});
 
   @override
@@ -17,16 +20,21 @@ class CipherViewer extends StatefulWidget {
 
 class _CipherViewerState extends State<CipherViewer> {
   CipherMap? _currentVersion;
-  int? _columnCount;
+  bool _hasShownVersionSelector = false;
 
   @override
   void initState() {
     super.initState();
-    // Use first version if available, otherwise null (empty state)
     _currentVersion = widget.cipher.maps.isNotEmpty
         ? widget.cipher.maps.first
         : null;
-    _columnCount = 1;
+
+    if (widget.cipher.maps.isNotEmpty && !_hasShownVersionSelector) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showVersionSelector();
+      _hasShownVersionSelector = true;
+    });
+  }
   }
 
   void _selectVersion(CipherMap version) {
@@ -69,7 +77,7 @@ class _CipherViewerState extends State<CipherViewer> {
 
     showModalBottomSheet(
       context: context,
-      builder: (context) => _VersionSelectorBottomSheet(
+      builder: (context) => VersionSelectorBottomSheet(
         versions: widget.cipher.maps,
         currentVersion: _currentVersion!,
         onVersionSelected: _selectVersion,
@@ -78,9 +86,37 @@ class _CipherViewerState extends State<CipherViewer> {
     );
   }
 
+  void _showLayoutSettings() {
+    showGeneralDialog(
+      context: context, 
+      barrierDismissible: true,
+      barrierLabel: 'Fechar',
+      transitionDuration: const Duration(milliseconds: 300),
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return Align(
+          alignment: Alignment.topCenter,
+          child: Material(
+            color: Colors.transparent,
+            child: LayoutSettings(),
+          ),
+        );
+      },
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        return SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0, -1),
+            end: Offset.zero,
+          ).animate(animation),
+          child: child,
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final cipherProvider = context.watch<CipherProvider>();
+    final layoutProvider = context.watch<LayoutSettingsProvider>();
     final hasVersions = widget.cipher.maps.isNotEmpty;
 
     final currentCipher = cipherProvider.ciphers.firstWhere(
@@ -122,6 +158,11 @@ class _CipherViewerState extends State<CipherViewer> {
         actions: [
           if (hasVersions) ...[
             IconButton(
+              onPressed: _showLayoutSettings, 
+              icon: const Icon(Icons.remove_red_eye),
+              tooltip: 'Layout Settings',
+            ),
+            IconButton(
               icon: const Icon(Icons.library_music),
               tooltip: 'Versões',
               onPressed: _showVersionSelector,
@@ -152,7 +193,7 @@ class _CipherViewerState extends State<CipherViewer> {
                   child: CipherContentSection(
                     cipher: currentCipher,
                     currentVersion: _currentVersion!,
-                    columnCount: _columnCount!,
+                    columnCount: layoutProvider.columnCount,
                   ),
                 ),
               ],
@@ -202,128 +243,5 @@ class _CipherViewerState extends State<CipherViewer> {
         ),
       ),
     );
-  }
-}
-
-class _VersionSelectorBottomSheet extends StatelessWidget {
-  final List<CipherMap> versions;
-  final CipherMap currentVersion;
-  final Function(CipherMap) onVersionSelected;
-  final VoidCallback onNewVersion;
-
-  const _VersionSelectorBottomSheet({
-    required this.versions,
-    required this.currentVersion,
-    required this.onVersionSelected,
-    required this.onNewVersion,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Versões da Cifra',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              FilledButton.icon(
-                onPressed: () {
-                  Navigator.pop(context);
-                  onNewVersion();
-                },
-                icon: const Icon(Icons.add),
-                label: const Text('Nova'),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-
-          if (versions.isEmpty)
-            const Center(
-              child: Padding(
-                padding: EdgeInsets.all(32),
-                child: Text(
-                  'Nenhuma versão encontrada',
-                  style: TextStyle(color: Colors.grey),
-                ),
-              ),
-            )
-          else
-            ListView.separated(
-              shrinkWrap: true,
-              itemCount: versions.length,
-              separatorBuilder: (context, index) => const Divider(),
-              itemBuilder: (context, index) {
-                final version = versions[index];
-                final isSelected = version.id == currentVersion.id;
-
-                return ListTile(
-                  leading: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? Theme.of(context).colorScheme.primary
-                          : Theme.of(
-                              context,
-                            ).colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(
-                      isSelected ? Icons.check : Icons.music_note,
-                      color: isSelected
-                          ? Theme.of(context).colorScheme.onPrimary
-                          : Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  title: Text(
-                    version.versionName ?? 'Versão ${index + 1}',
-                    style: TextStyle(
-                      fontWeight: isSelected
-                          ? FontWeight.bold
-                          : FontWeight.normal,
-                    ),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (version.createdAt != null)
-                        Text(
-                          'Criada em ${_formatDate(version.createdAt!)}',
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                    ],
-                  ),
-                  trailing: isSelected
-                      ? Icon(
-                          Icons.radio_button_checked,
-                          color: Theme.of(context).colorScheme.primary,
-                        )
-                      : const Icon(Icons.radio_button_unchecked),
-                  onTap: () {
-                    Navigator.pop(context);
-                    onVersionSelected(version);
-                  },
-                );
-              },
-            ),
-
-          const SizedBox(height: 16),
-        ],
-      ),
-    );
-  }
-
-  String _formatDate(DateTime date) {
-    return '${date.day}/${date.month}/${date.year}';
   }
 }

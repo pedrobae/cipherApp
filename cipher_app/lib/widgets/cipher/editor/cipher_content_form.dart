@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import '../../models/domain/cipher.dart';
-import '../../utils/section_color_manager.dart';
+import '../../../models/domain/cipher.dart';
+import '../../../utils/section_color_manager.dart';
 import 'reorderable_structure_chips.dart';
 
 class CipherContentForm extends StatefulWidget {
@@ -225,47 +225,45 @@ class _CipherContentFormState extends State<CipherContentForm> {
           ),
         ),
 
-        // Quick Add Buttons Row
-        Row(
-          children: [
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: _showPresetSectionsDialog,
-                icon: const Icon(Icons.library_music),
-                label: const Text('Seções Predefinidas'),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.all(12),
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: FilledButton.icon(
-                onPressed: _showCustomSectionDialog,
-                icon: const Icon(Icons.add),
-                label: const Text('Seção Personalizada'),
-                style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.all(12),
-                ),
-              ),
-            ),
-          ],
-        ),
-
-        const SizedBox(height: 16),
-
         // Song Structure Section
         Card(
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Estrutura da Música',
+                  'Estrutura da Versão',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
+                ),
+
+                // Quick Add Buttons Row
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: _showPresetSectionsDialog,
+                        icon: const Icon(Icons.library_music),
+                        label: const Text('Seções Predefinidas'),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.all(6),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: FilledButton.icon(
+                        onPressed: _showCustomSectionDialog,
+                        icon: const Icon(Icons.add),
+                        label: const Text('Seção Personalizada'),
+                        style: FilledButton.styleFrom(
+                          padding: const EdgeInsets.all(6),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
 
                 // Draggable Section Chips

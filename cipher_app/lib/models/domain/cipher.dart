@@ -185,7 +185,7 @@ class CipherVersion {
       transposedKey: transposedKey ?? this.transposedKey,
       versionName: versionName ?? this.versionName,
       createdAt: createdAt ?? this.createdAt,
-      sections: content ?? this.sections,
+      sections: content ?? sections,
     );
   }
 }

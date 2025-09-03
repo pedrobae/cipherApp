@@ -5,6 +5,7 @@ import '../helpers/database_helper.dart';
 import '../providers/cipher_provider.dart';
 import '../providers/playlist_provider.dart';
 import '../providers/info_provider.dart';
+import '../providers/settings_provider.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -44,8 +45,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               title: 'Tema',
               subtitle: 'Personalizar aparência do app',
               onTap: () {
-                // TODO: Implement theme settings
-                _showComingSoon(context);
+                _showThemeDialog(context);
               },
             ),
             
@@ -385,6 +385,64 @@ class _SettingsScreenState extends State<SettingsScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Funcionalidade em desenvolvimento 🚧'),
+      ),
+    );
+  }
+
+  void _showThemeDialog(BuildContext context) {
+    final settingsProvider = context.read<SettingsProvider>();
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Escolher Tema'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioListTile<ThemeMode>(
+              title: const Text('Claro'),
+              subtitle: const Text('Sempre usar tema claro'),
+              value: ThemeMode.light,
+              groupValue: settingsProvider.themeMode,
+              onChanged: (value) {
+                if (value != null) {
+                  settingsProvider.setThemeMode(value);
+                  Navigator.pop(context);
+                }
+              },
+            ),
+            RadioListTile<ThemeMode>(
+              title: const Text('Escuro'),
+              subtitle: const Text('Sempre usar tema escuro'),
+              value: ThemeMode.dark,
+              groupValue: settingsProvider.themeMode,
+              onChanged: (value) {
+                if (value != null) {
+                  settingsProvider.setThemeMode(value);
+                  Navigator.pop(context);
+                }
+              },
+            ),
+            RadioListTile<ThemeMode>(
+              title: const Text('Sistema'),
+              subtitle: const Text('Seguir configuração do sistema'),
+              value: ThemeMode.system,
+              groupValue: settingsProvider.themeMode,
+              onChanged: (value) {
+                if (value != null) {
+                  settingsProvider.setThemeMode(value);
+                  Navigator.pop(context);
+                }
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+        ],
       ),
     );
   }

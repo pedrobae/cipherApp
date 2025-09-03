@@ -143,27 +143,17 @@ void _notifySectionChanged() {
         // Update existing section content
         _currentSections[sectionCode]!.contentText = contentText;
       } else {
-        // Create new section - check if predefined or create as custom
-        final predefinedSection = _createPredefinedSection(sectionCode);
-        if (predefinedSection != null) {
-          // Use predefined section with content
-          _currentSections[sectionCode] = Section(
-            mapId: predefinedSection.mapId,
-            contentType: predefinedSection.contentType,
-            contentCode: sectionCode,
-            contentText: contentText,
-            contentColor: predefinedSection.contentColor,
-          );
-        } else {
-          // Create custom section with default values
-          _currentSections[sectionCode] = Section(
-            mapId: 0,
-            contentType: sectionCode, // Use code as type for custom sections
-            contentCode: sectionCode,
-            contentText: contentText,
-            contentColor: Colors.grey, // Default color for custom sections
-          );
-        }
+        // Create new section - use predefined values if available, otherwise default
+        final displayName = _predefinedSectionTypes[sectionCode];
+        final color = _defaultSectionColors[sectionCode];
+        
+        _currentSections[sectionCode] = Section(
+          mapId: 0,
+          contentType: displayName ?? sectionCode, // Use display name or code as fallback
+          contentCode: sectionCode,
+          contentText: contentText,
+          contentColor: color ?? Colors.grey, // Use predefined color or grey as fallback
+        );
       }
     }
     
@@ -186,7 +176,7 @@ void _notifySectionChanged() {
         _sectionControllers[sectionCode] = TextEditingController();
       }
 
-      // Create the section - either predefined or custom
+      // Create the section - either custom or use predefined values
       if (sectionType != null && customColor != null) {
         // This is a custom section created by user
         _currentSections[sectionCode] = Section(
@@ -199,10 +189,16 @@ void _notifySectionChanged() {
       } else {
         // This is a predefined section - create it if not exists
         if (!_currentSections.containsKey(sectionCode)) {
-          final predefinedSection = _createPredefinedSection(sectionCode);
-          if (predefinedSection != null) {
-            _currentSections[sectionCode] = predefinedSection;
-          }
+          final displayName = _predefinedSectionTypes[sectionCode];
+          final color = _defaultSectionColors[sectionCode];
+          
+          _currentSections[sectionCode] = Section(
+            mapId: 0,
+            contentType: displayName ?? sectionCode,
+            contentCode: sectionCode,
+            contentText: '',
+            contentColor: color ?? Colors.grey,
+          );
         }
       }
     });
@@ -234,23 +230,7 @@ void _notifySectionChanged() {
   }
 
   Section? _getSectionType(String key) {
-    return _currentSections[key] ?? _createPredefinedSection(key);
-  }
-
-  Section? _createPredefinedSection(String key) {
-    final displayName = _predefinedSectionTypes[key];
-    final color = _defaultSectionColors[key];
-    
-    if (displayName != null && color != null) {
-      return Section(
-        mapId: 0, // Will be set when saving
-        contentType: displayName,
-        contentCode: key,
-        contentText: '',
-        contentColor: color,
-      );
-    }
-    return null;
+    return _currentSections[key];
   }
 
   void _showPresetSectionsDialog() {

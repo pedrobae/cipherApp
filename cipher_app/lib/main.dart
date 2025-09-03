@@ -6,6 +6,8 @@ import 'providers/search_provider.dart';
 import 'providers/cipher_provider.dart';
 import 'providers/info_provider.dart';
 import 'providers/playlist_provider.dart';
+import 'providers/settings_provider.dart';
+import 'services/settings_service.dart';
 import 'routes/app_routes.dart';
 import 'helpers/database_factory_helper.dart';
 
@@ -15,6 +17,9 @@ void main() async {
   
   // Initialize database factory based on platform
   await DatabaseFactoryHelper.initialize();
+  
+  // Initialize settings service
+  await SettingsService.initialize();
   
   runApp(const MyApp());
 }
@@ -26,34 +31,26 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => LayoutSettingsProvider()),
+        ChangeNotifierProvider(create: (_) => SettingsProvider()..loadSettings()),
+        ChangeNotifierProvider(create: (_) => LayoutSettingsProvider()..loadSettings()),
         ChangeNotifierProvider(create: (_) => NavigationProvider()),
         ChangeNotifierProvider(create: (_) => SearchProvider()),
         ChangeNotifierProvider(create: (_) => CipherProvider()),
         ChangeNotifierProvider(create: (_) => InfoProvider()),
         ChangeNotifierProvider(create: (_) => PlaylistProvider()),
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'App de Cifras',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 15, 179, 29),
-            brightness: Brightness.light,
-            dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
-          ),
-          useMaterial3: true,
-          // Add custom theme extensions
-          cardTheme: CardThemeData(
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-          appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
-        ),
-        initialRoute: AppRoutes.home,
-        routes: AppRoutes.routes,
+      child: Consumer<SettingsProvider>(
+        builder: (context, settingsProvider, child) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'App de Cifras',
+            theme: settingsProvider.lightTheme,
+            darkTheme: settingsProvider.darkTheme,
+            themeMode: settingsProvider.themeMode,
+            initialRoute: AppRoutes.home,
+            routes: AppRoutes.routes,
+          );
+        },
       ),
     );
   }

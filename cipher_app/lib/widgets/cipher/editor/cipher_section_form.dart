@@ -81,7 +81,6 @@ class CipherSectionForm extends StatefulWidget {
 
 class _CipherSectionFormState extends State<CipherSectionForm> {
   final Map<String, TextEditingController> _sectionControllers = {};
-  final Map<String, Section> _customSections = {};
   Map<String, Section> _currentSections = {};
   List<String> _songStructure = [];
   Timer? _debounceTimer;
@@ -105,8 +104,9 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
           .toList();
       _currentSections = Map.from(widget.currentVersion!.sections!);
 
-      _currentSections.forEach((key, value) {
-        _sectionControllers[key] = TextEditingController(text: value.contentText);
+      // Create controllers for all existing sections
+      _currentSections.forEach((key, section) {
+        _sectionControllers[key] = TextEditingController(text: section.contentText);
       });
     }
 
@@ -126,25 +126,50 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
   }
 
 void _notifySectionChanged() {
-    // DEBUG: Print all section codes and their sections before saving
+    // Ensure controller exists for every section in structure
     for (final section in _songStructure) {
-      // Ensure controller exists for every section
       if (!_sectionControllers.containsKey(section)) {
         _sectionControllers[section] = TextEditingController();
       }
     }
 
-    // Collect all sections from section controllers
+    // Update content for all sections in structure
     for (final sectionCode in _songStructure) {
-      if (_currentSections[sectionCode] != null) {
-        final controller = _sectionControllers[sectionCode];
-        if (controller != null) {
-          _currentSections[sectionCode]!.contentText = controller.text;
+      final controller = _sectionControllers[sectionCode];
+      final contentText = controller?.text ?? '';
+      
+      // Check if we have a section in current sections
+      if (_currentSections.containsKey(sectionCode)) {
+        // Update existing section content
+        _currentSections[sectionCode]!.contentText = contentText;
+      } else {
+        // Create new section - check if predefined or create as custom
+        final predefinedSection = _createPredefinedSection(sectionCode);
+        if (predefinedSection != null) {
+          // Use predefined section with content
+          _currentSections[sectionCode] = Section(
+            mapId: predefinedSection.mapId,
+            contentType: predefinedSection.contentType,
+            contentCode: sectionCode,
+            contentText: contentText,
+            contentColor: predefinedSection.contentColor,
+          );
         } else {
-          _currentSections[sectionCode]!.contentText = '';
+          // Create custom section with default values
+          _currentSections[sectionCode] = Section(
+            mapId: 0,
+            contentType: sectionCode, // Use code as type for custom sections
+            contentCode: sectionCode,
+            contentText: contentText,
+            contentColor: Colors.grey, // Default color for custom sections
+          );
         }
       }
     }
+    
+    // Remove sections that are no longer in structure
+    _currentSections.removeWhere((key, value) => !_songStructure.contains(key));
+    
     widget.onSectionChanged(_currentSections);
   }
 
@@ -156,14 +181,29 @@ void _notifySectionChanged() {
     setState(() {
       _songStructure.add(sectionCode);
 
+      // Create text controller for this section
+      if (!_sectionControllers.containsKey(sectionCode)) {
+        _sectionControllers[sectionCode] = TextEditingController();
+      }
+
+      // Create the section - either predefined or custom
       if (sectionType != null && customColor != null) {
-        _customSections[sectionCode] = Section(
+        // This is a custom section created by user
+        _currentSections[sectionCode] = Section(
           mapId: 0, // Will be set when saving
           contentType: sectionType,
           contentCode: sectionCode,
           contentText: '',
           contentColor: customColor,
         );
+      } else {
+        // This is a predefined section - create it if not exists
+        if (!_currentSections.containsKey(sectionCode)) {
+          final predefinedSection = _createPredefinedSection(sectionCode);
+          if (predefinedSection != null) {
+            _currentSections[sectionCode] = predefinedSection;
+          }
+        }
       }
     });
     _notifySectionChanged();
@@ -179,7 +219,6 @@ void _notifySectionChanged() {
         _sectionControllers[sectionKey]?.dispose();
         _sectionControllers.remove(sectionKey);
         _currentSections.remove(sectionKey);
-        _customSections.remove(sectionKey);
       }
     });
     _notifySectionChanged();
@@ -195,8 +234,7 @@ void _notifySectionChanged() {
   }
 
   Section? _getSectionType(String key) {
-    return _customSections[key] ?? 
-           _createPredefinedSection(key);
+    return _currentSections[key] ?? _createPredefinedSection(key);
   }
 
   Section? _createPredefinedSection(String key) {
@@ -322,7 +360,7 @@ void _notifySectionChanged() {
                 ReorderableStructureChips(
                   songStructure: _songStructure,
                   sectionTypes: _predefinedSectionTypes,
-                  customSections: _customSections,
+                  customSections: _currentSections,
                   onReorder: _reorderSection,
                   onRemoveSection: _removeSection,
                 ),

@@ -120,10 +120,10 @@ class CipherVersion {
 
     return CipherVersion(
       id: json['id'] as int?,
-      cipherId: json['cipher_id'] as int, // Added: from database
+      cipherId: json['cipher_id'] as int,
       songStructure:
           json['song_structure'] as String? ??
-          '', // Fixed: use correct column name
+          '',
       transposedKey: json['transposed_key'] as String?,
       versionName: json['version_name'] as String?,
       createdAt: json['created_at'] != null
@@ -148,7 +148,7 @@ class CipherVersion {
     );
   }
 
-  // To JSON for database
+  // To JSON for database (without content - sections handled separately)
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -157,7 +157,6 @@ class CipherVersion {
       'transposed_key': transposedKey,
       'version_name': versionName,
       'created_at': createdAt?.toIso8601String(),
-      'content': sections!.values.map((version) => version.toJson()).toList()
     };
   }
 

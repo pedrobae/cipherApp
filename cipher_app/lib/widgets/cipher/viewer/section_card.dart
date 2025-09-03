@@ -1,23 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../utils/section_color_manager.dart';
 import 'package:cipher_app/widgets/cipher/viewer/chordpro_view.dart';
 import 'package:cipher_app/providers/layout_settings_provider.dart';
 
-class CipherContentCard extends StatelessWidget {
-  final String contentType;
-  final String? contentText;
+class CipherSectionCard extends StatelessWidget {
+  final String sectionCode;
+  final String sectionType;
+  final String sectionText;
+  final Color sectionColor;
 
-  const CipherContentCard({
+  const CipherSectionCard({
     super.key,
-    required this.contentType,
-    this.contentText,
+    required this.sectionType,
+    required this.sectionCode,
+    required this.sectionText,
+    required this.sectionColor,
   });
 
   @override
   Widget build(BuildContext context) {
-    // Get the section color for this content type
-    final sectionColor = SectionColorManager.getSectionColor(contentType, null);
+
     final layoutProvider = context.watch<LayoutSettingsProvider>();
 
     return Column(
@@ -31,13 +33,18 @@ class CipherContentCard extends StatelessWidget {
                 color: sectionColor,
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: Text(
-                contentType,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  fontSize: layoutProvider.fontSize,
-                ),
+              child: Row(
+                children: [
+                  Text(
+                    sectionCode,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: layoutProvider.fontSize,
+                    ),
+                  ),
+                  Text(sectionType)
+                ],
               ),
             ),
           ],
@@ -55,7 +62,7 @@ class CipherContentCard extends StatelessWidget {
             ),
           ),
           child: ChordProView(
-            song: contentText,
+            song: sectionText,
             maxWidth: double.infinity,
             lyricStyle: layoutProvider.lyricTextStyle,
             chordStyle: layoutProvider.chordTextStyle,

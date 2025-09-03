@@ -101,8 +101,10 @@ class DatabaseHelper {
       CREATE TABLE map_content (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         map_id INTEGER NOT NULL,
-        content_type VARCHAR NOT NULL,
+        content_type TEXT NOT NULL,
+        content_code VARCHAR NOT NULL,
         content_text TEXT NOT NULL,
+        content_color TEXT,
         FOREIGN KEY (map_id) REFERENCES cipher_map (id) ON DELETE CASCADE
       )
     ''');

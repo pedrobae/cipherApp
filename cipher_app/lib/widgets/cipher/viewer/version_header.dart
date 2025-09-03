@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cipher_app/models/domain/cipher.dart';
 
 class CipherVersionHeader extends StatelessWidget {
-  final CipherMap currentVersion;
+  final CipherVersion currentVersion;
 
   const CipherVersionHeader({super.key, required this.currentVersion});
 

@@ -39,7 +39,7 @@ void main() {
       expect(cipher, isNotNull);
       expect(cipher!.title, 'Amazing Grace');
       expect(cipher.maps.length, 2); // Original + Short version
-      expect(cipher.maps.first.content.isNotEmpty, true);
+      expect(cipher.maps.first.sections != null, true);
     });
 
     test('should soft delete cipher', () async {
@@ -53,27 +53,27 @@ void main() {
       expect(remainingCiphers.any((c) => c.id == cipherId), false);
     });
 
-    test('should get cipher maps with content', () async {
+    test('should get cipher maps with section', () async {
       final ciphers = await repository.getAllCiphers();
       final howGreat = ciphers.firstWhere((c) => c.title == 'How Great Thou Art');
       
-      final maps = await repository.getCipherMaps(howGreat.id!);
+      final maps = await repository.getCipherVersions(howGreat.id!);
       
       expect(maps.length, 1);
       expect(maps.first.songStructure, 'V1,C,V2,C,V3,C,V4,C');
-      expect(maps.first.content.length, 5); // V1, C, V2, V3, V4
+      expect(maps.first.sections!.keys.length, 5); // V1, C, V2, V3, V4
     });
 
-    test('should get map content', () async {
+    test('should get map sections', () async {
       final ciphers = await repository.getAllCiphers();
       final cipher = ciphers.firstWhere((c) => c.title == 'Amazing Grace');
-      final maps = await repository.getCipherMaps(cipher.id!);
+      final maps = await repository.getCipherVersions(cipher.id!);
       
-      final content = await repository.getMapContent(maps.first.id!);
+      final sections = await repository.getAllSections(maps.first.id!);
       
-      expect(content.isNotEmpty, true);
-      expect(content.containsKey('V1'), true);
-      expect(content['V1']?.contains('['), true); // Has chords
+      expect(sections.isNotEmpty, true);
+      expect(sections.containsKey('V1'), true);
+      expect(sections['V1']?.contentText.contains('['), true); // Has chords
     });
   });
 }

@@ -3,11 +3,11 @@ import 'package:provider/provider.dart';
 import '../providers/cipher_provider.dart';
 import '../models/domain/cipher.dart';
 import '../widgets/cipher/editor/cipher_basic_info_form.dart';
-import '../widgets/cipher/editor/cipher_content_form.dart';
+import '../widgets/cipher/editor/cipher_section_form.dart';
 
 class EditCipher extends StatefulWidget {
   final Cipher? cipher; // Null for create, populated for edit
-  final CipherMap? currentVersion; // Specific version to edit
+  final CipherVersion? currentVersion; // Specific version to edit
   final bool isNewVersion; // Creating a new version of existing cipher
 
   const EditCipher({
@@ -38,7 +38,7 @@ class _EditCipherState extends State<EditCipher>
   final _versionNameController = TextEditingController();
 
   // Content data
-  Map<String, String> _cipherContent = {};
+  Map<String, Section> _versionSections = {};
   List<String> _songStructure = [];
 
   bool get _isEditMode => widget.cipher != null;
@@ -53,7 +53,7 @@ class _EditCipherState extends State<EditCipher>
 
   void _initializeFields() {
     // Always start with blank state for new cipher/version
-    _cipherContent = {};
+    _versionSections = {};
     _songStructure = [];
 
     if (_isEditMode) {
@@ -66,7 +66,7 @@ class _EditCipherState extends State<EditCipher>
       _tagsController.text = cipher.tags.join(', ');
 
       if (!_isNewVersionMode && widget.currentVersion != null) {
-        _cipherContent = Map.from(widget.currentVersion!.content);
+        _versionSections = Map.from(widget.currentVersion!.sections!);
         _songStructure = widget.currentVersion!.songStructure
             .split(',')
             .map((s) => s.trim())
@@ -146,13 +146,13 @@ class _EditCipherState extends State<EditCipher>
             // Content Tab
             SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
-              child: CipherContentForm(
+              child: CipherSectionForm(
                 cipher: widget.cipher,
                 currentVersion: widget.currentVersion,
                 versionNameController: _versionNameController, // Pass this down
-                onContentChanged: (content) {
+                onSectionChanged: (content) {
                   setState(() {
-                    _cipherContent = content;
+                    _versionSections = content;
                   });
                 },
                 onStructureChanged: (structure) {
@@ -209,7 +209,7 @@ class _EditCipherState extends State<EditCipher>
     }
 
     // Validate that version has content (except when creating cipher without content)
-    if ((_songStructure.isEmpty || _cipherContent.isEmpty) &&
+    if ((_songStructure.isEmpty || _versionSections.isEmpty) &&
         (_isEditMode || _isNewVersionMode)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -232,13 +232,13 @@ class _EditCipherState extends State<EditCipher>
           .toList();
 
       // Create cipher map for this version (only if has content)
-      CipherMap? cipherMap;
-      if (_songStructure.isNotEmpty && _cipherContent.isNotEmpty) {
-        cipherMap = CipherMap(
+      CipherVersion? version;
+      if (_songStructure.isNotEmpty && _versionSections.isNotEmpty) {
+        version = CipherVersion(
           id: _isNewVersionMode ? null : widget.currentVersion?.id,
           cipherId: _isEditMode ? widget.cipher!.id! : 0,
           songStructure: _songStructure.join(','),
-          content: _cipherContent,
+          sections: _versionSections,
           versionName: _versionNameController.text.trim().isNotEmpty
               ? _versionNameController.text.trim()
               : 'Versão sem nome',
@@ -248,22 +248,22 @@ class _EditCipherState extends State<EditCipher>
               : widget.currentVersion?.createdAt,
         );
       }      // Prepare cipher data
-      List<CipherMap> updatedMaps;
-      if (_isNewVersionMode && cipherMap != null) {
+      List<CipherVersion> updatedMaps;
+      if (_isNewVersionMode && version != null) {
         // Adding new version to existing cipher
-        updatedMaps = [...widget.cipher!.maps, cipherMap];
+        updatedMaps = [...widget.cipher!.maps, version];
       } else if (_isEditMode &&
           widget.currentVersion != null &&
-          cipherMap != null) {
+          version != null) {
         // Editing existing version
         updatedMaps = widget.cipher!.maps
             .map(
-              (map) => map.id == widget.currentVersion!.id ? cipherMap! : map,
+              (map) => map.id == widget.currentVersion!.id ? version! : map,
             )
             .toList();
       } else {
         // Creating new cipher
-        updatedMaps = cipherMap != null ? [cipherMap] : [];
+        updatedMaps = version != null ? [version] : [];
       }
 
       final cipherData = Cipher(
@@ -281,9 +281,9 @@ class _EditCipherState extends State<EditCipher>
       final cipherProvider = context.read<CipherProvider>();
 
       if (_isEditMode) {
-        if (_isNewVersionMode && cipherMap != null) {
+        if (_isNewVersionMode && version != null) {
           // Adding new version to existing cipher - use specific method
-          await cipherProvider.addCipherVersion(widget.cipher!.id!, cipherMap);
+          await cipherProvider.addCipherVersion(widget.cipher!.id!, version);
         } else {
           // Updating existing cipher and/or version
           await cipherProvider.updateCipher(cipherData);

@@ -4,43 +4,43 @@ import '../../../models/domain/cipher.dart';
 import '../../../utils/section_color_manager.dart';
 import 'reorderable_structure_chips.dart';
 
-class CipherContentForm extends StatefulWidget {
+class CipherSectionForm extends StatefulWidget {
   final TextEditingController? versionNameController;
   final Cipher? cipher;
-  final CipherMap? currentVersion;
-  final Function(Map<String, String>) onContentChanged;
+  final CipherVersion? currentVersion;
+  final Function(Map<String, Section>) onSectionChanged;
   final Function(List<String>)? onStructureChanged;
 
-  const CipherContentForm({
+  const CipherSectionForm({
     super.key,
     this.versionNameController,
     this.cipher,
     this.currentVersion,
-    required this.onContentChanged,
+    required this.onSectionChanged,
     this.onStructureChanged,
   });
 
   @override
-  State<CipherContentForm> createState() => _CipherContentFormState();
+  State<CipherSectionForm> createState() => _CipherSectionFormState();
 }
 
-class _CipherContentFormState extends State<CipherContentForm> {
-  List<String> _songStructure = [];
-  final Map<String, TextEditingController> _contentControllers = {};
-  Map<String, String> _currentContent = {};
+class _CipherSectionFormState extends State<CipherSectionForm> {
+  final Map<String, TextEditingController> _sectionControllers = {};
   final Map<String, SectionType> _customSections = {};
+  Map<String, Section> _currentSections = {};
+  List<String> _songStructure = [];
   Timer? _debounceTimer;
 
   @override
   void initState() {
     super.initState();
-    _initializeContent();
+    _initializeSections();
   }
 
-  void _initializeContent() {
+  void _initializeSections() {
     // Always start with blank state for new version
     _songStructure = [];
-    _currentContent = {};
+    _currentSections = {};
 
     if (widget.currentVersion != null) {
       _songStructure = widget.currentVersion!.songStructure
@@ -48,90 +48,64 @@ class _CipherContentFormState extends State<CipherContentForm> {
           .map((s) => s.trim())
           .where((s) => s.isNotEmpty)
           .toList();
-      _currentContent = Map.from(widget.currentVersion!.content);
+      _currentSections = Map.from(widget.currentVersion!.sections!);
 
-      _currentContent.forEach((key, value) {
-        _contentControllers[key] = TextEditingController(text: value);
+      _currentSections.forEach((key, value) {
+        _sectionControllers[key] = TextEditingController(text: value.contentText);
       });
     }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.onStructureChanged?.call(_songStructure);
-      _notifyContentChanged();
+      _notifySectionChanged();
     });
   }
 
   @override
   void dispose() {
     _debounceTimer?.cancel();
-    for (var controller in _contentControllers.values) {
+    for (var controller in _sectionControllers.values) {
       controller.dispose();
     }
     super.dispose();
   }
 
-  void _updateSongStructure() {
-    // Update current content without including songStructure as a key
-    _currentContent.clear();
-    _contentControllers.forEach((key, controller) {
-      if (controller.text.trim().isNotEmpty) {
-        _currentContent[key] = controller.text.trim();
-      }
-    });
-
-    // Notify parent with both content and structure
-    _notifyContentChanged();
-    widget.onStructureChanged?.call(_songStructure);
-  }
-
-  void _notifyContentChanged() {
-    // DEBUG: Print all section keys and their content before saving
+void _notifySectionChanged() {
+    // DEBUG: Print all section codes and their sections before saving
     for (final section in _songStructure) {
       // Ensure controller exists for every section
-      if (!_contentControllers.containsKey(section)) {
-        _contentControllers[section] = TextEditingController();
-      }
-    }
-    // Collect all content from section controllers
-    _currentContent.clear();
-    for (final section in _songStructure) {
-      final controller = _contentControllers[section];
-      if (controller != null) {
-        _currentContent[section] = controller.text;
-      } else {
-        _currentContent[section] = '';
+      if (!_sectionControllers.containsKey(section)) {
+        _sectionControllers[section] = TextEditingController();
       }
     }
 
-    // Also include version name from the passed controller if available
-    if (widget.versionNameController != null &&
-        widget.versionNameController!.text.trim().isNotEmpty) {
-      _currentContent['versionName'] = widget.versionNameController!.text
-          .trim();
+    // Collect all sections from section controllers
+    for (final sectionCode in _songStructure) {
+      if (_currentSections[sectionCode] != null) {
+        final controller = _sectionControllers[sectionCode];
+        if (controller != null) {
+          _currentSections[sectionCode]!.contentText = controller.text;
+        } else {
+          _currentSections[sectionCode]!.contentText = '';
+        }
+      }
     }
-
-    widget.onContentChanged(_currentContent);
+    widget.onSectionChanged(_currentSections);
   }
 
   void _addSection(
-    String sectionKey, {
-    String? customName,
+    String sectionCode, {
+    String? sectionType,
     Color? customColor,
   }) {
     setState(() {
-      _songStructure.add(sectionKey);
+      _songStructure.add(sectionCode);
 
-      if (customName != null && customColor != null) {
-        _customSections[sectionKey] = SectionType(customName, customColor);
-      }
-
-      if (!_contentControllers.containsKey(sectionKey)) {
-        _contentControllers[sectionKey] = TextEditingController(
-          text: _currentContent[sectionKey] ?? '',
-        );
+      if (sectionType != null && customColor != null) {
+        _customSections[sectionCode] = SectionType(sectionType, customColor);
       }
     });
-    _updateSongStructure();
+    _notifySectionChanged();
   }
 
   void _removeSection(int index) {
@@ -141,13 +115,13 @@ class _CipherContentFormState extends State<CipherContentForm> {
 
       // Only remove content if this section is not used elsewhere
       if (!_songStructure.contains(sectionKey)) {
-        _contentControllers[sectionKey]?.dispose();
-        _contentControllers.remove(sectionKey);
-        _currentContent.remove(sectionKey);
+        _sectionControllers[sectionKey]?.dispose();
+        _sectionControllers.remove(sectionKey);
+        _currentSections.remove(sectionKey);
         _customSections.remove(sectionKey);
       }
     });
-    _updateSongStructure();
+    _notifySectionChanged();
   }
 
   void _reorderSection(int oldIndex, int newIndex) {
@@ -156,7 +130,7 @@ class _CipherContentFormState extends State<CipherContentForm> {
       final item = _songStructure.removeAt(oldIndex);
       _songStructure.insert(newIndex, item);
     });
-    _updateSongStructure();
+    _notifySectionChanged();
   }
 
   SectionType _getSectionType(String key) {
@@ -179,7 +153,7 @@ class _CipherContentFormState extends State<CipherContentForm> {
       context: context,
       builder: (context) => _CustomSectionDialog(
         onAdd: (sectionKey, name, color) =>
-            _addSection(sectionKey, customName: name, customColor: color),
+            _addSection(sectionKey, sectionType: name, customColor: color),
       ),
     );
   }
@@ -212,7 +186,7 @@ class _CipherContentFormState extends State<CipherContentForm> {
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.label),
                   ),
-                  onChanged: (_) => _notifyContentChanged(),
+                  onChanged: (_) => _notifySectionChanged(),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'Nome da versão é obrigatório';
@@ -337,7 +311,7 @@ class _CipherContentFormState extends State<CipherContentForm> {
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
-                      controller: _contentControllers[section],
+                      controller: _sectionControllers[section],
                       decoration: InputDecoration(
                         hintText: 'Conteúdo da seção ${sectionType.name}',
                         border: const OutlineInputBorder(),
@@ -349,7 +323,7 @@ class _CipherContentFormState extends State<CipherContentForm> {
                         _debounceTimer = Timer(
                           const Duration(milliseconds: 300),
                           () {
-                            _notifyContentChanged();
+                            _notifySectionChanged();
                             if (mounted) setState(() {});
                           },
                         );

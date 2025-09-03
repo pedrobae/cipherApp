@@ -4,8 +4,8 @@ import 'info.dart';
 import 'users.dart';
 import 'tags.dart';
 import 'ciphers.dart';
-import 'cipher_maps.dart';
-import 'map_contents.dart';
+import 'versions.dart';
+import 'sections.dart';
 import 'playlists.dart';
 
 Future<void> seedDatabase(Database db) async {

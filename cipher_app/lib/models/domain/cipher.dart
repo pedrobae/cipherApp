@@ -1,4 +1,7 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import '../../helpers/datetime_helper.dart';
+import '../../utils/color.dart' as c;
 
 class Cipher {
   final int? id;
@@ -11,7 +14,7 @@ class Cipher {
   final DateTime? updatedAt;
   final bool isLocal;
   final List<String> tags;
-  final List<CipherMap> maps;
+  final List<CipherVersion> maps;
 
   const Cipher({
     this.id,
@@ -41,7 +44,7 @@ class Cipher {
       updatedAt: DatetimeHelper.parseDateTime(json['updated_at']),
       isLocal: json['isLocal'] as bool? ?? true, // Default to true for local DB
       maps: json['maps'] != null
-          ? (json['maps'] as List).map((m) => CipherMap.fromJson(m)).toList()
+          ? (json['maps'] as List).map((m) => CipherVersion.fromJson(m)).toList()
           : const [],
     );
   }
@@ -71,7 +74,7 @@ class Cipher {
     DateTime? createdAt,
     DateTime? updatedAt,
     bool? isLocal,
-    List<CipherMap>? maps,
+    List<CipherVersion>? maps,
   }) {
     return Cipher(
       id: id ?? this.id,
@@ -89,34 +92,33 @@ class Cipher {
   }
 }
 
-class CipherMap {
+class CipherVersion {
   final int? id;
   final int cipherId;
   final String songStructure;
   final String? transposedKey;
   final String? versionName;
   final DateTime? createdAt;
-  final Map<String, String> content; // Changed from List<MapContent>
+  final Map<String, Section>? sections;
 
-  const CipherMap({
+  const CipherVersion({
     this.id,
     required this.cipherId,
     required this.songStructure,
     this.transposedKey,
     this.versionName,
     this.createdAt,
-    this.content = const {},
+    this.sections,
   });
 
-  factory CipherMap.fromJson(Map<String, dynamic> json) {
-    // Convert List<MapContent> to Map<String, String> during loading
-    final contentList = json['content'] as List? ?? [];
-    final contentMap = <String, String>{};
-    for (var item in contentList) {
-      contentMap[item['content_type']] = item['content_text'];
+  factory CipherVersion.fromJson(Map<String, dynamic> json) {
+    Map<String, Section> versionContentMap = {};
+    for (Map<String, dynamic> content in json['content']) {
+      Section versionContent = Section.fromJson(content);
+      versionContentMap[versionContent.contentCode] = versionContent;
     }
 
-    return CipherMap(
+    return CipherVersion(
       id: json['id'] as int?,
       cipherId: json['cipher_id'] as int, // Added: from database
       songStructure:
@@ -127,7 +129,22 @@ class CipherMap {
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'])
           : null,
-      content: contentMap,
+      sections: versionContentMap,
+    );
+  }
+
+  // Factory for database row (without content - populated separately)
+  factory CipherVersion.fromRow(Map<String, dynamic> row) {
+    return CipherVersion(
+      id: row['id'] as int?,
+      cipherId: row['cipher_id'] as int,
+      songStructure: row['song_structure'] as String? ?? '',
+      transposedKey: row['transposed_key'] as String?,
+      versionName: row['version_name'] as String?,
+      createdAt: row['created_at'] != null
+          ? DateTime.parse(row['created_at'])
+          : null,
+      sections: null, // Will be populated separately by repository
     );
   }
 
@@ -140,35 +157,76 @@ class CipherMap {
       'transposed_key': transposedKey,
       'version_name': versionName,
       'created_at': createdAt?.toIso8601String(),
+      'content': sections!.values.map((version) => version.toJson()).toList()
     };
   }
 
-  Map<String, String> getContentAsStruct() {
-    return content;
+  List<Section> getContentAsStruct() {
+    return (sections ?? {}).values.toList();
   }
 
   bool hasAllSections() {
     final requiredSections = songStructure.split(',').toSet();
-    return requiredSections.every((section) => content.containsKey(section));
+    return requiredSections.every((section) => sections!.containsKey(section));
   }
 
-  CipherMap copyWith({
+  CipherVersion copyWith({
     int? id,
     int? cipherId,
     String? songStructure,
     String? transposedKey,
     String? versionName,
     DateTime? createdAt,
-    Map<String, String>? content,
+    Map<String, Section>? content,
   }) {
-    return CipherMap(
+    return CipherVersion(
       id: id ?? this.id,
       cipherId: cipherId ?? this.cipherId,
       songStructure: songStructure ?? this.songStructure,
       transposedKey: transposedKey ?? this.transposedKey,
       versionName: versionName ?? this.versionName,
       createdAt: createdAt ?? this.createdAt,
-      content: content ?? this.content,
+      sections: content ?? this.sections,
     );
+  }
+}
+
+class Section {
+  final int? id;
+  final int mapId;
+  final String contentType;
+  final String contentCode;
+  String contentText;
+  final Color contentColor;
+
+  Section({
+    this.id,
+    required this.mapId,
+    required this.contentType,
+    required this.contentCode,
+    required this.contentText,
+    required this.contentColor,
+  });
+
+  factory Section.fromJson(Map<String, dynamic> json) {
+    return Section(
+      id: json['id'],
+      mapId: json['map_id'], 
+      contentType: json['content_type'],
+      contentCode: json['content_code'],
+      contentText: json['content_text'],
+      contentColor: c.colorFromHex(json['content_color']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'map_id': mapId,
+      'content_type': contentType,
+      'content_code': contentCode,
+      'content_text': contentText,
+      'color': c.colorToHex(contentColor),
+    };
   }
 }

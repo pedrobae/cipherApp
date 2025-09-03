@@ -142,7 +142,7 @@ void main() {
 
       // Check if cipher_map records were seeded
       final cipherMaps = await db.query('cipher_map');
-      expect(cipherMaps.length, 5, reason: 'Should have 5 cipher maps seeded');
+      expect(cipherMaps.length, 3, reason: 'Should have 5 cipher maps seeded');
 
       // Verify Amazing Grace maps
       final amazingGraceMaps = await db.query(
@@ -182,7 +182,7 @@ void main() {
         reason: 'How Great Thou Art should have 1 map',
       );
       expect(howGreatMaps.first['song_structure'], 'V1,C,V2,C,V3,C,V4,C');
-      expect(howGreatMaps.first['version_name'], 'Standard');
+      expect(howGreatMaps.first['version_name'], 'Original');
 
       // Clean up
       await dbHelper.resetDatabase();
@@ -208,17 +208,17 @@ void main() {
         'map_content',
         where: 'map_id = ?',
         whereArgs: [mapId],
-        orderBy: 'content_type',
+        orderBy: 'content_code',
       );
 
       expect(contentBlocks.length, 4, reason: 'Should have 4 verses (V1-V4)');
 
       // Verify content types match song structure
-      final contentTypes = contentBlocks.map((c) => c['content_type']).toList();
+      final contentTypes = contentBlocks.map((c) => c['content_code']).toList();
       expect(contentTypes, containsAll(['V1', 'V2', 'V3', 'V4']));
 
       // Verify ChordPro format in content
-      final verse1 = contentBlocks.firstWhere((c) => c['content_type'] == 'V1');
+      final verse1 = contentBlocks.firstWhere((c) => c['content_code'] == 'V1');
       final verse1Text = verse1['content_text'] as String;
 
       // Check for ChordPro chord notation
@@ -252,23 +252,23 @@ void main() {
       expect(mapWithCipher.length, 1);
       expect(mapWithCipher.first['title'], 'How Great Thou Art');
       expect(mapWithCipher.first['author'], 'Carl Boberg');
-      expect(mapWithCipher.first['version_name'], 'Standard');
+      expect(mapWithCipher.first['version_name'], 'Original');
 
       // Test map_content -> cipher_map relationship
       final contentWithMap = await db.rawQuery(
         '''
-        SELECT mc.content_type, mc.content_text, cm.version_name, c.title
+        SELECT mc.content_code, mc.content_text, cm.version_name, c.title
         FROM map_content mc
         JOIN cipher_map cm ON mc.map_id = cm.id
         JOIN cipher c ON cm.cipher_id = c.id
-        WHERE c.title = ? AND mc.content_type = ?
+        WHERE c.title = ? AND mc.content_code = ?
       ''',
         ['How Great Thou Art', 'C'],
       );
 
       expect(contentWithMap.length, 1);
-      expect(contentWithMap.first['content_type'], 'C');
-      expect(contentWithMap.first['version_name'], 'Standard');
+      expect(contentWithMap.first['content_code'], 'C');
+      expect(contentWithMap.first['version_name'], 'Original');
       expect(contentWithMap.first['content_text'], contains('Then sings my '));
 
       // Clean up
@@ -287,7 +287,7 @@ void main() {
         JOIN map_content mc ON cm.id = mc.map_id
         WHERE cm.cipher_id = (SELECT id FROM cipher WHERE title = ?)
           AND cm.version_name = ?
-          AND mc.content_type = ?
+          AND mc.content_code = ?
       ''',
         ['Amazing Grace', 'Original', 'V1'],
       );
@@ -299,7 +299,7 @@ void main() {
         JOIN map_content mc ON cm.id = mc.map_id
         WHERE cm.cipher_id = (SELECT id FROM cipher WHERE title = ?)
           AND cm.version_name = ?
-          AND mc.content_type = ?
+          AND mc.content_code = ?
       ''',
         ['Amazing Grace', 'Short Version (Key of D)', 'V1'],
       );
@@ -363,13 +363,13 @@ void main() {
       // Get available content types
       final availableContent = await db.query(
         'map_content',
-        columns: ['content_type'],
+        columns: ['content_code'],
         where: 'map_id = ?',
         whereArgs: [mapId],
       );
 
       final availableTypes = availableContent
-          .map((c) => c['content_type'] as String)
+          .map((c) => c['content_code'] as String)
           .toSet();
 
       // Verify all structure parts have corresponding content

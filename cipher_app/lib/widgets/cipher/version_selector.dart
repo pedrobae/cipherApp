@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:cipher_app/models/domain/cipher.dart';
 
 class VersionSelectorBottomSheet extends StatelessWidget {
-  final List<CipherMap> versions;
-  final CipherMap currentVersion;
-  final Function(CipherMap) onVersionSelected;
+  final List<CipherVersion> versions;
+  final CipherVersion currentVersion;
+  final Function(CipherVersion) onVersionSelected;
   final VoidCallback onNewVersion;
 
   const VersionSelectorBottomSheet({

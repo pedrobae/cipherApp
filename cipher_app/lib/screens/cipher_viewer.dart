@@ -19,7 +19,7 @@ class CipherViewer extends StatefulWidget {
 }
 
 class _CipherViewerState extends State<CipherViewer> {
-  CipherMap? _currentVersion;
+  CipherVersion? _currentVersion;
   bool _hasShownVersionSelector = false;
 
   @override
@@ -37,7 +37,7 @@ class _CipherViewerState extends State<CipherViewer> {
   }
   }
 
-  void _selectVersion(CipherMap version) {
+  void _selectVersion(CipherVersion version) {
     setState(() {
       _currentVersion = version;
     });

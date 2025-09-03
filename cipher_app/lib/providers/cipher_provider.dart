@@ -95,7 +95,7 @@ class CipherProvider extends ChangeNotifier {
       final cipherId = await _cipherRepository.insertCipher(cipher);
 
       // Insert cipher maps and their content
-      await _createCipherMapsAndContent(cipherId, cipher.maps);
+      await _createCipherVersionsAndSections(cipherId, cipher.maps);
 
       // Reload all ciphers to get the complete data with relationships
       await loadCiphers();
@@ -110,23 +110,26 @@ class CipherProvider extends ChangeNotifier {
     }
   }
 
-  /// Handle creating cipher maps and their content for a new cipher
-  Future<void> _createCipherMapsAndContent(
+  /// Handle creating cipher versions and their sections for a new cipher
+  Future<void> _createCipherVersionsAndSections(
     int cipherId,
-    List<CipherMap> maps,
+    List<CipherVersion> versions,
   ) async {
-    for (final map in maps) {
-      // Create map with the correct cipher ID
-      final mapWithCipherId = map.copyWith(cipherId: cipherId);
-      final newMapId = await _cipherRepository.insertCipherMap(mapWithCipherId);
+    for (final version in versions) {
+      // Create Version with the correct cipher ID
+      final versionWithCipherId = version.copyWith(cipherId: cipherId);
+      final newVersionId = await _cipherRepository.insertCipherVersion(versionWithCipherId);
 
       // Insert content for this map
-      for (final entry in map.content.entries) {
-        if (entry.value.trim().isNotEmpty) {
-          await _cipherRepository.insertMapContent(
-            newMapId,
-            entry.key,
-            entry.value,
+      for (final section in version.sections!.entries) {
+        if (section.key.isNotEmpty) {
+          final sectionJson = section.value.toJson();
+          await _cipherRepository.insertSection(
+            newVersionId,
+            sectionJson['content_type'],
+            sectionJson['content_code'],
+            sectionJson['content_text'],
+            sectionJson['color'],
           );
         }
       }
@@ -165,7 +168,7 @@ class CipherProvider extends ChangeNotifier {
     if (cipher.id == null || cipher.maps.isEmpty) return;
 
     // Get existing maps to determine which ones to update, create, or delete
-    final existingMaps = await _cipherRepository.getCipherMaps(cipher.id!);
+    final existingMaps = await _cipherRepository.getCipherVersions(cipher.id!);
     final existingMapIds = existingMaps
         .map((m) => m.id)
         .where((id) => id != null)
@@ -178,7 +181,7 @@ class CipherProvider extends ChangeNotifier {
     // Delete maps that are no longer present
     for (final existingMap in existingMaps) {
       if (existingMap.id != null && !newMapIds.contains(existingMap.id)) {
-        await _cipherRepository.deleteCipherMap(existingMap.id!);
+        await _cipherRepository.deleteCipherVersion(existingMap.id!);
       }
     }
 
@@ -188,42 +191,50 @@ class CipherProvider extends ChangeNotifier {
 
       if (map.id != null && existingMapIds.contains(map.id)) {
         // Update existing map
-        await _cipherRepository.updateCipherMap(mapWithCipherId);
-        await _updateMapContent(map.id!, map.content);
+        await _cipherRepository.updateCipherVersion(mapWithCipherId);
+        await _updateVersionSection(map.id!, map.sections);
       } else {
         // Create new map
-        final newMapId = await _cipherRepository.insertCipherMap(
+        final newMapId = await _cipherRepository.insertCipherVersion(
           mapWithCipherId,
         );
-        await _updateMapContent(newMapId, map.content);
+        await _updateVersionSection(newMapId, map.sections);
       }
     }
   }
 
   /// Handle updating map content
-  Future<void> _updateMapContent(
+  Future<void> _updateVersionSection(
     int mapId,
-    Map<String, String> newContent,
+    Map<String, Section>? newSection,
   ) async {
-    // Get existing content
-    final existingContent = await _cipherRepository.getMapContent(mapId);
+    if (newSection != null) {
+      // Get existing content
+      final existingContent = await _cipherRepository.getAllSections(mapId);
 
-    // Delete content types that are no longer present
-    for (final contentType in existingContent.keys) {
-      if (!newContent.containsKey(contentType)) {
-        // Note: We need a method to delete by mapId and contentType
-        // For now, we'll delete all and recreate (simpler approach)
+      // Delete content types that are no longer present
+      for (final contentCode in existingContent.keys) {
+        if (!newSection.containsKey(contentCode)) {
+          // Note: We need a method to delete by mapId and contentType
+          // For now, we'll delete all and recreate (simpler approach)
+        }
       }
-    }
+      // For simplicity, delete all existing content and recreate
+      // This could be optimized later to only update changed content
+      await _cipherRepository.deleteAllVersionSections(mapId);
 
-    // For simplicity, delete all existing content and recreate
-    // This could be optimized later to only update changed content
-    await _cipherRepository.deleteAllMapContent(mapId);
-
-    // Insert new content
-    for (final entry in newContent.entries) {
-      if (entry.value.trim().isNotEmpty) {
-        await _cipherRepository.insertMapContent(mapId, entry.key, entry.value);
+      // Insert new content
+      for (final entry in newSection.entries) {
+        if (entry.key.isNotEmpty) {
+          final sectionJson = entry.value.toJson();
+          await _cipherRepository.insertSection(
+              mapId,
+              sectionJson['content_type'],
+              sectionJson['content_code'],
+              sectionJson['content_text'],
+              sectionJson['color'],
+            );
+        }
       }
     }
   }
@@ -264,7 +275,7 @@ class CipherProvider extends ChangeNotifier {
   // === CIPHER MAP SPECIFIC OPERATIONS ===
 
   /// Add a new version (CipherMap) to an existing cipher
-  Future<void> addCipherVersion(int cipherId, CipherMap cipherMap) async {
+  Future<void> addCipherVersion(int cipherId, CipherVersion cipherMap) async {
     if (_isSaving) return;
 
     _isSaving = true;
@@ -274,10 +285,10 @@ class CipherProvider extends ChangeNotifier {
     try {
       // Create map with the correct cipher ID
       final mapWithCipherId = cipherMap.copyWith(cipherId: cipherId);
-      final newMapId = await _cipherRepository.insertCipherMap(mapWithCipherId);
+      final newMapId = await _cipherRepository.insertCipherVersion(mapWithCipherId);
 
       // Insert content for this map
-      await _updateMapContent(newMapId, cipherMap.content);
+      await _updateVersionSection(newMapId, cipherMap.sections);
 
       // Reload all ciphers to get the updated data
       await loadCiphers();
@@ -293,7 +304,7 @@ class CipherProvider extends ChangeNotifier {
   }
 
   /// Update a specific cipher version (CipherMap)
-  Future<void> updateCipherVersion(CipherMap cipherMap) async {
+  Future<void> updateCipherVersion(CipherVersion cipherMap) async {
     if (_isSaving) return;
 
     _isSaving = true;
@@ -301,8 +312,8 @@ class CipherProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _cipherRepository.updateCipherMap(cipherMap);
-      await _updateMapContent(cipherMap.id!, cipherMap.content);
+      await _cipherRepository.updateCipherVersion(cipherMap);
+      await _updateVersionSection(cipherMap.id!, cipherMap.sections);
 
       // Reload all ciphers to get the updated data
       await loadCiphers();
@@ -326,7 +337,7 @@ class CipherProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _cipherRepository.deleteCipherMap(mapId);
+      await _cipherRepository.deleteCipherVersion(mapId);
 
       // Reload all ciphers to get the updated data
       await loadCiphers();

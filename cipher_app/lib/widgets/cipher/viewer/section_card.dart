@@ -43,7 +43,14 @@ class CipherSectionCard extends StatelessWidget {
                       fontSize: layoutProvider.fontSize,
                     ),
                   ),
-                  Text(sectionType)
+                  SizedBox(width: 8,),
+                  Text(
+                    sectionType,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: (layoutProvider.fontSize*.9)
+                    ),
+                  )
                 ],
               ),
             ),

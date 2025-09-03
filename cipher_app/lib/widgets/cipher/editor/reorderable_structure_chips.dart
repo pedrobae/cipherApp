@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../../utils/section_color_manager.dart';
 import 'package:cipher_app/widgets/cipher/editor/custom_reorderable_delayed.dart';
+import '../../../models/domain/cipher.dart';
 
 class ReorderableStructureChips extends StatelessWidget {
   final List<String> songStructure;
-  final Map<String, SectionType> sectionTypes;
-  final Map<String, SectionType> customSections;
+  final Map<String, String> sectionTypes;
+  final Map<String, Section> customSections;
   final Function(int oldIndex, int newIndex) onReorder;
   final Function(int index) onRemoveSection;
 
@@ -18,8 +18,19 @@ class ReorderableStructureChips extends StatelessWidget {
     required this.onRemoveSection,
   });
 
-  SectionType _getSectionType(String key) {
-    return customSections[key] ?? sectionTypes[key] ?? SectionType(key, Colors.grey);
+  (String, Color) _getSectionInfo(String key) {
+    if (customSections.containsKey(key)) {
+      final section = customSections[key]!;
+      return (section.contentType, section.contentColor);
+    }
+    final displayName = sectionTypes[key] ?? key;
+    const defaultColors = {
+      'I': Colors.purple, 'V1': Colors.blue, 'V2': Colors.blue, 'V3': Colors.blue,
+      'C': Colors.red, 'C1': Colors.red, 'C2': Colors.red, 'PC': Colors.orange,
+      'B': Colors.green, 'B1': Colors.green, 'B2': Colors.green, 'S': Colors.amber,
+      'O': Colors.brown, 'F': Colors.indigo, 'N': Colors.grey, 'T': Colors.teal,
+    };
+    return (displayName, defaultColors[key] ?? Colors.grey);
   }
 
   @override
@@ -45,7 +56,8 @@ class ReorderableStructureChips extends StatelessWidget {
               onReorder: onReorder,
               itemBuilder: (context, index) {
                 final section = songStructure[index];
-                final sectionType = _getSectionType(section);
+                final sectionInfo = _getSectionInfo(section);
+                final color = sectionInfo.$2;
                 
                 return CustomReorderableDelayed(
                   delay: Duration(milliseconds: 100),
@@ -58,7 +70,7 @@ class ReorderableStructureChips extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                           decoration: BoxDecoration(
-                            color: sectionType.color.withValues(alpha: .8),
+                            color: color.withValues(alpha: .8),
                             borderRadius: BorderRadius.circular(5),
                             border: Border.all(color: Theme.of(context).highlightColor, width: 2),
                           ),

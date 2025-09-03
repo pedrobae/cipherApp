@@ -1,8 +1,63 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import '../../../models/domain/cipher.dart';
-import '../../../utils/section_color_manager.dart';
 import 'reorderable_structure_chips.dart';
+
+// Available colors for section selection
+const List<Color> _availableColors = [
+  Colors.blue,
+  Colors.red,
+  Colors.green,
+  Colors.orange,
+  Colors.purple,
+  Colors.amber,
+  Colors.teal,
+  Colors.brown,
+  Colors.indigo,
+  Colors.pink,
+  Colors.cyan,
+  Colors.lime,
+];
+
+// Predefined section types with Portuguese display names
+const Map<String, String> _predefinedSectionTypes = {
+  'I': 'Intro',
+  'V1': 'Verso 1',
+  'V2': 'Verso 2', 
+  'V3': 'Verso 3',
+  'C': 'Refrão',
+  'C1': 'Refrão 1',
+  'C2': 'Refrão 2',
+  'PC': 'Pré-Refrão',
+  'B': 'Ponte',
+  'B1': 'Ponte 1',
+  'B2': 'Ponte 2',
+  'S': 'Solo',
+  'O': 'Outro',
+  'F': 'Final',
+  'N': 'Notas',
+  'T': 'Tag',
+};
+
+// Default colors for predefined sections  
+const Map<String, Color> _defaultSectionColors = {
+  'I': Colors.purple,
+  'V1': Colors.blue,
+  'V2': Colors.blue,
+  'V3': Colors.blue,
+  'C': Colors.red,
+  'C1': Colors.red,
+  'C2': Colors.red,
+  'PC': Colors.orange,
+  'B': Colors.green,
+  'B1': Colors.green,
+  'B2': Colors.green,
+  'S': Colors.amber,
+  'O': Colors.brown,
+  'F': Colors.indigo,
+  'N': Colors.grey,
+  'T': Colors.teal,
+};
 
 class CipherSectionForm extends StatefulWidget {
   final TextEditingController? versionNameController;
@@ -26,7 +81,7 @@ class CipherSectionForm extends StatefulWidget {
 
 class _CipherSectionFormState extends State<CipherSectionForm> {
   final Map<String, TextEditingController> _sectionControllers = {};
-  final Map<String, SectionType> _customSections = {};
+  final Map<String, Section> _customSections = {};
   Map<String, Section> _currentSections = {};
   List<String> _songStructure = [];
   Timer? _debounceTimer;
@@ -102,7 +157,13 @@ void _notifySectionChanged() {
       _songStructure.add(sectionCode);
 
       if (sectionType != null && customColor != null) {
-        _customSections[sectionCode] = SectionType(sectionType, customColor);
+        _customSections[sectionCode] = Section(
+          mapId: 0, // Will be set when saving
+          contentType: sectionType,
+          contentCode: sectionCode,
+          contentText: '',
+          contentColor: customColor,
+        );
       }
     });
     _notifySectionChanged();
@@ -133,15 +194,32 @@ void _notifySectionChanged() {
     _notifySectionChanged();
   }
 
-  SectionType _getSectionType(String key) {
-    return SectionColorManager.getSectionType(key, _customSections);
+  Section? _getSectionType(String key) {
+    return _customSections[key] ?? 
+           _createPredefinedSection(key);
+  }
+
+  Section? _createPredefinedSection(String key) {
+    final displayName = _predefinedSectionTypes[key];
+    final color = _defaultSectionColors[key];
+    
+    if (displayName != null && color != null) {
+      return Section(
+        mapId: 0, // Will be set when saving
+        contentType: displayName,
+        contentCode: key,
+        contentText: '',
+        contentColor: color,
+      );
+    }
+    return null;
   }
 
   void _showPresetSectionsDialog() {
     showDialog(
       context: context,
       builder: (context) => _PresetSectionsDialog(
-        sectionTypes: SectionColorManager.predefinedSectionTypes,
+        sectionTypes: _predefinedSectionTypes,
         usedSections: _songStructure.toSet(),
         onAdd: (sectionKey) => _addSection(sectionKey),
       ),
@@ -243,7 +321,7 @@ void _notifySectionChanged() {
                 // Draggable Section Chips
                 ReorderableStructureChips(
                   songStructure: _songStructure,
-                  sectionTypes: SectionColorManager.predefinedSectionTypes,
+                  sectionTypes: _predefinedSectionTypes,
                   customSections: _customSections,
                   onReorder: _reorderSection,
                   onRemoveSection: _removeSection,
@@ -287,7 +365,7 @@ void _notifySectionChanged() {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: sectionType.color,
+                                color: sectionType?.contentColor ?? Colors.grey,
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
@@ -301,7 +379,7 @@ void _notifySectionChanged() {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              sectionType.name,
+                              sectionType?.contentType ?? section,
                               style: Theme.of(context).textTheme.titleSmall
                                   ?.copyWith(fontWeight: FontWeight.w600),
                             ),
@@ -313,7 +391,7 @@ void _notifySectionChanged() {
                     TextFormField(
                       controller: _sectionControllers[section],
                       decoration: InputDecoration(
-                        hintText: 'Conteúdo da seção ${sectionType.name}',
+                        hintText: 'Conteúdo da seção ${sectionType?.contentType ?? section}',
                         border: const OutlineInputBorder(),
                       ),
                       maxLines: null,
@@ -340,7 +418,7 @@ void _notifySectionChanged() {
 }
 
 class _PresetSectionsDialog extends StatelessWidget {
-  final Map<String, SectionType> sectionTypes;
+  final Map<String, String> sectionTypes;
   final Set<String> usedSections;
   final Function(String) onAdd;
 
@@ -361,8 +439,8 @@ class _PresetSectionsDialog extends StatelessWidget {
           runSpacing: 8,
           children: sectionTypes.entries.map((entry) {
             return ActionChip(
-              label: Text('${entry.key} - ${entry.value.name}'),
-              backgroundColor: entry.value.color.withValues(alpha: .8),
+              label: Text('${entry.key} - ${entry.value}'),
+              backgroundColor: (_defaultSectionColors[entry.key] ?? Colors.grey).withValues(alpha: .8),
               labelStyle: const TextStyle(color: Colors.white),
               onPressed: () {
                 onAdd(entry.key);
@@ -436,7 +514,7 @@ class _CustomSectionDialogState extends State<_CustomSectionDialog> {
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
-                children: SectionColorManager.availableColors.map((color) {
+                children: _availableColors.map((color) {
                   final isSelected = color == _selectedColor;
                   return GestureDetector(
                     onTap: () => setState(() => _selectedColor = color),

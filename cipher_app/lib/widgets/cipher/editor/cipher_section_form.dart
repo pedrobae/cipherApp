@@ -23,8 +23,9 @@ const List<Color> _availableColors = [
 const Map<String, String> _predefinedSectionTypes = {
   'I': 'Intro',
   'V1': 'Verso 1',
-  'V2': 'Verso 2', 
+  'V2': 'Verso 2',
   'V3': 'Verso 3',
+  'V4': 'Verso 4',
   'C': 'Refrão',
   'C1': 'Refrão 1',
   'C2': 'Refrão 2',
@@ -35,16 +36,17 @@ const Map<String, String> _predefinedSectionTypes = {
   'S': 'Solo',
   'O': 'Outro',
   'F': 'Final',
-  'N': 'Notas',
+  'N': 'Anotações',
   'T': 'Tag',
 };
 
-// Default colors for predefined sections  
+// Default colors for predefined sections
 const Map<String, Color> _defaultSectionColors = {
   'I': Colors.purple,
   'V1': Colors.blue,
   'V2': Colors.blue,
   'V3': Colors.blue,
+  'V4': Colors.blue,
   'C': Colors.red,
   'C1': Colors.red,
   'C2': Colors.red,
@@ -106,7 +108,9 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
 
       // Create controllers for all existing sections
       _currentSections.forEach((key, section) {
-        _sectionControllers[key] = TextEditingController(text: section.contentText);
+        _sectionControllers[key] = TextEditingController(
+          text: section.contentText,
+        );
       });
     }
 
@@ -125,7 +129,7 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
     super.dispose();
   }
 
-void _notifySectionChanged() {
+  void _notifySectionChanged() {
     // Ensure controller exists for every section in structure
     for (final section in _songStructure) {
       if (!_sectionControllers.containsKey(section)) {
@@ -137,7 +141,7 @@ void _notifySectionChanged() {
     for (final sectionCode in _songStructure) {
       final controller = _sectionControllers[sectionCode];
       final contentText = controller?.text ?? '';
-      
+
       // Check if we have a section in current sections
       if (_currentSections.containsKey(sectionCode)) {
         // Update existing section content
@@ -146,20 +150,23 @@ void _notifySectionChanged() {
         // Create new section - use predefined values if available, otherwise default
         final displayName = _predefinedSectionTypes[sectionCode];
         final color = _defaultSectionColors[sectionCode];
-        
+
         _currentSections[sectionCode] = Section(
           mapId: 0,
-          contentType: displayName ?? sectionCode, // Use display name or code as fallback
+          contentType:
+              displayName ??
+              sectionCode, // Use display name or code as fallback
           contentCode: sectionCode,
           contentText: contentText,
-          contentColor: color ?? Colors.grey, // Use predefined color or grey as fallback
+          contentColor:
+              color ?? Colors.grey, // Use predefined color or grey as fallback
         );
       }
     }
-    
+
     // Remove sections that are no longer in structure
     _currentSections.removeWhere((key, value) => !_songStructure.contains(key));
-    
+
     widget.onSectionChanged(_currentSections);
   }
 
@@ -191,7 +198,7 @@ void _notifySectionChanged() {
         if (!_currentSections.containsKey(sectionCode)) {
           final displayName = _predefinedSectionTypes[sectionCode];
           final color = _defaultSectionColors[sectionCode];
-          
+
           _currentSections[sectionCode] = Section(
             mapId: 0,
             contentType: displayName ?? sectionCode,
@@ -318,6 +325,11 @@ void _notifySectionChanged() {
                         icon: const Icon(Icons.library_music),
                         label: const Text('Seções Predefinidas'),
                         style: OutlinedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadiusGeometry.all(
+                              Radius.circular(24),
+                            ),
+                          ),
                           padding: const EdgeInsets.all(6),
                         ),
                       ),
@@ -329,6 +341,11 @@ void _notifySectionChanged() {
                         icon: const Icon(Icons.add),
                         label: const Text('Seção Personalizada'),
                         style: FilledButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadiusGeometry.all(
+                              Radius.circular(24),
+                            ),
+                          ),
                           padding: const EdgeInsets.all(6),
                         ),
                       ),
@@ -409,7 +426,8 @@ void _notifySectionChanged() {
                     TextFormField(
                       controller: _sectionControllers[section],
                       decoration: InputDecoration(
-                        hintText: 'Conteúdo da seção ${sectionType?.contentType ?? section}',
+                        hintText:
+                            'Conteúdo da seção ${sectionType?.contentType ?? section}',
                         border: const OutlineInputBorder(),
                       ),
                       maxLines: null,
@@ -458,7 +476,8 @@ class _PresetSectionsDialog extends StatelessWidget {
           children: sectionTypes.entries.map((entry) {
             return ActionChip(
               label: Text('${entry.key} - ${entry.value}'),
-              backgroundColor: (_defaultSectionColors[entry.key] ?? Colors.grey).withValues(alpha: .8),
+              backgroundColor: (_defaultSectionColors[entry.key] ?? Colors.grey)
+                  .withValues(alpha: .8),
               labelStyle: const TextStyle(color: Colors.white),
               onPressed: () {
                 onAdd(entry.key);

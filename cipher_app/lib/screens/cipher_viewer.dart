@@ -11,7 +11,7 @@ import 'cipher_editor.dart';
 
 class CipherViewer extends StatefulWidget {
   final Cipher cipher;
-  
+
   const CipherViewer({super.key, required this.cipher});
 
   @override
@@ -21,6 +21,7 @@ class CipherViewer extends StatefulWidget {
 class _CipherViewerState extends State<CipherViewer> {
   CipherVersion? _currentVersion;
   bool _hasShownVersionSelector = false;
+  bool _hasSetOriginalKey = false;
 
   @override
   void initState() {
@@ -30,11 +31,15 @@ class _CipherViewerState extends State<CipherViewer> {
         : null;
 
     if (widget.cipher.maps.isNotEmpty && !_hasShownVersionSelector) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _showVersionSelector();
-      _hasShownVersionSelector = true;
-    });
-  }
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showVersionSelector();
+        _hasShownVersionSelector = true;
+      });
+    }
+
+    if (!_hasSetOriginalKey) {
+      _hasSetOriginalKey = true;
+    }
   }
 
   void _selectVersion(CipherVersion version) {
@@ -88,7 +93,7 @@ class _CipherViewerState extends State<CipherViewer> {
 
   void _showLayoutSettings() {
     showGeneralDialog(
-      context: context, 
+      context: context,
       barrierDismissible: true,
       barrierLabel: 'Fechar',
       transitionDuration: const Duration(milliseconds: 300),
@@ -97,7 +102,7 @@ class _CipherViewerState extends State<CipherViewer> {
           alignment: Alignment.topCenter,
           child: Material(
             color: Colors.transparent,
-            child: LayoutSettings(),
+            child: LayoutSettings(originalKey: widget.cipher.musicKey),
           ),
         );
       },
@@ -116,7 +121,7 @@ class _CipherViewerState extends State<CipherViewer> {
   @override
   Widget build(BuildContext context) {
     final cipherProvider = context.watch<CipherProvider>();
-    final layoutProvider = context.watch<LayoutSettingsProvider>();
+    final settings = context.watch<LayoutSettingsProvider>();
     final hasVersions = widget.cipher.maps.isNotEmpty;
 
     final currentCipher = cipherProvider.ciphers.firstWhere(
@@ -136,6 +141,9 @@ class _CipherViewerState extends State<CipherViewer> {
       _currentVersion = null;
     }
 
+    if (!_hasSetOriginalKey) {
+      settings.setOriginalKey(currentCipher.musicKey);
+    }
     return Scaffold(
       appBar: AppBar(
         title: Column(
@@ -158,7 +166,7 @@ class _CipherViewerState extends State<CipherViewer> {
         actions: [
           if (hasVersions) ...[
             IconButton(
-              onPressed: _showLayoutSettings, 
+              onPressed: _showLayoutSettings,
               icon: const Icon(Icons.remove_red_eye),
               tooltip: 'Layout Settings',
             ),
@@ -193,7 +201,7 @@ class _CipherViewerState extends State<CipherViewer> {
                   child: CipherContentSection(
                     cipher: currentCipher,
                     currentVersion: _currentVersion!,
-                    columnCount: layoutProvider.columnCount,
+                    columnCount: settings.columnCount,
                   ),
                 ),
               ],

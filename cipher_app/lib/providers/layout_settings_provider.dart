@@ -7,6 +7,7 @@ class LayoutSettingsProvider extends ChangeNotifier {
   Color chordColor = const Color.fromARGB(255, 0, 0, 0);
   Color lyricColor = Colors.black;
   int columnCount = 1;
+  int transposeAmount = 0;
   bool showChords = true;
   bool showLyrics = true;
   bool showAnnotations = true;
@@ -80,6 +81,58 @@ class LayoutSettingsProvider extends ChangeNotifier {
     SettingsService.setShowTransitions(showTransitions);
     notifyListeners();
   }
+
+  // Transposition Logic
+  String originalKey = 'C';
+  String currentKey = 'C';
+
+  void setOriginalKey(String key) {
+    originalKey = key;
+    currentKey = key;
+  }
+
+  void resetToOriginalKey() {
+    currentKey = originalKey;
+    notifyListeners();
+  }
+
+  void transposeUp() {
+    final currentIndex = keys.indexOf(currentKey);
+    final newIndex = (currentIndex + 1) % keys.length;
+    currentKey = keys[newIndex];
+    transposeAmount = newIndex - keys.indexOf(originalKey);
+    notifyListeners();
+  }
+
+  void transposeDown() {
+    final currentIndex = keys.indexOf(currentKey);
+    final newIndex = (currentIndex - 1 + keys.length) % keys.length;
+    currentKey = keys[newIndex];
+    transposeAmount = newIndex - keys.indexOf(originalKey);
+    notifyListeners();
+  }
+
+  void selectKey(String key) {
+    currentKey = key;
+    transposeAmount = keys.indexOf(currentKey) - keys.indexOf(originalKey);
+    notifyListeners();
+  }
+
+  // Getter for keys
+  List<String> get keys => [
+    'C',
+    'Db',
+    'D',
+    'Eb',
+    'E',
+    'F',
+    'F#',
+    'G',
+    'Ab',
+    'A',
+    'Bb',
+    'B',
+  ];
 
   TextStyle get chordTextStyle => TextStyle(
     fontFamily: fontFamily,

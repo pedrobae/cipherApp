@@ -8,11 +8,13 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 //  Number of Columns
 //  Filters (Chords, Lyrics, Annotations, INTROS OUTROS BRIDGES)
 class LayoutSettings extends StatelessWidget {
-  const LayoutSettings({super.key});
+  final String originalKey;
+  const LayoutSettings({super.key, required this.originalKey});
 
   @override
   Widget build(BuildContext context) {
     final settings = Provider.of<LayoutSettingsProvider>(context);
+
     return Material(
       color: Theme.of(context).scaffoldBackgroundColor,
       child: SafeArea(
@@ -38,7 +40,10 @@ class LayoutSettings extends StatelessWidget {
                   ),
                 ],
               ),
-              Divider(color: Theme.of(context).dividerColor),
+              Divider(
+                color: Theme.of(context).dividerColor,
+                thickness: Theme.of(context).dividerTheme.thickness,
+              ),
               // Filters
               Text('Filtros', style: Theme.of(context).textTheme.titleMedium),
               Row(
@@ -71,7 +76,10 @@ class LayoutSettings extends StatelessWidget {
                   ),
                 ],
               ),
-              Divider(color: Theme.of(context).dividerColor),
+              Divider(
+                color: Theme.of(context).dividerColor,
+                thickness: Theme.of(context).dividerTheme.thickness,
+              ),
               // Font
               Text('Fonte', style: Theme.of(context).textTheme.titleMedium),
               Padding(
@@ -120,7 +128,10 @@ class LayoutSettings extends StatelessWidget {
                   ],
                 ),
               ),
-              Divider(color: Theme.of(context).dividerColor),
+              Divider(
+                color: Theme.of(context).dividerColor,
+                thickness: Theme.of(context).dividerTheme.thickness,
+              ),
               // Chord Color
               Text(
                 'Cor dos acordes',
@@ -180,7 +191,10 @@ class LayoutSettings extends StatelessWidget {
                   ],
                 ),
               ),
-              Divider(color: Theme.of(context).dividerColor),
+              Divider(
+                color: Theme.of(context).dividerColor,
+                thickness: Theme.of(context).dividerTheme.thickness,
+              ),
               // Layout
               Text('Layout', style: Theme.of(context).textTheme.titleMedium),
               Padding(
@@ -205,6 +219,67 @@ class LayoutSettings extends StatelessWidget {
                       ),
                   ],
                 ),
+              ),
+              Divider(
+                color: Theme.of(context).dividerColor,
+                thickness: Theme.of(context).dividerTheme.thickness,
+              ),
+              // Transposer
+              Text('Transpose', style: Theme.of(context).textTheme.titleMedium),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.remove),
+                    tooltip: 'Diminuir tom',
+                    onPressed: () => settings.transposeDown(),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: const Text('Selecione um tom'),
+                            content: Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: settings.keys.map((key) {
+                                return ElevatedButton(
+                                  onPressed: () {
+                                    settings.selectKey(key);
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text(key),
+                                );
+                              }).toList(),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: const Text('Cancelar'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    child: Text(
+                      settings.currentKey,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.add),
+                    tooltip: 'Aumentar tom',
+                    onPressed: () => settings.transposeUp(),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.refresh),
+                    tooltip: 'Voltar ao tom original',
+                    onPressed: () => settings.resetToOriginalKey(),
+                  ),
+                ],
               ),
             ],
           ),

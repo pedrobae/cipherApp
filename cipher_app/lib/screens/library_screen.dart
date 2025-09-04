@@ -76,25 +76,28 @@ class _LibraryScreenState extends State<LibraryScreen> {
           }
 
           // Display ciphers
-          return ListView.builder(
-            cacheExtent: 200,
-            physics: const BouncingScrollPhysics(), // Smoother scrolling
-            itemCount: cipherProvider.ciphers.length,
-            itemBuilder: (context, index) {
-              // Add bounds checking
-              if (index >= cipherProvider.ciphers.length) {
-                return const SizedBox.shrink();
-              }
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ListView.builder(
+              cacheExtent: 200,
+              physics: const BouncingScrollPhysics(), // Smoother scrolling
+              itemCount: cipherProvider.ciphers.length,
+              itemBuilder: (context, index) {
+                // Add bounds checking
+                if (index >= cipherProvider.ciphers.length) {
+                  return const SizedBox.shrink();
+                }
 
-              final cipher = cipherProvider.ciphers[index];
-              return CipherCard(
-                key: ValueKey(cipher.id), // Add keys for better performance
-                cipher: cipher,
-                onAddToPlaylist: () {
-                  // Handle add to playlist
-                },
-              );
-            },
+                final cipher = cipherProvider.ciphers[index];
+                return CipherCard(
+                  key: ValueKey(cipher.id), // Add keys for better performance
+                  cipher: cipher,
+                  onAddToPlaylist: () {
+                    // Handle add to playlist
+                  },
+                );
+              },
+            ),
           );
         },
       ),

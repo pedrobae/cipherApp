@@ -4,7 +4,7 @@ import '../services/settings_service.dart';
 class LayoutSettingsProvider extends ChangeNotifier {
   double fontSize = 16;
   String fontFamily = 'OpenSans';
-  Color chordColor = Colors.blue;
+  Color chordColor = const Color.fromARGB(255, 0, 0, 0);
   Color lyricColor = Colors.black;
   int columnCount = 1;
   bool showChords = true;
@@ -32,7 +32,7 @@ class LayoutSettingsProvider extends ChangeNotifier {
     SettingsService.setFontSize(value);
     notifyListeners();
   }
-  
+
   void setFontFamily(String family) {
     fontFamily = family;
     SettingsService.setFontFamily(family);
@@ -68,7 +68,7 @@ class LayoutSettingsProvider extends ChangeNotifier {
     SettingsService.setShowLyrics(showLyrics);
     notifyListeners();
   }
-  
+
   void toggleNotes() {
     showNotes = !showNotes;
     SettingsService.setShowNotes(showNotes);
@@ -95,6 +95,6 @@ class LayoutSettingsProvider extends ChangeNotifier {
     fontSize: fontSize.toDouble(),
     color: lyricColor,
     height: 2.2,
-    letterSpacing: 0, 
+    letterSpacing: 0,
   );
 }

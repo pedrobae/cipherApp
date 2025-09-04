@@ -24,6 +24,7 @@ class ChordProView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Song parsedSong = parseChordPro(song);
+    print(chordStyle.color);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

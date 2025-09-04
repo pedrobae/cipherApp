@@ -19,7 +19,6 @@ class CipherSectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final layoutProvider = context.watch<LayoutSettingsProvider>();
 
     return Column(
@@ -43,14 +42,14 @@ class CipherSectionCard extends StatelessWidget {
                       fontSize: layoutProvider.fontSize,
                     ),
                   ),
-                  SizedBox(width: 8,),
+                  SizedBox(width: 8),
                   Text(
                     sectionType,
                     style: TextStyle(
                       color: Colors.black,
-                      fontSize: (layoutProvider.fontSize*.9)
+                      fontSize: (layoutProvider.fontSize * .9),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),

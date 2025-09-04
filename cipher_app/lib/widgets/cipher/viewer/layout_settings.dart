@@ -144,6 +144,7 @@ class LayoutSettings extends StatelessWidget {
                                   pickerColor: settings.chordColor,
                                   onColorChanged: (color) {
                                     settings.setChordColor(color);
+                                    print(color);
                                   },
                                   pickerAreaHeightPercent: 0.8,
                                 ),

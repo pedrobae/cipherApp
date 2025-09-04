@@ -144,7 +144,6 @@ class LayoutSettings extends StatelessWidget {
                                   pickerColor: settings.chordColor,
                                   onColorChanged: (color) {
                                     settings.setChordColor(color);
-                                    print(color);
                                   },
                                   pickerAreaHeightPercent: 0.8,
                                 ),
@@ -152,12 +151,14 @@ class LayoutSettings extends StatelessWidget {
                               actions: [
                                 TextButton(
                                   child: const Text('Cancelar'),
-                                  onPressed: () => Navigator.of(context).pop(),
+                                  onPressed: () {
+                                    settings.setChordColor(tempColor);
+                                    Navigator.of(context).pop();
+                                  },
                                 ),
                                 TextButton(
                                   child: const Text('OK'),
                                   onPressed: () {
-                                    settings.setChordColor(tempColor);
                                     Navigator.of(context).pop();
                                   },
                                 ),

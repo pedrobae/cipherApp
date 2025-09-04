@@ -19,7 +19,7 @@ class CipherSectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final layoutProvider = context.watch<LayoutSettingsProvider>();
+    final ls = context.watch<LayoutSettingsProvider>();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -39,7 +39,7 @@ class CipherSectionCard extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
-                      fontSize: layoutProvider.fontSize,
+                      fontSize: ls.fontSize,
                     ),
                   ),
                   SizedBox(width: 8),
@@ -47,7 +47,7 @@ class CipherSectionCard extends StatelessWidget {
                     sectionType,
                     style: TextStyle(
                       color: Colors.black,
-                      fontSize: (layoutProvider.fontSize * .9),
+                      fontSize: (ls.fontSize * .9),
                     ),
                   ),
                 ],
@@ -67,12 +67,7 @@ class CipherSectionCard extends StatelessWidget {
               width: 1,
             ),
           ),
-          child: ChordProView(
-            song: sectionText,
-            maxWidth: double.infinity,
-            lyricStyle: layoutProvider.lyricTextStyle,
-            chordStyle: layoutProvider.chordTextStyle,
-          ),
+          child: ChordProView(song: sectionText, maxWidth: double.infinity),
         ),
         const SizedBox(height: 12),
       ],

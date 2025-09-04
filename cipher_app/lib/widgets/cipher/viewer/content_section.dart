@@ -1,8 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../providers/layout_settings_provider.dart';
 import '../../../models/domain/cipher.dart';
+import '../../../utils/section.dart';
 import 'section_card.dart';
-
 
 class CipherContentSection extends StatelessWidget {
   final Cipher cipher;
@@ -18,9 +20,15 @@ class CipherContentSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final sectionCardList = currentVersion.songStructure.split(',').map((
-      sectionCode,
-    ) {
+    final ls = context.watch<LayoutSettingsProvider>();
+    final filteredStructure = currentVersion.songStructure
+        .split(',')
+        .where(
+          (sectionCode) =>
+              ((ls.showAnnotations || !isAnnotation(sectionCode)) &&
+              (ls.showTransitions || !isTransition(sectionCode))),
+        );
+    final sectionCardList = filteredStructure.map((sectionCode) {
       return CipherSectionCard(
         sectionType: currentVersion.sections![sectionCode]!.contentType,
         sectionCode: sectionCode,

@@ -60,7 +60,7 @@ class LayoutSettings extends StatelessWidget {
                   FilterChip(
                     label: Text('Notas'),
                     showCheckmark: false,
-                    selected: settings.showNotes,
+                    selected: settings.showAnnotations,
                     onSelected: (_) => settings.toggleNotes(),
                   ),
                   FilterChip(

@@ -28,14 +28,11 @@ class LineView extends StatelessWidget {
           text: TextSpan(text: 'A', style: chordStyle),
           textDirection: TextDirection.ltr,
         )..layout();
-        final double yOffset = -textPainter.height /2 ;
+        final double yOffset = -textPainter.height / 2;
 
         return Stack(
           children: [
-            Text(
-              line,
-              style: lyricStyle,
-            ),
+            Text(line, style: lyricStyle),
             Positioned.fill(
               child: Stack(
                 clipBehavior: Clip.none,
@@ -43,10 +40,7 @@ class LineView extends StatelessWidget {
                   return Positioned(
                     left: chord.xOffset,
                     top: yOffset,
-                    child: Text(
-                      chord.name,
-                      style: chordStyle,
-                    ),
+                    child: Text(chord.name, style: chordStyle),
                   );
                 }).toList(),
               ),

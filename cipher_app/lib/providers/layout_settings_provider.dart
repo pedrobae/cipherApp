@@ -9,7 +9,7 @@ class LayoutSettingsProvider extends ChangeNotifier {
   int columnCount = 1;
   bool showChords = true;
   bool showLyrics = true;
-  bool showNotes = true;
+  bool showAnnotations = true;
   bool showTransitions = true;
 
   /// Initialize with stored settings
@@ -21,7 +21,7 @@ class LayoutSettingsProvider extends ChangeNotifier {
     columnCount = SettingsService.getColumnCount();
     showChords = SettingsService.getShowChords();
     showLyrics = SettingsService.getShowLyrics();
-    showNotes = SettingsService.getShowNotes();
+    showAnnotations = SettingsService.getShowNotes();
     showTransitions = SettingsService.getShowTransitions();
     notifyListeners();
   }
@@ -70,8 +70,8 @@ class LayoutSettingsProvider extends ChangeNotifier {
   }
 
   void toggleNotes() {
-    showNotes = !showNotes;
-    SettingsService.setShowNotes(showNotes);
+    showAnnotations = !showAnnotations;
+    SettingsService.setShowNotes(showAnnotations);
     notifyListeners();
   }
 

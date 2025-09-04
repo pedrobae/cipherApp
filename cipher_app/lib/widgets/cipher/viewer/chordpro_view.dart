@@ -1,13 +1,13 @@
+import 'package:cipher_app/providers/layout_settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:cipher_app/helpers/chords/chord_parser.dart';
 import 'package:cipher_app/helpers/chords/chord_song.dart';
+import 'package:provider/provider.dart';
 import 'line_view.dart';
 
 class ChordProView extends StatelessWidget {
   final String? song;
   final double maxWidth;
-  final TextStyle lyricStyle;
-  final TextStyle chordStyle;
   final int transpose;
   final bool centerChords;
 
@@ -15,31 +15,51 @@ class ChordProView extends StatelessWidget {
     super.key,
     this.song,
     required this.maxWidth,
-    required this.lyricStyle,
-    required this.chordStyle,
     this.transpose = 0,
     this.centerChords = true,
   });
 
   @override
   Widget build(BuildContext context) {
+    final ls = context.watch<LayoutSettingsProvider>();
     Song parsedSong = parseChordPro(song);
+
+    List<Widget> sectionChildren = [];
+
+    // CHECKS FILTERS - chords and lyrics
+    if (ls.showChords && ls.showLyrics) {
+      for (int i = 0; i < parsedSong.linesMap.length; i++) {
+        sectionChildren.add(
+          LineView(
+            chords: parsedSong.chordsMap[i] ?? [],
+            line: parsedSong.linesMap[i] ?? '',
+            chordStyle: ls.chordTextStyle,
+            lyricStyle: ls.lyricTextStyle,
+          ),
+        );
+      }
+    } else if (ls.showLyrics) {
+      for (int i = 0; i < parsedSong.linesMap.length; i++) {
+        sectionChildren.add(
+          Text(
+            parsedSong.linesMap[i] ?? '',
+            style: ls.lyricTextStyle.copyWith(height: 1.2),
+          ),
+        );
+      }
+    } else if (ls.showChords) {
+      List<Text> rowChildren = [];
+      for (int i = 0; i < parsedSong.chordsMap.length; i++) {
+        for (var chord in parsedSong.chordsMap[i]!) {
+          rowChildren.add(Text(chord.name, style: ls.chordTextStyle));
+        }
+      }
+      return Row(spacing: 5, children: rowChildren);
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        for (int i = 0; i < parsedSong.linesMap.length; i++)
-          Column(
-            children: [
-              LineView(
-                chords: parsedSong.chordsMap[i] ?? [],
-                line: parsedSong.linesMap[i] ?? '',
-                lyricStyle: lyricStyle,
-                chordStyle: chordStyle,
-              ),
-            ],
-          ),
-      ],
+      children: sectionChildren,
     );
   }
 }

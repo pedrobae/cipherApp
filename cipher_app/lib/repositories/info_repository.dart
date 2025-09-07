@@ -1,5 +1,5 @@
 import 'dart:convert';
-import '../helpers/database_helper.dart';
+import '../helpers/database.dart';
 import '../models/domain/info_item.dart';
 
 class InfoRepository {

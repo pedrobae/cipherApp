@@ -1,4 +1,4 @@
-import '../helpers/database_helper.dart';
+import '../helpers/database.dart';
 import '../models/domain/playlist.dart';
 
 class PlaylistRepository {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
-import '../helpers/database_helper.dart';
+import '../helpers/database.dart';
 import '../providers/cipher_provider.dart';
 import '../providers/playlist_provider.dart';
 import '../providers/info_provider.dart';

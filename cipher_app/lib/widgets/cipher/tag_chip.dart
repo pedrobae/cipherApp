@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../helpers/color_helpers.dart';
+import '../../helpers/colors.dart';
 import '../../utils/string_utils.dart';
 
 class TagChip extends StatelessWidget {

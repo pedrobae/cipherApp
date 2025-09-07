@@ -9,7 +9,7 @@ import 'providers/playlist_provider.dart';
 import 'providers/settings_provider.dart';
 import 'services/settings_service.dart';
 import 'routes/app_routes.dart';
-import 'helpers/database_factory_helper.dart';
+import 'helpers/database_factory.dart';
 
 void main() async {
   // Ensure Flutter is initialized before database operations

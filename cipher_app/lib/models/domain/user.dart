@@ -1,4 +1,4 @@
-import '../../helpers/datetime_helper.dart';
+import '../../helpers/datetime.dart';
 
 class User {
   final int id;

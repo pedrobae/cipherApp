@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cipher_app/helpers/database_helper.dart';
-import 'package:cipher_app/helpers/database_factory_helper.dart';
+import 'package:cipher_app/helpers/database.dart';
+import 'package:cipher_app/helpers/database_factory.dart';
 
 void main() {
   // Initialize database factory for tests

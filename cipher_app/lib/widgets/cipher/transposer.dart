@@ -22,22 +22,41 @@ class Transposer extends StatelessWidget {
               context: context,
               builder: (context) {
                 return AlertDialog(
+                  actionsAlignment: MainAxisAlignment.center,
                   title: const Text('Selecione um tom'),
-                  content: Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: settings.keys.map((key) {
-                      return ElevatedButton(
-                        onPressed: () {
-                          settings.selectKey(key);
-                          Navigator.of(context).pop();
-                        },
-                        child: Text(key),
-                      );
-                    }).toList(),
+                  content: SizedBox(
+                    width: double.maxFinite,
+                    child: GridView.count(
+                      shrinkWrap: true,
+                      crossAxisCount: 4,
+                      crossAxisSpacing: 8,
+                      mainAxisSpacing: 8,
+                      childAspectRatio: 1.5,
+                      children: settings.keys.map((key) {
+                        return ElevatedButton(
+                          onPressed: () {
+                            settings.selectKey(key);
+                            Navigator.of(context).pop();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: const Size(60, 48),
+                          ),
+                          child: Text(
+                            key,
+                            textAlign: TextAlign.center,
+                            overflow: TextOverflow.visible,
+                            softWrap: false,
+                          ),
+                        );
+                      }).toList(),
+                    ),
                   ),
                   actions: [
-                    TextButton(
+                    FilledButton(
+                      child: const Text('Tom original'),
+                      onPressed: () => settings.resetToOriginalKey(),
+                    ),
+                    FilledButton(
                       onPressed: () => Navigator.of(context).pop(),
                       child: const Text('Cancelar'),
                     ),
@@ -55,11 +74,6 @@ class Transposer extends StatelessWidget {
           icon: const Icon(Icons.add),
           tooltip: 'Aumentar tom',
           onPressed: () => settings.transposeUp(),
-        ),
-        IconButton(
-          icon: const Icon(Icons.refresh),
-          tooltip: 'Voltar ao tom original',
-          onPressed: () => settings.resetToOriginalKey(),
         ),
       ],
     );

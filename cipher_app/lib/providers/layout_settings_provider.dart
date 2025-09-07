@@ -93,6 +93,7 @@ class LayoutSettingsProvider extends ChangeNotifier {
 
   void resetToOriginalKey() {
     currentKey = originalKey;
+    transposeAmount = 0;
     notifyListeners();
   }
 

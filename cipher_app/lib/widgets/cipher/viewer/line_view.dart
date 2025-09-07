@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'package:cipher_app/helpers/chords/chord_song.dart';
+import 'package:cipher_app/helpers/chords/chord_transposer.dart';
+import 'package:cipher_app/providers/layout_settings_provider.dart';
 
 class LineView extends StatelessWidget {
   final List<Chord> chords;
@@ -17,6 +21,12 @@ class LineView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final settings = Provider.of<LayoutSettingsProvider>(context);
+    final transposer = ChordTransposer(
+                            originalKey: settings.originalKey, 
+                            transposeValue: settings.transposeAmount
+                          );
+    
     return LayoutBuilder(
       builder: (context, constraints) {
         // Calculate offsets with the actual available width
@@ -37,10 +47,14 @@ class LineView extends StatelessWidget {
               child: Stack(
                 clipBehavior: Clip.none,
                 children: chords.map((chord) {
+                  final String chordToShow = settings.transposeAmount != 0 ? transposer.transpose(chord.name) : chord.name;
                   return Positioned(
                     left: chord.xOffset,
                     top: yOffset,
-                    child: Text(chord.name, style: chordStyle),
+                    child: Text(
+                      chordToShow, 
+                      style: chordStyle,
+                      ),
                   );
                 }).toList(),
               ),

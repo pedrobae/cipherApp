@@ -15,15 +15,19 @@ class PlaylistViewer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final playlistProvider = context.watch<PlaylistProvider>();
-    final bool hasCipherVersions = playlist.cipherVersionIds.isEmpty;
+    final bool hasCipherVersions = playlist.cipherVersionIds.isNotEmpty;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          playlist.name,
-          style: Theme.of(
-            context,
-          ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+        title: Column(
+          children: [
+            Text(
+              playlist.name,
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+            ),
+          ],
         ),
         centerTitle: true,
         actions: [
@@ -39,31 +43,29 @@ class PlaylistViewer extends StatelessWidget {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Text(playlist.description ?? ''),
-          Expanded(
-            child: hasCipherVersions
-                ? ReorderableListView(
-                    onReorder: (oldIndex, newIndex) {
-                      if (newIndex > oldIndex) newIndex--;
-                      final item = playlist.cipherVersionIds.removeAt(oldIndex);
-                      playlist.cipherVersionIds.insert(newIndex, item);
-                      playlistProvider.reorderPlaylistCipherMaps(
-                        playlist.id,
-                        playlist.cipherVersionIds,
-                      );
-                    },
-                    children: playlist.cipherVersionIds.map((cipherVersionId) {
-                      return CipherVersionCard(
-                        cipherVersionId: cipherVersionId,
-                      );
-                    }).toList(),
-                  )
-                : const EmptyPlaylistWidget(),
-          ),
-        ],
-      ),
+      body: hasCipherVersions
+          ? ReorderableListView(
+              proxyDecorator: (child, index, animation) =>
+                  Material(type: MaterialType.transparency, child: child),
+              buildDefaultDragHandles: true,
+              header: Center(child: Text(playlist.description ?? '')),
+              onReorder: (oldIndex, newIndex) {
+                if (newIndex > oldIndex) newIndex--;
+                final item = playlist.cipherVersionIds.removeAt(oldIndex);
+                playlist.cipherVersionIds.insert(newIndex, item);
+                playlistProvider.reorderPlaylistCipherMaps(
+                  playlist.id,
+                  playlist.cipherVersionIds,
+                );
+              },
+              children: playlist.cipherVersionIds.map((cipherVersionId) {
+                return CipherVersionCard(
+                  key: Key(cipherVersionId.toString()),
+                  cipherVersionId: cipherVersionId,
+                );
+              }).toList(),
+            )
+          : const EmptyPlaylistWidget(),
     );
   }
 

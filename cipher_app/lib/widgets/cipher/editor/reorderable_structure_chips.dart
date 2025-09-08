@@ -25,10 +25,22 @@ class ReorderableStructureChips extends StatelessWidget {
     }
     final displayName = sectionTypes[key] ?? key;
     const defaultColors = {
-      'I': Colors.purple, 'V1': Colors.blue, 'V2': Colors.blue, 'V3': Colors.blue,
-      'C': Colors.red, 'C1': Colors.red, 'C2': Colors.red, 'PC': Colors.orange,
-      'B': Colors.green, 'B1': Colors.green, 'B2': Colors.green, 'S': Colors.amber,
-      'O': Colors.brown, 'F': Colors.indigo, 'N': Colors.grey, 'T': Colors.teal,
+      'I': Colors.purple,
+      'V1': Colors.blue,
+      'V2': Colors.blue,
+      'V3': Colors.blue,
+      'C': Colors.red,
+      'C1': Colors.red,
+      'C2': Colors.red,
+      'PC': Colors.orange,
+      'B': Colors.green,
+      'B1': Colors.green,
+      'B2': Colors.green,
+      'S': Colors.amber,
+      'O': Colors.brown,
+      'F': Colors.indigo,
+      'N': Colors.grey,
+      'T': Colors.teal,
     };
     return (displayName, defaultColors[key] ?? Colors.grey);
   }
@@ -50,6 +62,8 @@ class ReorderableStructureChips extends StatelessWidget {
               ),
             )
           : ReorderableListView.builder(
+              proxyDecorator: (child, index, animation) =>
+                  Material(type: MaterialType.transparency, child: child),
               buildDefaultDragHandles: false,
               scrollDirection: Axis.horizontal,
               itemCount: songStructure.length,
@@ -58,7 +72,7 @@ class ReorderableStructureChips extends StatelessWidget {
                 final section = songStructure[index];
                 final sectionInfo = _getSectionInfo(section);
                 final color = sectionInfo.$2;
-                
+
                 return CustomReorderableDelayed(
                   delay: Duration(milliseconds: 100),
                   key: ValueKey('$section-$index'),
@@ -68,11 +82,17 @@ class ReorderableStructureChips extends StatelessWidget {
                     child: Stack(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
                           decoration: BoxDecoration(
                             color: color.withValues(alpha: .8),
                             borderRadius: BorderRadius.circular(5),
-                            border: Border.all(color: Theme.of(context).highlightColor, width: 2),
+                            border: Border.all(
+                              color: Theme.of(context).highlightColor,
+                              width: 2,
+                            ),
                           ),
                           child: Column(
                             mainAxisSize: MainAxisSize.max,
@@ -112,7 +132,7 @@ class ReorderableStructureChips extends StatelessWidget {
                         ),
                       ],
                     ),
-                  )
+                  ),
                 );
               },
             ),

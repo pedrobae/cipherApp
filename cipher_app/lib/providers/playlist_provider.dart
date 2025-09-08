@@ -20,7 +20,6 @@ class PlaylistProvider extends ChangeNotifier {
   bool get isSaving => _isSaving;
   bool get isDeleting => _isDeleting;
   String? get error => _error;
-  
 
   // ===== READ =====
   // Load Playlists from local SQLite database
@@ -42,7 +41,7 @@ class PlaylistProvider extends ChangeNotifier {
   }
 
   // Load Single Playlist by ID
-  Future<void> _loadPlaylist(int id) async{
+  Future<void> _loadPlaylist(int id) async {
     if (_isLoading) return;
 
     _isLoading = true;
@@ -50,8 +49,10 @@ class PlaylistProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final Playlist playlist = (await _playlistRepository.getPlaylistById(id))!;
-      
+      final Playlist playlist = (await _playlistRepository.getPlaylistById(
+        id,
+      ))!;
+
       int existingIndex = _playlists.indexWhere((p) => p.id == playlist.id);
 
       if (existingIndex != -1) {
@@ -89,22 +90,33 @@ class PlaylistProvider extends ChangeNotifier {
 
   // ===== UPDATE =====
   // Update a Playlist with new data (name/description)
-  Future<void> updatePlaylistInfo(int id, String? name, String? description) async {
-    await _playlistRepository.updatePlaylist(id, name: name, description: description);
+  Future<void> updatePlaylistInfo(
+    int id,
+    String? name,
+    String? description,
+  ) async {
+    await _playlistRepository.updatePlaylist(
+      id,
+      name: name,
+      description: description,
+    );
     await _loadPlaylist(id); // Reload just this playlist
   }
 
   // Update a Playlist with a new Cipher Map
-  Future<void> addCipherMap(int playlistId, int cipherMapId) async { 
+  Future<void> addCipherMap(int playlistId, int cipherMapId) async {
     await _playlistRepository.addCipherMapToPlaylist(playlistId, cipherMapId);
     await _loadPlaylist(playlistId);
-   }
+  }
 
   // Update a Playlist with a new Order, but same cipher maps
-  Future<void> reorderPlaylistCipherMaps(int playlistId, List<int> newOrder) async { 
+  Future<void> reorderPlaylistCipherMaps(
+    int playlistId,
+    List<int> newOrder,
+  ) async {
     await _playlistRepository.reorderPlaylistCipherMaps(playlistId, newOrder);
     await _loadPlaylist(playlistId);
-   }
+  }
 
   // Update a Playlist with a new Collaborator
   Future<void> addCollaborator(int playlistId, int collaboratorId) async {
@@ -123,7 +135,7 @@ class PlaylistProvider extends ChangeNotifier {
 
     try {
       await _playlistRepository.deletePlaylist(playlistId);
-      int i =_playlists.indexWhere((p) => p.id == playlistId);
+      int i = _playlists.indexWhere((p) => p.id == playlistId);
       _playlists.removeAt(i);
     } catch (e) {
       _error = e.toString();
@@ -134,13 +146,22 @@ class PlaylistProvider extends ChangeNotifier {
   }
 
   // Remove a Cipher Map from a Playlist
-  Future<void> removeCipherMapFromPlaylist(int playlistId, int cipherMapId) async {
-    await _playlistRepository.removeCipherMapFromPlaylist(playlistId, cipherMapId);
+  Future<void> removeCipherMapFromPlaylist(
+    int playlistId,
+    int cipherMapId,
+  ) async {
+    await _playlistRepository.removeVersionFromPlaylist(
+      playlistId,
+      cipherMapId,
+    );
     await _loadPlaylist(playlistId);
   }
 
   // Remove a Collaborator from a Playlist
-  Future<void> removeCollaboratorFromPlaylist(int playlistId, int collaboratorId) async {
+  Future<void> removeCollaboratorFromPlaylist(
+    int playlistId,
+    int collaboratorId,
+  ) async {
     await _playlistRepository.removeCollaborator(playlistId, collaboratorId);
     await _loadPlaylist(playlistId);
   }

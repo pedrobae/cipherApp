@@ -197,6 +197,16 @@ class PlaylistRepository {
     final db = await _databaseHelper.database;
 
     await db.delete('playlist', where: 'id = ?', whereArgs: [playlistId]);
+    await db.delete(
+      'playlist_cipher_map',
+      where: 'playlist_id = ?',
+      whereArgs: [playlistId],
+    );
+    await db.delete(
+      'user_playlist',
+      where: 'playlist_id = ?',
+      whereArgs: [playlistId],
+    );
   }
 
   // ===== CIPHER MAP MANAGEMENT =====
@@ -240,7 +250,7 @@ class PlaylistRepository {
     });
   }
 
-  Future<void> removeCipherMapFromPlaylist(
+  Future<void> removeVersionFromPlaylist(
     int playlistId,
     int cipherMapId,
   ) async {

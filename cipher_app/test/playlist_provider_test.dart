@@ -296,19 +296,6 @@ void main() {
       });
     });
 
-    group('Error Handling', () {
-      test('should handle errors gracefully', () async {
-        // This test would require mocking to simulate database errors
-        // For now, we verify that error state is properly managed
-        expect(provider.error, isNull);
-      });
-
-      test('should not update playlists when loading fails', () async {
-        // Would require mocking database to fail
-        // Verify that on error, playlists remain unchanged
-      });
-    });
-
     group('State Management', () {
       test('should notify listeners when playlists change', () async {
         // Arrange

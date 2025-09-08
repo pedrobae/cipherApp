@@ -203,7 +203,7 @@ void main() {
         await repository.addCipherMapToPlaylist(testPlaylistId, 2);
 
         // Act
-        await repository.removeCipherMapFromPlaylist(testPlaylistId, 1);
+        await repository.removeVersionFromPlaylist(testPlaylistId, 1);
 
         // Assert
         final playlist = await repository.getPlaylistById(testPlaylistId);

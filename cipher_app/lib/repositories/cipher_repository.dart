@@ -129,6 +129,19 @@ class CipherRepository {
     );
   }
 
+  Future<void> updateFieldOfCipherVersion(
+    int versionId,
+    Map<String, dynamic> field,
+  ) async {
+    final db = await _databaseHelper.database;
+    await db.update(
+      'cipher_map',
+      field,
+      where: 'id = ?',
+      whereArgs: [versionId],
+    );
+  }
+
   Future<void> deleteCipherVersion(int id) async {
     final db = await _databaseHelper.database;
     await db.delete('cipher_map', where: 'id = ?', whereArgs: [id]);

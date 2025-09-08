@@ -1,85 +1,172 @@
-import 'package:cipher_app/widgets/cipher/tag_chip.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/domain/cipher.dart';
 import 'package:cipher_app/providers/cipher_provider.dart';
+import '../cipher/editor/custom_reorderable_delayed.dart';
 
-class CipherVersionCard extends StatelessWidget {
+class CipherVersionCard extends StatefulWidget {
   final int cipherVersionId;
   const CipherVersionCard({super.key, required this.cipherVersionId});
 
   @override
+  State<CipherVersionCard> createState() => _CipherVersionCardState();
+}
+
+class _CipherVersionCardState extends State<CipherVersionCard> {
+  Cipher? _cipher;
+  List<String> _songStructureList = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCipher();
+  }
+
+  Future<void> _loadCipher() async {
+    final cipherProvider = context.read<CipherProvider>();
+    final cipher = await cipherProvider.getCipherVersionById(
+      widget.cipherVersionId,
+    );
+
+    if (mounted && cipher != null) {
+      setState(() {
+        _cipher = cipher;
+        _songStructureList = cipher.maps[0].songStructure
+            .split(',')
+            .map((s) => s.trim())
+            .where((s) => s.isNotEmpty)
+            .toList();
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _onReorder(int oldIndex, int newIndex) {
+    // Update UI immediately (optimistic update)
+    setState(() {
+      if (newIndex > oldIndex) newIndex--;
+      final item = _songStructureList.removeAt(oldIndex);
+      _songStructureList.insert(newIndex, item);
+    });
+
+    // Persist to database (async, no UI blocking)
+    final cipherProvider = context.read<CipherProvider>();
+    final stringStructure = _songStructureList.toString();
+    cipherProvider.updateVersionSongStructure(
+      _cipher!.maps[0].id!,
+      stringStructure.substring(1, stringStructure.length - 1),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final cipherProvider = Provider.of<CipherProvider>(context);
+    if (_isLoading) {
+      return const CircularProgressIndicator();
+    }
 
-    return FutureBuilder<Cipher?>(
-      future: cipherProvider.getCipherVersionById(cipherVersionId),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
-        }
+    if (_cipher == null) {
+      return const Text('Cifra não encontrada');
+    }
 
-        if (snapshot.hasError) {
-          return Text('Erro: ${snapshot.error}');
-        }
+    final version = _cipher!.maps[0];
 
-        final cipher = snapshot.data;
-        if (cipher == null) {
-          return Text('Cifra não encontrada');
-        }
-
-        return Card(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest,
-          elevation: 4,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+    return Card(
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.end,
+                    spacing: 10,
                     children: [
-                      Wrap(
-                        crossAxisAlignment: WrapCrossAlignment.end,
-                        spacing: 10,
-                        children: [
-                          Text(
-                            cipher.title,
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                          Text(cipher.author),
-                        ],
+                      Text(
+                        _cipher!.title,
+                        style: Theme.of(context).textTheme.titleLarge,
                       ),
-                      Row(
-                        children: [
-                          Text('Versão: ${cipher.maps[0].versionName}'),
-                          const SizedBox(width: 8),
-                          Text('Tom: ${cipher.musicKey}'),
-                          const SizedBox(width: 8),
-                          Text('Tempo: ${cipher.tempo}'),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 4,
-                        runSpacing: 4,
-                        children: cipher.tags
-                            .map((tag) => TagChip(tag: tag))
-                            .toList(),
-                      ),
+                      Text(_cipher!.author),
                     ],
                   ),
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.delete, color: Colors.red),
-                ),
-              ],
+                  Wrap(
+                    children: [
+                      Text('Versão: ${version.versionName}'),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Tom: ${version.transposedKey ?? _cipher!.musicKey}',
+                      ),
+                      const SizedBox(width: 8),
+                      Text('Tempo: ${_cipher!.tempo}'),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    height: 30,
+                    child: ReorderableListView.builder(
+                      proxyDecorator: (child, index, animation) => Material(
+                        type: MaterialType.transparency,
+                        child: child,
+                      ),
+                      buildDefaultDragHandles: false,
+                      physics: const ClampingScrollPhysics(),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _songStructureList.length,
+                      onReorder: _onReorder,
+                      itemBuilder: (context, index) {
+                        final sectionCode = _songStructureList[index];
+                        final section = version.sections![sectionCode];
+
+                        return CustomReorderableDelayed(
+                          delay: Duration(milliseconds: 100),
+                          key: ValueKey('$section-$index'),
+                          index: index,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: section!.contentColor.withValues(
+                                alpha: .8,
+                              ),
+                              borderRadius: BorderRadius.circular(5),
+                              border: Border.all(
+                                color: Theme.of(context).highlightColor,
+                                width: 2,
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                section.contentCode,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
-      },
+            IconButton(
+              onPressed: () {},
+              icon: Icon(Icons.delete, color: Colors.red),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

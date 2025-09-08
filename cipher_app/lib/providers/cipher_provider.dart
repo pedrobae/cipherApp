@@ -337,6 +337,35 @@ class CipherProvider extends ChangeNotifier {
     }
   }
 
+  /// Update the song structure of a specific cipher version
+  Future<void> updateVersionSongStructure(
+    int versionId,
+    String songStructure,
+  ) async {
+    if (_isSaving) return;
+
+    _isSaving = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _cipherRepository.updateFieldOfCipherVersion(versionId, {
+        'song_structure': songStructure,
+      });
+
+      // Reload all ciphers to get the updated data
+      await loadCiphers();
+    } catch (e) {
+      _error = e.toString();
+      if (kDebugMode) {
+        print('Error updating cipher version: $e');
+      }
+    } finally {
+      _isSaving = false;
+      notifyListeners();
+    }
+  }
+
   /// Delete a specific cipher version (CipherMap)
   Future<void> deleteCipherVersion(int mapId) async {
     if (_isSaving) return;

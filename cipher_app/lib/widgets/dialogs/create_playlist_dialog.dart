@@ -52,10 +52,7 @@ class _CreatePlaylistDialogState extends State<CreatePlaylistDialog> {
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('Cancelar'),
         ),
-        ElevatedButton(
-          onPressed: _createPlaylist,
-          child: const Text('Criar'),
-        ),
+        ElevatedButton(onPressed: _createPlaylist, child: const Text('Criar')),
       ],
     );
   }
@@ -67,19 +64,19 @@ class _CreatePlaylistDialogState extends State<CreatePlaylistDialog> {
     final newPlaylist = Playlist(
       id: 0, // Will be auto-generated
       name: name,
-      description: _descriptionController.text.trim().isEmpty 
-          ? null 
+      description: _descriptionController.text.trim().isEmpty
+          ? null
           : _descriptionController.text.trim(),
       createdBy: '1', // TODO: Get from user session
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
-      cipherMapIds: const [],
+      cipherVersionIds: const [],
       collaborators: const [],
     );
-    
+
     Navigator.of(context).pop();
     context.read<PlaylistProvider>().createPlaylist(newPlaylist);
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Playlist "$name" criada'),

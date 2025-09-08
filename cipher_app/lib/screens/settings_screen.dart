@@ -29,7 +29,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             // App Settings Section
             _buildSectionHeader('Configurações do App', Icons.settings),
             const SizedBox(height: 16),
-            
+
             _buildSettingsTile(
               icon: Icons.notifications,
               title: 'Notificações',
@@ -39,7 +39,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 _showComingSoon(context);
               },
             ),
-            
+
             _buildSettingsTile(
               icon: Icons.palette,
               title: 'Tema',
@@ -48,52 +48,59 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 _showThemeDialog(context);
               },
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             // Development Tools Section (only in debug mode)
             if (kDebugMode) ...[
-              _buildSectionHeader('Ferramentas de Desenvolvimento', Icons.build),
+              _buildSectionHeader(
+                'Ferramentas de Desenvolvimento',
+                Icons.build,
+              ),
               const SizedBox(height: 16),
-              
+
               _buildDangerousTile(
                 icon: Icons.refresh,
                 title: 'Resetar Banco de Dados',
                 subtitle: 'Apaga todos os dados e recria com dados iniciais',
                 isLoading: _isResettingDb,
-                onTap: _isResettingDb ? null : () => _showResetDatabaseDialog(context),
+                onTap: _isResettingDb
+                    ? null
+                    : () => _showResetDatabaseDialog(context),
               ),
-              
+
               Card(
                 child: ListTile(
                   leading: const Icon(Icons.cached),
                   title: const Text('Recarregar Interface'),
-                  subtitle: const Text('Debug: Força recarga completa de dados e telas'),
-                  trailing: _isReloading 
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.refresh),
+                  subtitle: const Text(
+                    'Debug: Força recarga completa de dados e telas',
+                  ),
+                  trailing: _isReloading
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.refresh),
                   onTap: _isReloading ? null : _reloadAllData,
                 ),
               ),
-              
+
               _buildSettingsTile(
                 icon: Icons.storage,
                 title: 'Informações do Banco',
                 subtitle: 'Ver estatísticas e tabelas',
                 onTap: () => _showDatabaseInfo(),
               ),
-              
+
               const SizedBox(height: 32),
             ],
-            
+
             // About Section
             _buildSectionHeader('Sobre', Icons.info),
             const SizedBox(height: 16),
-            
+
             _buildSettingsTile(
               icon: Icons.info_outline,
               title: 'Versão do App',
@@ -102,7 +109,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 _showAboutDialog(context);
               },
             ),
-            
+
             _buildSettingsTile(
               icon: Icons.help_outline,
               title: 'Ajuda e Suporte',
@@ -158,20 +165,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
     required VoidCallback? onTap,
   }) {
     final colorScheme = Theme.of(context).colorScheme;
-    
+
     return Card(
       color: colorScheme.errorContainer.withValues(alpha: 0.9),
       child: ListTile(
-        leading: isLoading 
-          ? SizedBox(
-              width: 24,
-              height: 24,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            )
-          : Icon(icon, color: colorScheme.error),
+        leading: isLoading
+            ? SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : Icon(icon, color: colorScheme.error),
         title: Text(title, style: TextStyle(color: colorScheme.error)),
         subtitle: Text(subtitle),
-        trailing: isLoading ? null : Icon(Icons.chevron_right, color: colorScheme.error),
+        trailing: isLoading
+            ? null
+            : Icon(Icons.chevron_right, color: colorScheme.error),
         onTap: onTap,
       ),
     );
@@ -193,7 +202,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           '• Recriar as tabelas\n'
           '• Inserir dados iniciais (Amazing Grace, How Great Thou Art)\n\n'
           'Esta ação NÃO pode ser desfeita.\n\n'
-          'Tem certeza que deseja continuar?'
+          'Tem certeza que deseja continuar?',
         ),
         actions: [
           TextButton(
@@ -217,20 +226,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _resetDatabase() async {
     setState(() => _isResettingDb = true);
-    
+
     try {
       final dbHelper = DatabaseHelper();
       await dbHelper.resetDatabase();
-      
-      
+
       // Check if widget is still mounted before using context
       if (mounted) await context.read<CipherProvider>().loadCiphers();
 
       if (mounted) await context.read<PlaylistProvider>().loadPlaylists();
-            
+
       // Check mounted again after async operations
       if (!mounted) return;
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Row(
@@ -245,7 +253,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       );
     } catch (e) {
       if (!mounted) return;
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Erro ao resetar banco: $e'),
@@ -261,13 +269,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _reloadAllData() async {
     setState(() => _isReloading = true);
-    
+
     try {
       // Clear all provider caches first
       context.read<CipherProvider>().clearCache();
       context.read<PlaylistProvider>().clearCache();
       context.read<InfoProvider>().clearCache();
-      
+
       // Force reload all providers from database
       await Future.wait([
         context.read<CipherProvider>().loadCiphers(),
@@ -311,23 +319,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
     try {
       final dbHelper = DatabaseHelper();
       final db = await dbHelper.database;
-      
+
       // Get table counts
-      final tables = ['cipher', 'tag', 'cipher_tags', 'cipher_map', 'map_content', 'user', 'playlist', 'playlist_cipher_map', 'user_playlist', 'app_info'];
+      final tables = [
+        'cipher',
+        'tag',
+        'cipher_tags',
+        'cipher_map',
+        'map_content',
+        'user',
+        'playlist',
+        'playlist_cipher_map',
+        'user_playlist',
+        'app_info',
+      ];
       final Map<String, int> tableCounts = {};
-      
+
       for (final table in tables) {
         try {
-          final result = await db.rawQuery('SELECT COUNT(*) as count FROM $table');
+          final result = await db.rawQuery(
+            'SELECT COUNT(*) as count FROM $table',
+          );
           tableCounts[table] = result.first['count'] as int;
         } catch (e) {
           tableCounts[table] = -1; // Error indicator
         }
       }
-      
+
       // Check mounted after async operations
       if (!mounted) return;
-      
+
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -337,7 +358,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Registros por tabela:', style: TextStyle(fontWeight: FontWeight.bold)),
+                const Text(
+                  'Registros por tabela:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
                 const SizedBox(height: 8),
                 ...tableCounts.entries.map((entry) {
                   final count = entry.value;
@@ -351,13 +375,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           count == -1 ? 'Erro' : count.toString(),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: count == -1 ? Theme.of(context).colorScheme.error : null,
+                            color: count == -1
+                                ? Theme.of(context).colorScheme.error
+                                : null,
                           ),
                         ),
                       ],
                     ),
                   );
-                })
+                }),
               ],
             ),
           ),
@@ -371,7 +397,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       );
     } catch (e) {
       if (!mounted) return;
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Erro ao acessar banco: $e'),
@@ -383,59 +409,40 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   void _showComingSoon(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Funcionalidade em desenvolvimento 🚧'),
-      ),
+      const SnackBar(content: Text('Funcionalidade em desenvolvimento 🚧')),
     );
   }
 
   void _showThemeDialog(BuildContext context) {
     final settingsProvider = context.read<SettingsProvider>();
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Escolher Tema'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            RadioListTile<ThemeMode>(
-              title: const Text('Claro'),
-              subtitle: const Text('Sempre usar tema claro'),
-              value: ThemeMode.light,
-              groupValue: settingsProvider.themeMode,
-              onChanged: (value) {
-                if (value != null) {
-                  settingsProvider.setThemeMode(value);
-                  Navigator.pop(context);
-                }
-              },
-            ),
-            RadioListTile<ThemeMode>(
-              title: const Text('Escuro'),
-              subtitle: const Text('Sempre usar tema escuro'),
-              value: ThemeMode.dark,
-              groupValue: settingsProvider.themeMode,
-              onChanged: (value) {
-                if (value != null) {
-                  settingsProvider.setThemeMode(value);
-                  Navigator.pop(context);
-                }
-              },
-            ),
-            RadioListTile<ThemeMode>(
-              title: const Text('Sistema'),
-              subtitle: const Text('Seguir configuração do sistema'),
-              value: ThemeMode.system,
-              groupValue: settingsProvider.themeMode,
-              onChanged: (value) {
-                if (value != null) {
-                  settingsProvider.setThemeMode(value);
-                  Navigator.pop(context);
-                }
-              },
-            ),
-          ],
+        content: RadioGroup(
+          groupValue: settingsProvider.themeMode,
+          onChanged: (dynamic value) => settingsProvider.setThemeMode(value),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              RadioListTile<ThemeMode>(
+                title: const Text('Claro'),
+                subtitle: const Text('Sempre usar tema claro'),
+                value: ThemeMode.light,
+              ),
+              RadioListTile<ThemeMode>(
+                title: const Text('Escuro'),
+                subtitle: const Text('Sempre usar tema escuro'),
+                value: ThemeMode.dark,
+              ),
+              RadioListTile<ThemeMode>(
+                title: const Text('Sistema'),
+                subtitle: const Text('Seguir configuração do sistema'),
+                value: ThemeMode.system,
+              ),
+            ],
+          ),
         ),
         actions: [
           TextButton(

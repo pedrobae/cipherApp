@@ -18,10 +18,10 @@ void main() {
     setUp(() async {
       repository = PlaylistRepository();
       databaseHelper = DatabaseHelper();
-      
+
       // Set current user for testing
       PlaylistRepository.setCurrentUserId(1);
-      
+
       // Reset database for each test
       await databaseHelper.resetDatabase();
     });
@@ -40,7 +40,7 @@ void main() {
           createdBy: '1',
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
-          cipherMapIds: [1, 2], // Reference existing seeded cipher maps
+          cipherVersionIds: [1, 2], // Reference existing seeded cipher maps
           collaborators: [],
         );
 
@@ -55,8 +55,8 @@ void main() {
         final retrievedPlaylist = await repository.getPlaylistById(playlistId);
         expect(retrievedPlaylist, isNotNull);
         expect(retrievedPlaylist!.name, equals('Teste Playlist'));
-        expect(retrievedPlaylist.cipherMapIds, contains(1));
-        expect(retrievedPlaylist.cipherMapIds, contains(2));
+        expect(retrievedPlaylist.cipherVersionIds, contains(1));
+        expect(retrievedPlaylist.cipherVersionIds, contains(2));
       });
 
       test('should get all playlists', () async {
@@ -67,14 +67,17 @@ void main() {
 
         // Assert
         expect(playlists, isA<List<Playlist>>());
-        expect(playlists.length, greaterThanOrEqualTo(2)); // At least 2 seeded playlists
-        
+        expect(
+          playlists.length,
+          greaterThanOrEqualTo(2),
+        ); // At least 2 seeded playlists
+
         // Check if seeded playlists exist
         final worshipPlaylist = playlists.firstWhere(
           (p) => p.name == 'Culto Dominical',
           orElse: () => throw Exception('Worship playlist not found'),
         );
-        expect(worshipPlaylist.cipherMapIds, isNotEmpty);
+        expect(worshipPlaylist.cipherVersionIds, isNotEmpty);
       });
 
       test('should get playlist by ID with relationships', () async {
@@ -89,7 +92,10 @@ void main() {
         expect(playlist, isNotNull);
         expect(playlist!.id, equals(existingPlaylist.id));
         expect(playlist.name, equals(existingPlaylist.name));
-        expect(playlist.cipherMapIds, equals(existingPlaylist.cipherMapIds));
+        expect(
+          playlist.cipherVersionIds,
+          equals(existingPlaylist.cipherVersionIds),
+        );
       });
 
       test('should return null for non-existent playlist', () async {
@@ -135,7 +141,7 @@ void main() {
 
         // Verify relationships were also deleted
         final db = await databaseHelper.database;
-        
+
         final cipherRelations = await db.query(
           'playlist_cipher_map',
           where: 'playlist_id = ?',
@@ -164,7 +170,7 @@ void main() {
           createdBy: '1',
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
-          cipherMapIds: [],
+          cipherVersionIds: [],
           collaborators: [],
         );
         testPlaylistId = await repository.createPlaylist(playlist);
@@ -176,7 +182,7 @@ void main() {
 
         // Assert
         final playlist = await repository.getPlaylistById(testPlaylistId);
-        expect(playlist!.cipherMapIds, contains(1));
+        expect(playlist!.cipherVersionIds, contains(1));
       });
 
       test('should add cipher map with correct position', () async {
@@ -188,7 +194,7 @@ void main() {
 
         // Assert
         final playlist = await repository.getPlaylistById(testPlaylistId);
-        expect(playlist!.cipherMapIds, equals([1, 2]));
+        expect(playlist!.cipherVersionIds, equals([1, 2]));
       });
 
       test('should remove cipher map from playlist', () async {
@@ -201,8 +207,8 @@ void main() {
 
         // Assert
         final playlist = await repository.getPlaylistById(testPlaylistId);
-        expect(playlist!.cipherMapIds, equals([2]));
-        expect(playlist.cipherMapIds, isNot(contains(1)));
+        expect(playlist!.cipherVersionIds, equals([2]));
+        expect(playlist.cipherVersionIds, isNot(contains(1)));
       });
 
       test('should reorder playlist cipher maps', () async {
@@ -216,7 +222,7 @@ void main() {
 
         // Assert
         final playlist = await repository.getPlaylistById(testPlaylistId);
-        expect(playlist!.cipherMapIds, equals([3, 1, 2]));
+        expect(playlist!.cipherVersionIds, equals([3, 1, 2]));
       });
     });
 
@@ -231,7 +237,7 @@ void main() {
           createdBy: '1',
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
-          cipherMapIds: [],
+          cipherVersionIds: [],
           collaborators: [],
         );
         testPlaylistId = await repository.createPlaylist(playlist);
@@ -269,7 +275,7 @@ void main() {
           createdBy: '1',
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
-          cipherMapIds: [],
+          cipherVersionIds: [],
           collaborators: [],
         );
 
@@ -279,31 +285,36 @@ void main() {
         // Assert
         expect(playlistId, greaterThan(0));
         final retrievedPlaylist = await repository.getPlaylistById(playlistId);
-        expect(retrievedPlaylist!.cipherMapIds, isEmpty);
+        expect(retrievedPlaylist!.cipherVersionIds, isEmpty);
         expect(retrievedPlaylist.collaborators, isEmpty);
       });
 
-      test('should handle playlist with collaborators but no ciphers', () async {
-        // Arrange
-        final playlist = Playlist(
-          id: 0,
-          name: 'Collaborator Only Playlist',
-          description: 'Has collaborators but no cipher maps',
-          createdBy: '1',
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-          cipherMapIds: [],
-          collaborators: ['2'],
-        );
+      test(
+        'should handle playlist with collaborators but no ciphers',
+        () async {
+          // Arrange
+          final playlist = Playlist(
+            id: 0,
+            name: 'Collaborator Only Playlist',
+            description: 'Has collaborators but no cipher maps',
+            createdBy: '1',
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+            cipherVersionIds: [],
+            collaborators: ['2'],
+          );
 
-        // Act
-        final playlistId = await repository.createPlaylist(playlist);
+          // Act
+          final playlistId = await repository.createPlaylist(playlist);
 
-        // Assert
-        final retrievedPlaylist = await repository.getPlaylistById(playlistId);
-        expect(retrievedPlaylist!.cipherMapIds, isEmpty);
-        expect(retrievedPlaylist.collaborators, contains('2'));
-      });
+          // Assert
+          final retrievedPlaylist = await repository.getPlaylistById(
+            playlistId,
+          );
+          expect(retrievedPlaylist!.cipherVersionIds, isEmpty);
+          expect(retrievedPlaylist.collaborators, contains('2'));
+        },
+      );
     });
   });
 }

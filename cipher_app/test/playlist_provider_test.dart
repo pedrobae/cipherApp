@@ -19,10 +19,10 @@ void main() {
     setUp(() async {
       provider = PlaylistProvider();
       databaseHelper = DatabaseHelper();
-      
+
       // Set current user for testing
       PlaylistRepository.setCurrentUserId(1);
-      
+
       // Reset database for each test
       await databaseHelper.resetDatabase();
     });
@@ -64,13 +64,13 @@ void main() {
         expect(provider.playlists, isNotEmpty);
         expect(provider.error, isNull);
         expect(provider.isLoading, isFalse);
-        
+
         // Check for seeded playlists
         final worshipPlaylist = provider.playlists.firstWhere(
           (p) => p.name == 'Culto Dominical',
           orElse: () => throw Exception('Seeded playlist not found'),
         );
-        expect(worshipPlaylist.cipherMapIds, isNotEmpty);
+        expect(worshipPlaylist.cipherVersionIds, isNotEmpty);
       });
     });
 
@@ -89,7 +89,7 @@ void main() {
           createdBy: '1',
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
-          cipherMapIds: [1, 2],
+          cipherVersionIds: [1, 2],
           collaborators: [],
         );
 
@@ -99,12 +99,12 @@ void main() {
         // Assert
         expect(provider.playlists.length, equals(initialCount + 1));
         expect(provider.error, isNull);
-        
+
         final createdPlaylist = provider.playlists.firstWhere(
           (p) => p.name == 'Nova Playlist de Teste',
         );
-        expect(createdPlaylist.cipherMapIds, contains(1));
-        expect(createdPlaylist.cipherMapIds, contains(2));
+        expect(createdPlaylist.cipherVersionIds, contains(1));
+        expect(createdPlaylist.cipherVersionIds, contains(2));
       });
 
       test('should update playlist info', () async {
@@ -129,7 +129,6 @@ void main() {
         expect(provider.error, isNull);
       });
 
-
       test('should delete playlist', () async {
         // Arrange
         final initialCount = provider.playlists.length;
@@ -141,7 +140,7 @@ void main() {
         // Assert
         expect(provider.playlists.length, equals(initialCount - 1));
         expect(provider.error, isNull);
-        
+
         final deletedPlaylistExists = provider.playlists.any(
           (p) => p.id == playlistToDelete.id,
         );
@@ -154,7 +153,7 @@ void main() {
 
       setUp(() async {
         await provider.loadPlaylists();
-        
+
         // Create a test playlist for cipher operations
         final newPlaylist = Playlist(
           id: 0,
@@ -163,10 +162,10 @@ void main() {
           createdBy: '1',
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
-          cipherMapIds: [],
+          cipherVersionIds: [],
           collaborators: [],
         );
-        
+
         await provider.createPlaylist(newPlaylist);
         testPlaylist = provider.playlists.firstWhere(
           (p) => p.name == 'Teste Cifras',
@@ -175,7 +174,7 @@ void main() {
 
       test('should add cipher to playlist', () async {
         // Arrange
-        final initialCipherCount = testPlaylist.cipherMapIds.length;
+        final initialCipherCount = testPlaylist.cipherVersionIds.length;
 
         // Act
         await provider.addCipherMap(testPlaylist.id, 1);
@@ -186,8 +185,11 @@ void main() {
         final updatedPlaylist = provider.playlists.firstWhere(
           (p) => p.id == testPlaylist.id,
         );
-        expect(updatedPlaylist.cipherMapIds.length, equals(initialCipherCount + 1));
-        expect(updatedPlaylist.cipherMapIds, contains(1));
+        expect(
+          updatedPlaylist.cipherVersionIds.length,
+          equals(initialCipherCount + 1),
+        );
+        expect(updatedPlaylist.cipherVersionIds, contains(1));
         expect(provider.error, isNull);
       });
 
@@ -203,8 +205,8 @@ void main() {
         final updatedPlaylist = provider.playlists.firstWhere(
           (p) => p.id == testPlaylist.id,
         );
-        expect(updatedPlaylist.cipherMapIds, isNot(contains(1)));
-        expect(updatedPlaylist.cipherMapIds, contains(2));
+        expect(updatedPlaylist.cipherVersionIds, isNot(contains(1)));
+        expect(updatedPlaylist.cipherVersionIds, contains(2));
         expect(provider.error, isNull);
       });
 
@@ -222,7 +224,7 @@ void main() {
         final updatedPlaylist = provider.playlists.firstWhere(
           (p) => p.id == testPlaylist.id,
         );
-        expect(updatedPlaylist.cipherMapIds, equals([3, 1, 2]));
+        expect(updatedPlaylist.cipherVersionIds, equals([3, 1, 2]));
         expect(provider.error, isNull);
       });
     });
@@ -230,7 +232,7 @@ void main() {
     group('Collaborator Management', () {
       setUp(() async {
         await provider.loadPlaylists();
-        
+
         final newPlaylist = Playlist(
           id: 0,
           name: 'Teste Colaboradores',
@@ -238,10 +240,10 @@ void main() {
           createdBy: '1',
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
-          cipherMapIds: [],
+          cipherVersionIds: [],
           collaborators: [],
         );
-        
+
         await provider.createPlaylist(newPlaylist);
       });
 
@@ -249,7 +251,7 @@ void main() {
 
       setUp(() async {
         await provider.loadPlaylists();
-        
+
         // Create a test playlist for cipher operations
         final newPlaylist = Playlist(
           id: 0,
@@ -258,10 +260,10 @@ void main() {
           createdBy: '1',
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
-          cipherMapIds: [],
+          cipherVersionIds: [],
           collaborators: [],
         );
-        
+
         await provider.createPlaylist(newPlaylist);
         testPlaylist = provider.playlists.firstWhere(
           (p) => p.name == 'Teste Cifras',
@@ -335,15 +337,15 @@ void main() {
           createdBy: '1',
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
-          cipherMapIds: [1],
+          cipherVersionIds: [1],
           collaborators: [],
         );
-        
+
         await provider.createPlaylist(newPlaylist);
         final createdPlaylist = provider.playlists.firstWhere(
           (p) => p.name == 'Teste Estado',
         );
-        
+
         await provider.addCipherMap(createdPlaylist.id, 2);
 
         // Assert
@@ -351,8 +353,8 @@ void main() {
         final finalPlaylist = provider.playlists.firstWhere(
           (p) => p.id == createdPlaylist.id,
         );
-        expect(finalPlaylist.cipherMapIds, contains(1));
-        expect(finalPlaylist.cipherMapIds, contains(2));
+        expect(finalPlaylist.cipherVersionIds, contains(1));
+        expect(finalPlaylist.cipherVersionIds, contains(2));
       });
     });
   });

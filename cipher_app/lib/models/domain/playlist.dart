@@ -2,12 +2,13 @@ import '../../helpers/datetime.dart';
 
 class Playlist {
   final int id;
-  final String name; 
+  final String name;
   final String? description;
   final String createdBy;
   final DateTime? createdAt;
   final DateTime? updatedAt;
-  final List<int> cipherMapIds; // Changed from cipherIds to cipherMapIds
+  final List<int>
+  cipherVersionIds; // Changed from cipherIds to cipherVersionIds
   final List<String> collaborators;
 
   const Playlist({
@@ -17,7 +18,7 @@ class Playlist {
     required this.createdBy,
     this.createdAt,
     this.updatedAt,
-    this.cipherMapIds = const [],
+    this.cipherVersionIds = const [],
     this.collaborators = const [],
   });
 
@@ -29,12 +30,12 @@ class Playlist {
       createdBy: json['created_by'] as String? ?? '',
       createdAt: DatetimeHelper.parseDateTime(json['created_at']),
       updatedAt: DatetimeHelper.parseDateTime(json['updated_at']),
-      cipherMapIds: json['cipher_map_ids'] != null
-        ? List<int>.from(json['cipher_map_ids'])
-        : const[],
+      cipherVersionIds: json['cipher_map_ids'] != null
+          ? List<int>.from(json['cipher_map_ids'])
+          : const [],
       collaborators: json['collaborators'] != null
-        ? List<String>.from(json['collaborators'])
-        : const[],
+          ? List<String>.from(json['collaborators'])
+          : const [],
     );
   }
 
@@ -46,7 +47,7 @@ class Playlist {
       'created_by': createdBy,
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
-      'cipher_map_ids': cipherMapIds,
+      'cipher_map_ids': cipherVersionIds,
       'collaborators': collaborators,
     };
   }
@@ -56,28 +57,30 @@ class Playlist {
     final result = <String, dynamic>{
       'name': name,
       'description': description,
-      'author_id': int.parse(createdBy), // Assuming createdBy is user ID as string
+      'author_id': int.parse(
+        createdBy,
+      ), // Assuming createdBy is user ID as string
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
     };
-    
+
     // Only include id if it's not 0 (for updates)
     if (id != 0) {
       result['id'] = id;
     }
-    
+
     return result;
   }
 
   Playlist copyWith({
-   int? id,
-   String? name,
-   String? description,
-   String? createdBy,
-   DateTime? createdAt,
-   DateTime? updatedAt,
-   List<int>? cipherMapIds, 
-   List<String>? collaborators,
+    int? id,
+    String? name,
+    String? description,
+    String? createdBy,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    List<int>? cipherVersionIds,
+    List<String>? collaborators,
   }) {
     return Playlist(
       id: id ?? this.id,
@@ -86,23 +89,25 @@ class Playlist {
       createdBy: createdBy ?? this.createdBy,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
-      cipherMapIds: cipherMapIds ?? this.cipherMapIds,
+      cipherVersionIds: cipherVersionIds ?? this.cipherVersionIds,
       collaborators: collaborators ?? this.collaborators,
     );
   }
 
   Playlist addCipherMapToPlaylist(int cipherMapId) => copyWith(
-      cipherMapIds: [...cipherMapIds, cipherMapId],
-      updatedAt: DateTime.now(),
-    );
-    
-  Playlist removeCipherMapFromPlaylist(int cipherMapId) => copyWith(
-    cipherMapIds: cipherMapIds.where((id) => id != cipherMapId).toList(),
+    cipherVersionIds: [...cipherVersionIds, cipherMapId],
     updatedAt: DateTime.now(),
   );
- 
-  Playlist reorderCipherMaps(List<int> newCipherMapIds) => copyWith(
-    cipherMapIds: newCipherMapIds,
+
+  Playlist removeCipherMapFromPlaylist(int cipherMapId) => copyWith(
+    cipherVersionIds: cipherVersionIds
+        .where((id) => id != cipherMapId)
+        .toList(),
+    updatedAt: DateTime.now(),
+  );
+
+  Playlist reorderCipherMaps(List<int> newcipherVersionIds) => copyWith(
+    cipherVersionIds: newcipherVersionIds,
     updatedAt: DateTime.now(),
   );
 }

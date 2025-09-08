@@ -21,21 +21,19 @@ class PlaylistCard extends StatelessWidget {
         contentPadding: const EdgeInsets.all(16),
         leading: CircleAvatar(
           backgroundColor: Theme.of(context).primaryColor,
-          child: const Icon(
-            Icons.playlist_play,
-            color: Colors.white,
-          ),
+          child: const Icon(Icons.playlist_play, color: Colors.white),
         ),
         title: Text(
           playlist.name,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (playlist.description != null && playlist.description!.isNotEmpty)
+            if (playlist.description != null &&
+                playlist.description!.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
@@ -45,10 +43,10 @@ class PlaylistCard extends StatelessWidget {
               ),
             const SizedBox(height: 4),
             Text(
-              '${playlist.cipherMapIds.length} ${playlist.cipherMapIds.length == 1 ? 'música' : 'músicas'}',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey[600],
-              ),
+              '${playlist.cipherVersionIds.length} ${playlist.cipherVersionIds.length == 1 ? 'música' : 'músicas'}',
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
             ),
           ],
         ),

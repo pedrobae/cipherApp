@@ -93,7 +93,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   key: ValueKey(cipher.id), // Add keys for better performance
                   cipher: cipher,
                   onAddToPlaylist: () {
-                    // Handle add to playlist
+                    // TODO Handle add to playlist
                   },
                 );
               },

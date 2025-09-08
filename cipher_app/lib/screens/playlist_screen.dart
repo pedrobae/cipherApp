@@ -1,3 +1,4 @@
+import 'package:cipher_app/screens/playlist_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/playlist_provider.dart';
@@ -15,7 +16,8 @@ class PlaylistScreen extends StatefulWidget {
   State<PlaylistScreen> createState() => _PlaylistScreenState();
 }
 
-class _PlaylistScreenState extends State<PlaylistScreen> with WidgetsBindingObserver {
+class _PlaylistScreenState extends State<PlaylistScreen>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
@@ -44,17 +46,11 @@ class _PlaylistScreenState extends State<PlaylistScreen> with WidgetsBindingObse
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Playlists'),
-        centerTitle: true,
-      ),
       body: Consumer<PlaylistProvider>(
         builder: (context, playlistProvider, child) {
           // Handle loading state
           if (playlistProvider.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           // Handle error state
@@ -79,7 +75,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> with WidgetsBindingObse
           return RefreshIndicator(
             onRefresh: () => playlistProvider.loadPlaylists(),
             child: ListView.builder(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(8),
               itemCount: playlistProvider.playlists.length,
               itemBuilder: (context, index) {
                 final playlist = playlistProvider.playlists[index];
@@ -102,11 +98,9 @@ class _PlaylistScreenState extends State<PlaylistScreen> with WidgetsBindingObse
   }
 
   void _onPlaylistTap(BuildContext context, Playlist playlist) {
-    // TODO: Navigate to playlist viewer/editor
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Abrir playlist: ${playlist.name}'),
-        duration: const Duration(seconds: 2),
+    Navigator.of(context, rootNavigator: true).push(
+      MaterialPageRoute(
+        builder: (context) => PlaylistViewer(playlist: playlist),
       ),
     );
   }

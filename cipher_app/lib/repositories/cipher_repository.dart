@@ -101,6 +101,19 @@ class CipherRepository {
     return Future.wait(results.map((row) => _buildCipherVersion(row)));
   }
 
+  Future<Cipher?> getCipherVersionWithId(int versionId) async {
+    final db = await _databaseHelper.database;
+    final result = await db.query(
+      'cipher_map',
+      where: 'id = ?',
+      whereArgs: [versionId],
+    );
+
+    CipherVersion version = await (_buildCipherVersion(result[0]));
+
+    return _buildPrunedCipherByVersion(version.cipherId, version);
+  }
+
   Future<int> insertCipherVersion(CipherVersion map) async {
     final db = await _databaseHelper.database;
     return await db.insert('cipher_map', map.toJson());
@@ -136,11 +149,11 @@ class CipherRepository {
     for (var row in results) {
       sections[row['content_code'] as String] = Section.fromJson({
         'id': row['id'] as int,
-        'map_id': mapId, 
-        'content_type': row['content_type'] as String, 
-        'content_code': row['content_code'] as String, 
+        'map_id': mapId,
+        'content_type': row['content_type'] as String,
+        'content_code': row['content_code'] as String,
         'content_text': row['content_text'] as String,
-        'content_color': row['content_color'] as String
+        'content_color': row['content_color'] as String,
       });
     }
     return sections;
@@ -172,9 +185,10 @@ class CipherRepository {
   ) async {
     final db = await _databaseHelper.database;
     await db.update(
-      'map_content', {
-        'content_type': contentType, 
-        'content_code': contentCode, 
+      'map_content',
+      {
+        'content_type': contentType,
+        'content_code': contentCode,
         'content_text': contentText,
         'content_color': hexColor,
       },
@@ -272,6 +286,23 @@ class CipherRepository {
   Future<CipherVersion> _buildCipherVersion(Map<String, dynamic> row) async {
     final section = await getAllSections(row['id']);
     return CipherVersion.fromRow(row).copyWith(content: section);
+  }
+
+  Future<Cipher?> _buildPrunedCipherByVersion(
+    int id,
+    CipherVersion version,
+  ) async {
+    final db = await _databaseHelper.database;
+    final results = await db.query(
+      'cipher',
+      where: 'id = ? AND is_deleted = 0',
+      whereArgs: [id],
+    );
+
+    final tags = await getCipherTags(results[0]['id'] as int);
+
+    if (results.isEmpty) return null;
+    return Cipher.fromJson(results[0]).copyWith(maps: [version], tags: tags);
   }
 
   // Helper method to add tags within a transaction

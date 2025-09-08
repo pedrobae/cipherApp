@@ -50,26 +50,9 @@ class PlaylistCard extends StatelessWidget {
             ),
           ],
         ),
-        trailing: PopupMenuButton<String>(
-          onSelected: (value) {
-            switch (value) {
-              case 'delete':
-                onDelete();
-                break;
-            }
-          },
-          itemBuilder: (context) => [
-            const PopupMenuItem(
-              value: 'delete',
-              child: Row(
-                children: [
-                  Icon(Icons.delete, color: Colors.red),
-                  SizedBox(width: 8),
-                  Text('Excluir'),
-                ],
-              ),
-            ),
-          ],
+        trailing: IconButton(
+          onPressed: () => onDelete,
+          icon: Icon(Icons.delete, color: Colors.red),
         ),
         onTap: onTap,
       ),

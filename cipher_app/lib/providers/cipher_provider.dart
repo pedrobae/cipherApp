@@ -118,7 +118,9 @@ class CipherProvider extends ChangeNotifier {
     for (final version in versions) {
       // Create Version with the correct cipher ID
       final versionWithCipherId = version.copyWith(cipherId: cipherId);
-      final newVersionId = await _cipherRepository.insertCipherVersion(versionWithCipherId);
+      final newVersionId = await _cipherRepository.insertCipherVersion(
+        versionWithCipherId,
+      );
 
       // Insert content for this map
       for (final section in version.sections!.entries) {
@@ -228,12 +230,12 @@ class CipherProvider extends ChangeNotifier {
         if (entry.key.isNotEmpty) {
           final sectionJson = entry.value.toJson();
           await _cipherRepository.insertSection(
-              mapId,
-              sectionJson['content_type'],
-              sectionJson['content_code'],
-              sectionJson['content_text'],
-              sectionJson['color'],
-            );
+            mapId,
+            sectionJson['content_type'],
+            sectionJson['content_code'],
+            sectionJson['content_text'],
+            sectionJson['color'],
+          );
         }
       }
     }
@@ -272,7 +274,12 @@ class CipherProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // === CIPHER MAP SPECIFIC OPERATIONS ===
+  // === CIPHER VERSION SPECIFIC OPERATIONS ===
+
+  /// Get cipher data from versionId
+  Future<Cipher?> getCipherVersionById(int versionId) async {
+    return await _cipherRepository.getCipherVersionWithId(versionId);
+  }
 
   /// Add a new version (CipherMap) to an existing cipher
   Future<void> addCipherVersion(int cipherId, CipherVersion cipherMap) async {
@@ -285,7 +292,9 @@ class CipherProvider extends ChangeNotifier {
     try {
       // Create map with the correct cipher ID
       final mapWithCipherId = cipherMap.copyWith(cipherId: cipherId);
-      final newMapId = await _cipherRepository.insertCipherVersion(mapWithCipherId);
+      final newMapId = await _cipherRepository.insertCipherVersion(
+        mapWithCipherId,
+      );
 
       // Insert content for this map
       await _updateVersionSection(newMapId, cipherMap.sections);

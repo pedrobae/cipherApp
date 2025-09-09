@@ -11,8 +11,9 @@ import 'cipher_editor.dart';
 
 class CipherViewer extends StatefulWidget {
   final Cipher cipher;
+  final bool showVersionSelector;
 
-  const CipherViewer({super.key, required this.cipher});
+  const CipherViewer({super.key, required this.cipher, this.showVersionSelector = true});
 
   @override
   State<CipherViewer> createState() => _CipherViewerState();
@@ -30,7 +31,7 @@ class _CipherViewerState extends State<CipherViewer> {
         ? widget.cipher.maps.first
         : null;
 
-    if (widget.cipher.maps.isNotEmpty && !_hasShownVersionSelector) {
+    if (widget.showVersionSelector && !_hasShownVersionSelector && widget.cipher.maps.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _showVersionSelector();
         _hasShownVersionSelector = true;
@@ -71,6 +72,7 @@ class _CipherViewerState extends State<CipherViewer> {
           cipher: widget.cipher,
           currentVersion: _currentVersion,
           isNewVersion: false,
+          startTab: 'version',
         ),
       ),
     );

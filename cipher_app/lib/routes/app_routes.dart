@@ -3,7 +3,7 @@ import '../screens/main_screen.dart';
 import '../screens/library_screen.dart';
 import '../screens/cipher_editor.dart';
 import '../screens/info_screen.dart';
-import '../screens/playlist_screen.dart';
+import '../screens/playlist_library.dart';
 import '../screens/settings_screen.dart';
 
 class AppRoutes {
@@ -22,7 +22,7 @@ class AppRoutes {
     // Note: CipherViewer now requires a cipher parameter, so direct route navigation
     // should use Navigator.push with MaterialPageRoute instead of named routes
     info: (context) => const InfoScreen(),
-    playlists: (context) => const PlaylistScreen(),
+    playlists: (context) => const PlaylistLibraryScreen(),
     settings: (context) => const SettingsScreen(),
   };
 }

@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/navigation_provider.dart';
 import '../widgets/app_drawer.dart';
 import 'library_screen.dart';
-import 'playlist_screen.dart';
+import 'playlist_library.dart';
 import 'settings_screen.dart';
 import 'info_screen.dart';
 
@@ -21,7 +21,7 @@ class MainScreen extends StatelessWidget {
             index: navigationProvider.selectedIndex,
             children: const [
               LibraryScreen(),
-              PlaylistScreen(),
+              PlaylistLibraryScreen(),
               SettingsScreen(),
               InfoScreen(),
             ],

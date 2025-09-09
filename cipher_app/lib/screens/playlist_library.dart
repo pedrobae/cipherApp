@@ -9,14 +9,14 @@ import '../widgets/playlist/playlist_card.dart';
 import '../widgets/states/error_state_widget.dart';
 import '../widgets/states/empty_state_widget.dart';
 
-class PlaylistScreen extends StatefulWidget {
-  const PlaylistScreen({super.key});
+class PlaylistLibraryScreen extends StatefulWidget {
+  const PlaylistLibraryScreen({super.key});
 
   @override
-  State<PlaylistScreen> createState() => _PlaylistScreenState();
+  State<PlaylistLibraryScreen> createState() => _PlaylistLibraryScreenState();
 }
 
-class _PlaylistScreenState extends State<PlaylistScreen>
+class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
     with WidgetsBindingObserver {
   @override
   void initState() {

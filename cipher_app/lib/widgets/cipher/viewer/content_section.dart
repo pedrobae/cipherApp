@@ -29,11 +29,12 @@ class CipherContentSection extends StatelessWidget {
               (ls.showTransitions || !isTransition(sectionCode))),
         );
     final sectionCardList = filteredStructure.map((sectionCode) {
+      String trimmedCode = sectionCode.trim();
       return CipherSectionCard(
-        sectionType: currentVersion.sections![sectionCode]!.contentType,
-        sectionCode: sectionCode,
-        sectionText: currentVersion.sections![sectionCode]!.contentText,
-        sectionColor: currentVersion.sections![sectionCode]!.contentColor,
+        sectionType: currentVersion.sections![trimmedCode]!.contentType,
+        sectionCode: trimmedCode,
+        sectionText: currentVersion.sections![trimmedCode]!.contentText,
+        sectionColor: currentVersion.sections![trimmedCode]!.contentColor,
       );
     }).toList();
 

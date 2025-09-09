@@ -27,14 +27,14 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
   }
 
   void _onReorder(int oldIndex, int newIndex) {
-    // Update UI immediately (optimistic update)
+    // Update UI immediately
     setState(() {
       if (newIndex > oldIndex) newIndex--;
       final item = _cipherVersionIds.removeAt(oldIndex);
       _cipherVersionIds.insert(newIndex, item);
     });
 
-    // Persist to database (async, no UI blocking)
+    // Persist to database
     final playlistProvider = context.read<PlaylistProvider>();
     playlistProvider.reorderPlaylistCipherMaps(
       widget.playlist.id,
@@ -62,7 +62,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
         actions: [
           IconButton(
             icon: const Icon(Icons.group),
-            tooltip: 'Versões',
+            tooltip: 'Colaboradores',
             onPressed: () => _showCollaborators(context),
           ),
           IconButton(
@@ -79,7 +79,11 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                 proxyDecorator: (child, index, animation) =>
                     Material(type: MaterialType.transparency, child: child),
                 buildDefaultDragHandles: true,
-                header: Center(child: Text(widget.playlist.description ?? '')),
+                header: Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Center(child: Text(widget.playlist.description ?? '')),
+                ),
+                
                 itemCount: _cipherVersionIds.length,
                 onReorder: _onReorder,
                 itemBuilder: (context, index) {
@@ -88,7 +92,10 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                     delay: Duration(milliseconds: 200),
                     key: Key(cipherVersionId.toString()),
                     index: index,
-                    child: CipherVersionCard(cipherVersionId: cipherVersionId),
+                    child: CipherVersionCard(
+                      cipherVersionId: cipherVersionId,
+                      onDelete: () => _handleDeleteVersion(widget.playlist.id, cipherVersionId),
+                    )
                   );
                 },
               )
@@ -108,6 +115,36 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
     showDialog(
       context: context,
       builder: (context) => EditPlaylistForm(playlist: widget.playlist),
+    );
+  }
+
+  void _handleDeleteVersion(int playlistId, int versionId) {
+    // Show confirmation dialog first
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Remover Cifra'),
+        content: const Text('Deseja remover esta cifra da playlist?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              setState(() {
+                _cipherVersionIds.remove(versionId);
+              });
+              
+              // Update provider for persistence
+              final playlistProvider = context.read<PlaylistProvider>();
+              playlistProvider.removeCipherMapFromPlaylist(playlistId, versionId);
+            },
+            child: const Text('Remover'),
+          ),
+        ],
+      ),
     );
   }
 }

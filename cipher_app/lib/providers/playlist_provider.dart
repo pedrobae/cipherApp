@@ -155,6 +155,7 @@ class PlaylistProvider extends ChangeNotifier {
       cipherMapId,
     );
     await _loadPlaylist(playlistId);
+    notifyListeners();
   }
 
   // Remove a Collaborator from a Playlist

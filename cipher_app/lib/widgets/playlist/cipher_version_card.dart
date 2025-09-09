@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../screens/cipher_viewer.dart';
 import '../../models/domain/cipher.dart';
-import 'package:cipher_app/providers/cipher_provider.dart';
+import '../../providers/cipher_provider.dart';
 import '../cipher/editor/custom_reorderable_delayed.dart';
 
 class CipherVersionCard extends StatefulWidget {
   final int cipherVersionId;
-  const CipherVersionCard({super.key, required this.cipherVersionId});
+  final VoidCallback? onDelete;
+  
+  const CipherVersionCard({super.key, required this.cipherVersionId, this.onDelete});
+  
 
   @override
   State<CipherVersionCard> createState() => _CipherVersionCardState();
@@ -16,6 +20,7 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
   Cipher? _cipher;
   List<String> _songStructureList = [];
   bool _isLoading = true;
+  
 
   @override
   void initState() {
@@ -71,100 +76,121 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
 
     final version = _cipher!.maps[0];
 
-    return Card(
-      color: Theme.of(context).colorScheme.surfaceContainerHighest,
-      elevation: 4,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.end,
-                    spacing: 10,
-                    children: [
-                      Text(
-                        _cipher!.title,
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      Text(_cipher!.author),
-                    ],
-                  ),
-                  Wrap(
-                    children: [
-                      Text('Versão: ${version.versionName}'),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Tom: ${version.transposedKey ?? _cipher!.musicKey}',
-                      ),
-                      const SizedBox(width: 8),
-                      Text('Tempo: ${_cipher!.tempo}'),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  SizedBox(
-                    height: 30,
-                    child: ReorderableListView.builder(
-                      proxyDecorator: (child, index, animation) => Material(
-                        type: MaterialType.transparency,
-                        child: child,
-                      ),
-                      buildDefaultDragHandles: false,
-                      physics: const ClampingScrollPhysics(),
-                      scrollDirection: Axis.horizontal,
-                      itemCount: _songStructureList.length,
-                      onReorder: _onReorder,
-                      itemBuilder: (context, index) {
-                        final sectionCode = _songStructureList[index];
-                        final section = version.sections![sectionCode];
+    return GestureDetector(
+      /// ROUTE TO CIPHER EDITOR
+      // onTap: () => Navigator.push(
+      //             context,
+      //             MaterialPageRoute(
+      //               builder: (context) => EditCipher(
+      //                 cipher: _cipher,
+      //                 currentVersion: version,
+      //                 isNewVersion: false,
+      //                 startTab: 'version'
+      //               ),
+      //             ),
+      //           ),
 
-                        return CustomReorderableDelayed(
-                          delay: Duration(milliseconds: 100),
-                          key: ValueKey('$section-$index'),
-                          index: index,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: section!.contentColor.withValues(
-                                alpha: .8,
-                              ),
-                              borderRadius: BorderRadius.circular(5),
-                              border: Border.all(
-                                color: Theme.of(context).highlightColor,
-                                width: 2,
-                              ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                section.contentCode,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                        );
-                      },
+      onTap: () => Navigator.of(context, rootNavigator: true).push(
+        MaterialPageRoute(builder: (context) => CipherViewer(cipher: _cipher!, showVersionSelector: false)),
+      ),
+      child: Card(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        elevation: 4,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.end,
+                      spacing: 10,
+                      children: [
+                        Text(
+                          _cipher!.title,
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        Text(_cipher!.author),
+                      ],
                     ),
-                  ),
-                ],
+                    Wrap(
+                      children: [
+                        Text('Versão: ${version.versionName}',style: TextStyle(fontWeight: FontWeight.bold),),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Tom: ${version.transposedKey ?? _cipher!.musicKey}',
+                        ),
+                        const SizedBox(width: 8),
+                        Text('Tempo: ${_cipher!.tempo}'),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      height: 30,
+                      child: ReorderableListView.builder(
+                        proxyDecorator: (child, index, animation) => Material(
+                          type: MaterialType.transparency,
+                          child: child,
+                        ),
+                        buildDefaultDragHandles: false,
+                        physics: const ClampingScrollPhysics(),
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _songStructureList.length,
+                        onReorder: _onReorder,
+                        itemBuilder: (context, index) {
+                          final sectionCode = _songStructureList[index];
+                          final section = version.sections![sectionCode];
+      
+                          return CustomReorderableDelayed(
+                            delay: Duration(milliseconds: 100),
+                            key: ValueKey('$section-$index'),
+                            index: index,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 1),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: section!.contentColor.withValues(
+                                    alpha: .8,
+                                  ),
+                                  borderRadius: BorderRadius.circular(5),
+                                  border: Border.all(
+                                    color: Theme.of(context).highlightColor,
+                                    width: 2,
+                                  ),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    section.contentCode,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.delete, color: Colors.red),
-            ),
-          ],
+              IconButton(
+                onPressed: widget.onDelete,
+                icon: Icon(Icons.delete, color: Colors.red),
+              ),
+            ],
+          ),
         ),
       ),
     );

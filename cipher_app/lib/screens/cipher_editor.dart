@@ -9,12 +9,14 @@ class EditCipher extends StatefulWidget {
   final Cipher? cipher; // Null for create, populated for edit
   final CipherVersion? currentVersion; // Specific version to edit
   final bool isNewVersion; // Creating a new version of existing cipher
+  final String startTab;
 
   const EditCipher({
     super.key,
     this.cipher,
     this.currentVersion,
     this.isNewVersion = false,
+    this.startTab = 'cipher'
   });
 
   @override
@@ -87,6 +89,11 @@ class _EditCipherState extends State<EditCipher>
     }
   }
 
+  void _navigateStartTab() {
+    const Map<String, int> tabMap= {'cipher': 0, 'version': 1};
+    _tabController.animateTo(tabMap[widget.startTab]!);
+  }
+
   @override
   void dispose() {
     _tabController.dispose();
@@ -104,6 +111,7 @@ class _EditCipherState extends State<EditCipher>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    _navigateStartTab();
 
     return Scaffold(
       appBar: AppBar(

@@ -7,6 +7,7 @@ import '../widgets/cipher/editor/custom_reorderable_delayed.dart';
 import '../widgets/playlist/collaborators_bottom_sheet.dart';
 import '../widgets/playlist/edit_playlist_form.dart';
 import '../widgets/playlist/empty_playlist_widget.dart';
+import 'cipher_library.dart';
 
 class PlaylistViewer extends StatefulWidget {
   final Playlist playlist;
@@ -100,6 +101,24 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                 },
               )
             : const EmptyPlaylistWidget(),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _navigateToAddCiphers(),
+        tooltip: 'Adicionar Cifras',
+        child: const Icon(Icons.add),
+      )
+    );
+  }
+
+  void _navigateToAddCiphers() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CipherLibraryScreen(
+          selectionMode: true,
+          playlistId: widget.playlist.id,
+          excludeVersionIds: _cipherVersionIds, // Don't show already added
+        ),
       ),
     );
   }

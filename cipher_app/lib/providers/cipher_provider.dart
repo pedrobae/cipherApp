@@ -83,6 +83,10 @@ class CipherProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearSearch() {
+    searchCiphers('');
+  }
+
   Future<void> createCipher(Cipher cipher) async {
     if (_isSaving) return;
 

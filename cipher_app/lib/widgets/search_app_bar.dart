@@ -6,6 +6,7 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String hint;
   final bool? isSearching;
   final VoidCallback? onSearchToggle;
+  final String? title;
 
   const SearchAppBar({
     super.key,
@@ -14,6 +15,7 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.hint,
     this.isSearching,
     this.onSearchToggle,
+    this.title,
   });
 
   @override
@@ -21,26 +23,23 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return AppBar(
-      backgroundColor: colorScheme.surface,
-      foregroundColor: colorScheme.onSurface,
-      title: TextField(
+    return Container(
+      color: colorScheme.surface,
+      child: TextField(
         controller: searchController,
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
           border: InputBorder.none,
           focusedBorder: InputBorder.none,
+          isDense: title != null,
         ),
-        style: TextStyle(color: colorScheme.onSurface),
+        style: TextStyle(
+          color: colorScheme.onSurface,
+          fontSize: title != null ? 14 : null,
+        ),
         onChanged: onSearchChanged,
       ),
-      actions: [
-        IconButton(
-          icon: Icon(Icons.search, color: colorScheme.onSurface),
-          onPressed: onSearchToggle,
-        ),
-      ],
     );
   }
 

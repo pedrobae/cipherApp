@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/navigation_provider.dart';
 import '../widgets/app_drawer.dart';
-import 'library_screen.dart';
+import 'cipher_library.dart';
 import 'playlist_library.dart';
 import 'settings_screen.dart';
 import 'info_screen.dart';
@@ -20,7 +20,7 @@ class MainScreen extends StatelessWidget {
           body: IndexedStack(
             index: navigationProvider.selectedIndex,
             children: const [
-              LibraryScreen(),
+              CipherLibraryScreen(),
               PlaylistLibraryScreen(),
               SettingsScreen(),
               InfoScreen(),

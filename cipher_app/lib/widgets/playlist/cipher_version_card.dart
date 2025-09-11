@@ -8,9 +8,12 @@ import '../cipher/editor/custom_reorderable_delayed.dart';
 class CipherVersionCard extends StatefulWidget {
   final int cipherVersionId;
   final VoidCallback? onDelete;
-  
-  const CipherVersionCard({super.key, required this.cipherVersionId, this.onDelete});
-  
+
+  const CipherVersionCard({
+    super.key,
+    required this.cipherVersionId,
+    this.onDelete,
+  });
 
   @override
   State<CipherVersionCard> createState() => _CipherVersionCardState();
@@ -20,7 +23,6 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
   Cipher? _cipher;
   List<String> _songStructureList = [];
   bool _isLoading = true;
-  
 
   @override
   void initState() {
@@ -89,9 +91,11 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
       //               ),
       //             ),
       //           ),
-
       onTap: () => Navigator.of(context, rootNavigator: true).push(
-        MaterialPageRoute(builder: (context) => CipherViewer(cipher: _cipher!, showVersionSelector: false)),
+        MaterialPageRoute(
+          builder: (context) =>
+              CipherViewer(cipher: _cipher!, version: version),
+        ),
       ),
       child: Card(
         color: Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -118,7 +122,10 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
                     ),
                     Wrap(
                       children: [
-                        Text('Versão: ${version.versionName}',style: TextStyle(fontWeight: FontWeight.bold),),
+                        Text(
+                          'Versão: ${version.versionName}',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           'Tom: ${version.transposedKey ?? _cipher!.musicKey}',
@@ -143,13 +150,15 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
                         itemBuilder: (context, index) {
                           final sectionCode = _songStructureList[index];
                           final section = version.sections![sectionCode];
-      
+
                           return CustomReorderableDelayed(
                             delay: Duration(milliseconds: 100),
                             key: ValueKey('$section-$index'),
                             index: index,
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 1),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 1,
+                              ),
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 8,

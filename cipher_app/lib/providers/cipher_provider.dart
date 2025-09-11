@@ -56,7 +56,6 @@ class CipherProvider extends ChangeNotifier {
   // Search functionality
   Future<void> searchCiphers(String term) async {
     _searchTerm = term.toLowerCase();
-
     if (_useMemoryFiltering) {
       // Instant memory filtering
       _filterCiphers();

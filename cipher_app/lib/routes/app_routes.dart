@@ -25,4 +25,11 @@ class AppRoutes {
     playlists: (context) => const PlaylistLibraryScreen(),
     settings: (context) => const SettingsScreen(),
   };
+
+  static Map<String, Widget?> contentRoutes = {
+    library: const CipherLibraryScreen(),
+    playlists: const PlaylistLibraryScreen(),
+    settings: const SettingsScreen(),
+    info: const InfoScreen(),
+  };
 }

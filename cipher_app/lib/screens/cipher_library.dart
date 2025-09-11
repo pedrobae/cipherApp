@@ -1,3 +1,5 @@
+import 'package:cipher_app/models/domain/cipher.dart';
+import 'package:cipher_app/screens/cipher_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../widgets/search_app_bar.dart';
@@ -19,6 +21,10 @@ class CipherLibraryScreen extends StatefulWidget {
 
   @override
   State<CipherLibraryScreen> createState() => _CipherLibraryScreenState();
+
+  static void clearSearchFromOutside(BuildContext context) {
+    context.read<CipherProvider>().clearSearch();
+  }
 }
 
 class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
@@ -26,7 +32,23 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
   bool _hasInitialized = false;
   final Set<int> _selectedVersionIds = {};
 
-  late CipherProvider cipherProvider;
+  int? _expandedCipherId;
+
+  void _onExpand(int cipherId) {
+    setState(() {
+      _expandedCipherId = cipherId;
+    });
+  }
+
+  void _selectVersion(CipherVersion version, Cipher cipher) {
+    if (widget.selectionMode) {}
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CipherViewer(cipher: cipher, version: version),
+      ),
+    );
+  }
 
   void _loadDataIfNeeded() {
     if (!_hasInitialized && mounted) {
@@ -42,7 +64,6 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
   @override
   void dispose() {
     _searchController.dispose();
-
     super.dispose();
   }
 
@@ -122,13 +143,10 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
                       }
 
                       return CipherCard(
-                        key: ValueKey(
-                          cipher.id,
-                        ), // Add keys for better performance
                         cipher: cipher,
-                        onAddToPlaylist: () {
-                          // TODO Handle add to playlist
-                        },
+                        isExpanded: _expandedCipherId == cipher.id,
+                        onExpand: () => _onExpand(cipher.id!),
+                        selectVersion: _selectVersion,
                       );
                     },
                   ),

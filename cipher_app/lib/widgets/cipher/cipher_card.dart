@@ -1,26 +1,35 @@
-import 'package:cipher_app/screens/cipher_viewer.dart';
 import 'package:flutter/material.dart';
 import '../../models/domain/cipher.dart';
 import 'tag_chip.dart';
 
 class CipherCard extends StatelessWidget {
   final Cipher cipher;
-  final VoidCallback? onAddToPlaylist;
+  final Function(CipherVersion, Cipher)? selectVersion;
+  final bool isExpanded;
+  final VoidCallback onExpand;
 
-  const CipherCard({super.key, required this.cipher, this.onAddToPlaylist});
+  const CipherCard({
+    super.key,
+    required this.cipher,
+    this.selectVersion,
+    required this.isExpanded,
+    required this.onExpand,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => Navigator.of(context, rootNavigator: true).push(
-        MaterialPageRoute(builder: (context) => CipherViewer(cipher: cipher)),
-      ),
-      child: Card(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        elevation: 4,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
+    return Card(
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ExpansionTile(
+          key: PageStorageKey(cipher.id),
+          initiallyExpanded: isExpanded,
+          onExpansionChanged: (expanded) {
+            if (expanded) onExpand;
+          },
+          title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
@@ -56,13 +65,26 @@ class CipherCard extends StatelessWidget {
                   ],
                 ),
               ),
-              IconButton(
-                icon: const Icon(Icons.playlist_add),
-                onPressed: onAddToPlaylist,
-                tooltip: 'Adicionar à playlist',
-              ),
             ],
           ),
+          children: cipher.maps.map((version) {
+            return InkWell(
+              onTap: selectVersion!(version, cipher),
+              child: Row(
+                spacing: 16,
+                children: [
+                  Text(
+                    version.versionName!,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  Text(
+                    'Tom: ${version.transposedKey}',
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
         ),
       ),
     );

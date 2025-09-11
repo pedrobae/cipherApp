@@ -2,7 +2,6 @@ import 'package:cipher_app/providers/layout_settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/navigation_provider.dart';
-import 'providers/search_provider.dart';
 import 'providers/cipher_provider.dart';
 import 'providers/info_provider.dart';
 import 'providers/playlist_provider.dart';
@@ -14,13 +13,13 @@ import 'helpers/database_factory.dart';
 void main() async {
   // Ensure Flutter is initialized before database operations
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Initialize database factory based on platform
   await DatabaseFactoryHelper.initialize();
-  
+
   // Initialize settings service
   await SettingsService.initialize();
-  
+
   runApp(const MyApp());
 }
 
@@ -31,10 +30,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => SettingsProvider()..loadSettings()),
-        ChangeNotifierProvider(create: (_) => LayoutSettingsProvider()..loadSettings()),
+        ChangeNotifierProvider(
+          create: (_) => SettingsProvider()..loadSettings(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => LayoutSettingsProvider()..loadSettings(),
+        ),
         ChangeNotifierProvider(create: (_) => NavigationProvider()),
-        ChangeNotifierProvider(create: (_) => SearchProvider()),
         ChangeNotifierProvider(create: (_) => CipherProvider()),
         ChangeNotifierProvider(create: (_) => InfoProvider()),
         ChangeNotifierProvider(create: (_) => PlaylistProvider()),

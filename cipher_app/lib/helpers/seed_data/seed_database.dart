@@ -7,6 +7,7 @@ import 'ciphers.dart';
 import 'versions.dart';
 import 'sections.dart';
 import 'playlists.dart';
+import 'collaborators.dart';
 
 Future<void> seedDatabase(Database db) async {
   await db.transaction((txn) async {
@@ -34,16 +35,25 @@ Future<void> seedDatabase(Database db) async {
     });
 
     // Insert cipher maps
-    final mapIds = await insertCipherMaps(txn, cipherIds['amazing']!, cipherIds['howgreat']!);
+    final mapIds = await insertCipherMaps(
+      txn,
+      cipherIds['amazing']!,
+      cipherIds['howgreat']!,
+    );
 
     // Insert map contents
     await insertMapContents(txn, mapIds);
 
+    // Create users (including test user and band members)
+    final userIds = await insertUsers(txn);
+
+    // Create playlists with the new user structure
+    final playlistIds = await insertPlaylists(txn, userIds, mapIds);
+
+    // Create collaborator relationships between users and playlists
+    await insertCollaborators(txn, userIds, playlistIds);
+
     // Seed info items after cipher data
     await seedInfoDatabase(db);
-
-    // Create test user and playlists
-    final testUserId = await insertTestUser(txn);
-    await insertPlaylists(txn, testUserId, mapIds);
   });
 }

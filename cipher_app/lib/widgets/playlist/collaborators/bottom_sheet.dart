@@ -63,21 +63,16 @@ class _CollaboratorsBottomSheetState extends State<CollaboratorsBottomSheet> {
                 ),
               if (_isSearching)
                 IconButton(
-                  icon: const Icon(Icons.close),
+                  icon: const Icon(Icons.group),
                   tooltip: 'Cancelar busca',
                   onPressed: () {
                     setState(() {
                       _isSearching = false;
                       _searchController.clear();
-                      // context.read<UserProvider>().clearSearchResults(); TODO user provider
+                      context.read<UserProvider>().clearSearchResults();
                     });
                   },
                 ),
-              IconButton(
-                icon: const Icon(Icons.close),
-                tooltip: 'Fechar',
-                onPressed: () => Navigator.of(context).pop(),
-              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -96,7 +91,7 @@ class _CollaboratorsBottomSheetState extends State<CollaboratorsBottomSheet> {
           TextField(
             controller: _searchController,
             decoration: InputDecoration(
-              hintText: 'Buscar por e-mail ou nome de usuário',
+              hintText: 'Buscar por e-mail ou username',
               prefixIcon: const Icon(Icons.search),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -199,7 +194,7 @@ class _CollaboratorsBottomSheetState extends State<CollaboratorsBottomSheet> {
             StatefulBuilder(
               builder: (context, setState) {
                 return DropdownButtonFormField<String>(
-                  value: selectedInstrument,
+                  initialValue: selectedInstrument,
                   decoration: const InputDecoration(
                     labelText: 'Selecione o instrumento',
                   ),

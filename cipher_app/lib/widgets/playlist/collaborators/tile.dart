@@ -98,7 +98,7 @@ class CollaboratorTile extends StatelessWidget {
             StatefulBuilder(
               builder: (context, setState) {
                 return DropdownButtonFormField<String>(
-                  value: instrumentOptions.contains(selectedInstrument)
+                  initialValue: instrumentOptions.contains(selectedInstrument)
                       ? selectedInstrument
                       : 'Outro',
                   decoration: const InputDecoration(labelText: 'Instrumento'),

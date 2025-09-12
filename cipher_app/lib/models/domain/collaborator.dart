@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import '../../helpers/datetime.dart';
 
 /// Represents a user who contributes to a playlist with their musical role
@@ -75,33 +74,5 @@ class Collaborator {
       email: email ?? this.email,
       profilePhoto: profilePhoto ?? this.profilePhoto,
     );
-  }
-
-  // Helper method to get appropriate instrument icon
-  IconData get instrumentIcon {
-    switch (instrument.toLowerCase()) {
-      case 'guitarrista':
-      case 'guitar':
-      case 'guitarist':
-        return Icons.music_note;
-      case 'vocalista':
-      case 'vocal':
-      case 'vocalist':
-        return Icons.mic;
-      case 'baterista':
-      case 'drums':
-      case 'drummer':
-        return Icons.upcoming;
-      case 'baixista':
-      case 'bass':
-      case 'bassist':
-        return Icons.queue_music;
-      case 'tecladista':
-      case 'keyboard':
-      case 'keyboardist':
-        return Icons.piano;
-      default:
-        return Icons.person;
-    }
   }
 }

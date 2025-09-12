@@ -29,10 +29,7 @@ class CollaboratorTile extends StatelessWidget {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Chip(
-            label: Text(collaborator.instrument),
-            avatar: Icon(collaborator.instrumentIcon, size: 16),
-          ),
+          Chip(label: Text(collaborator.instrument)),
           PopupMenuButton(
             icon: const Icon(Icons.more_vert),
             onSelected: (value) {
@@ -47,7 +44,7 @@ class CollaboratorTile extends StatelessWidget {
                 value: 'edit',
                 child: ListTile(
                   leading: Icon(Icons.edit),
-                  title: Text('Alterar Instrumento'),
+                  title: Text('Alterar Função'),
                 ),
               ),
               const PopupMenuItem(
@@ -76,7 +73,7 @@ class CollaboratorTile extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Alterar Instrumento'),
+        title: const Text('Alterar Função'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -94,14 +91,14 @@ class CollaboratorTile extends StatelessWidget {
               subtitle: Text(collaborator.email ?? ''),
             ),
             const SizedBox(height: 16),
-            const Text('Selecione o instrumento:'),
+            const Text('Selecione a função:'),
             StatefulBuilder(
               builder: (context, setState) {
                 return DropdownButtonFormField<String>(
                   initialValue: instrumentOptions.contains(selectedInstrument)
                       ? selectedInstrument
                       : 'Outro',
-                  decoration: const InputDecoration(labelText: 'Instrumento'),
+                  decoration: const InputDecoration(labelText: 'Função'),
                   items: instrumentOptions.map((String instrument) {
                     return DropdownMenuItem<String>(
                       value: instrument,

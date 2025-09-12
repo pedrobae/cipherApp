@@ -147,16 +147,15 @@ class CollaboratorProvider extends ChangeNotifier {
       'Baixista',
       'Baterista',
       'Tecladista',
+      'Pianista',
       'Violão',
       'Percussão',
       'Saxofone',
-      'Trompete',
-      'Trombone',
       'Violino',
       'Viola',
       'Violoncelo',
       'Flauta',
-      'Outro',
+      'Dirigente',
     ];
   }
 }

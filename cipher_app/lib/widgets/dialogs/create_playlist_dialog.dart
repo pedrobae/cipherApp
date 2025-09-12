@@ -62,7 +62,7 @@ class _CreatePlaylistDialogState extends State<CreatePlaylistDialog> {
     if (name.isEmpty) return;
 
     final newPlaylist = Playlist(
-      id: 0, // Will be auto-generated
+      id: 0, // Will be overwritten by an auto-generated id on db insertion
       name: name,
       description: _descriptionController.text.trim().isEmpty
           ? null

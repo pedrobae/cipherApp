@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import '../widgets/cipher/editor/custom_reorderable_delayed.dart';
 import '../widgets/playlist/collaborators_bottom_sheet.dart';
 import '../widgets/playlist/edit_playlist_form.dart';
-import '../widgets/playlist/empty_playlist_widget.dart';
 import 'cipher_library.dart';
 
 class PlaylistViewer extends StatefulWidget {
@@ -25,22 +24,6 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
   void initState() {
     super.initState();
     _cipherVersionIds = List.from(widget.playlist.cipherVersionIds);
-  }
-
-  void _onReorder(int oldIndex, int newIndex) {
-    // Update UI immediately
-    setState(() {
-      if (newIndex > oldIndex) newIndex--;
-      final item = _cipherVersionIds.removeAt(oldIndex);
-      _cipherVersionIds.insert(newIndex, item);
-    });
-
-    // Persist to database
-    final playlistProvider = context.read<PlaylistProvider>();
-    playlistProvider.reorderPlaylistCipherMaps(
-      widget.playlist.id,
-      _cipherVersionIds,
-    );
   }
 
   @override
@@ -73,18 +56,24 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: hasCipherVersions
-            ? ReorderableListView.builder(
+      body: hasCipherVersions
+          ? Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ReorderableListView.builder(
                 proxyDecorator: (child, index, animation) =>
                     Material(type: MaterialType.transparency, child: child),
                 buildDefaultDragHandles: true,
                 header: Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: Center(child: Text(widget.playlist.description ?? '')),
+                  padding: const EdgeInsets.only(
+                    bottom: 8.0,
+                    left: 16,
+                    right: 16,
+                  ),
+                  child: Text(
+                    widget.playlist.description ?? '',
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-                
                 itemCount: _cipherVersionIds.length,
                 onReorder: _onReorder,
                 itemBuilder: (context, index) {
@@ -95,18 +84,60 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                     index: index,
                     child: CipherVersionCard(
                       cipherVersionId: cipherVersionId,
-                      onDelete: () => _handleDeleteVersion(widget.playlist.id, cipherVersionId),
-                    )
+                      onDelete: () => _handleDeleteVersion(
+                        widget.playlist.id,
+                        cipherVersionId,
+                      ),
+                    ),
                   );
                 },
-              )
-            : const EmptyPlaylistWidget(),
-      ),
+              ),
+            )
+          : Center(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text(
+                      widget.playlist.description ?? '',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.music_note_outlined,
+                          size: 80,
+                          color: Colors.grey[400],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Playlist vazia',
+                          style: Theme.of(context).textTheme.headlineSmall
+                              ?.copyWith(
+                                color: Colors.grey[600],
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Adicione suas primeiras cifras!',
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: Colors.grey[500]),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _navigateToAddCiphers(),
         tooltip: 'Adicionar Cifras',
         child: const Icon(Icons.add),
-      )
+      ),
     );
   }
 
@@ -137,6 +168,22 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
     );
   }
 
+  void _onReorder(int oldIndex, int newIndex) {
+    // Update UI immediately
+    setState(() {
+      if (newIndex > oldIndex) newIndex--;
+      final item = _cipherVersionIds.removeAt(oldIndex);
+      _cipherVersionIds.insert(newIndex, item);
+    });
+
+    // Persist to database
+    final playlistProvider = context.read<PlaylistProvider>();
+    playlistProvider.reorderPlaylistCipherMaps(
+      widget.playlist.id,
+      _cipherVersionIds,
+    );
+  }
+
   void _handleDeleteVersion(int playlistId, int versionId) {
     // Show confirmation dialog first
     showDialog(
@@ -155,10 +202,13 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
               setState(() {
                 _cipherVersionIds.remove(versionId);
               });
-              
+
               // Update provider for persistence
               final playlistProvider = context.read<PlaylistProvider>();
-              playlistProvider.removeCipherMapFromPlaylist(playlistId, versionId);
+              playlistProvider.removeCipherMapFromPlaylist(
+                playlistId,
+                versionId,
+              );
             },
             child: const Text('Remover'),
           ),

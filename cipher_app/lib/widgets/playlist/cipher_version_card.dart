@@ -105,24 +105,13 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
                           _cipher!.title,
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
-                        Text(_cipher!.author),
-                      ],
-                    ),
-                    Wrap(
-                      children: [
-                        Text(
-                          'Versão: ${version.versionName}',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(width: 8),
                         Text(
                           'Tom: ${version.transposedKey ?? _cipher!.musicKey}',
                         ),
-                        const SizedBox(width: 8),
-                        Text('Tempo: ${_cipher!.tempo}'),
                       ],
                     ),
                     const SizedBox(height: 8),
+                    // REORDERABLE SECTION CHIPS
                     SizedBox(
                       height: 30,
                       child: ReorderableListView.builder(
@@ -184,12 +173,37 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
                   ],
                 ),
               ),
-              IconButton(
-                onPressed: widget.onDelete,
-                icon: Icon(
-                  Icons.delete,
-                  color: const Color.fromARGB(255, 241, 103, 93),
-                ),
+              PopupMenuButton<String>(
+                onSelected: (value) {
+                  switch (value) {
+                    case 'delete':
+                      widget.onDelete?.call();
+                    case 'copy':
+                    //  TODO copy cipher version in playlist, check the DB, repo and provider
+                  }
+                },
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 'delete',
+                    child: Row(
+                      children: [
+                        Icon(Icons.delete, color: Colors.red),
+                        SizedBox(width: 8),
+                        Text('Excluir'),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'copy',
+                    child: Row(
+                      children: [
+                        Icon(Icons.copy),
+                        SizedBox(width: 8),
+                        Text('Copiar'),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

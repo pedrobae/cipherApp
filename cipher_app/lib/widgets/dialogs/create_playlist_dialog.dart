@@ -43,7 +43,7 @@ class _CreatePlaylistDialogState extends State<CreatePlaylistDialog> {
               labelText: 'Descrição (opcional)',
               border: OutlineInputBorder(),
             ),
-            maxLines: 2,
+            maxLines: 3,
           ),
         ],
       ),

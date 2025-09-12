@@ -1,4 +1,6 @@
+import 'package:cipher_app/providers/playlist_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../models/domain/playlist.dart';
 
 class EditPlaylistForm extends StatefulWidget {
@@ -60,14 +62,28 @@ class _EditPlaylistFormState extends State<EditPlaylistForm> {
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('Cancelar'),
         ),
-        ElevatedButton(
-          onPressed: () {
-            // TODO: Implement save functionality
-            Navigator.of(context).pop();
-          },
-          child: const Text('Salvar'),
-        ),
+        ElevatedButton(onPressed: _editPlaylist, child: const Text('Salvar')),
       ],
+    );
+  }
+
+  void _editPlaylist() {
+    final name = _nameController.text.trim();
+    if (name.isEmpty) return;
+
+    final description = _descriptionController.text.trim();
+
+    context.read<PlaylistProvider>().updatePlaylistInfo(
+      widget.playlist.id,
+      name,
+      description,
+    );
+    Navigator.of(context).pop();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Playlist "$name" salva'),
+        duration: const Duration(seconds: 2),
+      ),
     );
   }
 }

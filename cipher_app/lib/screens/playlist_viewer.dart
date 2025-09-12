@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../widgets/cipher/editor/custom_reorderable_delayed.dart';
 import '../widgets/playlist/collaborators_bottom_sheet.dart';
 import '../widgets/playlist/edit_playlist_form.dart';
+import '../widgets/playlist/empty_playlist.dart';
 import 'cipher_library.dart';
 
 class PlaylistViewer extends StatefulWidget {
@@ -93,46 +94,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                 },
               ),
             )
-          : Center(
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Text(
-                      widget.playlist.description ?? '',
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.music_note_outlined,
-                          size: 80,
-                          color: Colors.grey[400],
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Playlist vazia',
-                          style: Theme.of(context).textTheme.headlineSmall
-                              ?.copyWith(
-                                color: Colors.grey[600],
-                                fontWeight: FontWeight.bold,
-                              ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Adicione suas primeiras cifras!',
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(color: Colors.grey[500]),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          : EmptyPlaylist(description: widget.playlist.description),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _navigateToAddCiphers(),
         tooltip: 'Adicionar Cifras',

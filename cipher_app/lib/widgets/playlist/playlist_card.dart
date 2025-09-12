@@ -51,7 +51,7 @@ class PlaylistCard extends StatelessWidget {
           ],
         ),
         trailing: IconButton(
-          onPressed: () => onDelete,
+          onPressed: onDelete,
           icon: Icon(Icons.delete, color: Colors.red),
         ),
         onTap: onTap,

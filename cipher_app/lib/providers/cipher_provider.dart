@@ -15,6 +15,7 @@ class CipherProvider extends ChangeNotifier {
   String? _error;
   String _searchTerm = '';
   bool _useMemoryFiltering = true;
+  bool _hasInitialized = false;
 
   // Add debouncing for rapid calls
   Timer? _loadTimer;
@@ -25,6 +26,7 @@ class CipherProvider extends ChangeNotifier {
   bool get isSaving => _isSaving;
   String? get error => _error;
   bool get useMemoryFiltering => _useMemoryFiltering;
+  bool get hasInitialized => _hasInitialized;
 
   // Load ciphers from local SQLite database
   Future<void> loadCiphers() async {
@@ -38,6 +40,7 @@ class CipherProvider extends ChangeNotifier {
       _useMemoryFiltering = true;
       _ciphers = await _cipherRepository.getAllCiphers();
       _filterCiphers();
+      _hasInitialized = true;
 
       if (kDebugMode) {
         print('Loaded ${_ciphers.length} ciphers from SQLite');
@@ -83,7 +86,7 @@ class CipherProvider extends ChangeNotifier {
   }
 
   void clearSearch() {
-    searchCiphers('');
+    _filteredCiphers = List.from(_ciphers);
   }
 
   Future<void> createCipher(Cipher cipher) async {

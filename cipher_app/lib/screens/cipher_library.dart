@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../widgets/search_app_bar.dart';
 import '../widgets/cipher/cipher_card.dart';
 import '../providers/cipher_provider.dart';
+import '../providers/playlist_provider.dart';
 import 'cipher_editor.dart';
 
 class CipherLibraryScreen extends StatefulWidget {
@@ -29,8 +30,6 @@ class CipherLibraryScreen extends StatefulWidget {
 
 class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
   final TextEditingController _searchController = TextEditingController();
-  bool _hasInitialized = false;
-  final Set<int> _selectedVersionIds = {};
 
   int? _expandedCipherId;
 
@@ -41,18 +40,26 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
   }
 
   void _selectVersion(CipherVersion version, Cipher cipher) {
-    if (widget.selectionMode) {}
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => CipherViewer(cipher: cipher, version: version),
-      ),
-    );
+    if (widget.selectionMode) {
+      context.read<PlaylistProvider>().addCipherMap(
+        widget.playlistId!,
+        version.id!,
+      );
+
+      context.read<CipherProvider>().clearSearch();
+
+      Navigator.pop(context);
+    } else {
+      Navigator.of(context, rootNavigator: true).push(
+        MaterialPageRoute(
+          builder: (context) => CipherViewer(cipher: cipher, version: version),
+        ),
+      );
+    }
   }
 
   void _loadDataIfNeeded() {
-    if (!_hasInitialized && mounted) {
-      _hasInitialized = true;
+    if (!context.read<CipherProvider>().hasInitialized && mounted) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           context.read<CipherProvider>().loadCiphers();
@@ -169,18 +176,5 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
               heroTag: 'library_fab',
             ),
     );
-  }
-
-  void _addSelectedToPlaylist() {
-    if (widget.playlistId == null || _selectedVersionIds.isEmpty) return;
-
-    // TODO: Add selected versions to playlist
-    // final playlistProvider = context.read<PlaylistProvider>();
-    // for (final versionId in _selectedVersionIds) {
-    //   playlistProvider.addCipherMapToPlaylist(widget.playlistId!, versionId);
-    // }
-
-    // Return to playlist viewer
-    Navigator.pop(context);
   }
 }

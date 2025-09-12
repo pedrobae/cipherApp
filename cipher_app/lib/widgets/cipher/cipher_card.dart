@@ -69,7 +69,7 @@ class CipherCard extends StatelessWidget {
           ),
           children: cipher.maps.map((version) {
             return InkWell(
-              onTap: selectVersion!(version, cipher),
+              onTap: () => selectVersion?.call(version, cipher),
               child: Row(
                 spacing: 16,
                 children: [
@@ -90,15 +90,3 @@ class CipherCard extends StatelessWidget {
     );
   }
 }
-
-
-// CipherCard(
-//   cipher: cipher,
-//   onAddToPlaylist: () {
-//     // Handle adding to playlist
-//     showModalBottomSheet(
-//       context: context,
-//       builder: (context) => PlaylistSelectionSheet(cipher: cipher),
-//     );
-//   },
-// ),

@@ -9,34 +9,28 @@ import '../widgets/dialogs/edit_playlist_dialog.dart';
 import '../widgets/playlist/empty_playlist.dart';
 import 'cipher_library.dart';
 
-class PlaylistViewer extends StatefulWidget {
-  final Playlist playlist;
+class PlaylistViewer extends StatelessWidget {
+  final int playlistId; // Receive the playlist ID from the parent
 
-  const PlaylistViewer({super.key, required this.playlist});
-
-  @override
-  State<PlaylistViewer> createState() => _PlaylistViewerState();
-}
-
-class _PlaylistViewerState extends State<PlaylistViewer> {
-  late List<int> _cipherVersionIds;
-
-  @override
-  void initState() {
-    super.initState();
-    _cipherVersionIds = List.from(widget.playlist.cipherVersionIds);
-  }
+  const PlaylistViewer({super.key, required this.playlistId});
 
   @override
   Widget build(BuildContext context) {
-    final bool hasCipherVersions = _cipherVersionIds.isNotEmpty;
+    // Read the playlist from the provider
+    final playlistProvider = context.watch<PlaylistProvider>();
+    final playlist = playlistProvider.playlists.firstWhere(
+      (p) => p.id == playlistId,
+      orElse: () => throw Exception('Playlist not found'),
+    );
+
+    final bool hasCipherVersions = playlist.cipherVersionIds.isNotEmpty;
 
     return Scaffold(
       appBar: AppBar(
         title: Column(
           children: [
             Text(
-              widget.playlist.name,
+              playlist.name,
               style: Theme.of(
                 context,
               ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
@@ -48,12 +42,12 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
           IconButton(
             icon: const Icon(Icons.group),
             tooltip: 'Colaboradores',
-            onPressed: () => _showCollaborators(context),
+            onPressed: () => _showCollaborators(context, playlist),
           ),
           IconButton(
             icon: const Icon(Icons.edit),
-            tooltip: 'Edit',
-            onPressed: () => _editPlaylist(context),
+            tooltip: 'Editar',
+            onPressed: () => _editPlaylist(context, playlist),
           ),
         ],
       ),
@@ -71,22 +65,24 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                     right: 16,
                   ),
                   child: Text(
-                    widget.playlist.description ?? '',
+                    playlist.description ?? '',
                     textAlign: TextAlign.center,
                   ),
                 ),
-                itemCount: _cipherVersionIds.length,
-                onReorder: _onReorder,
+                itemCount: playlist.cipherVersionIds.length,
+                onReorder: (oldIndex, newIndex) =>
+                    _onReorder(context, playlist, oldIndex, newIndex),
                 itemBuilder: (context, index) {
-                  final cipherVersionId = _cipherVersionIds[index];
+                  final cipherVersionId = playlist.cipherVersionIds[index];
                   return CustomReorderableDelayed(
-                    delay: Duration(milliseconds: 200),
+                    delay: const Duration(milliseconds: 200),
                     key: Key(cipherVersionId.toString()),
                     index: index,
                     child: CipherVersionCard(
                       cipherVersionId: cipherVersionId,
                       onDelete: () => _handleDeleteVersion(
-                        widget.playlist.id,
+                        context,
+                        playlist.id,
                         cipherVersionId,
                       ),
                     ),
@@ -94,59 +90,64 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                 },
               ),
             )
-          : EmptyPlaylist(description: widget.playlist.description),
+          : EmptyPlaylist(description: playlist.description),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _navigateToAddCiphers(),
+        onPressed: () => _navigateToAddCiphers(context, playlist),
         tooltip: 'Adicionar Cifras',
         child: const Icon(Icons.add),
       ),
     );
   }
 
-  void _navigateToAddCiphers() {
+  void _navigateToAddCiphers(BuildContext context, Playlist playlist) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => CipherLibraryScreen(
           selectionMode: true,
-          playlistId: widget.playlist.id,
-          excludeVersionIds: _cipherVersionIds, // Don't show already added
+          playlistId: playlist.id,
+          excludeVersionIds:
+              playlist.cipherVersionIds, // Don't show already added
         ),
       ),
     );
   }
 
-  void _showCollaborators(BuildContext context) {
+  void _showCollaborators(BuildContext context, Playlist playlist) {
     showModalBottomSheet(
       context: context,
-      builder: (context) => CollaboratorsBottomSheet(playlist: widget.playlist),
+      builder: (context) => CollaboratorsBottomSheet(playlist: playlist),
     );
   }
 
-  void _editPlaylist(BuildContext context) {
+  void _editPlaylist(BuildContext context, Playlist playlist) {
     showDialog(
       context: context,
-      builder: (context) => EditPlaylistForm(playlist: widget.playlist),
+      builder: (context) => EditPlaylistForm(playlist: playlist),
     );
   }
 
-  void _onReorder(int oldIndex, int newIndex) {
-    // Update UI immediately
-    setState(() {
-      if (newIndex > oldIndex) newIndex--;
-      final item = _cipherVersionIds.removeAt(oldIndex);
-      _cipherVersionIds.insert(newIndex, item);
-    });
-
-    // Persist to database
+  void _onReorder(
+    BuildContext context,
+    Playlist playlist,
+    int oldIndex,
+    int newIndex,
+  ) {
     final playlistProvider = context.read<PlaylistProvider>();
+
+    // Update the playlist order in the provider
     playlistProvider.reorderPlaylistCipherMaps(
-      widget.playlist.id,
-      _cipherVersionIds,
+      playlist.id,
+      (playlist.cipherVersionIds
+        ..insert(newIndex, playlist.cipherVersionIds.removeAt(oldIndex))),
     );
   }
 
-  void _handleDeleteVersion(int playlistId, int versionId) {
+  void _handleDeleteVersion(
+    BuildContext context,
+    int playlistId,
+    int versionId,
+  ) {
     // Show confirmation dialog first
     showDialog(
       context: context,
@@ -161,9 +162,6 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              setState(() {
-                _cipherVersionIds.remove(versionId);
-              });
 
               // Update provider for persistence
               final playlistProvider = context.read<PlaylistProvider>();

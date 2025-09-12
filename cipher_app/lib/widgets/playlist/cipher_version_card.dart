@@ -78,19 +78,7 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
 
     final version = _cipher!.maps[0];
 
-    return GestureDetector(
-      /// ROUTE TO CIPHER EDITOR
-      // onTap: () => Navigator.push(
-      //             context,
-      //             MaterialPageRoute(
-      //               builder: (context) => EditCipher(
-      //                 cipher: _cipher,
-      //                 currentVersion: version,
-      //                 isNewVersion: false,
-      //                 startTab: 'version'
-      //               ),
-      //             ),
-      //           ),
+    return InkWell(
       onTap: () => Navigator.of(context, rootNavigator: true).push(
         MaterialPageRoute(
           builder: (context) =>
@@ -160,10 +148,6 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
                                 horizontal: 1,
                               ),
                               child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 2,
-                                ),
                                 decoration: BoxDecoration(
                                   color: section!.contentColor.withValues(
                                     alpha: .8,
@@ -174,15 +158,21 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
                                     width: 2,
                                   ),
                                 ),
-                                child: Center(
-                                  child: Text(
-                                    section.contentCode,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 2,
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      section.contentCode,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                      textAlign: TextAlign.center,
                                     ),
-                                    textAlign: TextAlign.center,
                                   ),
                                 ),
                               ),
@@ -196,7 +186,10 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
               ),
               IconButton(
                 onPressed: widget.onDelete,
-                icon: Icon(Icons.delete, color: Colors.red),
+                icon: Icon(
+                  Icons.delete,
+                  color: const Color.fromARGB(255, 241, 103, 93),
+                ),
               ),
             ],
           ),

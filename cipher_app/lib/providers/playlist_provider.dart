@@ -118,12 +118,6 @@ class PlaylistProvider extends ChangeNotifier {
     await _loadPlaylist(playlistId);
   }
 
-  // Update a Playlist with a new Collaborator
-  Future<void> addCollaborator(int playlistId, int collaboratorId) async {
-    await _playlistRepository.addCollaborator(playlistId, collaboratorId);
-    await _loadPlaylist(playlistId);
-  }
-
   // ===== DELETE =====
   // Delete a playlist
   Future<void> deletePlaylist(int playlistId) async {
@@ -156,15 +150,6 @@ class PlaylistProvider extends ChangeNotifier {
     );
     await _loadPlaylist(playlistId);
     notifyListeners();
-  }
-
-  // Remove a Collaborator from a Playlist
-  Future<void> removeCollaboratorFromPlaylist(
-    int playlistId,
-    int collaboratorId,
-  ) async {
-    await _playlistRepository.removeCollaborator(playlistId, collaboratorId);
-    await _loadPlaylist(playlistId);
   }
 
   // ===== UTILITY =====

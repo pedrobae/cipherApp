@@ -226,45 +226,6 @@ void main() {
       });
     });
 
-    group('Collaborator Management', () {
-      late int testPlaylistId;
-
-      setUp(() async {
-        final playlist = Playlist(
-          id: 0,
-          name: 'Test Collaborators',
-          description: 'Testing collaborator operations',
-          createdBy: '1',
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-          cipherVersionIds: [],
-          collaborators: [],
-        );
-        testPlaylistId = await repository.createPlaylist(playlist);
-      });
-
-      test('should add collaborator to playlist', () async {
-        // Act
-        await repository.addCollaborator(testPlaylistId, 2, addedBy: 1);
-
-        // Assert
-        final playlist = await repository.getPlaylistById(testPlaylistId);
-        expect(playlist!.collaborators, contains('2'));
-      });
-
-      test('should remove collaborator from playlist', () async {
-        // Arrange
-        await repository.addCollaborator(testPlaylistId, 2, addedBy: 1);
-
-        // Act
-        await repository.removeCollaborator(testPlaylistId, 2);
-
-        // Assert
-        final playlist = await repository.getPlaylistById(testPlaylistId);
-        expect(playlist!.collaborators, isNot(contains('2')));
-      });
-    });
-
     group('Edge Cases', () {
       test('should handle empty playlist creation', () async {
         // Arrange

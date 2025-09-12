@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:cipher_app/models/domain/playlist.dart';
 import 'package:provider/provider.dart';
 import '../widgets/cipher/editor/custom_reorderable_delayed.dart';
-import '../widgets/playlist/collaborators_bottom_sheet.dart';
+import '../widgets/playlist/collaborators/bottom_sheet.dart';
 import '../widgets/dialogs/edit_playlist_dialog.dart';
 import '../widgets/playlist/empty_playlist.dart';
 import 'cipher_library.dart';

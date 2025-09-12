@@ -7,8 +7,7 @@ class Playlist {
   final String createdBy;
   final DateTime? createdAt;
   final DateTime? updatedAt;
-  final List<int>
-  cipherVersionIds; // Changed from cipherIds to cipherVersionIds
+  final List<int> cipherVersionIds;
   final List<String> collaborators;
 
   const Playlist({

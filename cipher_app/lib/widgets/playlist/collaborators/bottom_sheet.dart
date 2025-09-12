@@ -110,11 +110,7 @@ class _CollaboratorsBottomSheetState extends State<CollaboratorsBottomSheet> {
               ),
             ),
             onChanged: (value) {
-              if (value.length >= 3) {
-                context.read<UserProvider>().searchUsers(value);
-              } else if (value.isEmpty) {
-                context.read<UserProvider>().clearSearchResults();
-              }
+              context.read<UserProvider>().searchUsers(value);
             },
           ),
           const SizedBox(height: 16),

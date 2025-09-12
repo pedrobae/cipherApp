@@ -310,32 +310,4 @@ class PlaylistRepository {
       );
     });
   }
-
-  // ===== COLLABORATOR MANAGEMENT =====
-  Future<void> addCollaborator(
-    int playlistId,
-    int userId, {
-    int? addedBy,
-  }) async {
-    final db = await _databaseHelper.database;
-    final effectiveIncluderId = addedBy ?? _currentUserId ?? 1;
-
-    await db.insert('user_playlist', {
-      'user_id': userId,
-      'playlist_id': playlistId,
-      'role': 'collaborator',
-      'added_by': effectiveIncluderId,
-      'added_at': DateTime.now().toIso8601String(),
-    });
-  }
-
-  Future<void> removeCollaborator(int playlistId, int userId) async {
-    final db = await _databaseHelper.database;
-
-    await db.delete(
-      'user_playlist',
-      where: 'playlist_id = ? AND user_id = ?',
-      whereArgs: [playlistId, userId],
-    );
-  }
 }

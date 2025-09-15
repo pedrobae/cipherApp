@@ -1,10 +1,11 @@
+import 'package:cipher_app/models/domain/version.dart';
 import 'package:flutter/material.dart';
 import '../../models/domain/cipher.dart';
 import 'tag_chip.dart';
 
 class CipherCard extends StatelessWidget {
   final Cipher cipher;
-  final Function(CipherVersion, Cipher)? selectVersion;
+  final Function(Version, Cipher)? selectVersion;
   final bool isExpanded;
   final VoidCallback onExpand;
 

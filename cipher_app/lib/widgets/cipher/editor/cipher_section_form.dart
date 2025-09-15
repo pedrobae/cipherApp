@@ -1,3 +1,5 @@
+import 'package:cipher_app/models/domain/section.dart';
+import 'package:cipher_app/models/domain/version.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import '../../../models/domain/cipher.dart';
@@ -64,7 +66,7 @@ const Map<String, Color> _defaultSectionColors = {
 class CipherSectionForm extends StatefulWidget {
   final TextEditingController? versionNameController;
   final Cipher? cipher;
-  final CipherVersion? currentVersion;
+  final Version? currentVersion;
   final Function(Map<String, Section>) onSectionChanged;
   final Function(List<String>)? onStructureChanged;
 

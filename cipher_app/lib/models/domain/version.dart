@@ -1,0 +1,97 @@
+import 'package:cipher_app/models/domain/section.dart';
+
+class Version {
+  final int? id;
+  final int cipherId;
+  final String songStructure;
+  final String? transposedKey;
+  final String? versionName;
+  final DateTime? createdAt;
+  final Map<String, Section>? sections;
+
+  const Version({
+    this.id,
+    required this.cipherId,
+    required this.songStructure,
+    this.transposedKey,
+    this.versionName,
+    this.createdAt,
+    this.sections,
+  });
+
+  factory Version.fromJson(Map<String, dynamic> json) {
+    Map<String, Section> versionContentMap = {};
+    for (Map<String, dynamic> content in json['content']) {
+      Section versionContent = Section.fromJson(content);
+      versionContentMap[versionContent.contentCode] = versionContent;
+    }
+
+    return Version(
+      id: json['id'] as int?,
+      cipherId: json['cipher_id'] as int,
+      songStructure: json['song_structure'] as String? ?? '',
+      transposedKey: json['transposed_key'] as String?,
+      versionName: json['version_name'] as String?,
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
+          : null,
+      sections: versionContentMap,
+    );
+  }
+
+  // Factory for database row (without content - populated separately)
+  factory Version.fromRow(Map<String, dynamic> row) {
+    return Version(
+      id: row['id'] as int?,
+      cipherId: row['cipher_id'] as int,
+      songStructure: row['song_structure'] as String? ?? '',
+      transposedKey: row['transposed_key'] as String?,
+      versionName: row['version_name'] as String?,
+      createdAt: row['created_at'] != null
+          ? DateTime.parse(row['created_at'])
+          : null,
+      sections: null, // Will be populated separately by repository
+    );
+  }
+
+  // To JSON for database (without content - sections handled separately)
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'cipher_id': cipherId,
+      'song_structure': songStructure,
+      'transposed_key': transposedKey,
+      'version_name': versionName,
+      'created_at': createdAt?.toIso8601String(),
+    };
+  }
+
+  List<Section> getContentAsStruct() {
+    return (sections ?? {}).values.toList();
+  }
+
+  bool hasAllSections() {
+    final requiredSections = songStructure.split(',').toSet();
+    return requiredSections.every((section) => sections!.containsKey(section));
+  }
+
+  Version copyWith({
+    int? id,
+    int? cipherId,
+    String? songStructure,
+    String? transposedKey,
+    String? versionName,
+    DateTime? createdAt,
+    Map<String, Section>? content,
+  }) {
+    return Version(
+      id: id ?? this.id,
+      cipherId: cipherId ?? this.cipherId,
+      songStructure: songStructure ?? this.songStructure,
+      transposedKey: transposedKey ?? this.transposedKey,
+      versionName: versionName ?? this.versionName,
+      createdAt: createdAt ?? this.createdAt,
+      sections: content ?? sections,
+    );
+  }
+}

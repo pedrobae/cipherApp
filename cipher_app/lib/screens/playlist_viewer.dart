@@ -1,5 +1,6 @@
 import 'package:cipher_app/providers/playlist_provider.dart';
 import 'package:cipher_app/widgets/playlist/cipher_version_card.dart';
+import 'package:cipher_app/widgets/playlist/text_section_card.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cipher_app/models/domain/playlist.dart';
@@ -125,25 +126,13 @@ class PlaylistViewer extends StatelessWidget {
       case 'cipher_version':
         return CipherVersionCard(
           cipherVersionId: item.contentId,
-          onDelete: () => _handleDeleteVersion(
-            context,
-            playlistId,
-            item.contentId,
-          ),
+          onDelete: () =>
+              _handleDeleteVersion(context, playlistId, item.contentId),
         );
       case 'text_section':
-        return Card(
-          child: ListTile(
-            leading: const Icon(Icons.text_snippet),
-            title: Text('Text Section ${item.contentId}'),
-            subtitle: const Text('Text content - click to view/edit'),
-            onTap: () {
-              // TODO: Implement text section viewing/editing
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Text section editing not implemented yet')),
-              );
-            },
-          ),
+        return TextSectionCard(
+          textSectionId: item.contentId,
+          playlistId: playlistId,
         );
       default:
         return Card(

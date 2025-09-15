@@ -1,4 +1,5 @@
 import 'package:cipher_app/models/domain/cipher.dart';
+import 'package:cipher_app/models/domain/version.dart';
 import 'package:cipher_app/screens/cipher_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -39,7 +40,7 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
     });
   }
 
-  void _selectVersion(CipherVersion version, Cipher cipher) {
+  void _selectVersion(Version version, Cipher cipher) {
     if (widget.selectionMode) {
       context.read<PlaylistProvider>().addCipherMap(
         widget.playlistId!,

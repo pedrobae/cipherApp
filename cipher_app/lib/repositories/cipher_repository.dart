@@ -1,3 +1,5 @@
+import 'package:cipher_app/models/domain/section.dart';
+import 'package:cipher_app/models/domain/version.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../helpers/database.dart';
@@ -89,7 +91,7 @@ class CipherRepository {
 
   // === CIPHER VERSION OPERATIONS ===
 
-  Future<List<CipherVersion>> getCipherVersions(int cipherId) async {
+  Future<List<Version>> getCipherVersions(int cipherId) async {
     final db = await _databaseHelper.database;
     final results = await db.query(
       'version',
@@ -109,17 +111,17 @@ class CipherRepository {
       whereArgs: [versionId],
     );
 
-    CipherVersion version = await (_buildCipherVersion(result[0]));
+    Version version = await (_buildCipherVersion(result[0]));
 
     return _buildPrunedCipherByVersion(version.cipherId, version);
   }
 
-  Future<int> insertCipherVersion(CipherVersion map) async {
+  Future<int> insertCipherVersion(Version map) async {
     final db = await _databaseHelper.database;
     return await db.insert('version', map.toJson());
   }
 
-  Future<void> updateCipherVersion(CipherVersion map) async {
+  Future<void> updateCipherVersion(Version map) async {
     final db = await _databaseHelper.database;
     await db.update(
       'version',
@@ -134,12 +136,7 @@ class CipherRepository {
     Map<String, dynamic> field,
   ) async {
     final db = await _databaseHelper.database;
-    await db.update(
-      'version',
-      field,
-      where: 'id = ?',
-      whereArgs: [versionId],
-    );
+    await db.update('version', field, where: 'id = ?', whereArgs: [versionId]);
   }
 
   Future<void> deleteCipherVersion(int id) async {
@@ -296,15 +293,12 @@ class CipherRepository {
     return Cipher.fromJson(row).copyWith(maps: maps, tags: tags);
   }
 
-  Future<CipherVersion> _buildCipherVersion(Map<String, dynamic> row) async {
+  Future<Version> _buildCipherVersion(Map<String, dynamic> row) async {
     final section = await getAllSections(row['id']);
-    return CipherVersion.fromRow(row).copyWith(content: section);
+    return Version.fromRow(row).copyWith(content: section);
   }
 
-  Future<Cipher?> _buildPrunedCipherByVersion(
-    int id,
-    CipherVersion version,
-  ) async {
+  Future<Cipher?> _buildPrunedCipherByVersion(int id, Version version) async {
     final db = await _databaseHelper.database;
     final results = await db.query(
       'cipher',

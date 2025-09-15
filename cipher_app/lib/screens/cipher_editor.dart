@@ -1,3 +1,5 @@
+import 'package:cipher_app/models/domain/section.dart';
+import 'package:cipher_app/models/domain/version.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/cipher_provider.dart';
@@ -7,7 +9,7 @@ import '../widgets/cipher/editor/cipher_section_form.dart';
 
 class EditCipher extends StatefulWidget {
   final Cipher? cipher; // Null for create, populated for edit
-  final CipherVersion? currentVersion; // Specific version to edit
+  final Version? currentVersion; // Specific version to edit
   final bool isNewVersion; // Creating a new version of existing cipher
   final String startTab;
 
@@ -16,7 +18,7 @@ class EditCipher extends StatefulWidget {
     this.cipher,
     this.currentVersion,
     this.isNewVersion = false,
-    this.startTab = 'cipher'
+    this.startTab = 'cipher',
   });
 
   @override
@@ -90,7 +92,7 @@ class _EditCipherState extends State<EditCipher>
   }
 
   void _navigateStartTab() {
-    const Map<String, int> tabMap= {'cipher': 0, 'version': 1};
+    const Map<String, int> tabMap = {'cipher': 0, 'version': 1};
     _tabController.animateTo(tabMap[widget.startTab]!);
   }
 
@@ -240,9 +242,9 @@ class _EditCipherState extends State<EditCipher>
           .toList();
 
       // Create cipher map for this version (only if has content)
-      CipherVersion? version;
+      Version? version;
       if (_songStructure.isNotEmpty && _versionSections.isNotEmpty) {
-        version = CipherVersion(
+        version = Version(
           id: _isNewVersionMode ? null : widget.currentVersion?.id,
           cipherId: _isEditMode ? widget.cipher!.id! : 0,
           songStructure: _songStructure.join(','),
@@ -255,8 +257,8 @@ class _EditCipherState extends State<EditCipher>
               ? DateTime.now()
               : widget.currentVersion?.createdAt,
         );
-      }      // Prepare cipher data
-      List<CipherVersion> updatedMaps;
+      } // Prepare cipher data
+      List<Version> updatedMaps;
       if (_isNewVersionMode && version != null) {
         // Adding new version to existing cipher
         updatedMaps = [...widget.cipher!.maps, version];
@@ -265,9 +267,7 @@ class _EditCipherState extends State<EditCipher>
           version != null) {
         // Editing existing version
         updatedMaps = widget.cipher!.maps
-            .map(
-              (map) => map.id == widget.currentVersion!.id ? version! : map,
-            )
+            .map((map) => map.id == widget.currentVersion!.id ? version! : map)
             .toList();
       } else {
         // Creating new cipher
@@ -296,7 +296,7 @@ class _EditCipherState extends State<EditCipher>
           // Updating existing cipher and/or version
           await cipherProvider.updateCipher(cipherData);
         }
-        
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

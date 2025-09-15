@@ -1,3 +1,4 @@
+import 'package:cipher_app/models/domain/version.dart';
 import 'package:cipher_app/providers/layout_settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -11,7 +12,7 @@ import 'cipher_editor.dart';
 
 class CipherViewer extends StatefulWidget {
   final Cipher cipher;
-  final CipherVersion version;
+  final Version version;
 
   const CipherViewer({super.key, required this.cipher, required this.version});
 
@@ -20,7 +21,7 @@ class CipherViewer extends StatefulWidget {
 }
 
 class _CipherViewerState extends State<CipherViewer> {
-  CipherVersion? _currentVersion;
+  Version? _currentVersion;
   bool _hasSetOriginalKey = false;
 
   @override
@@ -33,7 +34,7 @@ class _CipherViewerState extends State<CipherViewer> {
     }
   }
 
-  void _selectVersion(CipherVersion version) {
+  void _selectVersion(Version version) {
     setState(() {
       _currentVersion = version;
     });

@@ -1,3 +1,5 @@
+import 'package:cipher_app/models/domain/section.dart';
+import 'package:cipher_app/models/domain/version.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:async';
 import '../models/domain/cipher.dart';
@@ -119,7 +121,7 @@ class CipherProvider extends ChangeNotifier {
   /// Handle creating cipher versions and their sections for a new cipher
   Future<void> _createCipherVersionsAndSections(
     int cipherId,
-    List<CipherVersion> versions,
+    List<Version> versions,
   ) async {
     for (final version in versions) {
       // Create Version with the correct cipher ID
@@ -288,7 +290,7 @@ class CipherProvider extends ChangeNotifier {
   }
 
   /// Add a new version (CipherMap) to an existing cipher
-  Future<void> addCipherVersion(int cipherId, CipherVersion cipherMap) async {
+  Future<void> addCipherVersion(int cipherId, Version cipherMap) async {
     if (_isSaving) return;
 
     _isSaving = true;
@@ -319,7 +321,7 @@ class CipherProvider extends ChangeNotifier {
   }
 
   /// Update a specific cipher version (CipherMap)
-  Future<void> updateCipherVersion(CipherVersion cipherMap) async {
+  Future<void> updateCipherVersion(Version cipherMap) async {
     if (_isSaving) return;
 
     _isSaving = true;

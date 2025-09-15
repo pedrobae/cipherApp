@@ -1,3 +1,4 @@
+import 'package:cipher_app/models/domain/version.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -8,7 +9,7 @@ import 'section_card.dart';
 
 class CipherContentSection extends StatelessWidget {
   final Cipher cipher;
-  final CipherVersion currentVersion;
+  final Version currentVersion;
   final int columnCount;
 
   const CipherContentSection({

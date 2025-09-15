@@ -1,10 +1,10 @@
+import 'package:cipher_app/models/domain/version.dart';
 import 'package:flutter/material.dart';
-import 'package:cipher_app/models/domain/cipher.dart';
 
 class VersionSelectorBottomSheet extends StatelessWidget {
-  final List<CipherVersion> versions;
-  final CipherVersion currentVersion;
-  final Function(CipherVersion) onVersionSelected;
+  final List<Version> versions;
+  final Version currentVersion;
+  final Function(Version) onVersionSelected;
   final VoidCallback onNewVersion;
 
   const VersionSelectorBottomSheet({
@@ -36,7 +36,7 @@ class VersionSelectorBottomSheet extends StatelessWidget {
                   context,
                 ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
-              
+
               const Spacer(),
               FilledButton.icon(
                 onPressed: () {

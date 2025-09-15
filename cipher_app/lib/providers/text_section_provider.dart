@@ -45,7 +45,8 @@ class TextSectionProvider extends ChangeNotifier {
   // Load single textSection
   Future<void> loadTextSection(int textSectionsId) async {
     // Check if already loaded or loading
-    if (_loadingIds.contains(textSectionsId) || _textSections.containsKey(textSectionsId)) {
+    if (_loadingIds.contains(textSectionsId) ||
+        _textSections.containsKey(textSectionsId)) {
       return;
     }
 
@@ -59,7 +60,7 @@ class TextSectionProvider extends ChangeNotifier {
         _textSections[textSection.id!] = textSection;
       }
       if (kDebugMode) {
-        print('========== LOADED TEXT SECTION ${textSectionsId} =============');
+        print('========== LOADED TEXT SECTION $textSectionsId =============');
       }
     } catch (e) {
       _error = e.toString();

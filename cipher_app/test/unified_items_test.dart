@@ -165,7 +165,7 @@ void main() {
       ];
 
       // Reorder
-      await playlistRepo.reorderPlaylistItems(playlistId, reorderedItems);
+      await playlistRepo.savePlaylistOrder(playlistId, reorderedItems);
 
       // Verify new order
       final newItems = await playlistRepo.getPlaylistItems(playlistId);

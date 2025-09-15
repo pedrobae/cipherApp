@@ -1,3 +1,4 @@
+import 'package:cipher_app/models/domain/playlist/playlist_item.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:async';
 import '../models/domain/playlist/playlist.dart';
@@ -104,17 +105,35 @@ class PlaylistProvider extends ChangeNotifier {
 
   // Update a Playlist with a new Cipher Map
   Future<void> addCipherMap(int playlistId, int cipherMapId) async {
-    await _playlistRepository.addCipherMapToPlaylist(playlistId, cipherMapId);
+    await _playlistRepository.addVersionToPlaylist(playlistId, cipherMapId);
     await _loadPlaylist(playlistId);
   }
 
-  // Update a Playlist with a new Order, but same cipher maps
-  Future<void> reorderPlaylistCipherMaps(
-    int playlistId,
-    List<int> newOrder,
+  // Reorder playlist items
+  Future<void> reorderItems(
+    int oldIndex,
+    int newIndex,
+    Playlist playlist,
   ) async {
-    await _playlistRepository.reorderPlaylistCipherMaps(playlistId, newOrder);
-    await _loadPlaylist(playlistId);
+    List<PlaylistItem> items = playlist.orderedItems;
+
+    if (newIndex > oldIndex) {
+      items[oldIndex].order = newIndex;
+      for (var i = oldIndex; i < newIndex; i++) {
+        items[i].order -= 1;
+      }
+    } else if (newIndex < oldIndex) {
+      items[oldIndex].order = newIndex;
+      for (var i = newIndex; i < oldIndex; i++) {
+        items[i].order += 1;
+      }
+    }
+    List<PlaylistItem> changedList = (oldIndex < newIndex)
+        ? items.sublist(oldIndex, newIndex + 1)
+        : items.sublist(newIndex, oldIndex + 1);
+    // Call the repo to save each item that is between the new and old index with a new position
+    await _playlistRepository.savePlaylistOrder(playlist.id, changedList);
+    await _loadPlaylist(playlist.id);
   }
 
   // ===== DELETE =====

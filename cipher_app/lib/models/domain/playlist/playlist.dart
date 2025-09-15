@@ -126,17 +126,6 @@ class Playlist {
     return copyWith(items: reorderedItems, updatedAt: DateTime.now());
   }
 
-  Playlist reorderItems(List<PlaylistItem> newItems) {
-    // Ensure proper ordering
-    final reorderedItems = newItems
-        .asMap()
-        .entries
-        .map((entry) => entry.value.copyWith(order: entry.key))
-        .toList();
-
-    return copyWith(items: reorderedItems, updatedAt: DateTime.now());
-  }
-
   // Convenience getters for filtering items by type
   List<PlaylistItem> get cipherVersionItems =>
       items.where((item) => item.isCipherVersion).toList();
@@ -149,6 +138,12 @@ class Playlist {
       .where((item) => item.isTextSection)
       .map((item) => item.contentId)
       .toList();
+
+  List<PlaylistItem> get orderedItems {
+    final ordered = List<PlaylistItem>.from(items)
+      ..sort((a, b) => a.order.compareTo(b.order));
+    return ordered;
+  }
 
   // Debug method for quick playlist inspection
   void debugPrint() {

@@ -262,8 +262,8 @@ class PlaylistRepository {
     );
   }
 
-  // ===== CIPHER MAP MANAGEMENT =====
-  Future<void> addCipherMapToPlaylist(
+  // ===== VERSION MANAGEMENT =====
+  Future<void> addVersionToPlaylist(
     int playlistId,
     int cipherMapId, {
     int? includerId,
@@ -327,43 +327,6 @@ class PlaylistRepository {
     });
   }
 
-  Future<void> reorderPlaylistCipherMaps(
-    int playlistId,
-    List<int> newCipherMapOrder,
-  ) async {
-    final db = await _databaseHelper.database;
-
-    await db.transaction((txn) async {
-      // First, set all positions to negative values to avoid constraint conflicts
-      await txn.rawUpdate(
-        '''
-        UPDATE playlist_version 
-        SET position = -position - 1000 
-        WHERE playlist_id = ?
-      ''',
-        [playlistId],
-      );
-
-      // Now update positions for all cipher maps in order
-      for (int i = 0; i < newCipherMapOrder.length; i++) {
-        await txn.update(
-          'playlist_version',
-          {'position': i},
-          where: 'playlist_id = ? AND version_id = ?',
-          whereArgs: [playlistId, newCipherMapOrder[i]],
-        );
-      }
-
-      // Update playlist timestamp
-      await txn.update(
-        'playlist',
-        {'updated_at': DateTime.now().toIso8601String()},
-        where: 'id = ?',
-        whereArgs: [playlistId],
-      );
-    });
-  }
-
   // ===== UNIFIED PLAYLIST ITEMS =====
   /// Get all playlist items (cipher versions and text sections) in order
   Future<List<PlaylistItem>> getPlaylistItems(int playlistId) async {
@@ -408,8 +371,8 @@ class PlaylistRepository {
     return items;
   }
 
-  /// Reorder all playlist items
-  Future<void> reorderPlaylistItems(
+  /// Saves playlist items from a list
+  Future<void> savePlaylistOrder(
     int playlistId,
     List<PlaylistItem> items,
   ) async {

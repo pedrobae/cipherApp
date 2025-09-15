@@ -2,9 +2,9 @@
 class PlaylistItem {
   final String type; // 'cipher_version' or 'text_section'
   final int contentId;
-  final int order;
+  int order;
 
-  const PlaylistItem({
+  PlaylistItem({
     required this.type,
     required this.contentId,
     required this.order,
@@ -32,28 +32,16 @@ class PlaylistItem {
 
   // Helper constructors
   PlaylistItem.cipherVersion(int cipherVersionId, int order)
-      : this(
-          type: cipherVersionType,
-          contentId: cipherVersionId,
-          order: order,
-        );
+    : this(type: cipherVersionType, contentId: cipherVersionId, order: order);
 
   PlaylistItem.textSection(int textSectionId, int order)
-      : this(
-          type: textSectionType,
-          contentId: textSectionId,
-          order: order,
-        );
+    : this(type: textSectionType, contentId: textSectionId, order: order);
 
   // Type checking helpers
   bool get isCipherVersion => type == cipherVersionType;
   bool get isTextSection => type == textSectionType;
 
-  PlaylistItem copyWith({
-    String? type,
-    int? contentId,
-    int? order,
-  }) {
+  PlaylistItem copyWith({String? type, int? contentId, int? order}) {
     return PlaylistItem(
       type: type ?? this.type,
       contentId: contentId ?? this.contentId,

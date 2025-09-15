@@ -158,19 +158,10 @@ class PlaylistViewer extends StatelessWidget {
     int oldIndex,
     int newIndex,
   ) {
-    // TODO: Implement unified items reordering
-    // For now, disable reordering until we implement the unified approach
-    // Need to implement reorderPlaylistItems method in provider
-
-    /* 
-    final playlistProvider = context.read<PlaylistProvider>();
-    // Update the playlist order in the provider
-    playlistProvider.reorderPlaylistCipherMaps(
-      playlist.id,
-      (playlist.cipherVersionIds
-        ..insert(newIndex, playlist.cipherVersionIds.removeAt(oldIndex))),
-    );
-    */
+    if (newIndex > oldIndex) {
+      newIndex -= 1;
+    }
+    context.read<PlaylistProvider>().reorderItems(oldIndex, newIndex, playlist);
   }
 
   void _handleDeleteVersion(

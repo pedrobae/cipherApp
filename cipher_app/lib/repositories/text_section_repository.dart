@@ -16,7 +16,7 @@ class TextSectionRepository {
   }
 
   // ===== CRUD =====
-  Future<void> createPlaylistText(
+  Future<int?> createPlaylistText(
     int playlistId,
     String title,
     String content,
@@ -36,14 +36,15 @@ class TextSectionRepository {
       });
       return playlistTextId;
     });
+    return null;
   }
 
   Future<void> updatePlaylistText(
-    int id,
+    int id, {
     String? title,
     String? content,
     int? position,
-  ) async {
+  }) async {
     final db = await _databaseHelper.database;
 
     Map<String, dynamic> updates = {};

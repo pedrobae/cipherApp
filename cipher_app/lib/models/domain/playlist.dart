@@ -1,4 +1,5 @@
 import '../../helpers/datetime.dart';
+import 'playlist_item.dart';
 
 class Playlist {
   final int id;
@@ -7,8 +8,8 @@ class Playlist {
   final String createdBy;
   final DateTime? createdAt;
   final DateTime? updatedAt;
-  final List<int> cipherVersionIds;
   final List<String> collaborators;
+  final List<PlaylistItem> items; // Unified content items
 
   const Playlist({
     required this.id,
@@ -17,8 +18,8 @@ class Playlist {
     required this.createdBy,
     this.createdAt,
     this.updatedAt,
-    this.cipherVersionIds = const [],
     this.collaborators = const [],
+    this.items = const [],
   });
 
   factory Playlist.fromJson(Map<String, dynamic> json) {
@@ -29,11 +30,13 @@ class Playlist {
       createdBy: json['created_by'] as String? ?? '',
       createdAt: DatetimeHelper.parseDateTime(json['created_at']),
       updatedAt: DatetimeHelper.parseDateTime(json['updated_at']),
-      cipherVersionIds: json['cipher_map_ids'] != null
-          ? List<int>.from(json['cipher_map_ids'])
-          : const [],
       collaborators: json['collaborators'] != null
           ? List<String>.from(json['collaborators'])
+          : const [],
+      items: json['items'] != null
+          ? (json['items'] as List)
+                .map((item) => PlaylistItem.fromJson(item))
+                .toList()
           : const [],
     );
   }
@@ -46,8 +49,8 @@ class Playlist {
       'created_by': createdBy,
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
-      'cipher_map_ids': cipherVersionIds,
       'collaborators': collaborators,
+      'items': items.map((item) => item.toJson()).toList(),
     };
   }
 
@@ -78,8 +81,8 @@ class Playlist {
     String? createdBy,
     DateTime? createdAt,
     DateTime? updatedAt,
-    List<int>? cipherVersionIds,
     List<String>? collaborators,
+    List<PlaylistItem>? items,
   }) {
     return Playlist(
       id: id ?? this.id,
@@ -88,25 +91,114 @@ class Playlist {
       createdBy: createdBy ?? this.createdBy,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
-      cipherVersionIds: cipherVersionIds ?? this.cipherVersionIds,
       collaborators: collaborators ?? this.collaborators,
+      items: items ?? this.items,
     );
   }
 
-  Playlist addCipherMapToPlaylist(int cipherMapId) => copyWith(
-    cipherVersionIds: [...cipherVersionIds, cipherMapId],
-    updatedAt: DateTime.now(),
-  );
+  // Methods for unified content items
+  Playlist addCipherVersionItem(int cipherVersionId) {
+    final newOrder = items.length;
+    final newItem = PlaylistItem.cipherVersion(cipherVersionId, newOrder);
+    return copyWith(items: [...items, newItem], updatedAt: DateTime.now());
+  }
 
-  Playlist removeCipherMapFromPlaylist(int cipherMapId) => copyWith(
-    cipherVersionIds: cipherVersionIds
-        .where((id) => id != cipherMapId)
-        .toList(),
-    updatedAt: DateTime.now(),
-  );
+  Playlist addTextSectionItem(int textSectionId) {
+    final newOrder = items.length;
+    final newItem = PlaylistItem.textSection(textSectionId, newOrder);
+    return copyWith(items: [...items, newItem], updatedAt: DateTime.now());
+  }
 
-  Playlist reorderCipherMaps(List<int> newcipherVersionIds) => copyWith(
-    cipherVersionIds: newcipherVersionIds,
-    updatedAt: DateTime.now(),
-  );
+  Playlist removeItem(String type, int contentId) {
+    final updatedItems = items
+        .where((item) => !(item.type == type && item.contentId == contentId))
+        .toList();
+
+    // Reorder remaining items
+    final reorderedItems = updatedItems
+        .asMap()
+        .entries
+        .map((entry) => entry.value.copyWith(order: entry.key))
+        .toList();
+
+    return copyWith(items: reorderedItems, updatedAt: DateTime.now());
+  }
+
+  Playlist reorderItems(List<PlaylistItem> newItems) {
+    // Ensure proper ordering
+    final reorderedItems = newItems
+        .asMap()
+        .entries
+        .map((entry) => entry.value.copyWith(order: entry.key))
+        .toList();
+
+    return copyWith(items: reorderedItems, updatedAt: DateTime.now());
+  }
+
+  // Convenience getters for filtering items by type
+  List<PlaylistItem> get cipherVersionItems =>
+      items.where((item) => item.isCipherVersion).toList();
+
+  List<PlaylistItem> get textSectionItems =>
+      items.where((item) => item.isTextSection).toList();
+
+  // Helper to get text section IDs from items
+  List<int> get textSectionIdsFromItems => items
+      .where((item) => item.isTextSection)
+      .map((item) => item.contentId)
+      .toList();
+
+  // Debug method for quick playlist inspection
+  void debugPrint() {
+    print('=== Playlist Debug ===');
+    print('ID: $id | Name: $name');
+    print('Items: ${items.length}');
+    for (int i = 0; i < items.length; i++) {
+      final item = items[i];
+      print(
+        '  [$i] ${item.type} - ID: ${item.contentId} (order: ${item.order})',
+      );
+    }
+    print('======================');
+  }
+}
+
+class TextSection {
+  final int? id;
+  final int playlistId;
+  final String title;
+  String contentText;
+  final int position;
+  final int includerId;
+
+  TextSection({
+    this.id,
+    required this.playlistId,
+    required this.title,
+    required this.contentText,
+    required this.position,
+    required this.includerId,
+  });
+
+  factory TextSection.fromJson(Map<String, dynamic> json) {
+    return TextSection(
+      id: json['id'],
+      playlistId: json['playlist_id'],
+      title: json['title'],
+      contentText: json['content'],
+      position: json['position'] ?? 0,
+      includerId: json['added_by'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'playlist_id': playlistId,
+      'title': title,
+      'content': contentText,
+      'position': position,
+      'added_by': includerId,
+    };
+  }
 }

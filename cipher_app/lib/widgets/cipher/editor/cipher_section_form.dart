@@ -152,7 +152,7 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
         final color = _defaultSectionColors[sectionCode];
 
         _currentSections[sectionCode] = Section(
-          mapId: 0,
+          versionId: 0,
           contentType:
               displayName ??
               sectionCode, // Use display name or code as fallback
@@ -187,7 +187,7 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
       if (sectionType != null && customColor != null) {
         // This is a custom section created by user
         _currentSections[sectionCode] = Section(
-          mapId: 0, // Will be set when saving
+          versionId: 0, // Will be set when saving
           contentType: sectionType,
           contentCode: sectionCode,
           contentText: '',
@@ -200,7 +200,7 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
           final color = _defaultSectionColors[sectionCode];
 
           _currentSections[sectionCode] = Section(
-            mapId: 0,
+            versionId: 0,
             contentType: displayName ?? sectionCode,
             contentCode: sectionCode,
             contentText: '',

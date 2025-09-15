@@ -70,8 +70,8 @@ class _CreatePlaylistDialogState extends State<CreatePlaylistDialog> {
       createdBy: '1', // TODO: Get from user session
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
-      cipherVersionIds: const [],
       collaborators: const [],
+      items: const [],
     );
 
     Navigator.of(context).pop();

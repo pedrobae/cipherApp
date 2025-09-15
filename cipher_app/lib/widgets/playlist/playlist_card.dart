@@ -43,7 +43,7 @@ class PlaylistCard extends StatelessWidget {
               ),
             const SizedBox(height: 4),
             Text(
-              '${playlist.cipherVersionIds.length} ${playlist.cipherVersionIds.length == 1 ? 'música' : 'músicas'}',
+              '${playlist.cipherVersionItems.length} ${playlist.cipherVersionItems.length == 1 ? 'música' : 'músicas'}',
               style: Theme.of(
                 context,
               ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),

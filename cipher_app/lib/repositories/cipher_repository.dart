@@ -92,7 +92,7 @@ class CipherRepository {
   Future<List<CipherVersion>> getCipherVersions(int cipherId) async {
     final db = await _databaseHelper.database;
     final results = await db.query(
-      'cipher_map',
+      'version',
       where: 'cipher_id = ?',
       whereArgs: [cipherId],
       orderBy: 'id',
@@ -104,7 +104,7 @@ class CipherRepository {
   Future<Cipher?> getCipherVersionWithId(int versionId) async {
     final db = await _databaseHelper.database;
     final result = await db.query(
-      'cipher_map',
+      'version',
       where: 'id = ?',
       whereArgs: [versionId],
     );
@@ -116,13 +116,13 @@ class CipherRepository {
 
   Future<int> insertCipherVersion(CipherVersion map) async {
     final db = await _databaseHelper.database;
-    return await db.insert('cipher_map', map.toJson());
+    return await db.insert('version', map.toJson());
   }
 
   Future<void> updateCipherVersion(CipherVersion map) async {
     final db = await _databaseHelper.database;
     await db.update(
-      'cipher_map',
+      'version',
       map.toJson(),
       where: 'id = ?',
       whereArgs: [map.id],
@@ -135,7 +135,7 @@ class CipherRepository {
   ) async {
     final db = await _databaseHelper.database;
     await db.update(
-      'cipher_map',
+      'version',
       field,
       where: 'id = ?',
       whereArgs: [versionId],
@@ -144,7 +144,7 @@ class CipherRepository {
 
   Future<void> deleteCipherVersion(int id) async {
     final db = await _databaseHelper.database;
-    await db.delete('cipher_map', where: 'id = ?', whereArgs: [id]);
+    await db.delete('version', where: 'id = ?', whereArgs: [id]);
   }
 
   // === SECTION OPERATIONS ===
@@ -152,8 +152,8 @@ class CipherRepository {
   Future<Map<String, Section>> getAllSections(int mapId) async {
     final db = await _databaseHelper.database;
     final results = await db.query(
-      'map_content',
-      where: 'map_id = ?',
+      'section',
+      where: 'version_id = ?',
       whereArgs: [mapId],
       orderBy: 'content_code',
     );
@@ -162,7 +162,7 @@ class CipherRepository {
     for (var row in results) {
       sections[row['content_code'] as String] = Section.fromJson({
         'id': row['id'] as int,
-        'map_id': mapId,
+        'version_id': mapId,
         'content_type': row['content_type'] as String,
         'content_code': row['content_code'] as String,
         'content_text': row['content_text'] as String,
@@ -180,8 +180,8 @@ class CipherRepository {
     String hexColor,
   ) async {
     final db = await _databaseHelper.database;
-    return await db.insert('map_content', {
-      'map_id': mapId,
+    return await db.insert('section', {
+      'version_id': mapId,
       'content_type': contentType,
       'content_code': contentCode,
       'content_text': contentText,
@@ -198,26 +198,26 @@ class CipherRepository {
   ) async {
     final db = await _databaseHelper.database;
     await db.update(
-      'map_content',
+      'section',
       {
         'content_type': contentType,
         'content_code': contentCode,
         'content_text': contentText,
         'content_color': hexColor,
       },
-      where: 'map_id = ? AND content_code = ?',
+      where: 'version_id = ? AND content_code = ?',
       whereArgs: [mapId, contentCode],
     );
   }
 
   Future<void> deleteSection(int id) async {
     final db = await _databaseHelper.database;
-    await db.delete('map_content', where: 'id = ?', whereArgs: [id]);
+    await db.delete('section', where: 'id = ?', whereArgs: [id]);
   }
 
   Future<void> deleteAllVersionSections(int mapId) async {
     final db = await _databaseHelper.database;
-    await db.delete('map_content', where: 'map_id = ?', whereArgs: [mapId]);
+    await db.delete('section', where: 'version_id = ?', whereArgs: [mapId]);
   }
 
   // === TAG OPERATIONS ===

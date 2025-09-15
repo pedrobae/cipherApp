@@ -1,7 +1,9 @@
 import 'package:cipher_app/providers/playlist_provider.dart';
 import 'package:cipher_app/widgets/playlist/cipher_version_card.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cipher_app/models/domain/playlist.dart';
+import 'package:cipher_app/models/domain/playlist_item.dart';
 import 'package:provider/provider.dart';
 import '../widgets/cipher/editor/custom_reorderable_delayed.dart';
 import '../widgets/playlist/collaborators/bottom_sheet.dart';
@@ -22,8 +24,11 @@ class PlaylistViewer extends StatelessWidget {
       (p) => p.id == playlistId,
       orElse: () => throw Exception('Playlist not found'),
     );
+    if (kDebugMode) {
+      playlist.debugPrint();
+    }
 
-    final bool hasCipherVersions = playlist.cipherVersionIds.isNotEmpty;
+    final bool hasItems = playlist.items.isNotEmpty;
 
     return Scaffold(
       appBar: AppBar(
@@ -51,7 +56,7 @@ class PlaylistViewer extends StatelessWidget {
           ),
         ],
       ),
-      body: hasCipherVersions
+      body: hasItems
           ? Padding(
               padding: const EdgeInsets.all(8.0),
               child: ReorderableListView.builder(
@@ -69,23 +74,16 @@ class PlaylistViewer extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                 ),
-                itemCount: playlist.cipherVersionIds.length,
+                itemCount: playlist.items.length,
                 onReorder: (oldIndex, newIndex) =>
                     _onReorder(context, playlist, oldIndex, newIndex),
                 itemBuilder: (context, index) {
-                  final cipherVersionId = playlist.cipherVersionIds[index];
+                  final item = playlist.items[index];
                   return CustomReorderableDelayed(
                     delay: const Duration(milliseconds: 200),
-                    key: Key(cipherVersionId.toString()),
+                    key: Key('${item.type}_${item.contentId}'),
                     index: index,
-                    child: CipherVersionCard(
-                      cipherVersionId: cipherVersionId,
-                      onDelete: () => _handleDeleteVersion(
-                        context,
-                        playlist.id,
-                        cipherVersionId,
-                      ),
-                    ),
+                    child: _buildItemWidget(context, item),
                   );
                 },
               ),
@@ -106,8 +104,10 @@ class PlaylistViewer extends StatelessWidget {
         builder: (context) => CipherLibraryScreen(
           selectionMode: true,
           playlistId: playlist.id,
-          excludeVersionIds:
-              playlist.cipherVersionIds, // Don't show already added
+          excludeVersionIds: playlist.items
+              .where((item) => item.type == 'cipher_version')
+              .map((item) => item.contentId)
+              .toList(), // Don't show already added
         ),
       ),
     );
@@ -118,6 +118,42 @@ class PlaylistViewer extends StatelessWidget {
       context: context,
       builder: (context) => CollaboratorsBottomSheet(playlist: playlist),
     );
+  }
+
+  Widget _buildItemWidget(BuildContext context, PlaylistItem item) {
+    switch (item.type) {
+      case 'cipher_version':
+        return CipherVersionCard(
+          cipherVersionId: item.contentId,
+          onDelete: () => _handleDeleteVersion(
+            context,
+            playlistId,
+            item.contentId,
+          ),
+        );
+      case 'text_section':
+        return Card(
+          child: ListTile(
+            leading: const Icon(Icons.text_snippet),
+            title: Text('Text Section ${item.contentId}'),
+            subtitle: const Text('Text content - click to view/edit'),
+            onTap: () {
+              // TODO: Implement text section viewing/editing
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Text section editing not implemented yet')),
+              );
+            },
+          ),
+        );
+      default:
+        return Card(
+          child: ListTile(
+            leading: const Icon(Icons.help),
+            title: Text('Unknown item type: ${item.type}'),
+            subtitle: Text('Content ID: ${item.contentId}'),
+          ),
+        );
+    }
   }
 
   void _editPlaylist(BuildContext context, Playlist playlist) {
@@ -133,14 +169,19 @@ class PlaylistViewer extends StatelessWidget {
     int oldIndex,
     int newIndex,
   ) {
-    final playlistProvider = context.read<PlaylistProvider>();
+    // TODO: Implement unified items reordering
+    // For now, disable reordering until we implement the unified approach
+    // Need to implement reorderPlaylistItems method in provider
 
+    /* 
+    final playlistProvider = context.read<PlaylistProvider>();
     // Update the playlist order in the provider
     playlistProvider.reorderPlaylistCipherMaps(
       playlist.id,
       (playlist.cipherVersionIds
         ..insert(newIndex, playlist.cipherVersionIds.removeAt(oldIndex))),
     );
+    */
   }
 
   void _handleDeleteVersion(

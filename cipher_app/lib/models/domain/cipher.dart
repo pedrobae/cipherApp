@@ -44,7 +44,9 @@ class Cipher {
       updatedAt: DatetimeHelper.parseDateTime(json['updated_at']),
       isLocal: json['isLocal'] as bool? ?? true, // Default to true for local DB
       maps: json['maps'] != null
-          ? (json['maps'] as List).map((m) => CipherVersion.fromJson(m)).toList()
+          ? (json['maps'] as List)
+                .map((m) => CipherVersion.fromJson(m))
+                .toList()
           : const [],
     );
   }
@@ -121,9 +123,7 @@ class CipherVersion {
     return CipherVersion(
       id: json['id'] as int?,
       cipherId: json['cipher_id'] as int,
-      songStructure:
-          json['song_structure'] as String? ??
-          '',
+      songStructure: json['song_structure'] as String? ?? '',
       transposedKey: json['transposed_key'] as String?,
       versionName: json['version_name'] as String?,
       createdAt: json['created_at'] != null
@@ -192,7 +192,7 @@ class CipherVersion {
 
 class Section {
   final int? id;
-  final int mapId;
+  final int versionId;
   final String contentType;
   final String contentCode;
   String contentText;
@@ -200,7 +200,7 @@ class Section {
 
   Section({
     this.id,
-    required this.mapId,
+    required this.versionId,
     required this.contentType,
     required this.contentCode,
     required this.contentText,
@@ -210,7 +210,7 @@ class Section {
   factory Section.fromJson(Map<String, dynamic> json) {
     return Section(
       id: json['id'],
-      mapId: json['map_id'], 
+      versionId: json['version_id'],
       contentType: json['content_type'],
       contentCode: json['content_code'],
       contentText: json['content_text'],
@@ -221,7 +221,7 @@ class Section {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'map_id': mapId,
+      'version_id': versionId,
       'content_type': contentType,
       'content_code': contentCode,
       'content_text': contentText,

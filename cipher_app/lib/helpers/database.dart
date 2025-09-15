@@ -24,16 +24,18 @@ class DatabaseHelper {
 
       final db = await openDatabase(
         path,
-        version: 1,
+        version:
+            3, // Updated version for table renaming: cipher_map -> version, map_content -> section
         onCreate: _onCreate, // This will seed the database
-        onUpgrade: _onUpgrade,
       );
 
       // Only seed if database existed but is empty (edge case)
       if (!isNewDatabase) {
-        final cipherCount = await db.rawQuery('SELECT COUNT(*) as count FROM cipher');
+        final cipherCount = await db.rawQuery(
+          'SELECT COUNT(*) as count FROM cipher',
+        );
         final count = cipherCount.first['count'] as int;
-        
+
         if (count == 0) {
           await seedDatabase(db);
         }
@@ -83,9 +85,9 @@ class DatabaseHelper {
       )
     ''');
 
-    // Create cipher_map table
+    // Create version table (renamed from cipher_map)
     await db.execute('''
-      CREATE TABLE cipher_map (
+      CREATE TABLE version (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         cipher_id INTEGER NOT NULL,
         song_structure TEXT NOT NULL,
@@ -96,16 +98,16 @@ class DatabaseHelper {
       )
     ''');
 
-    // Create map_content table
+    // Create section table (renamed from map_content)
     await db.execute('''
-      CREATE TABLE map_content (
+      CREATE TABLE section (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        map_id INTEGER NOT NULL,
+        version_id INTEGER NOT NULL,
         content_type TEXT NOT NULL,
         content_code VARCHAR NOT NULL,
         content_text TEXT NOT NULL,
         content_color TEXT,
-        FOREIGN KEY (map_id) REFERENCES cipher_map (id) ON DELETE CASCADE
+        FOREIGN KEY (version_id) REFERENCES version (id) ON DELETE CASCADE
       )
     ''');
 
@@ -137,19 +139,19 @@ class DatabaseHelper {
       )
     ''');
 
-    // Create playlist_cipher_map table (playlists contain specific cipher versions)
+    // Create playlist_version table (playlists contain specific cipher versions)
     await db.execute('''
-      CREATE TABLE playlist_cipher_map (
+      CREATE TABLE playlist_version (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        cipher_map_id INTEGER NOT NULL,
+        version_id INTEGER NOT NULL,
         playlist_id INTEGER NOT NULL,
         includer_id INTEGER NOT NULL,
         position INTEGER NOT NULL,
         included_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (cipher_map_id) REFERENCES cipher_map (id) ON DELETE CASCADE,
+        FOREIGN KEY (version_id) REFERENCES version (id) ON DELETE CASCADE,
         FOREIGN KEY (playlist_id) REFERENCES playlist (id) ON DELETE CASCADE,
         FOREIGN KEY (includer_id) REFERENCES user (id) ON DELETE CASCADE,
-        UNIQUE(playlist_id, cipher_map_id),
+        UNIQUE(playlist_id, version_id),
         UNIQUE(playlist_id, position)
       )
     ''');
@@ -167,6 +169,21 @@ class DatabaseHelper {
         FOREIGN KEY (playlist_id) REFERENCES playlist (id) ON DELETE CASCADE,
         FOREIGN KEY (added_by) REFERENCES user (id) ON DELETE CASCADE,
         UNIQUE(user_id, playlist_id)
+      )
+    ''');
+
+    // Create playlist_text table, for written sections
+    await db.execute('''
+      CREATE TABLE playlist_text (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        playlist_id INTEGER NOT NULL,
+        title TEXT NOT NULL,
+        content TEXT NOT NULL,
+        position INTEGER NOT NULL DEFAULT 0,
+        added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        added_by INTEGER NOT NULL,
+        FOREIGN KEY (playlist_id) REFERENCES playlist (id) ON DELETE CASCADE,
+        FOREIGN KEY (added_by) REFERENCES user (id) ON DELETE CASCADE
       )
     ''');
 
@@ -201,19 +218,19 @@ class DatabaseHelper {
       'CREATE INDEX idx_cipher_tags_tag_id ON cipher_tags(tag_id)',
     );
     await db.execute(
-      'CREATE INDEX idx_cipher_map_cipher_id ON cipher_map(cipher_id)',
+      'CREATE INDEX idx_version_cipher_id ON version(cipher_id)',
     );
     await db.execute(
-      'CREATE INDEX idx_map_content_map_id ON map_content(map_id)',
+      'CREATE INDEX idx_section_version_id ON section(version_id)',
     );
     await db.execute(
       'CREATE INDEX idx_playlist_author_id ON playlist(author_id)',
     );
     await db.execute(
-      'CREATE INDEX idx_playlist_cipher_map_playlist_id ON playlist_cipher_map(playlist_id)',
+      'CREATE INDEX idx_playlist_version_playlist_id ON playlist_version(playlist_id)',
     );
     await db.execute(
-      'CREATE INDEX idx_playlist_cipher_map_cipher_map_id ON playlist_cipher_map(cipher_map_id)',
+      'CREATE INDEX idx_playlist_version_version_id ON playlist_version(version_id)',
     );
     await db.execute(
       'CREATE INDEX idx_user_playlist_user_id ON user_playlist(user_id)',
@@ -236,16 +253,11 @@ class DatabaseHelper {
     await db.execute('CREATE INDEX idx_user_mail ON user(mail)');
     // For content queries
     await db.execute(
-      'CREATE INDEX idx_map_content_type ON map_content(content_type)',
+      'CREATE INDEX idx_section_content_type ON section(content_type)',
     );
-    
+
     // Seed the database with initial data
     await seedDatabase(db);
-  }
-
-  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    // Handle database upgrades here
-    // For example, if you need to add new columns or tables in future versions
   }
 
   Future<void> close() async {

@@ -52,7 +52,6 @@ class PlaylistProvider extends ChangeNotifier {
       final Playlist playlist = (await _playlistRepository.getPlaylistById(
         id,
       ))!;
-
       int existingIndex = _playlists.indexWhere((p) => p.id == playlist.id);
 
       if (existingIndex != -1) {

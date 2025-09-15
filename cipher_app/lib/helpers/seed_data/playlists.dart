@@ -1,6 +1,10 @@
 import 'package:sqflite/sqflite.dart';
 
-Future<Map<String, int>> insertPlaylists(Transaction txn, Map<String, int> userIds, Map<String, int> mapIds) async {
+Future<Map<String, int>> insertPlaylists(
+  Transaction txn,
+  Map<String, int> userIds,
+  Map<String, int> versionIds,
+) async {
   final now = DateTime.now().toIso8601String();
   final testUserId = userIds['testuser']!;
 
@@ -33,25 +37,25 @@ Future<Map<String, int>> insertPlaylists(Transaction txn, Map<String, int> userI
   });
 
   // Add cipher maps to worship playlist
-  await txn.insert('playlist_cipher_map', {
-    'cipher_map_id': mapIds['amazing1'],
+  await txn.insert('playlist_version', {
+    'version_id': versionIds['amazing1'],
     'playlist_id': worshipPlaylistId,
     'includer_id': testUserId,
-    'position': 0,
+    'position': 1, // After opening text
     'included_at': now,
   });
 
-  await txn.insert('playlist_cipher_map', {
-    'cipher_map_id': mapIds['howgreat1'],
+  await txn.insert('playlist_version', {
+    'version_id': versionIds['howgreat1'],
     'playlist_id': worshipPlaylistId,
     'includer_id': testUserId,
-    'position': 1,
+    'position': 3, // After prayer text
     'included_at': now,
   });
 
   // Add cipher maps to evening playlist
-  await txn.insert('playlist_cipher_map', {
-    'cipher_map_id': mapIds['howgreat1'],
+  await txn.insert('playlist_version', {
+    'version_id': versionIds['howgreat1'],
     'playlist_id': eveningPlaylistId,
     'includer_id': testUserId,
     'position': 0,
@@ -59,24 +63,69 @@ Future<Map<String, int>> insertPlaylists(Transaction txn, Map<String, int> userI
   });
 
   // Add cipher maps to Maria's playlist
-  await txn.insert('playlist_cipher_map', {
-    'cipher_map_id': mapIds['amazing1'],
+  await txn.insert('playlist_version', {
+    'version_id': versionIds['amazing1'],
     'playlist_id': mariaPlaylistId,
     'includer_id': userIds['maria']!,
     'position': 0,
     'included_at': now,
   });
 
+  // Add text sections to playlists for mixed content
+  await txn.insert('playlist_text', {
+    'playlist_id': worshipPlaylistId,
+    'title': 'Abertura do Culto',
+    'content':
+        'Bem-vindos ao culto dominical!\n\nAnnúncios:\n- Reunião de oração na quarta-feira às 19h\n- Próximo domingo: Santa Ceia\n- Inscrições abertas para o coral',
+    'position': 0, // Before Amazing Grace
+    'added_by': testUserId,
+    'added_at': now,
+  });
+
+  await txn.insert('playlist_text', {
+    'playlist_id': worshipPlaylistId,
+    'title': 'Momento de Oração',
+    'content':
+        'Vamos nos dirigir ao Senhor em oração.\n\nMotivos de oração:\n- Pelos enfermos da congregação\n- Pelos missionários\n- Pelas autoridades\n- Pela paz mundial',
+    'position': 2, // After How Great Thou Art
+    'added_by': testUserId,
+    'added_at': now,
+  });
+
+  await txn.insert('playlist_text', {
+    'playlist_id': eveningPlaylistId,
+    'title': 'Reflexão Noturna',
+    'content':
+        'Uma noite especial de comunhão e adoração.\n\n"Aquietai-vos e sabei que Eu sou Deus" - Salmos 46:10\n\nConvite para um momento de silêncio e reflexão.',
+    'position': 1, // After How Great Thou Art
+    'added_by': testUserId,
+    'added_at': now,
+  });
+
+  await txn.insert('playlist_text', {
+    'playlist_id': mariaPlaylistId,
+    'title': 'Ministração Especial',
+    'content':
+        'Preparação para o momento de ministração:\n\n1. Verificar microfones\n2. Ajustar instrumentos\n3. Oração em equipe\n4. Começar com adoração espontânea',
+    'position': 1, // After Amazing Grace
+    'added_by': userIds['maria']!,
+    'added_at': now,
+  });
+
   return {
-    'worship': worshipPlaylistId, 
+    'worship': worshipPlaylistId,
     'evening': eveningPlaylistId,
     'maria_ministry': mariaPlaylistId,
   };
 }
 
 // For backward compatibility with old signature
-Future<Map<String, int>> insertPlaylistsLegacy(Transaction txn, int testUserId, Map<String, int> mapIds) async {
+Future<Map<String, int>> insertPlaylistsLegacy(
+  Transaction txn,
+  int testUserId,
+  Map<String, int> versionIds,
+) async {
   final userIds = {'testuser': testUserId};
-  final playlists = await insertPlaylists(txn, userIds, mapIds);
+  final playlists = await insertPlaylists(txn, userIds, versionIds);
   return {'worship': playlists['worship']!, 'evening': playlists['evening']!};
 }

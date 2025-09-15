@@ -1,5 +1,6 @@
 import '../helpers/database.dart';
 import '../models/domain/playlist.dart';
+import '../models/domain/playlist_item.dart';
 
 class PlaylistRepository {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
@@ -27,18 +28,24 @@ class PlaylistRepository {
         playlist.toDatabaseJson(),
       );
 
-      // 2. Insert cipher map relationships if any
-      if (playlist.cipherVersionIds.isNotEmpty) {
-        for (int i = 0; i < playlist.cipherVersionIds.length; i++) {
-          await txn.insert('playlist_cipher_map', {
-            'cipher_map_id': playlist.cipherVersionIds[i],
-            'playlist_id': playlistId,
-            'includer_id': int.parse(
-              playlist.createdBy,
-            ), // Creator adds initial cipher maps
-            'position': i,
-            'included_at': DateTime.now().toIso8601String(),
-          });
+      // 2. Insert playlist items if any
+      for (final item in playlist.items) {
+        switch (item.type) {
+          case 'cipher_version':
+            await txn.insert('playlist_version', {
+              'version_id': item.contentId,
+              'playlist_id': playlistId,
+              'includer_id': int.parse(
+                playlist.createdBy,
+              ), // Creator adds initial items
+              'position': item.order,
+              'included_at': DateTime.now().toIso8601String(),
+            });
+            break;
+          case 'text_section':
+            // Handle text sections if they exist
+            // For now, just skip as we're removing text sections
+            break;
         }
       }
 
@@ -72,19 +79,42 @@ class PlaylistRepository {
     List<Playlist> playlists = [];
 
     for (Map<String, dynamic> playlistData in playlistResults) {
-      // Get cipher map IDs for this playlist
-      final cipherMapResults = await db.rawQuery(
+      // Get playlist items for this playlist (unified approach)
+      final cipherVersionResults = await db.rawQuery(
         '''
-          SELECT cipher_map_id FROM playlist_cipher_map 
+          SELECT version_id as content_id, position, 'cipher_version' as type 
+          FROM playlist_version 
           WHERE playlist_id = ? 
-          ORDER BY position
         ''',
         [playlistData['id']],
       );
 
-      final cipherVersionIds = cipherMapResults
-          .map((row) => row['cipher_map_id'] as int)
-          .toList();
+      final textSectionResults = await db.rawQuery(
+        '''
+          SELECT id as content_id, position, 'text_section' as type 
+          FROM playlist_text 
+          WHERE playlist_id = ? 
+        ''',
+        [playlistData['id']],
+      );
+
+      // Combine and sort all items by position
+      final allItemResults = [...cipherVersionResults, ...textSectionResults];
+      allItemResults.sort(
+        (a, b) => (a['position'] as int).compareTo(b['position'] as int),
+      );
+
+      final items = allItemResults.map((row) {
+        final type = row['type'] as String;
+        final contentId = row['content_id'] as int;
+        final position = row['position'] as int;
+
+        if (type == 'cipher_version') {
+          return PlaylistItem.cipherVersion(contentId, position);
+        } else {
+          return PlaylistItem.textSection(contentId, position);
+        }
+      }).toList();
 
       // Get collaborator IDs for this playlist
       final collaboratorResults = await db.rawQuery(
@@ -107,8 +137,8 @@ class PlaylistRepository {
         createdBy: playlistData['author_id'].toString(),
         createdAt: DateTime.parse(playlistData['created_at'] as String),
         updatedAt: DateTime.parse(playlistData['updated_at'] as String),
-        cipherVersionIds: cipherVersionIds,
         collaborators: collaborators,
+        items: items,
       );
       playlists.add(playlist);
     }
@@ -130,19 +160,42 @@ class PlaylistRepository {
 
     final playlistData = playlistResults.first;
 
-    // Get cipher map IDs
-    final cipherMapResults = await db.rawQuery(
+    // Get playlist items (unified approach) - both cipher versions and text sections
+    final cipherVersionResults = await db.rawQuery(
       '''
-      SELECT cipher_map_id FROM playlist_cipher_map 
+      SELECT version_id as content_id, position, 'cipher_version' as type 
+      FROM playlist_version 
       WHERE playlist_id = ? 
-      ORDER BY position
     ''',
       [playlistId],
     );
 
-    final cipherVersionIds = cipherMapResults
-        .map((row) => row['cipher_map_id'] as int)
-        .toList();
+    final textSectionResults = await db.rawQuery(
+      '''
+      SELECT id as content_id, position, 'text_section' as type 
+      FROM playlist_text 
+      WHERE playlist_id = ? 
+    ''',
+      [playlistId],
+    );
+
+    // Combine and sort all items by position
+    final allItemResults = [...cipherVersionResults, ...textSectionResults];
+    allItemResults.sort(
+      (a, b) => (a['position'] as int).compareTo(b['position'] as int),
+    );
+
+    final items = allItemResults.map((row) {
+      final type = row['type'] as String;
+      final contentId = row['content_id'] as int;
+      final position = row['position'] as int;
+
+      if (type == 'cipher_version') {
+        return PlaylistItem.cipherVersion(contentId, position);
+      } else {
+        return PlaylistItem.textSection(contentId, position);
+      }
+    }).toList();
 
     // Get collaborators
     final collaboratorResults = await db.rawQuery(
@@ -164,8 +217,8 @@ class PlaylistRepository {
       createdBy: playlistData['author_id'].toString(),
       createdAt: DateTime.parse(playlistData['created_at'] as String),
       updatedAt: DateTime.parse(playlistData['updated_at'] as String),
-      cipherVersionIds: cipherVersionIds,
       collaborators: collaborators,
+      items: items,
     );
   }
 
@@ -198,7 +251,7 @@ class PlaylistRepository {
 
     await db.delete('playlist', where: 'id = ?', whereArgs: [playlistId]);
     await db.delete(
-      'playlist_cipher_map',
+      'playlist_version',
       where: 'playlist_id = ?',
       whereArgs: [playlistId],
     );
@@ -223,7 +276,7 @@ class PlaylistRepository {
       final positionResult = await txn.rawQuery(
         '''
         SELECT COALESCE(MAX(position), -1) + 1 as next_position 
-        FROM playlist_cipher_map 
+        FROM playlist_version 
         WHERE playlist_id = ?
       ''',
         [playlistId],
@@ -232,8 +285,8 @@ class PlaylistRepository {
       final nextPosition = positionResult.first['next_position'] as int;
 
       // Insert cipher map relationship
-      await txn.insert('playlist_cipher_map', {
-        'cipher_map_id': cipherMapId,
+      await txn.insert('playlist_version', {
+        'version_id': cipherMapId,
         'playlist_id': playlistId,
         'includer_id': effectiveIncluderId,
         'position': nextPosition,
@@ -259,8 +312,8 @@ class PlaylistRepository {
     await db.transaction((txn) async {
       // Remove cipher map relationship
       await txn.delete(
-        'playlist_cipher_map',
-        where: 'playlist_id = ? AND cipher_map_id = ?',
+        'playlist_version',
+        where: 'playlist_id = ? AND version_id = ?',
         whereArgs: [playlistId, cipherMapId],
       );
 
@@ -284,7 +337,7 @@ class PlaylistRepository {
       // First, set all positions to negative values to avoid constraint conflicts
       await txn.rawUpdate(
         '''
-        UPDATE playlist_cipher_map 
+        UPDATE playlist_version 
         SET position = -position - 1000 
         WHERE playlist_id = ?
       ''',
@@ -294,9 +347,9 @@ class PlaylistRepository {
       // Now update positions for all cipher maps in order
       for (int i = 0; i < newCipherMapOrder.length; i++) {
         await txn.update(
-          'playlist_cipher_map',
+          'playlist_version',
           {'position': i},
-          where: 'playlist_id = ? AND cipher_map_id = ?',
+          where: 'playlist_id = ? AND version_id = ?',
           whereArgs: [playlistId, newCipherMapOrder[i]],
         );
       }
@@ -308,6 +361,135 @@ class PlaylistRepository {
         where: 'id = ?',
         whereArgs: [playlistId],
       );
+    });
+  }
+
+  // ===== PLAYLIST TEXT MANAGEMENT =====
+  Future<void> createPlaylistText(
+    int playlistId,
+    String title,
+    String content,
+    int position,
+    int? includerId,
+  ) async {
+    final db = await _databaseHelper.database;
+    final effectiveIncluderId = includerId ?? _currentUserId ?? 1;
+
+    await db.transaction((txn) async {
+      final playlistTextId = txn.insert('playlist_text', {
+        'playlist_id': playlistId,
+        'title': title,
+        'content': content,
+        'position': position,
+        'added_by': effectiveIncluderId,
+      });
+      return playlistTextId;
+    });
+  }
+
+  Future<void> updatePlaylistText(
+    int id,
+    String? title,
+    String? content,
+    int? position,
+  ) async {
+    final db = await _databaseHelper.database;
+
+    Map<String, dynamic> updates = {};
+
+    if (title != null) updates['title'] = title;
+    if (content != null) updates['content'] = content;
+    if (position != null) updates['position'] = position;
+
+    if (updates.isNotEmpty) {
+      await db.update(
+        'playlist_text',
+        updates,
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+    }
+  }
+
+  Future<void> deletePlaylistText(int id) async {
+    final db = await _databaseHelper.database;
+
+    await db.transaction((txn) async {
+      txn.delete('playlist_text', where: 'id = ?', whereArgs: [id]);
+    });
+  }
+
+  // ===== UNIFIED PLAYLIST ITEMS =====
+  /// Get all playlist items (cipher versions and text sections) in order
+  Future<List<PlaylistItem>> getPlaylistItems(int playlistId) async {
+    final db = await _databaseHelper.database;
+
+    // Get cipher map items
+    final cipherResults = await db.query(
+      'playlist_version',
+      where: 'playlist_id = ?',
+      whereArgs: [playlistId],
+    );
+
+    // Get text section items
+    final textResults = await db.query(
+      'playlist_text',
+      where: 'playlist_id = ?',
+      whereArgs: [playlistId],
+    );
+
+    List<PlaylistItem> items = [];
+
+    // Add cipher version items
+    for (var row in cipherResults) {
+      items.add(
+        PlaylistItem.cipherVersion(
+          row['version_id'] as int,
+          row['position'] as int,
+        ),
+      );
+    }
+
+    // Add text section items
+    for (var row in textResults) {
+      items.add(
+        PlaylistItem.textSection(row['id'] as int, row['position'] as int),
+      );
+    }
+
+    // Sort by order
+    items.sort((a, b) => a.order.compareTo(b.order));
+
+    return items;
+  }
+
+  /// Reorder all playlist items
+  Future<void> reorderPlaylistItems(
+    int playlistId,
+    List<PlaylistItem> items,
+  ) async {
+    final db = await _databaseHelper.database;
+
+    await db.transaction((txn) async {
+      // Update cipher version positions
+      for (var item in items.where((i) => i.isCipherVersion)) {
+        await txn.update(
+          'playlist_version',
+          {'position': item.order},
+          where: 'playlist_id = ? AND version_id = ?',
+          whereArgs: [playlistId, item.contentId],
+        );
+      }
+
+      // Update text section positions
+      for (var item in items.where((i) => i.isTextSection)) {
+        await txn.update(
+          'playlist_text',
+          {'position': item.order},
+          where: 'id = ?',
+          whereArgs: [item.contentId],
+        );
+      }
     });
   }
 }

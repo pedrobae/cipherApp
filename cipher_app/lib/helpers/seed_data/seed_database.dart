@@ -34,21 +34,21 @@ Future<void> seedDatabase(Database db) async {
       'created_at': DateTime.now().toIso8601String(),
     });
 
-    // Insert cipher maps
-    final mapIds = await insertCipherMaps(
+    // Insert versions (previously cipher maps)
+    final versionIds = await insertVersions(
       txn,
       cipherIds['amazing']!,
       cipherIds['howgreat']!,
     );
 
-    // Insert map contents
-    await insertMapContents(txn, mapIds);
+    // Insert sections (previously map contents)
+    await insertSections(txn, versionIds);
 
     // Create users (including test user and band members)
     final userIds = await insertUsers(txn);
 
     // Create playlists with the new user structure
-    final playlistIds = await insertPlaylists(txn, userIds, mapIds);
+    final playlistIds = await insertPlaylists(txn, userIds, versionIds);
 
     // Create collaborator relationships between users and playlists
     await insertCollaborators(txn, userIds, playlistIds);

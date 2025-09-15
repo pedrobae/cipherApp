@@ -1,9 +1,9 @@
 import 'package:sqflite/sqflite.dart';
 
-Future<Map<String, int>> insertCipherMaps(Transaction txn, int hymn1Id, int hymn2Id) async {
+Future<Map<String, int>> insertVersions(Transaction txn, int hymn1Id, int hymn2Id) async {
   final now = DateTime.now().toIso8601String();
 
-  int amazingGraceMap1Id = await txn.insert('cipher_map', {
+  int amazingGraceVersion1Id = await txn.insert('version', {
     'cipher_id': hymn1Id,
     'song_structure': 'V1,V2,V3,V4',
     'transposed_key': null,
@@ -11,7 +11,7 @@ Future<Map<String, int>> insertCipherMaps(Transaction txn, int hymn1Id, int hymn
     'created_at': now,
   });
 
-  int amazingGraceMap2Id = await txn.insert('cipher_map', {
+  int amazingGraceVersion2Id = await txn.insert('version', {
     'cipher_id': hymn1Id,
     'song_structure': 'V1,V3,V4',
     'transposed_key': 'D',
@@ -19,7 +19,7 @@ Future<Map<String, int>> insertCipherMaps(Transaction txn, int hymn1Id, int hymn
     'created_at': now,
   });
 
-  int howGreatMap1Id = await txn.insert('cipher_map', {
+  int howGreatVersion1Id = await txn.insert('version', {
     'cipher_id': hymn2Id,
     'song_structure': 'V1,C,V2,C,V3,C,V4,C',
     'transposed_key': null,
@@ -28,8 +28,8 @@ Future<Map<String, int>> insertCipherMaps(Transaction txn, int hymn1Id, int hymn
   });
 
   return {
-    'amazing1': amazingGraceMap1Id,
-    'amazing2': amazingGraceMap2Id,
-    'howgreat1': howGreatMap1Id,
+    'amazing1': amazingGraceVersion1Id,
+    'amazing2': amazingGraceVersion2Id,
+    'howgreat1': howGreatVersion1Id,
   };
 }

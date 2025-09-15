@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../models/domain/playlist.dart';
+import '../../models/domain/playlist/playlist.dart';
 import '../../providers/playlist_provider.dart';
 
 class CreatePlaylistDialog extends StatefulWidget {

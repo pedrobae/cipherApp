@@ -1,8 +1,8 @@
-import 'package:cipher_app/models/domain/section.dart';
-import 'package:cipher_app/models/domain/version.dart';
+import 'package:cipher_app/models/domain/cipher/section.dart';
+import 'package:cipher_app/models/domain/cipher/version.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:async';
-import '../models/domain/cipher.dart';
+import '../models/domain/cipher/cipher.dart';
 import '../repositories/cipher_repository.dart';
 
 class CipherProvider extends ChangeNotifier {

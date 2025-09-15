@@ -2,7 +2,7 @@ import 'package:cipher_app/screens/playlist_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/playlist_provider.dart';
-import '../models/domain/playlist.dart';
+import '../models/domain/playlist/playlist.dart';
 import '../widgets/dialogs/create_playlist_dialog.dart';
 import '../widgets/dialogs/delete_playlist_dialog.dart';
 import '../widgets/playlist/playlist_card.dart';

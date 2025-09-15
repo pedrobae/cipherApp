@@ -1,9 +1,9 @@
-import 'package:cipher_app/models/domain/section.dart';
-import 'package:cipher_app/models/domain/version.dart';
+import 'package:cipher_app/models/domain/cipher/section.dart';
+import 'package:cipher_app/models/domain/cipher/version.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../helpers/database.dart';
-import '../models/domain/cipher.dart';
+import '../models/domain/cipher/cipher.dart';
 
 class CipherRepository {
   final DatabaseHelper _databaseHelper = DatabaseHelper();

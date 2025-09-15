@@ -1,4 +1,4 @@
-import 'package:cipher_app/models/domain/section.dart';
+import 'package:cipher_app/models/domain/cipher/section.dart';
 import 'package:flutter/material.dart';
 import 'package:cipher_app/widgets/cipher/editor/custom_reorderable_delayed.dart';
 

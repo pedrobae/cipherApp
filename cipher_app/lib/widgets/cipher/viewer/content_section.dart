@@ -1,9 +1,9 @@
-import 'package:cipher_app/models/domain/version.dart';
+import 'package:cipher_app/models/domain/cipher/version.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/layout_settings_provider.dart';
-import '../../../models/domain/cipher.dart';
+import '../../../models/domain/cipher/cipher.dart';
 import '../../../utils/section.dart';
 import 'section_card.dart';
 

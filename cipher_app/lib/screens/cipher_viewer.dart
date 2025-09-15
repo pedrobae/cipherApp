@@ -1,8 +1,8 @@
-import 'package:cipher_app/models/domain/version.dart';
+import 'package:cipher_app/models/domain/cipher/version.dart';
 import 'package:cipher_app/providers/layout_settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/domain/cipher.dart';
+import '../models/domain/cipher/cipher.dart';
 import '../providers/cipher_provider.dart';
 import '../widgets/cipher/viewer/content_section.dart';
 import '../widgets/cipher/viewer/version_header.dart';

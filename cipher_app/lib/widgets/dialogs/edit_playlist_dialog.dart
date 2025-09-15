@@ -1,7 +1,7 @@
 import 'package:cipher_app/providers/playlist_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../models/domain/playlist.dart';
+import '../../models/domain/playlist/playlist.dart';
 
 class EditPlaylistForm extends StatefulWidget {
   final Playlist playlist;

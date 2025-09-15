@@ -1,4 +1,4 @@
-import 'package:cipher_app/models/domain/version.dart';
+import 'package:cipher_app/models/domain/cipher/version.dart';
 import 'package:flutter/material.dart';
 
 class CipherVersionHeader extends StatelessWidget {

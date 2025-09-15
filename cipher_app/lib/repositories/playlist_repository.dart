@@ -1,6 +1,6 @@
 import '../helpers/database.dart';
-import '../models/domain/playlist.dart';
-import '../models/domain/playlist_item.dart';
+import '../models/domain/playlist/playlist.dart';
+import '../models/domain/playlist/playlist_item.dart';
 
 class PlaylistRepository {
   final DatabaseHelper _databaseHelper = DatabaseHelper();

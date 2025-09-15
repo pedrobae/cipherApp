@@ -1,9 +1,9 @@
-import 'package:cipher_app/models/domain/section.dart';
-import 'package:cipher_app/models/domain/version.dart';
+import 'package:cipher_app/models/domain/cipher/section.dart';
+import 'package:cipher_app/models/domain/cipher/version.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/cipher_provider.dart';
-import '../models/domain/cipher.dart';
+import '../models/domain/cipher/cipher.dart';
 import '../widgets/cipher/editor/cipher_basic_info_form.dart';
 import '../widgets/cipher/editor/cipher_section_form.dart';
 

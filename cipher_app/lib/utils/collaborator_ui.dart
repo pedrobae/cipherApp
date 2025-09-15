@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/domain/playlist.dart';
+import '../models/domain/playlist/playlist.dart';
 import '../widgets/playlist/collaborators/bottom_sheet.dart';
 
 /// Helper class for showing collaborator-related UI components

@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../models/domain/playlist.dart';
+import '../../models/domain/playlist/playlist.dart';
 import '../../providers/playlist_provider.dart';
 
 class DeletePlaylistDialog extends StatelessWidget {
   final Playlist playlist;
 
-  const DeletePlaylistDialog({
-    super.key,
-    required this.playlist,
-  });
+  const DeletePlaylistDialog({super.key, required this.playlist});
 
   @override
   Widget build(BuildContext context) {

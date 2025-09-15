@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../screens/cipher_viewer.dart';
-import '../../models/domain/cipher.dart';
+import '../../models/domain/cipher/cipher.dart';
 import '../../providers/cipher_provider.dart';
 import '../cipher/editor/custom_reorderable_delayed.dart';
 

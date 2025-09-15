@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'dart:async';
-import '../models/domain/playlist.dart';
+import '../models/domain/playlist/playlist.dart';
 import '../repositories/playlist_repository.dart';
 
 class PlaylistProvider extends ChangeNotifier {

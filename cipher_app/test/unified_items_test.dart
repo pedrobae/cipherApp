@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:cipher_app/helpers/database.dart';
 import 'package:cipher_app/helpers/database_factory.dart';
 import 'package:cipher_app/repositories/playlist_repository.dart';
-import 'package:cipher_app/models/domain/playlist_item.dart';
+import 'package:cipher_app/models/domain/playlist/playlist_item.dart';
 
 void main() {
   group('Unified Playlist Items Tests', () {

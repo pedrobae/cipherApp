@@ -1,6 +1,6 @@
-import 'package:cipher_app/models/domain/version.dart';
+import 'package:cipher_app/models/domain/cipher/version.dart';
 import 'package:flutter/material.dart';
-import '../../models/domain/cipher.dart';
+import '../../models/domain/cipher/cipher.dart';
 import 'tag_chip.dart';
 
 class CipherCard extends StatelessWidget {

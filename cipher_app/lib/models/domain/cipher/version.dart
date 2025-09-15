@@ -1,4 +1,4 @@
-import 'package:cipher_app/models/domain/section.dart';
+import 'package:cipher_app/models/domain/cipher/section.dart';
 
 class Version {
   final int? id;

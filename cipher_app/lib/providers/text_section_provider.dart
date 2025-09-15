@@ -8,14 +8,14 @@ class TextSectionProvider extends ChangeNotifier {
 
   TextSectionProvider();
 
-  List<TextSection> _textSections = [];
+  Map<int, TextSection> _textSections = {};
   bool _isLoading = false;
   bool _isSaving = false;
   bool _isDeleting = false;
   String? _error;
 
   // Getters
-  List<TextSection> get textSections => _textSections;
+  Map<int, TextSection> get textSections => _textSections;
   bool get isLoading => _isLoading;
   bool get isSaving => _isSaving;
   bool get isDeleting => _isDeleting;
@@ -52,16 +52,13 @@ class TextSectionProvider extends ChangeNotifier {
       final textSection = await _textSectionRepo.getTextSection(textSectionsId);
       if (textSection != null) {
         // Update cache
-        int existingIndex = _textSections.indexWhere(
-          (p) => p.id == textSection.id,
-        );
-
-        if (existingIndex != -1) {
-          _textSections[existingIndex] = textSection;
-        } else {
-          _textSections.add(textSection);
-        }
+        _textSections[textSection.id!] = textSection;
+        
       }
+      if (kDebugMode) {
+        print('========== LOADING TEXT SECTION =============')
+      }
+
     } catch (e) {
       _error = e.toString();
     } finally {

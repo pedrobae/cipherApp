@@ -1,4 +1,6 @@
+import 'package:cipher_app/providers/text_section_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class TextSectionCard extends StatelessWidget {
   final int textSectionId;
@@ -12,6 +14,8 @@ class TextSectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    TextSectionProvider().loadTextSection(textSectionId);
+    final textSectionProvider = context.watch<TextSectionProvider>();
     return InkWell(
       onTap: () {},
       child: Card(
@@ -27,7 +31,8 @@ class TextSectionCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'placeholder for text title',
+                      textSectionProvider.textSections?[textSectionId]?.title ??
+                          'ERROR LOADING',
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     const SizedBox(height: 8),

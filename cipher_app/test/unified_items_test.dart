@@ -1,3 +1,4 @@
+import 'package:cipher_app/repositories/text_section_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:cipher_app/helpers/database.dart';
@@ -9,6 +10,7 @@ void main() {
   group('Unified Playlist Items Tests', () {
     late DatabaseHelper dbHelper;
     late PlaylistRepository playlistRepo;
+    late TextSectionRepository textSectionRepo;
 
     setUpAll(() {
       DatabaseFactoryHelper.initializeForTesting();
@@ -19,6 +21,8 @@ void main() {
       await dbHelper.resetDatabase();
       playlistRepo = PlaylistRepository();
       PlaylistRepository.setCurrentUserId(1);
+      textSectionRepo = TextSectionRepository();
+      TextSectionRepository.setCurrentUserId(1);
     });
 
     tearDown(() async {
@@ -49,7 +53,7 @@ void main() {
         'updated_at': DateTime.now().toIso8601String(),
       });
 
-      final cipherMapId = await db.insert('cipher_map', {
+      final cipherMapId = await db.insert('version', {
         'cipher_id': cipherId,
         'song_structure': 'verse,chorus',
         'transposed_key': 'C',
@@ -59,7 +63,7 @@ void main() {
 
       // Add mixed content in specific order
       // Position 0: Text section
-      await playlistRepo.createPlaylistText(
+      await textSectionRepo.createPlaylistText(
         playlistId,
         'Opening Announcements',
         'Welcome to our service!',
@@ -68,8 +72,8 @@ void main() {
       );
 
       // Position 1: Cipher version
-      await db.insert('playlist_cipher_map', {
-        'cipher_map_id': cipherMapId,
+      await db.insert('playlist_version', {
+        'version_id': cipherMapId,
         'playlist_id': playlistId,
         'includer_id': 1,
         'position': 1,
@@ -77,7 +81,7 @@ void main() {
       });
 
       // Position 2: Another text section
-      await playlistRepo.createPlaylistText(
+      await textSectionRepo.createPlaylistText(
         playlistId,
         'Prayer Time',
         'Let us pray together',
@@ -125,7 +129,7 @@ void main() {
         'updated_at': DateTime.now().toIso8601String(),
       });
 
-      final cipherMapId = await db.insert('cipher_map', {
+      final cipherMapId = await db.insert('version', {
         'cipher_id': cipherId,
         'song_structure': 'verse,chorus',
         'transposed_key': 'C',
@@ -134,7 +138,7 @@ void main() {
       });
 
       // Add content
-      await playlistRepo.createPlaylistText(
+      await textSectionRepo.createPlaylistText(
         playlistId,
         'Text 1',
         'Content 1',
@@ -142,8 +146,8 @@ void main() {
         1,
       );
 
-      await db.insert('playlist_cipher_map', {
-        'cipher_map_id': cipherMapId,
+      await db.insert('playlist_version', {
+        'version_id': cipherMapId,
         'playlist_id': playlistId,
         'includer_id': 1,
         'position': 1,

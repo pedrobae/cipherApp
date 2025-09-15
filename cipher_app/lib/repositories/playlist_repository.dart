@@ -364,61 +364,6 @@ class PlaylistRepository {
     });
   }
 
-  // ===== PLAYLIST TEXT MANAGEMENT =====
-  Future<void> createPlaylistText(
-    int playlistId,
-    String title,
-    String content,
-    int position,
-    int? includerId,
-  ) async {
-    final db = await _databaseHelper.database;
-    final effectiveIncluderId = includerId ?? _currentUserId ?? 1;
-
-    await db.transaction((txn) async {
-      final playlistTextId = txn.insert('playlist_text', {
-        'playlist_id': playlistId,
-        'title': title,
-        'content': content,
-        'position': position,
-        'added_by': effectiveIncluderId,
-      });
-      return playlistTextId;
-    });
-  }
-
-  Future<void> updatePlaylistText(
-    int id,
-    String? title,
-    String? content,
-    int? position,
-  ) async {
-    final db = await _databaseHelper.database;
-
-    Map<String, dynamic> updates = {};
-
-    if (title != null) updates['title'] = title;
-    if (content != null) updates['content'] = content;
-    if (position != null) updates['position'] = position;
-
-    if (updates.isNotEmpty) {
-      await db.update(
-        'playlist_text',
-        updates,
-        where: 'id = ?',
-        whereArgs: [id],
-      );
-    }
-  }
-
-  Future<void> deletePlaylistText(int id) async {
-    final db = await _databaseHelper.database;
-
-    await db.transaction((txn) async {
-      txn.delete('playlist_text', where: 'id = ?', whereArgs: [id]);
-    });
-  }
-
   // ===== UNIFIED PLAYLIST ITEMS =====
   /// Get all playlist items (cipher versions and text sections) in order
   Future<List<PlaylistItem>> getPlaylistItems(int playlistId) async {

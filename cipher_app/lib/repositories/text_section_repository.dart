@@ -86,10 +86,9 @@ class TextSectionRepository {
     return null;
   }
 
-  Future<List<TextSection>> getTextSections(List<int> ids) async {
+  Future<Map<int, TextSection>> getTextSections(List<int> ids) async {
     final db = await _databaseHelper.database;
-
-    if (ids.isEmpty) return [];
+    Map<int, TextSection> textSections = {};
 
     final placeholders = List.filled(ids.length, '?').join(',');
     final results = await db.query(
@@ -98,6 +97,10 @@ class TextSectionRepository {
       whereArgs: ids,
     );
 
-    return results.map((row) => TextSection.fromJson(row)).toList();
+    for (final row in results) {
+      textSections[row['id'] as int] = TextSection.fromJson(row);
+    }
+
+    return textSections;
   }
 }

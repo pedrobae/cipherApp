@@ -2,7 +2,7 @@ import 'package:cipher_app/providers/text_section_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class TextSectionCard extends StatelessWidget {
+class TextSectionCard extends StatefulWidget {
   final int textSectionId;
   final int playlistId;
 
@@ -13,9 +13,22 @@ class TextSectionCard extends StatelessWidget {
   });
 
   @override
+  State<TextSectionCard> createState() => _TextSectionCardState();
+}
+
+class _TextSectionCardState extends State<TextSectionCard> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<TextSectionProvider>().loadTextSection(widget.textSectionId);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    TextSectionProvider().loadTextSection(textSectionId);
     final textSectionProvider = context.watch<TextSectionProvider>();
+
     return InkWell(
       onTap: () {},
       child: Card(
@@ -31,14 +44,19 @@ class TextSectionCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      textSectionProvider.textSections?[textSectionId]?.title ??
+                      textSectionProvider
+                              .textSections[widget.textSectionId]
+                              ?.title ??
                           'ERROR LOADING',
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     const SizedBox(height: 8),
                     // REORDERABLE SECTION CHIPS
                     Text(
-                      'placeholder for text content',
+                      textSectionProvider
+                              .textSections[widget.textSectionId]
+                              ?.contentText ??
+                          '',
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],

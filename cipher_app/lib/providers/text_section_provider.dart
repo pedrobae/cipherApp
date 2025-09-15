@@ -14,6 +14,8 @@ class TextSectionProvider extends ChangeNotifier {
   bool _isDeleting = false;
   String? _error;
 
+  final Set<int> _loadingIds = <int>{};
+
   // Getters
   Map<int, TextSection> get textSections => _textSections;
   bool get isLoading => _isLoading;
@@ -42,27 +44,27 @@ class TextSectionProvider extends ChangeNotifier {
 
   // Load single textSection
   Future<void> loadTextSection(int textSectionsId) async {
-    if (_isLoading) return;
+    // Check if already loaded or loading
+    if (_loadingIds.contains(textSectionsId) || _textSections.containsKey(textSectionsId)) {
+      return;
+    }
 
-    _isLoading = true;
+    _loadingIds.add(textSectionsId);
     _error = null;
     notifyListeners();
 
     try {
       final textSection = await _textSectionRepo.getTextSection(textSectionsId);
       if (textSection != null) {
-        // Update cache
         _textSections[textSection.id!] = textSection;
-        
       }
       if (kDebugMode) {
-        print('========== LOADING TEXT SECTION =============')
+        print('========== LOADED TEXT SECTION ${textSectionsId} =============');
       }
-
     } catch (e) {
       _error = e.toString();
     } finally {
-      _isLoading = false;
+      _loadingIds.remove(textSectionsId);
       notifyListeners();
     }
   }

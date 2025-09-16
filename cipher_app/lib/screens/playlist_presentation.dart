@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../models/domain/playlist/playlist.dart';
 import '../models/domain/playlist/playlist_item.dart';
 import '../providers/playlist_provider.dart';
-import '../providers/layout_settings_provider.dart';
 import '../widgets/presentation/presentation_cipher_section.dart';
 import '../widgets/presentation/presentation_text_section.dart';
 import '../widgets/presentation/presentation_header.dart';
@@ -67,58 +66,34 @@ class _PlaylistPresentationScreenState extends State<PlaylistPresentationScreen>
         }
 
         return Scaffold(
-          appBar: _buildAppBar(playlist),
           endDrawer: PlaylistNavigationDrawer(
             playlist: playlist,
             onItemSelected: _scrollToItem,
           ),
           body: _buildPresentationBody(playlist),
+          floatingActionButton: Builder(
+            builder: (BuildContext context) {
+              return FloatingActionButton(
+                onPressed: () => Scaffold.of(context).openEndDrawer(),
+                tooltip: 'Navegação Rápida',
+                child: const Icon(Icons.list),
+              );
+            },
+          ),
         );
       },
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar(Playlist playlist) {
-    return AppBar(
-      title: Text(
-        playlist.name,
-        style: const TextStyle(fontWeight: FontWeight.bold),
-      ),
-      centerTitle: true,
-      elevation: 2,
-      actions: [
-        // Layout settings (no transpose)
-        Consumer<LayoutSettingsProvider>(
-          builder: (context, layoutProvider, child) {
-            return IconButton(
-              icon: const Icon(Icons.visibility),
-              tooltip: 'Configurações de Layout',
-              onPressed: () => _showLayoutSettings(context, layoutProvider),
-            );
-          },
-        ),
-        // Navigation drawer trigger (showing items list)
-        Builder(
-          builder: (context) => IconButton(
-            icon: const Icon(Icons.list),
-            tooltip: 'Navegação Rápida',
-            onPressed: () => Scaffold.of(context).openEndDrawer(),
-          ),
-        ),
-      ],
     );
   }
 
   Widget _buildPresentationBody(Playlist playlist) {
     return SingleChildScrollView(
       controller: _scrollController,
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Playlist description if available
-          if (playlist.description?.isNotEmpty == true) ...[
-            Container(
+          SizedBox(height: 16,),
+          Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               margin: const EdgeInsets.only(bottom: 24),
@@ -130,15 +105,25 @@ class _PlaylistPresentationScreenState extends State<PlaylistPresentationScreen>
                   width: 1,
                 ),
               ),
-              child: Text(
-                playlist.description!,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  fontStyle: FontStyle.italic,
-                ),
-                textAlign: TextAlign.center,
+              child: Column(
+                children: [
+                  Text(
+                    playlist.name,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)
+                  ),
+                  if (playlist.description?.isNotEmpty == true) ...[
+                  Text(
+                    playlist.description!,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      fontStyle: FontStyle.italic,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  ],
+                ],
               ),
             ),
-          ],
+          
           
           // All playlist items in one continuous column
           ...playlist.items.asMap().entries.map((entry) {
@@ -229,77 +214,5 @@ class _PlaylistPresentationScreenState extends State<PlaylistPresentationScreen>
       _isScrolling = false;
     }
   }
-
-  void _showLayoutSettings(BuildContext context, LayoutSettingsProvider layoutProvider) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.4,
-        minChildSize: 0.3,
-        maxChildSize: 0.7,
-        expand: false,
-        builder: (context, scrollController) {
-          return Container(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Handle bar
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).dividerColor,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                
-                Text(
-                  'Configurações de Layout',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                const SizedBox(height: 24),
-                
-                // Layout options (excluding transpose)
-                SwitchListTile(
-                  title: const Text('Mostrar Anotações'),
-                  subtitle: const Text('Exibe seções de anotações e comentários'),
-                  value: layoutProvider.showAnnotations,
-                  onChanged: (value) => layoutProvider.toggleNotes(),
-                ),
-                
-                SwitchListTile(
-                  title: const Text('Mostrar Transições'),
-                  subtitle: const Text('Exibe seções de transição entre partes'),
-                  value: layoutProvider.showTransitions,
-                  onChanged: (value) => layoutProvider.toggleTransitions(),
-                ),
-                
-                const Divider(),
-                
-                ListTile(
-                  title: const Text('Tamanho da Fonte'),
-                  subtitle: Slider(
-                    value: layoutProvider.fontSize,
-                    min: 12.0,
-                    max: 24.0,
-                    divisions: 12,
-                    label: '${layoutProvider.fontSize.round()}',
-                    onChanged: (value) => layoutProvider.setFontSize(value),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
+  
 }

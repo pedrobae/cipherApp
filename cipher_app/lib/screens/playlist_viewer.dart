@@ -25,9 +25,9 @@ class PlaylistViewer extends StatelessWidget {
       (p) => p.id == playlistId,
       orElse: () => throw Exception('Playlist not found'),
     );
-    if (kDebugMode) {
-      playlist.debugPrint();
-    }
+    // if (kDebugMode) {
+    //   playlist.debugPrint();
+    // }
 
     final bool hasItems = playlist.items.isNotEmpty;
 
@@ -157,11 +157,28 @@ class PlaylistViewer extends StatelessWidget {
     Playlist playlist,
     int oldIndex,
     int newIndex,
-  ) {
+  ) async {
     if (newIndex > oldIndex) {
       newIndex -= 1;
     }
-    context.read<PlaylistProvider>().reorderItems(oldIndex, newIndex, playlist);
+    
+    try {
+      await context.read<PlaylistProvider>().reorderItems(oldIndex, newIndex, playlist);
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao reordenar: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            action: SnackBarAction(
+              label: 'Tentar Novamente',
+              textColor: Colors.white,
+              onPressed: () => _onReorder(context, playlist, oldIndex, newIndex),
+            ),
+          ),
+        );
+      }
+    }
   }
 
   void _handleDeleteVersion(

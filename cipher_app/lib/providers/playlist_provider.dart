@@ -109,31 +109,71 @@ class PlaylistProvider extends ChangeNotifier {
     await _loadPlaylist(playlistId);
   }
 
-  // Reorder playlist items
+  // Reorder playlist items with optimistic updates
   Future<void> reorderItems(
     int oldIndex,
     int newIndex,
     Playlist playlist,
   ) async {
-    List<PlaylistItem> items = playlist.orderedItems;
+    final originalItems = playlist.items.map((item) => PlaylistItem(
+      type: item.type,
+      contentId: item.contentId,
+      order: item.order,
+    )).toList();
 
-    if (newIndex > oldIndex) {
-      items[oldIndex].order = newIndex;
-      for (var i = oldIndex; i < newIndex; i++) {
-        items[i].order -= 1;
-      }
-    } else if (newIndex < oldIndex) {
-      items[oldIndex].order = newIndex;
-      for (var i = newIndex; i < oldIndex; i++) {
-        items[i].order += 1;
+    try {
+      _updateItemOrdersOptimistically(playlist, oldIndex, newIndex);
+      notifyListeners();
+      
+      List<PlaylistItem> changedList = _getChangedItems(originalItems, playlist.items);
+      await _playlistRepository.savePlaylistOrder(playlist.id, changedList);
+      
+    } catch (e) {
+      _rollbackItemOrders(playlist, originalItems);
+      notifyListeners();
+      _error = 'Erro ao reordenar itens: $e';
+      rethrow;
+    }
+  }
+
+  void _updateItemOrdersOptimistically(Playlist playlist, int oldIndex, int newIndex) {
+    final items = playlist.items;
+
+    final movedItem = items.removeAt(oldIndex);
+    items.insert(newIndex, movedItem);
+
+    for (int i = 0; i < items.length; i++) {
+      items[i].order = i;
+    }
+  }
+
+  // Helper method to get items that changed order
+  List<PlaylistItem> _getChangedItems(List<PlaylistItem> original, List<PlaylistItem> updated) {
+    List<PlaylistItem> changed = [];
+    
+    for (int i = 0; i < updated.length; i++) {
+      final updatedItem = updated[i];
+      final originalItem = original.firstWhere(
+        (item) => item.contentId == updatedItem.contentId && item.type == updatedItem.type,
+      );
+      
+      if (originalItem.order != updatedItem.order) {
+        changed.add(updatedItem);
       }
     }
-    List<PlaylistItem> changedList = (oldIndex < newIndex)
-        ? items.sublist(oldIndex, newIndex + 1)
-        : items.sublist(newIndex, oldIndex + 1);
-    // Call the repo to save each item that is between the new and old index with a new position
-    await _playlistRepository.savePlaylistOrder(playlist.id, changedList);
-    await _loadPlaylist(playlist.id);
+    
+    return changed;
+  }
+
+  void _rollbackItemOrders(Playlist playlist, List<PlaylistItem> originalItems) {
+    for (int i = 0; i < playlist.items.length; i++) {
+      final currentItem = playlist.items[i];
+      final originalItem = originalItems.firstWhere(
+        (item) => item.contentId == currentItem.contentId && item.type == currentItem.type,
+      );
+      currentItem.order = originalItem.order;
+    }
+    playlist.items.sort((a, b) => a.order.compareTo(b.order));
   }
 
   // ===== DELETE =====

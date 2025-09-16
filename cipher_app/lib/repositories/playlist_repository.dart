@@ -379,24 +379,42 @@ class PlaylistRepository {
     final db = await _databaseHelper.database;
 
     await db.transaction((txn) async {
-      // Update cipher version positions
-      for (var item in items.where((i) => i.isCipherVersion)) {
-        await txn.update(
-          'playlist_version',
-          {'position': item.order},
-          where: 'playlist_id = ? AND version_id = ?',
-          whereArgs: [playlistId, item.contentId],
-        );
+      for (var i = 0; i < items.length; i++) {
+        final item = items[i];
+        final tempPosition = -(i + 1000);
+        if (item.isCipherVersion) {
+          await txn.update(
+            'playlist_version',
+            {'position': tempPosition},
+            where: 'playlist_id = ? AND version_id = ?',
+            whereArgs: [playlistId, item.contentId],
+          );
+        } else if (item.isTextSection) {
+          await txn.update(
+            'playlist_text',
+            {'position': tempPosition},
+            where: 'id = ?',
+            whereArgs: [item.contentId],
+          );
+        }
       }
 
-      // Update text section positions
-      for (var item in items.where((i) => i.isTextSection)) {
-        await txn.update(
-          'playlist_text',
-          {'position': item.order},
-          where: 'id = ?',
-          whereArgs: [item.contentId],
-        );
+      for (var item in items) {
+        if (item.isCipherVersion) {
+          await txn.update(
+            'playlist_version',
+            {'position': item.order},
+            where: 'playlist_id = ? AND version_id = ?',
+            whereArgs: [playlistId, item.contentId],
+          );
+        } else if (item.isTextSection) {
+          await txn.update(
+            'playlist_text',
+            {'position': item.order},
+            where: 'id = ?',
+            whereArgs: [item.contentId],
+          );
+        }
       }
     });
   }

@@ -5,7 +5,6 @@ import '../models/domain/playlist/playlist_item.dart';
 import '../providers/playlist_provider.dart';
 import '../widgets/presentation/presentation_cipher_section.dart';
 import '../widgets/presentation/presentation_text_section.dart';
-import '../widgets/presentation/presentation_header.dart';
 import '../widgets/presentation/playlist_navigation_drawer.dart';
 
 class PlaylistPresentationScreen extends StatefulWidget {
@@ -92,11 +91,11 @@ class _PlaylistPresentationScreenState extends State<PlaylistPresentationScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 16,),
+          SizedBox(height: 16),
           Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
-              margin: const EdgeInsets.only(bottom: 24),
+              margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(8),
@@ -124,27 +123,16 @@ class _PlaylistPresentationScreenState extends State<PlaylistPresentationScreen>
               ),
             ),
           
-          
-          // All playlist items in one continuous column
           ...playlist.items.asMap().entries.map((entry) {
             final index = entry.key;
             final item = entry.value;
             
             return Container(
               key: _itemKeys[index],
-              margin: const EdgeInsets.only(bottom: 32),
+              margin: const EdgeInsets.only(bottom: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Section header
-                  PresentationHeader(
-                    item: item,
-                    index: index + 1,
-                  ),
-                  
-                  const SizedBox(height: 16),
-                  
-                  // Section content
                   _buildItemContent(item),
                 ],
               ),
@@ -152,7 +140,7 @@ class _PlaylistPresentationScreenState extends State<PlaylistPresentationScreen>
           }),
           
           // Extra padding at bottom for better UX
-          const SizedBox(height: 100),
+          const SizedBox(height: 200),
         ],
       ),
     );

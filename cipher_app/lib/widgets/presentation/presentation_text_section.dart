@@ -70,9 +70,9 @@ class PresentationTextSection extends StatelessWidget {
 
         return Card(
           elevation: 2,
-          margin: const EdgeInsets.symmetric(vertical: 4),
+          margin: const EdgeInsets.symmetric(vertical: 0),
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -85,7 +85,7 @@ class PresentationTextSection extends StatelessWidget {
                       fontSize: layoutProvider.fontSize + 4, // Slightly larger than content
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 8),
                 ],
                 
                 // Content

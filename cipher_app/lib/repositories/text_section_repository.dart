@@ -16,7 +16,7 @@ class TextSectionRepository {
   }
 
   // ===== CRUD =====
-  Future<int?> createPlaylistText(
+  Future<int> createPlaylistText(
     int playlistId,
     String title,
     String content,
@@ -26,14 +26,12 @@ class TextSectionRepository {
     final db = await _databaseHelper.database;
     final effectiveIncluderId = includerId ?? _currentUserId ?? 1;
 
-    return await db.transaction((txn) async {
-      return await txn.insert('playlist_text', {
-        'playlist_id': playlistId,
-        'title': title,
-        'content': content,
-        'position': position,
-        'added_by': effectiveIncluderId,
-      });
+    return await db.insert('playlist_text', {
+      'playlist_id': playlistId,
+      'title': title,
+      'content': content,
+      'position': position,
+      'added_by': effectiveIncluderId,
     });
   }
 

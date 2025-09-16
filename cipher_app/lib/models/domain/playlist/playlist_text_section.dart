@@ -4,7 +4,7 @@ class TextSection {
   final String title;
   String contentText;
   final int position;
-  final int includerId;
+  final int? includerId;
 
   TextSection({
     this.id,
@@ -12,7 +12,7 @@ class TextSection {
     required this.title,
     required this.contentText,
     required this.position,
-    required this.includerId,
+    this.includerId,
   });
 
   factory TextSection.fromJson(Map<String, dynamic> json) {

@@ -42,11 +42,14 @@ class TextSectionProvider extends ChangeNotifier {
 
   // Load single textSection
   Future<void> loadTextSection(int textSectionId, {bool forceReload = false}) async {
+    if (kDebugMode) {
+      print('===== Loading - $textSectionId - Forced Reload - $forceReload =====');
+    }
     // Check if already loaded (unless forcing reload)
     if (!forceReload && _textSections.containsKey(textSectionId)) {
       return;
     }
-
+    
     _error = null;
     notifyListeners();
 
@@ -64,7 +67,7 @@ class TextSectionProvider extends ChangeNotifier {
 
   // ===== CREATE =====
   // Create a new TextSection from scratch
-  Future<void> createTextSection(TextSection textSection) async {
+  Future<void> createTextSection(TextSection textSection, {VoidCallback? onPlaylistRefreshNeeded}) async {
     if (_isSaving) return;
 
     _isSaving = true;
@@ -72,16 +75,18 @@ class TextSectionProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      int? id = await _textSectionRepo.createPlaylistText(
+      int id = await _textSectionRepo.createPlaylistText(
         textSection.playlistId,
         textSection.title,
         textSection.contentText,
         textSection.position,
         textSection.includerId,
       );
-      if (id != null) {
-        await loadTextSection(id);
-      }
+      await loadTextSection(id, forceReload: true);
+
+      // Notify that playlist needs refresh due to position adjustments
+      onPlaylistRefreshNeeded?.call();
+
     } catch (e) {
       _error = e.toString();
       rethrow;

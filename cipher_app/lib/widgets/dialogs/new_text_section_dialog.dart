@@ -1,38 +1,37 @@
+import 'package:cipher_app/models/domain/playlist/playlist.dart';
+import 'package:cipher_app/models/domain/playlist/playlist_text_section.dart';
+import 'package:cipher_app/providers/playlist_provider.dart';
 import 'package:cipher_app/providers/text_section_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 /// Dialog for text section editing and deletion
-class TextSectionDialog extends StatefulWidget {
-  final int textSectionId;
-  final int playlistId;
+class NewTextSectionDialog extends StatefulWidget {
+  final Playlist playlist;
 
-  const TextSectionDialog({
+  const NewTextSectionDialog({
     super.key,
-    required this.textSectionId,
-    required this.playlistId,
+    required this.playlist,
   });
 
   /// Shows the text section dialog
   static void show(
     BuildContext context, {
-    required int textSectionId,
-    required int playlistId,
+    required Playlist playlist
   }) {
     showDialog(
       context: context,
-      builder: (context) => TextSectionDialog(
-        textSectionId: textSectionId,
-        playlistId: playlistId,
+      builder: (context) => NewTextSectionDialog(
+        playlist: playlist,
       ),
     );
   }
 
   @override
-  State<TextSectionDialog> createState() => _TextSectionDialogState();
+  State<NewTextSectionDialog> createState() => _TextSectionDialogState();
 }
 
-class _TextSectionDialogState extends State<TextSectionDialog> {
+class _TextSectionDialogState extends State<NewTextSectionDialog> {
   late TextEditingController titleController;
   late TextEditingController contentController;
 
@@ -40,11 +39,8 @@ class _TextSectionDialogState extends State<TextSectionDialog> {
   void initState() {
     super.initState();
     
-    final textSection = context.read<TextSectionProvider>()
-        .textSections[widget.textSectionId];
-    
-    titleController = TextEditingController(text: textSection?.title ?? '');
-    contentController = TextEditingController(text: textSection?.contentText ?? '');
+    titleController = TextEditingController(text: '');
+    contentController = TextEditingController(text: '');
   }
 
   @override
@@ -64,20 +60,13 @@ class _TextSectionDialogState extends State<TextSectionDialog> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header with title and delete button
             Row(
               children: [
                 Expanded(
                   child: Text(
-                    'Editar Seção de Texto',
+                    'Nova Seção de Texto',
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
-                ),
-                IconButton(
-                  onPressed: _showDeleteConfirmation,
-                  icon: const Icon(Icons.delete),
-                  color: Colors.red,
-                  tooltip: 'Excluir seção',
                 ),
                 IconButton(
                   onPressed: () => Navigator.pop(context),
@@ -151,11 +140,17 @@ class _TextSectionDialogState extends State<TextSectionDialog> {
     }
 
     try {
-      await context.read<TextSectionProvider>().updateTextSection(
-        widget.textSectionId,
-        newTitle,
-        newContent,
-        null, // Keep current position
+      final int nextPosition = widget.playlist.items.last.order + 1;
+      await context.read<TextSectionProvider>().createTextSection(
+        TextSection(
+          playlistId: widget.playlist.id, 
+          title: newTitle, 
+          contentText: newContent, 
+          position: nextPosition), 
+        onPlaylistRefreshNeeded: () {
+          // Refresh the playlist to show updated text section
+          context.read<PlaylistProvider>().loadPlaylists();
+        }
       );
       
       if (mounted) {
@@ -163,7 +158,7 @@ class _TextSectionDialogState extends State<TextSectionDialog> {
         
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Seção atualizada com sucesso!'),
+            content: Text('Seção criada com sucesso!'),
             backgroundColor: Colors.green,
           ),
         );
@@ -172,62 +167,7 @@ class _TextSectionDialogState extends State<TextSectionDialog> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erro ao atualizar seção: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-  }
-
-  /// Shows delete confirmation dialog
-  void _showDeleteConfirmation() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Excluir Seção'),
-        content: const Text(
-          'Tem certeza que deseja excluir esta seção de texto? Esta ação não pode ser desfeita.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
-          ),
-          TextButton(
-            onPressed: _confirmDelete,
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.red,
-            ),
-            child: const Text('Excluir'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Confirms and executes the delete operation
-  void _confirmDelete() async {
-    Navigator.pop(context); // Close confirmation dialog
-    
-    try {
-      await context.read<TextSectionProvider>().deleteTextSection(widget.textSectionId);
-      
-      if (mounted) {
-        Navigator.pop(context); // Close main dialog
-        
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Seção excluída com sucesso!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erro ao excluir seção: $e'),
+            content: Text('Erro ao criar seção: $e'),
             backgroundColor: Colors.red,
           ),
         );

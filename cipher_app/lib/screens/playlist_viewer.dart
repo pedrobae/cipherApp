@@ -1,4 +1,6 @@
+import 'package:cipher_app/widgets/dialogs/new_text_section_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/models/domain/playlist/playlist.dart';
 import 'package:cipher_app/models/domain/playlist/playlist_item.dart';
@@ -86,8 +88,17 @@ class PlaylistViewer extends StatelessWidget {
               ),
             )
           : EmptyPlaylist(description: playlist.description),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _navigateToAddCiphers(context, playlist),
+      floatingActionButton: SpeedDial(
+        children: [
+          SpeedDialChild(
+            onTap: () => _navigateToAddCiphers(context, playlist), 
+            child: Icon(Icons.library_music)
+          ), 
+          SpeedDialChild(
+            onTap: () => _addTextSection(context, playlist), 
+            child: Icon(Icons.text_snippet)
+          )
+        ],
         tooltip: 'Adicionar Cifras',
         child: const Icon(Icons.add),
       ),
@@ -208,6 +219,13 @@ class PlaylistViewer extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void _addTextSection(BuildContext context, Playlist playlist) {
+    showDialog(
+      context: context,
+      builder: (context) => NewTextSectionDialog(playlist: playlist),
     );
   }
 }

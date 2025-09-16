@@ -1,15 +1,14 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:cipher_app/models/domain/playlist/playlist.dart';
+import 'package:cipher_app/models/domain/playlist/playlist_item.dart';
 import 'package:cipher_app/providers/playlist_provider.dart';
 import 'package:cipher_app/widgets/playlist/cipher_version_card.dart';
 import 'package:cipher_app/widgets/playlist/text_section_card.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:cipher_app/models/domain/playlist/playlist.dart';
-import 'package:cipher_app/models/domain/playlist/playlist_item.dart';
-import 'package:provider/provider.dart';
-import '../widgets/cipher/editor/custom_reorderable_delayed.dart';
-import '../widgets/playlist/collaborators/bottom_sheet.dart';
-import '../widgets/dialogs/edit_playlist_dialog.dart';
-import '../widgets/playlist/empty_playlist.dart';
+import 'package:cipher_app/widgets/playlist/empty_playlist.dart';
+import 'package:cipher_app/widgets/cipher/editor/custom_reorderable_delayed.dart';
+import 'package:cipher_app/widgets/playlist/collaborators/bottom_sheet.dart';
+import 'package:cipher_app/widgets/dialogs/edit_playlist_dialog.dart';
 import 'cipher_library.dart';
 
 class PlaylistViewer extends StatelessWidget {
@@ -25,9 +24,6 @@ class PlaylistViewer extends StatelessWidget {
       (p) => p.id == playlistId,
       orElse: () => throw Exception('Playlist not found'),
     );
-    // if (kDebugMode) {
-    //   playlist.debugPrint();
-    // }
 
     final bool hasItems = playlist.items.isNotEmpty;
 

@@ -1,7 +1,6 @@
-import 'package:cipher_app/widgets/dialogs/new_text_section_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:cipher_app/models/domain/playlist/playlist.dart';
 import 'package:cipher_app/models/domain/playlist/playlist_item.dart';
 import 'package:cipher_app/providers/playlist_provider.dart';
@@ -11,7 +10,9 @@ import 'package:cipher_app/widgets/playlist/empty_playlist.dart';
 import 'package:cipher_app/widgets/cipher/editor/custom_reorderable_delayed.dart';
 import 'package:cipher_app/widgets/playlist/collaborators/bottom_sheet.dart';
 import 'package:cipher_app/widgets/dialogs/edit_playlist_dialog.dart';
+import 'package:cipher_app/widgets/dialogs/new_text_section_dialog.dart';
 import 'cipher_library.dart';
+import 'playlist_presentation.dart';
 
 class PlaylistViewer extends StatelessWidget {
   final int playlistId; // Receive the playlist ID from the parent
@@ -48,6 +49,12 @@ class PlaylistViewer extends StatelessWidget {
             tooltip: 'Colaboradores',
             onPressed: () => _showCollaborators(context, playlist),
           ),
+          if (hasItems)
+            IconButton(
+              icon: const Icon(Icons.fullscreen),
+              tooltip: 'Modo Apresentação',
+              onPressed: () => _openPresentationMode(context, playlist),
+            ),
           IconButton(
             icon: const Icon(Icons.edit),
             tooltip: 'Editar',
@@ -218,6 +225,17 @@ class PlaylistViewer extends StatelessWidget {
             child: const Text('Remover'),
           ),
         ],
+      ),
+    );
+  }
+
+  void _openPresentationMode(BuildContext context, Playlist playlist) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PlaylistPresentationScreen(
+          playlistId: playlist.id,
+        ),
       ),
     );
   }

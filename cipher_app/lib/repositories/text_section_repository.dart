@@ -26,17 +26,15 @@ class TextSectionRepository {
     final db = await _databaseHelper.database;
     final effectiveIncluderId = includerId ?? _currentUserId ?? 1;
 
-    await db.transaction((txn) async {
-      final playlistTextId = txn.insert('playlist_text', {
+    return await db.transaction((txn) async {
+      return await txn.insert('playlist_text', {
         'playlist_id': playlistId,
         'title': title,
         'content': content,
         'position': position,
         'added_by': effectiveIncluderId,
       });
-      return playlistTextId;
     });
-    return null;
   }
 
   Future<void> updatePlaylistText(
@@ -47,27 +45,60 @@ class TextSectionRepository {
   }) async {
     final db = await _databaseHelper.database;
 
-    Map<String, dynamic> updates = {};
+    await db.transaction((txn) async {
+      Map<String, dynamic> updates = {};
 
-    if (title != null) updates['title'] = title;
-    if (content != null) updates['content'] = content;
-    if (position != null) updates['position'] = position;
+      if (title != null) updates['title'] = title;
+      if (content != null) updates['content'] = content;
+      if (position != null) updates['position'] = position;
 
-    if (updates.isNotEmpty) {
-      await db.update(
-        'playlist_text',
-        updates,
-        where: 'id = ?',
-        whereArgs: [id],
-      );
-    }
+      if (updates.isNotEmpty) {
+        
+        final result = await txn.update(
+          'playlist_text',
+          updates,
+          where: 'id = ?',
+          whereArgs: [id],
+        );
+        
+        if (result == 0) {
+          throw Exception('Failed to update text section with id $id - no rows affected');
+        }
+      }
+    });
   }
 
   Future<void> deletePlaylistText(int id) async {
     final db = await _databaseHelper.database;
 
     await db.transaction((txn) async {
-      txn.delete('playlist_text', where: 'id = ?', whereArgs: [id]);
+      // First, get the position and playlist_id of the item being deleted
+      final result = await txn.query(
+        'playlist_text',
+        columns: ['position', 'playlist_id'],
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+
+      if (result.isNotEmpty) {
+        final deletedPosition = result.first['position'] as int;
+        final playlistId = result.first['playlist_id'] as int;
+
+        // Delete the text section
+        await txn.delete('playlist_text', where: 'id = ?', whereArgs: [id]);
+
+        // Adjust positions of items that come after the deleted item
+        await txn.rawUpdate(
+          'UPDATE playlist_text SET position = position - 1 WHERE playlist_id = ? AND position > ?',
+          [playlistId, deletedPosition],
+        );
+
+        // Also adjust positions in playlist_version table for the same playlist
+        await txn.rawUpdate(
+          'UPDATE playlist_version SET position = position - 1 WHERE playlist_id = ? AND position > ?',
+          [playlistId, deletedPosition],
+        );
+      }
     });
   }
 

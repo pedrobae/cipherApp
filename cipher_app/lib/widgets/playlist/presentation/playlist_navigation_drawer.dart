@@ -240,21 +240,25 @@ class PlaylistNavigationDrawer extends StatelessWidget {
   void _showLayoutSettings(BuildContext context, LayoutSettingsProvider layoutProvider) {
     showModalBottomSheet(
       context: context,
-      isScrollControlled: true,
+      isScrollControlled: true, // Allows the modal to expand based on content
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.4,
-        minChildSize: 0.3,
-        maxChildSize: 0.7,
-        expand: false,
-        builder: (context, scrollController) {
-          return LayoutSettings(
-            scrollController: scrollController,
-          );
-        },
-      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.only(top: 12),
+          child: SingleChildScrollView(
+            child: Align(
+              alignment: AlignmentGeometry.center,
+              child: LayoutSettings(
+                  scrollController: null, // No need for an external scroll controller
+                  includeFilters: true,
+                  isPresenter: true,
+                ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

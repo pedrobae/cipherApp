@@ -6,9 +6,11 @@ class CipherFilters extends StatelessWidget {
   const CipherFilters({
     super.key,
     required this.settings,
+    required this.isPresenter
   });
 
   final LayoutSettingsProvider settings;
+  final bool isPresenter;
 
   @override
   Widget build(BuildContext context) {
@@ -17,29 +19,38 @@ class CipherFilters extends StatelessWidget {
       spacing: 4,
       children: [
         FilterChip(
-          label: Text('Acordes'),
-          showCheckmark: false,
-          selected: settings.showChords,
-          onSelected: (_) => settings.toggleChords(),
-        ),
-        FilterChip(
-          label: Text('Letras'),
-          showCheckmark: false,
-          selected: settings.showLyrics,
-          onSelected: (_) => settings.toggleLyrics(),
-        ),
-        FilterChip(
-          label: Text('Notas'),
-          showCheckmark: false,
-          selected: settings.showAnnotations,
-          onSelected: (_) => settings.toggleNotes(),
-        ),
-        FilterChip(
-          label: Text('Transições'),
-          showCheckmark: false,
-          selected: settings.showTransitions,
-          onSelected: (_) => settings.toggleTransitions(),
-        ),
+            label: Text('Acordes'),
+            showCheckmark: false,
+            selected: settings.showChords,
+            onSelected: (_) => settings.toggleChords(),
+          ),
+          FilterChip(
+            label: Text('Letras'),
+            showCheckmark: false,
+            selected: settings.showLyrics,
+            onSelected: (_) => settings.toggleLyrics(),
+          ),
+        if (!isPresenter) ...[
+          FilterChip(
+            label: Text('Notas'),
+            showCheckmark: false,
+            selected: settings.showAnnotations,
+            onSelected: (_) => settings.toggleNotes(),
+          ),
+          FilterChip(
+            label: Text('Transições'),
+            showCheckmark: false,
+            selected: settings.showTransitions,
+            onSelected: (_) => settings.toggleTransitions(),
+          ),
+        ] else ...[
+          FilterChip(
+            label: Text('Seções de Texto'),
+            showCheckmark: false,
+            selected: settings.showTextSections,
+            onSelected: (_) => settings.toggleTextSections(),
+          ),
+        ],
       ],
     );
   }

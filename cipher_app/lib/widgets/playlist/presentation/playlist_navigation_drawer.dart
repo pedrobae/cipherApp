@@ -1,6 +1,7 @@
 import 'package:cipher_app/providers/layout_settings_provider.dart';
 import 'package:cipher_app/providers/cipher_provider.dart';
 import 'package:cipher_app/providers/text_section_provider.dart';
+import 'package:cipher_app/widgets/settings/layout_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../models/domain/playlist/playlist.dart';
@@ -249,60 +250,8 @@ class PlaylistNavigationDrawer extends StatelessWidget {
         maxChildSize: 0.7,
         expand: false,
         builder: (context, scrollController) {
-          return Container(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Handle bar
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).dividerColor,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                
-                Text(
-                  'Configurações de Layout',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                const SizedBox(height: 24),
-                
-                // Layout options (excluding transpose)
-                SwitchListTile(
-                  title: const Text('Mostrar Anotações'),
-                  subtitle: const Text('Exibe seções de anotações e comentários'),
-                  value: layoutProvider.showAnnotations,
-                  onChanged: (value) => layoutProvider.toggleNotes(),
-                ),
-                
-                SwitchListTile(
-                  title: const Text('Mostrar Transições'),
-                  subtitle: const Text('Exibe seções de transição entre partes'),
-                  value: layoutProvider.showTransitions,
-                  onChanged: (value) => layoutProvider.toggleTransitions(),
-                ),
-                
-                const Divider(),
-                
-                ListTile(
-                  title: const Text('Tamanho da Fonte'),
-                  subtitle: Slider(
-                    value: layoutProvider.fontSize,
-                    min: 12.0,
-                    max: 24.0,
-                    divisions: 12,
-                    label: '${layoutProvider.fontSize.round()}',
-                    onChanged: (value) => layoutProvider.setFontSize(value),
-                  ),
-                ),
-              ],
-            ),
+          return LayoutSettings(
+            scrollController: scrollController,
           );
         },
       ),

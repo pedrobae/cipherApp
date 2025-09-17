@@ -1,12 +1,12 @@
 import 'package:cipher_app/models/domain/cipher/version.dart';
 import 'package:cipher_app/providers/layout_settings_provider.dart';
+import 'package:cipher_app/widgets/settings/layout_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/domain/cipher/cipher.dart';
 import '../providers/cipher_provider.dart';
 import '../widgets/cipher/viewer/content_section.dart';
 import '../widgets/cipher/viewer/version_header.dart';
-import '../widgets/cipher/viewer/layout_settings.dart';
 import '../widgets/cipher/version_selector.dart';
 import 'cipher_editor.dart';
 
@@ -95,7 +95,7 @@ class _CipherViewerState extends State<CipherViewer> {
           alignment: Alignment.topCenter,
           child: Material(
             color: Colors.transparent,
-            child: LayoutSettings(originalKey: widget.cipher.musicKey),
+            child: LayoutSettings(includeTransposer: true, includeFilters: true,),
           ),
         );
       },

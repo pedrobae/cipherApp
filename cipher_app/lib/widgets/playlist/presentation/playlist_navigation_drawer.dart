@@ -1,8 +1,8 @@
 import 'package:cipher_app/providers/layout_settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../models/domain/playlist/playlist.dart';
-import '../../models/domain/playlist/playlist_item.dart';
+import '../../../models/domain/playlist/playlist.dart';
+import '../../../models/domain/playlist/playlist_item.dart';
 
 class PlaylistNavigationDrawer extends StatelessWidget {
   final Playlist playlist;

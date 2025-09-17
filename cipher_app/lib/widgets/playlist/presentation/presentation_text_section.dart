@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../providers/text_section_provider.dart';
-import '../../providers/layout_settings_provider.dart';
+import '../../../providers/text_section_provider.dart';
+import '../../../providers/layout_settings_provider.dart';
 
 class PresentationTextSection extends StatelessWidget {
   final int textSectionId;

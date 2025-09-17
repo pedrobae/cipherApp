@@ -3,9 +3,9 @@ import 'package:provider/provider.dart';
 import '../models/domain/playlist/playlist.dart';
 import '../models/domain/playlist/playlist_item.dart';
 import '../providers/playlist_provider.dart';
-import '../widgets/presentation/presentation_cipher_section.dart';
-import '../widgets/presentation/presentation_text_section.dart';
-import '../widgets/presentation/playlist_navigation_drawer.dart';
+import '../widgets/playlist/presentation/presentation_cipher_section.dart';
+import '../widgets/playlist/presentation/presentation_text_section.dart';
+import '../widgets/playlist/presentation/playlist_navigation_drawer.dart';
 
 class PlaylistPresentationScreen extends StatefulWidget {
   final int playlistId;

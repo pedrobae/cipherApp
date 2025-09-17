@@ -69,7 +69,7 @@ class CipherSectionCard extends StatelessWidget {
           ),
           child: ChordProView(song: sectionText, maxWidth: double.infinity),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 4),
       ],
     );
   }

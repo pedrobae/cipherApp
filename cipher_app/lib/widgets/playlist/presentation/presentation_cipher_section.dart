@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/models/domain/cipher/cipher.dart';
 import 'package:cipher_app/providers/cipher_provider.dart';
@@ -106,24 +107,29 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
           child: Padding(
             padding: const EdgeInsets.all(8),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildCipherHeader(),
+                MasonryGridView.builder(padding: EdgeInsets.only(top: 8),
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(crossAxisCount: layoutProvider.columnCount,),
+                  itemCount: filteredStructure.length,
+                  itemBuilder: (context, index) {
+                    final sectionCode = filteredStructure[index];
+                    final section = currentVersion.sections?[sectionCode];
+                    if (section == null) return const SizedBox.shrink();
                 
-                Divider(color: Theme.of(context).dividerColor,),
-                
-                ...filteredStructure.map((sectionCode) {
-                  final trimmedCode = sectionCode.trim();
-                  final section = currentVersion.sections?[trimmedCode];
-                  if (section == null) return const SizedBox.shrink();
-                  
-                  return CipherSectionCard(
-                      sectionType: section.contentType,
-                      sectionCode: trimmedCode,
-                      sectionText: section.contentText,
-                      sectionColor: section.contentColor,
+                    return Padding(
+                      padding: const EdgeInsets.all(2.0),
+                      child: CipherSectionCard(
+                        sectionType: section.contentType,
+                        sectionCode: sectionCode,
+                        sectionText: section.contentText,
+                        sectionColor: section.contentColor,
+                      ),
                     );
-                })
+                  }
+                ),
               ],
             ),
           ),

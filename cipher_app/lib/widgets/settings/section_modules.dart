@@ -14,44 +14,47 @@ class CipherFilters extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      spacing: 4,
-      children: [
-        FilterChip(
-            label: Text('Acordes'),
-            showCheckmark: false,
-            selected: settings.showChords,
-            onSelected: (_) => settings.toggleChords(),
-          ),
+    return Center(
+      child: Wrap(
+        alignment: WrapAlignment.center,
+        runSpacing: 2,
+        spacing: 4,
+        children: [
           FilterChip(
-            label: Text('Letras'),
-            showCheckmark: false,
-            selected: settings.showLyrics,
-            onSelected: (_) => settings.toggleLyrics(),
-          ),
-        if (!isPresenter) ...[
-          FilterChip(
-            label: Text('Notas'),
-            showCheckmark: false,
-            selected: settings.showAnnotations,
-            onSelected: (_) => settings.toggleNotes(),
-          ),
-          FilterChip(
-            label: Text('Transições'),
-            showCheckmark: false,
-            selected: settings.showTransitions,
-            onSelected: (_) => settings.toggleTransitions(),
-          ),
-        ] else ...[
-          FilterChip(
-            label: Text('Seções de Texto'),
-            showCheckmark: false,
-            selected: settings.showTextSections,
-            onSelected: (_) => settings.toggleTextSections(),
-          ),
+              label: Text('Acordes'),
+              showCheckmark: false,
+              selected: settings.showChords,
+              onSelected: (_) => settings.toggleChords(),
+            ),
+            FilterChip(
+              label: Text('Letras'),
+              showCheckmark: false,
+              selected: settings.showLyrics,
+              onSelected: (_) => settings.toggleLyrics(),
+            ),
+          if (!isPresenter) ...[
+            FilterChip(
+              label: Text('Notas'),
+              showCheckmark: false,
+              selected: settings.showAnnotations,
+              onSelected: (_) => settings.toggleNotes(),
+            ),
+            FilterChip(
+              label: Text('Transições'),
+              showCheckmark: false,
+              selected: settings.showTransitions,
+              onSelected: (_) => settings.toggleTransitions(),
+            ),
+          ] else ...[
+            FilterChip(
+              label: Text('Seções de Texto'),
+              showCheckmark: false,
+              selected: settings.showTextSections,
+              onSelected: (_) => settings.toggleTextSections(),
+            ),
+          ],
         ],
-      ],
+      ),
     );
   }
 }

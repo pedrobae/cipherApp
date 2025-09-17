@@ -239,6 +239,7 @@ class PlaylistNavigationDrawer extends StatelessWidget {
 
   void _showLayoutSettings(BuildContext context, LayoutSettingsProvider layoutProvider) {
     showModalBottomSheet(
+      
       context: context,
       isScrollControlled: true, // Allows the modal to expand based on content
       shape: const RoundedRectangleBorder(
@@ -251,7 +252,6 @@ class PlaylistNavigationDrawer extends StatelessWidget {
             child: Align(
               alignment: AlignmentGeometry.center,
               child: LayoutSettings(
-                  scrollController: null, // No need for an external scroll controller
                   includeFilters: true,
                   isPresenter: true,
                 ),

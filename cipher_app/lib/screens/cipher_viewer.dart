@@ -85,29 +85,25 @@ class _CipherViewerState extends State<CipherViewer> {
   }
 
   void _showLayoutSettings() {
-    showGeneralDialog(
+    showModalBottomSheet(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       context: context,
-      barrierDismissible: true,
-      barrierLabel: 'Fechar',
-      transitionDuration: const Duration(milliseconds: 300),
-      pageBuilder: (context, animation, secondaryAnimation) {
-        return Align(
-          alignment: Alignment.topCenter,
-          child: Material(
-            color: Colors.transparent,
-            child: LayoutSettings(includeTransposer: true, includeFilters: true,),
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top:12),
+            child: LayoutSettings(
+              includeTransposer: true,
+              includeFilters: true,
+            ),
           ),
-        );
-      },
-      transitionBuilder: (context, animation, secondaryAnimation, child) {
-        return SlideTransition(
-          position: Tween<Offset>(
-            begin: const Offset(0, -1),
-            end: Offset.zero,
-          ).animate(animation),
-          child: child,
-        );
-      },
+        ],
+      ),
     );
   }
 

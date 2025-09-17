@@ -5,14 +5,12 @@ import 'package:cipher_app/widgets/settings/section_modules.dart';
 import 'package:cipher_app/widgets/cipher/transposer.dart';
 
 class LayoutSettings extends StatelessWidget {
-  final ScrollController? scrollController;
   final bool includeTransposer;
   final bool includeFilters;
   final bool isPresenter;
 
   const LayoutSettings({
     super.key,
-    this.scrollController,
     this.includeTransposer = false,
     this.includeFilters = false,
     this.isPresenter = false,

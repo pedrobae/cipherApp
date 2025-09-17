@@ -129,7 +129,7 @@ class _PlaylistPresentationScreenState extends State<PlaylistPresentationScreen>
             
             return Container(
               key: _itemKeys[index],
-              margin: const EdgeInsets.only(bottom: 24),
+              margin: const EdgeInsets.only(bottom: 8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

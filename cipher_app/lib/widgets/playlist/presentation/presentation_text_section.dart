@@ -69,6 +69,7 @@ class PresentationTextSection extends StatelessWidget {
         }
 
         return Card(
+          surfaceTintColor: Theme.of(context).primaryColor,
           elevation: 2,
           margin: const EdgeInsets.symmetric(vertical: 0),
           child: Padding(

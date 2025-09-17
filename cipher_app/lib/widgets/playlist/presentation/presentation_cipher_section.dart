@@ -100,6 +100,7 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
             .toList();
 
         return Card(
+          surfaceTintColor: Theme.of(context).primaryColor,
           elevation: 2,
           margin: const EdgeInsets.symmetric(vertical: 4),
           child: Padding(
@@ -184,8 +185,8 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
                 ),
               ),
               const SizedBox(width: 6),
-            ],
-            
+              ],
+              
             if (_cipher!.musicKey.isNotEmpty)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),

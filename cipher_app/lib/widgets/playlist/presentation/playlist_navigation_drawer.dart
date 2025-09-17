@@ -60,34 +60,42 @@ class PlaylistNavigationDrawer extends StatelessWidget {
           // Items list
           Expanded(
             child: playlist.items.isEmpty
-                ? const Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.playlist_play,
-                          size: 64,
-                          color: Colors.grey,
-                        ),
-                        SizedBox(height: 16),
-                        Text(
-                          'Playlist vazia',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ],
+              ? const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.playlist_play,
+                      size: 64,
+                      color: Colors.grey,
                     ),
-                  )
-                : ListView.builder(
-                    itemCount: playlist.items.length,
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    itemBuilder: (context, index) {
-                      final item = playlist.items[index];
-                      return _buildNavigationItem(context, item, index);
-                    },
-                  ),
+                    SizedBox(height: 16),
+                    Text(
+                      'Playlist vazia',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            : ListView.separated(
+                separatorBuilder: (context, index) {
+                  return const Divider(
+                    height: 1,
+                    thickness: 1,
+                    indent: 16,
+                    endIndent: 16,
+                  );
+                },
+                itemCount: playlist.items.length,
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                itemBuilder: (context, index) {
+                  final item = playlist.items[index];
+                  return _buildNavigationItem(context, item, index);
+                },
+              ),
           ),
           
           // Footer
@@ -205,7 +213,6 @@ class PlaylistNavigationDrawer extends StatelessWidget {
         return 'Item ${item.contentId}';
     }
   }
-
 
   IconData _getIconForType(String type) {
     switch (type) {

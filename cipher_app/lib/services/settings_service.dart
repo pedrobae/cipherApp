@@ -16,8 +16,9 @@ class SettingsService {
   static const String _keyShowLyrics = 'layout_show_lyrics';
   static const String _keyShowNotes = 'layout_show_notes';
   static const String _keyShowTransitions = 'layout_show_transitions';
+  static const String _keyShowTextSections = 'layout_show_text_sections';
 
-  // Notification Settings Keys
+  // Notification Settnigs Keys
   static const String _keyNotificationsEnabled = 'notifications_enabled';
   static const String _keyReminderNotifications = 'reminder_notifications';
 
@@ -152,6 +153,16 @@ class SettingsService {
   /// Get show transitions
   static bool getShowTransitions() {
     return _preferences.getBool(_keyShowTransitions) ?? true;
+  }
+
+  /// Save show text sections
+  static Future<void> setShowTextSections(bool show) async {
+    await _preferences.setBool(_keyShowTextSections, show);
+  }
+
+  /// Get show text sections
+  static bool getShowTextSections() {
+    return _preferences.getBool(_keyShowTextSections) ?? true;
   }
 
   // === NOTIFICATION SETTINGS ===

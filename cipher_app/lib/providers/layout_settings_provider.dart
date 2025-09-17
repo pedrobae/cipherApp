@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 import '../services/settings_service.dart';
 
 class LayoutSettingsProvider extends ChangeNotifier {
@@ -12,6 +13,7 @@ class LayoutSettingsProvider extends ChangeNotifier {
   bool showLyrics = true;
   bool showAnnotations = true;
   bool showTransitions = true;
+  bool showTextSections = true;
 
   /// Initialize with stored settings
   Future<void> loadSettings() async {
@@ -24,6 +26,7 @@ class LayoutSettingsProvider extends ChangeNotifier {
     showLyrics = SettingsService.getShowLyrics();
     showAnnotations = SettingsService.getShowNotes();
     showTransitions = SettingsService.getShowTransitions();
+    showTextSections = SettingsService.getShowTextSections();
     notifyListeners();
   }
 
@@ -79,6 +82,12 @@ class LayoutSettingsProvider extends ChangeNotifier {
   void toggleTransitions() {
     showTransitions = !showTransitions;
     SettingsService.setShowTransitions(showTransitions);
+    notifyListeners();
+  }
+
+  void toggleTextSections () {
+    showTextSections = !showTextSections;
+    SettingsService.setShowTextSections(showTextSections);
     notifyListeners();
   }
 
@@ -147,7 +156,7 @@ class LayoutSettingsProvider extends ChangeNotifier {
   TextStyle get lyricTextStyle => TextStyle(
     fontFamily: fontFamily,
     fontSize: fontSize.toDouble(),
-    color: lyricColor,
+    color: Theme.of(context as BuildContext).textTheme.bodyMedium?.color,
     height: 2.2,
     letterSpacing: 0,
   );

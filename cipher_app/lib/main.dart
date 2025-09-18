@@ -19,13 +19,18 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
-    // Initialize database factory based on platform
-    if (!kIsWeb) {
+    // Check if we're in a build environment (skip database operations)
+    final isBuildMode =
+        const String.fromEnvironment('FLUTTER_BUILD_MODE') == 'true';
+
+    // Initialize database factory based on platform (skip during build)
+    if (!kIsWeb && !isBuildMode) {
       await DatabaseFactoryHelper.initialize();
     }
 
-    // Initialize settings service
-    await SettingsService.initialize();
+    if (!isBuildMode) {
+      await SettingsService.initialize();
+    }
 
     runApp(const MyApp());
   } catch (e, stackTrace) {

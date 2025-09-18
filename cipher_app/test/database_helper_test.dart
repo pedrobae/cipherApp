@@ -24,13 +24,13 @@ void main() {
       final tableNames = tables.map((t) => t['name']).toList();
 
       expect(tableNames, contains('cipher'));
-      expect(tableNames, contains('cipher_map'));
-      expect(tableNames, contains('map_content'));
+      expect(tableNames, contains('version'));
+      expect(tableNames, contains('section'));
       expect(tableNames, contains('tag'));
       expect(tableNames, contains('cipher_tags'));
       expect(tableNames, contains('user'));
       expect(tableNames, contains('playlist'));
-      expect(tableNames, contains('playlist_cipher_map'));
+      expect(tableNames, contains('playlist_version'));
       expect(tableNames, contains('app_info'));
 
       // Clean up this test
@@ -140,13 +140,17 @@ void main() {
       final dbHelper = DatabaseHelper();
       final db = await dbHelper.database;
 
-      // Check if cipher_map records were seeded
-      final cipherMaps = await db.query('cipher_map');
-      expect(cipherMaps.length, 3, reason: 'Should have 5 cipher maps seeded');
+      // Check if version records were seeded
+      final versionRecords = await db.query('version');
+      expect(
+        versionRecords.length,
+        3,
+        reason: 'Should have 5 version records seeded',
+      );
 
       // Verify Amazing Grace maps
       final amazingGraceMaps = await db.query(
-        'cipher_map',
+        'version',
         where: 'cipher_id = (SELECT id FROM cipher WHERE title = ?)',
         whereArgs: ['Amazing Grace'],
       );
@@ -172,7 +176,7 @@ void main() {
 
       // Verify How Great Thou Art map
       final howGreatMaps = await db.query(
-        'cipher_map',
+        'version',
         where: 'cipher_id = (SELECT id FROM cipher WHERE title = ?)',
         whereArgs: ['How Great Thou Art'],
       );
@@ -192,9 +196,9 @@ void main() {
       final dbHelper = DatabaseHelper();
       final db = await dbHelper.database;
 
-      // Get cipher map IDs for testing
+      // Get version IDs for testing
       final amazingGraceOriginalMap = await db.query(
-        'cipher_map',
+        'version',
         where: '''cipher_id = (SELECT id FROM cipher WHERE title = ?) 
                   AND version_name = ?''',
         whereArgs: ['Amazing Grace', 'Original'],
@@ -205,8 +209,8 @@ void main() {
 
       // Check content blocks for Amazing Grace original
       final contentBlocks = await db.query(
-        'map_content',
-        where: 'map_id = ?',
+        'section',
+        where: 'version_id = ?',
         whereArgs: [mapId],
         orderBy: 'content_code',
       );
@@ -242,7 +246,7 @@ void main() {
       final mapWithCipher = await db.rawQuery(
         '''
         SELECT cm.id, cm.version_name, c.title, c.author
-        FROM cipher_map cm
+        FROM version cm
         JOIN cipher c ON cm.cipher_id = c.id
         WHERE c.title = ?
       ''',
@@ -258,8 +262,8 @@ void main() {
       final contentWithMap = await db.rawQuery(
         '''
         SELECT mc.content_code, mc.content_text, cm.version_name, c.title
-        FROM map_content mc
-        JOIN cipher_map cm ON mc.map_id = cm.id
+        FROM section mc
+        JOIN version cm ON mc.version_id = cm.id
         JOIN cipher c ON cm.cipher_id = c.id
         WHERE c.title = ? AND mc.content_code = ?
       ''',
@@ -283,8 +287,8 @@ void main() {
       final originalVersion = await db.rawQuery(
         '''
         SELECT cm.id, mc.content_text
-        FROM cipher_map cm
-        JOIN map_content mc ON cm.id = mc.map_id
+        FROM version cm
+        JOIN section mc ON cm.id = mc.version_id
         WHERE cm.cipher_id = (SELECT id FROM cipher WHERE title = ?)
           AND cm.version_name = ?
           AND mc.content_code = ?
@@ -295,8 +299,8 @@ void main() {
       final transposedVersion = await db.rawQuery(
         '''
         SELECT cm.id, mc.content_text
-        FROM cipher_map cm
-        JOIN map_content mc ON cm.id = mc.map_id
+        FROM version cm
+        JOIN section mc ON cm.id = mc.version_id
         WHERE cm.cipher_id = (SELECT id FROM cipher WHERE title = ?)
           AND cm.version_name = ?
           AND mc.content_code = ?
@@ -346,15 +350,15 @@ void main() {
       final dbHelper = DatabaseHelper();
       final db = await dbHelper.database;
 
-      // Get How Great Thou Art map and its structure
-      final mapData = await db.query(
-        'cipher_map',
+      // Get How Great Thou Art version and its structure
+      final versionData = await db.query(
+        'version',
         where: 'cipher_id = (SELECT id FROM cipher WHERE title = ?)',
         whereArgs: ['How Great Thou Art'],
       );
 
-      final songStructure = mapData.first['song_structure'] as String;
-      final mapId = mapData.first['id'] as int;
+      final songStructure = versionData.first['song_structure'] as String;
+      final versionId = versionData.first['id'] as int;
 
       // Parse song structure
       final structureParts = songStructure.split(',');
@@ -362,10 +366,10 @@ void main() {
 
       // Get available content types
       final availableContent = await db.query(
-        'map_content',
+        'section',
         columns: ['content_code'],
-        where: 'map_id = ?',
-        whereArgs: [mapId],
+        where: 'version_id = ?',
+        whereArgs: [versionId],
       );
 
       final availableTypes = availableContent

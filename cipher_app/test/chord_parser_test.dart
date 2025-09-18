@@ -6,7 +6,8 @@ void main() {
   group('parseChordPro', () {
     test('parses ChordPro text into Song object', () {
       // Arrange
-      const chordProText = '[C]Amazing grace, how [G]sweet the sound\nThat [Am]saved a wretch like [F]me';
+      const chordProText =
+          '[C]Amazing grace, how [G]sweet the sound\nThat [Am]saved a wretch like [F]me';
 
       // Act
       final song = parseChordPro(chordProText);
@@ -19,12 +20,28 @@ void main() {
 
       expect(song.chordsMap, {
         0: [
-          isA<Chord>().having((c) => c.name, 'name', 'C').having((c) => c.lyricsBefore, 'lyricsBefore', ''),
-          isA<Chord>().having((c) => c.name, 'name', 'G').having((c) => c.lyricsBefore, 'lyricsBefore', 'Amazing grace, how'),
+          isA<Chord>()
+              .having((c) => c.name, 'name', 'C')
+              .having((c) => c.lyricsBefore, 'lyricsBefore', ''),
+          isA<Chord>()
+              .having((c) => c.name, 'name', 'G')
+              .having(
+                (c) => c.lyricsBefore,
+                'lyricsBefore',
+                'Amazing grace, how ',
+              ),
         ],
         1: [
-          isA<Chord>().having((c) => c.name, 'name', 'Am').having((c) => c.lyricsBefore, 'lyricsBefore', 'That'),
-          isA<Chord>().having((c) => c.name, 'name', 'F').having((c) => c.lyricsBefore, 'lyricsBefore', 'saved a wretch like'),
+          isA<Chord>()
+              .having((c) => c.name, 'name', 'Am')
+              .having((c) => c.lyricsBefore, 'lyricsBefore', 'That '),
+          isA<Chord>()
+              .having((c) => c.name, 'name', 'F')
+              .having(
+                (c) => c.lyricsBefore,
+                'lyricsBefore',
+                'That saved a wretch like ',
+              ),
         ],
       });
     });
@@ -43,7 +60,8 @@ void main() {
 
     test('handles lines without chords', () {
       // Arrange
-      const chordProText = 'Amazing grace, how sweet the sound\nThat saved a wretch like me';
+      const chordProText =
+          'Amazing grace, how sweet the sound\nThat saved a wretch like me';
 
       // Act
       final song = parseChordPro(chordProText);
@@ -65,16 +83,26 @@ void main() {
       final song = parseChordPro(chordProText);
 
       // Assert
-      expect(song.linesMap, {
-        0: 'Amazing grace, how sweet the sound',
-      });
+      expect(song.linesMap, {0: 'Amazing grace, how sweet the sound'});
 
       expect(song.chordsMap, {
         0: [
-          isA<Chord>().having((c) => c.name, 'name', 'C').having((c) => c.lyricsBefore, 'lyricsBefore', ''),
-          isA<Chord>().having((c) => c.name, 'name', 'G').having((c) => c.lyricsBefore, 'lyricsBefore', ''),
-          isA<Chord>().having((c) => c.name, 'name', 'Am').having((c) => c.lyricsBefore, 'lyricsBefore', ''),
-          isA<Chord>().having((c) => c.name, 'name', 'F').having((c) => c.lyricsBefore, 'lyricsBefore', 'Amazing grace, how'),
+          isA<Chord>()
+              .having((c) => c.name, 'name', 'C')
+              .having((c) => c.lyricsBefore, 'lyricsBefore', ''),
+          isA<Chord>()
+              .having((c) => c.name, 'name', 'G')
+              .having((c) => c.lyricsBefore, 'lyricsBefore', ''),
+          isA<Chord>()
+              .having((c) => c.name, 'name', 'Am')
+              .having((c) => c.lyricsBefore, 'lyricsBefore', ''),
+          isA<Chord>()
+              .having((c) => c.name, 'name', 'F')
+              .having(
+                (c) => c.lyricsBefore,
+                'lyricsBefore',
+                'Amazing grace, how ',
+              ),
         ],
       });
     });
@@ -87,16 +115,22 @@ void main() {
       final song = parseChordPro(chordProText);
 
       // Assert
-      expect(song.linesMap, {
-        0: '',
-      });
+      expect(song.linesMap, {0: ''});
 
       expect(song.chordsMap, {
         0: [
-          isA<Chord>().having((c) => c.name, 'name', 'C').having((c) => c.lyricsBefore, 'lyricsBefore', ''),
-          isA<Chord>().having((c) => c.name, 'name', 'G').having((c) => c.lyricsBefore, 'lyricsBefore', ''),
-          isA<Chord>().having((c) => c.name, 'name', 'Am').having((c) => c.lyricsBefore, 'lyricsBefore', ''),
-          isA<Chord>().having((c) => c.name, 'name', 'F').having((c) => c.lyricsBefore, 'lyricsBefore', ''),
+          isA<Chord>()
+              .having((c) => c.name, 'name', 'C')
+              .having((c) => c.lyricsBefore, 'lyricsBefore', ''),
+          isA<Chord>()
+              .having((c) => c.name, 'name', 'G')
+              .having((c) => c.lyricsBefore, 'lyricsBefore', ''),
+          isA<Chord>()
+              .having((c) => c.name, 'name', 'Am')
+              .having((c) => c.lyricsBefore, 'lyricsBefore', ''),
+          isA<Chord>()
+              .having((c) => c.name, 'name', 'F')
+              .having((c) => c.lyricsBefore, 'lyricsBefore', ''),
         ],
       });
     });
@@ -109,16 +143,22 @@ void main() {
       final song = parseChordPro(chordProText);
 
       // Assert
-      expect(song.linesMap, {
-        0: '',
-      });
+      expect(song.linesMap, {0: ''});
 
       expect(song.chordsMap, {
         0: [
-          isA<Chord>().having((c) => c.name, 'name', 'C').having((c) => c.lyricsBefore, 'lyricsBefore', ''),
-          isA<Chord>().having((c) => c.name, 'name', 'G').having((c) => c.lyricsBefore, 'lyricsBefore', ''),
-          isA<Chord>().having((c) => c.name, 'name', 'Am').having((c) => c.lyricsBefore, 'lyricsBefore', ''),
-          isA<Chord>().having((c) => c.name, 'name', 'F').having((c) => c.lyricsBefore, 'lyricsBefore', ''),
+          isA<Chord>()
+              .having((c) => c.name, 'name', 'C')
+              .having((c) => c.lyricsBefore, 'lyricsBefore', ''),
+          isA<Chord>()
+              .having((c) => c.name, 'name', 'G')
+              .having((c) => c.lyricsBefore, 'lyricsBefore', ''),
+          isA<Chord>()
+              .having((c) => c.name, 'name', 'Am')
+              .having((c) => c.lyricsBefore, 'lyricsBefore', ''),
+          isA<Chord>()
+              .having((c) => c.name, 'name', 'F')
+              .having((c) => c.lyricsBefore, 'lyricsBefore', ''),
         ],
       });
     });
@@ -131,20 +171,21 @@ void main() {
       final song = parseChordPro(chordProText);
 
       // Assert
-      expect(song.linesMap, {
-        0: 'Amazing grace, how [Gsweet the sound',
-      });
+      expect(song.linesMap, {0: 'Amazing grace, how [Gsweet the sound'});
 
       expect(song.chordsMap, {
         0: [
-          isA<Chord>().having((c) => c.name, 'name', 'C').having((c) => c.lyricsBefore, 'lyricsBefore', ''),
+          isA<Chord>()
+              .having((c) => c.name, 'name', 'C')
+              .having((c) => c.lyricsBefore, 'lyricsBefore', ''),
         ],
       });
     });
 
     test('handles lines with special characters', () {
       // Arrange
-      const chordProText = '[C]Amazing grace, how [G]sweet the sound! @#\$%^&*()';
+      const chordProText =
+          '[C]Amazing grace, how [G]sweet the sound! @#\$%^&*()';
 
       // Act
       final song = parseChordPro(chordProText);
@@ -156,8 +197,16 @@ void main() {
 
       expect(song.chordsMap, {
         0: [
-          isA<Chord>().having((c) => c.name, 'name', 'C').having((c) => c.lyricsBefore, 'lyricsBefore', ''),
-          isA<Chord>().having((c) => c.name, 'name', 'G').having((c) => c.lyricsBefore, 'lyricsBefore', 'Amazing grace, how'),
+          isA<Chord>()
+              .having((c) => c.name, 'name', 'C')
+              .having((c) => c.lyricsBefore, 'lyricsBefore', ''),
+          isA<Chord>()
+              .having((c) => c.name, 'name', 'G')
+              .having(
+                (c) => c.lyricsBefore,
+                'lyricsBefore',
+                'Amazing grace, how ',
+              ),
         ],
       });
     });

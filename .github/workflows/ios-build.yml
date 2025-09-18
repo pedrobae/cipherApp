@@ -1,0 +1,76 @@
+name: Build iOS App
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]  # Trigger on version tags
+  workflow_dispatch:  # Manual trigger
+    inputs:
+      build_type:
+        description: 'Build type'
+        required: true
+        default: 'debug'
+        type: choice
+        options:
+          - debug
+          - release
+
+jobs:
+  build-ios:
+    name: Build iOS App
+    runs-on: macos-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.5'
+          channel: 'stable'
+          
+      - name: Get dependencies
+        working-directory: ./cipher_app
+        run: flutter pub get
+        
+      - name: Analyze code
+        working-directory: ./cipher_app
+        run: flutter analyze --fatal-infos
+        
+      - name: Run tests
+        working-directory: ./cipher_app
+        run: flutter test
+        
+      - name: Build iOS (no codesign)
+        working-directory: ./cipher_app
+        run: |
+          flutter build ios --no-codesign --${{ github.event.inputs.build_type || 'debug' }}
+          
+      - name: Create unsigned IPA
+        working-directory: ./cipher_app
+        run: |
+          # Create Payload directory
+          mkdir -p Payload
+          
+          # Copy Runner.app to Payload
+          cp -r build/ios/iphoneos/Runner.app Payload/
+          
+          # Create IPA
+          zip -r CipherApp-unsigned-${{ github.run_number }}.ipa Payload/
+          
+      - name: Upload iOS build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build-${{ github.run_number }}
+          path: cipher_app/CipherApp-unsigned-*.ipa
+          retention-days: 30
+          
+      - name: Create Release (on tags)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: cipher_app/CipherApp-unsigned-*.ipa
+          draft: false
+          prerelease: false
+          generate_release_notes: true

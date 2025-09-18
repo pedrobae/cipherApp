@@ -45,7 +45,7 @@ jobs:
       - name: Build iOS (no codesign)
         working-directory: ./cipher_app
         run: |
-          flutter build ios --no-codesign --${{ github.event.inputs.build_type || 'debug' }}
+          flutter build ios --no-codesign --debug --verbose
           
       - name: Create unsigned IPA
         working-directory: ./cipher_app
@@ -56,21 +56,25 @@ jobs:
           # Copy Runner.app to Payload
           cp -r build/ios/iphoneos/Runner.app Payload/
           
+          # List contents for debugging
+          echo "Contents of Runner.app:"
+          ls -la Payload/Runner.app/
+          
           # Create IPA
-          zip -r CipherApp-unsigned-${{ github.run_number }}.ipa Payload/
+          zip -r CipherApp-debug-${{ github.run_number }}.ipa Payload/
           
       - name: Upload iOS build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ios-build-${{ github.run_number }}
-          path: cipher_app/CipherApp-unsigned-*.ipa
+          path: cipher_app/CipherApp-debug-*.ipa
           retention-days: 30
           
       - name: Create Release (on tags)
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
-          files: cipher_app/CipherApp-unsigned-*.ipa
+          files: cipher_app/CipherApp-debug-*.ipa
           draft: false
           prerelease: false
           generate_release_notes: true

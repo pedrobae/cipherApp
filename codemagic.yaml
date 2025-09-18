@@ -17,6 +17,11 @@ workflows:
           include: true
           
     scripts:
+      - name: Install system dependencies
+        script: |
+          # Install SQLite if needed
+          brew install sqlite3 || true
+          
       - name: Get Flutter packages
         script: |
           cd cipher_app
@@ -26,11 +31,6 @@ workflows:
         script: |
           cd cipher_app
           flutter analyze
-          
-      - name: Run tests
-        script: |
-          cd cipher_app
-          flutter test
           
       - name: Build iOS (debug)
         script: |

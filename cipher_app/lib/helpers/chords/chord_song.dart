@@ -17,21 +17,35 @@ class Song {
 
 class Chord {
   final String name; // e.g., "C", "Am"
-  double xOffset; // X-axis offset for alignment
+  double xOffset;
+  double yOffset;
   final String lyricsBefore; // Lyrics before the chord
 
-  Chord(this.name, this.lyricsBefore, [this.xOffset = 0.0]);
+  Chord(this.name, this.lyricsBefore, [this.xOffset = 0.0, this.yOffset = 0.0]);
 
-  double calculateOffsetForChord(TextStyle textStyle, double lineWidth) {
+  (double, double) calculateOffsetForChord(
+    TextStyle textStyle,
+    double lineWidth,
+  ) {
     final textPainter = TextPainter(
       text: TextSpan(text: lyricsBefore, style: textStyle),
       textDirection: TextDirection.ltr,
-    )..layout(maxWidth: lineWidth, minWidth: 0);
+      maxLines: null,
+    )..layout(maxWidth: double.infinity, minWidth: 0);
 
-    return textPainter.width;
+    if (textPainter.width > lineWidth) {
+      return (textPainter.width % lineWidth, textPainter.height * 0.5);
+    }
+
+    return (textPainter.width, -textPainter.height * 0.5);
   }
 
   void saveOffsetForChord(TextStyle textStyle, double lineWidth) {
-    xOffset = calculateOffsetForChord(textStyle, lineWidth);
+    final (newXOffset, newYOffset) = calculateOffsetForChord(
+      textStyle,
+      lineWidth,
+    );
+    xOffset = newXOffset;
+    yOffset = newYOffset;
   }
 }

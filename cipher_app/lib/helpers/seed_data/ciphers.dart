@@ -23,25 +23,5 @@ Future<Map<String, int>> insertCiphers(Transaction txn) async {
     'updated_at': now,
   });
 
-  await txn.insert('cipher', {
-    'title': 'Holy Holy Holy',
-    'author': 'Reginald Heber',
-    'tempo': 'Medium',
-    'music_key': 'F',
-    'language': 'en',
-    'created_at': now,
-    'updated_at': now,
-  });
-
-  await txn.insert('cipher', {
-    'title': 'Be Thou My Vision',
-    'author': 'Eleanor Hull',
-    'tempo': 'Slow',
-    'music_key': 'C',
-    'language': 'en',
-    'created_at': now,
-    'updated_at': now,
-  });
-
   return {'amazing': hymn1Id, 'howgreat': hymn2Id};
 }

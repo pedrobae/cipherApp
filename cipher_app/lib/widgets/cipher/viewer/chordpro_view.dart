@@ -37,6 +37,9 @@ class ChordProView extends StatelessWidget {
             lyricStyle: ls.lyricTextStyle,
           ),
         );
+        sectionChildren.add(
+          SizedBox(height: ls.lyricTextStyle.fontSize! * 0.8),
+        ); // Spacing between broken lines
       }
     } else if (ls.showLyrics) {
       for (int i = 0; i < parsedSong.linesMap.length; i++) {

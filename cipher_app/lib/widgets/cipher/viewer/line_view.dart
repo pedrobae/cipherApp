@@ -23,22 +23,18 @@ class LineView extends StatelessWidget {
   Widget build(BuildContext context) {
     final settings = Provider.of<LayoutSettingsProvider>(context);
     final transposer = ChordTransposer(
-                            originalKey: settings.originalKey, 
-                            transposeValue: settings.transposeAmount
-                          );
-    
+      originalKey: settings.originalKey,
+      transposeValue: settings.transposeAmount,
+    );
+
     return LayoutBuilder(
       builder: (context, constraints) {
         // Calculate offsets with the actual available width
         for (var chord in chords) {
           chord.saveOffsetForChord(lyricStyle, constraints.maxWidth);
         }
-        // Calculate yOffset dynamically based on chordStyle
-        final textPainter = TextPainter(
-          text: TextSpan(text: 'A', style: chordStyle),
-          textDirection: TextDirection.ltr,
-        )..layout();
-        final double yOffset = -textPainter.height / 2;
+        double xOffset;
+        double yOffset;
 
         return Stack(
           children: [
@@ -47,14 +43,17 @@ class LineView extends StatelessWidget {
               child: Stack(
                 clipBehavior: Clip.none,
                 children: chords.map((chord) {
-                  final String chordToShow = settings.transposeAmount != 0 ? transposer.transpose(chord.name) : chord.name;
+                  final String chordToShow = settings.transposeAmount != 0
+                      ? transposer.transpose(chord.name)
+                      : chord.name;
+                  (xOffset, yOffset) = chord.calculateOffsetForChord(
+                    lyricStyle,
+                    constraints.maxWidth,
+                  );
                   return Positioned(
-                    left: chord.xOffset,
+                    left: xOffset,
                     top: yOffset,
-                    child: Text(
-                      chordToShow, 
-                      style: chordStyle,
-                      ),
+                    child: Text(chordToShow, style: chordStyle),
                   );
                 }).toList(),
               ),

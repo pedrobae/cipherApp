@@ -38,7 +38,7 @@ jobs:
         
       - name: Build web app
         working-directory: ./cipher_app
-        run: flutter build web --release --base-href /cipherApp/cipher_app/
+        run: flutter build web --release --base-href /cipherApp/
         
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

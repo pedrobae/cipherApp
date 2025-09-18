@@ -28,4 +28,4 @@ workflows:
           flutter build ios --simulator --debug
 
     artifacts:
-      - build/ios/iphonesimulator/Runner.app
+      - cipher_app/build/ios/iphonesimulator/Runner.app

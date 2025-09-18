@@ -32,8 +32,17 @@ Song parseChordPro(String? chordProText) {
 
         String lyricsBefore = plainLyrics.substring(0, plainIndex);
 
+        // Find the next word after the chord
+        int nextWordStart = plainIndex;
+        int nextWordEnd = plainIndex;
+        while (nextWordEnd < plainLyrics.length &&
+            plainLyrics[nextWordEnd] != ' ') {
+          nextWordEnd++;
+        }
+        String wordAfter = plainLyrics.substring(nextWordStart, nextWordEnd);
+
         // Add the chord to the list
-        chords.add(Chord(chordName, lyricsBefore));
+        chords.add(Chord(chordName, lyricsBefore, wordAfter));
       }
 
       // Add the list of chords to the map

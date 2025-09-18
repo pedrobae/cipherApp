@@ -19,9 +19,16 @@ class Chord {
   final String name; // e.g., "C", "Am"
   double xOffset;
   double yOffset;
-  final String lyricsBefore; // Lyrics before the chord
+  final String lyricsBefore;
+  final String wordAfter;
 
-  Chord(this.name, this.lyricsBefore, [this.xOffset = 0.0, this.yOffset = 0.0]);
+  Chord(
+    this.name,
+    this.lyricsBefore,
+    this.wordAfter, [
+    this.xOffset = 0.0,
+    this.yOffset = 0.0,
+  ]);
 
   (double, double) calculateOffsetForChord(
     TextStyle textStyle,
@@ -33,10 +40,17 @@ class Chord {
       maxLines: null,
     )..layout(maxWidth: double.infinity, minWidth: 0);
 
+    final nextTextPainter = TextPainter(
+      text: TextSpan(text: wordAfter, style: textStyle),
+      maxLines: null,
+      textDirection: TextDirection.ltr,
+    )..layout(maxWidth: double.infinity, minWidth: 0);
+
     if (textPainter.width > lineWidth) {
       return (textPainter.width % lineWidth, textPainter.height * 0.5);
+    } else if (nextTextPainter.width > (lineWidth - textPainter.width)) {
+      return (0, textPainter.height * 0.5);
     }
-
     return (textPainter.width, -textPainter.height * 0.5);
   }
 

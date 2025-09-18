@@ -8,6 +8,7 @@ workflows:
       flutter: stable
       xcode: latest
       cocoapods: default
+      ios-signing: false  # No code signing for simulator builds
       
     triggering:
       events:

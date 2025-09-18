@@ -44,8 +44,6 @@ jobs:
         
       - name: Build iOS (no codesign)
         working-directory: ./cipher_app
-        env:
-          FLUTTER_BUILD_MODE: true  # Environment variable to skip database init during build
         run: |
           flutter build ios --no-codesign --debug --verbose
           

@@ -1,9 +1,6 @@
 name: Build iOS App
 
 on:
-  push:
-    branches: [ main ]
-    tags: [ 'v*' ]  # Trigger on version tags
   workflow_dispatch:  # Manual trigger
     inputs:
       build_type:

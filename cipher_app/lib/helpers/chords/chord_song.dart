@@ -35,25 +35,58 @@ class Chord {
     TextStyle textStyle,
     double lineWidth,
   ) {
-    final previousTextPainter = TextPainter(
-      text: TextSpan(text: lyricsBefore, style: textStyle),
-      textDirection: TextDirection.ltr,
-      maxLines: null,
-    )..layout(maxWidth: double.infinity, minWidth: 0);
+    /// GOES THROUGH EACH CHARACTER CHECKING THE LAST WORD FOR LINE BREAKS
+    /// SAVES THE SAME LINE LYRICS BEFORE
+    String sameLineLyricsBefore = '';
+    String wordBefore = '';
+    int lineNumber = 0;
+    for (int i = 0; i < lyricsBefore.length; i++) {
+      String character = lyricsBefore[i];
+      if (character == ' ') {
+        final previousPiece = TextPainter(
+          text: TextSpan(text: sameLineLyricsBefore, style: textStyle),
+          textDirection: TextDirection.ltr,
+          maxLines: 1,
+        )..layout(maxWidth: double.infinity, minWidth: 0);
 
-    final nextTextPainter = TextPainter(
-      text: TextSpan(text: wordAfter, style: textStyle),
+        if (previousPiece.width > lineWidth) {
+          sameLineLyricsBefore = '$wordBefore ';
+          lineNumber++;
+        } else {
+          sameLineLyricsBefore = '$sameLineLyricsBefore$character';
+        }
+        wordBefore = '';
+      } else {
+        wordBefore = '$wordBefore$character';
+        sameLineLyricsBefore = '$sameLineLyricsBefore$character';
+      }
+    }
+
+    /// TEXT PAINTER FOR THE SAME LINE LYRICS BEFORE
+    final sameLineTextPainter = TextPainter(
+      text: TextSpan(text: sameLineLyricsBefore, style: textStyle),
+      textDirection: TextDirection.ltr,
       maxLines: 1,
-      textDirection: TextDirection.ltr,
     )..layout(maxWidth: double.infinity, minWidth: 0);
 
-    final double lineHeight = nextTextPainter.height;
+    final TextPainter nextWordPainter = TextPainter(
+      text: TextSpan(text: wordAfter, style: textStyle),
+      textDirection: TextDirection.ltr,
+      maxLines: 1,
+    )..layout(maxWidth: double.infinity, minWidth: 0);
+    final double lineHeight = nextWordPainter.height;
 
-    return (
-      previousTextPainter.width % lineWidth,
-      lineHeight * offset +
-          lineHeight * (previousTextPainter.width ~/ lineWidth),
-    );
+    double xOffset = sameLineTextPainter.width % lineWidth;
+
+    /// CHECK IF NEXT WORD LINE BREAKS
+    if (nextWordPainter.width > lineWidth - sameLineTextPainter.width) {
+      xOffset = 0;
+      lineNumber++;
+    }
+
+    double yOffset = lineHeight * (lineNumber + offset);
+
+    return (xOffset, yOffset);
   }
 
   void saveOffsetForChord(TextStyle textStyle, double lineWidth) {

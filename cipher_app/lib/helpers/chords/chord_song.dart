@@ -21,6 +21,7 @@ class Chord {
   double yOffset;
   final String lyricsBefore;
   final String wordAfter;
+  static double offset = -0.4;
 
   Chord(
     this.name,
@@ -34,7 +35,7 @@ class Chord {
     TextStyle textStyle,
     double lineWidth,
   ) {
-    final textPainter = TextPainter(
+    final previousTextPainter = TextPainter(
       text: TextSpan(text: lyricsBefore, style: textStyle),
       textDirection: TextDirection.ltr,
       maxLines: null,
@@ -42,16 +43,17 @@ class Chord {
 
     final nextTextPainter = TextPainter(
       text: TextSpan(text: wordAfter, style: textStyle),
-      maxLines: null,
+      maxLines: 1,
       textDirection: TextDirection.ltr,
     )..layout(maxWidth: double.infinity, minWidth: 0);
 
-    if (textPainter.width > lineWidth) {
-      return (textPainter.width % lineWidth, textPainter.height * 0.5);
-    } else if (nextTextPainter.width > (lineWidth - textPainter.width)) {
-      return (0, textPainter.height * 0.5);
-    }
-    return (textPainter.width, -textPainter.height * 0.5);
+    final double lineHeight = nextTextPainter.height;
+
+    return (
+      previousTextPainter.width % lineWidth,
+      lineHeight * offset +
+          lineHeight * (previousTextPainter.width ~/ lineWidth),
+    );
   }
 
   void saveOffsetForChord(TextStyle textStyle, double lineWidth) {

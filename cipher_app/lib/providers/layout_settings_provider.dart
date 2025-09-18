@@ -84,7 +84,7 @@ class LayoutSettingsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void toggleTextSections () {
+  void toggleTextSections() {
     showTextSections = !showTextSections;
     SettingsService.setShowTextSections(showTextSections);
     notifyListeners();
@@ -148,14 +148,14 @@ class LayoutSettingsProvider extends ChangeNotifier {
     fontSize: fontSize.toDouble(),
     color: chordColor,
     fontWeight: FontWeight.bold,
-    height: 2.2,
+    height: 2,
     letterSpacing: 0,
   );
 
   TextStyle get lyricTextStyle => TextStyle(
     fontFamily: fontFamily,
     fontSize: fontSize.toDouble(),
-    height: 2.2,
+    height: 2,
     letterSpacing: 0,
   );
 }

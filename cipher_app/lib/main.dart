@@ -30,8 +30,10 @@ void main() async {
     runApp(const MyApp());
   } catch (e, stackTrace) {
     // If initialization fails, show error screen
-    print('Initialization error: $e');
-    print('Stack trace: $stackTrace');
+    if (kDebugMode) {
+      print('Initialization error: $e');
+      print('Stack trace: $stackTrace');
+    }
     runApp(ErrorApp(error: e.toString()));
   }
 }
@@ -39,9 +41,9 @@ void main() async {
 // Error app to show when initialization fails
 class ErrorApp extends StatelessWidget {
   final String error;
-  
+
   const ErrorApp({super.key, required this.error});
-  
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -54,11 +56,7 @@ class ErrorApp extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
-                  Icons.error_outline,
-                  color: Colors.red,
-                  size: 64,
-                ),
+                const Icon(Icons.error_outline, color: Colors.red, size: 64),
                 const SizedBox(height: 16),
                 const Text(
                   'Erro de Inicialização',

@@ -20,12 +20,12 @@ class TagChip extends StatelessWidget {
           StringUtils.toTitleCase(tag),
           style: theme.textTheme.labelSmall?.copyWith(
             color: tagColors.textColor,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w600,
           ),
         ),
         backgroundColor: tagColors.backgroundColor,
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        side: BorderSide(color: tagColors.borderColor, width: 1),
+        side: BorderSide(color: tagColors.borderColor, width: 1.2),
       ),
     );
   }

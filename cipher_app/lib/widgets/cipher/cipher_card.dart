@@ -25,22 +25,26 @@ class CipherCard extends StatelessWidget {
       elevation: 4,
       child: ExpansionTile(
         shape: Border(),
+        tilePadding: EdgeInsets.symmetric(horizontal: 8),
         childrenPadding: EdgeInsets.only(left: 8, right: 8, bottom: 8),
+        showTrailingIcon: false,
         key: PageStorageKey(cipher.id),
         initiallyExpanded: isExpanded,
         onExpansionChanged: (expanded) {
           if (expanded) onExpand;
         },
         title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
+              flex: 1,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 4,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Wrap(
+                    alignment: WrapAlignment.spaceBetween,
                     crossAxisAlignment: WrapCrossAlignment.end,
-                    spacing: 10,
                     children: [
                       Text(
                         cipher.title,
@@ -50,14 +54,14 @@ class CipherCard extends StatelessWidget {
                     ],
                   ),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Tom: ${cipher.musicKey}'),
-                      const SizedBox(width: 8),
                       Text('Tempo: ${cipher.tempo}'),
                     ],
                   ),
-                  const SizedBox(height: 8),
                   Wrap(
+                    alignment: WrapAlignment.center,
                     spacing: 4,
                     runSpacing: 4,
                     children: cipher.tags
@@ -73,6 +77,8 @@ class CipherCard extends StatelessWidget {
           Column(
             spacing: 4,
             children: [
+              Divider(height: 4, thickness: 1.5),
+              SizedBox(height: 2),
               GestureDetector(
                 onTap: () => Navigator.push(
                   context,
@@ -87,7 +93,14 @@ class CipherCard extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: Theme.of(context).colorScheme.secondaryContainer,
+                    boxShadow: [
+                      BoxShadow(
+                        offset: Offset(0, 1),
+                        color: Theme.of(context).shadowColor,
+                        blurRadius: 1,
+                      ),
+                    ],
+                    color: Theme.of(context).colorScheme.primaryContainer,
                   ),
                   padding: EdgeInsets.symmetric(horizontal: 8),
                   child: Row(
@@ -101,7 +114,7 @@ class CipherCard extends StatelessWidget {
                             ?.copyWith(
                               color: Theme.of(
                                 context,
-                              ).colorScheme.onTertiaryContainer,
+                              ).colorScheme.onPrimaryContainer,
                               fontWeight: FontWeight.w500,
                             ),
                       ),
@@ -115,6 +128,13 @@ class CipherCard extends StatelessWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          offset: Offset(0, 1),
+                          color: Theme.of(context).primaryColor,
+                          blurRadius: 1,
+                        ),
+                      ],
                       color: Theme.of(context).colorScheme.surfaceContainer,
                     ),
                     padding: EdgeInsets.symmetric(horizontal: 8),
@@ -126,9 +146,7 @@ class CipherCard extends StatelessWidget {
                           version.versionName!,
                           style: Theme.of(context).textTheme.titleMedium
                               ?.copyWith(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
+                                color: Theme.of(context).colorScheme.onSurface,
                                 fontWeight: FontWeight.w500,
                               ),
                         ),

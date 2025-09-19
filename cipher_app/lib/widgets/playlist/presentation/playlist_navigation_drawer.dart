@@ -40,11 +40,7 @@ class PlaylistNavigationDrawer extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(
-                    Icons.list,
-                    color: Colors.white,
-                    size: 32,
-                  ),
+                  const Icon(Icons.list, color: Colors.white, size: 32),
                   const SizedBox(height: 12),
                   Text(
                     playlist.name,
@@ -57,48 +53,41 @@ class PlaylistNavigationDrawer extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // Items list
           Expanded(
             child: playlist.items.isEmpty
-              ? const Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.playlist_play,
-                      size: 64,
-                      color: Colors.grey,
+                ? const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.playlist_play, size: 64, color: Colors.grey),
+                        SizedBox(height: 16),
+                        Text(
+                          'Playlist vazia',
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                      ],
                     ),
-                    SizedBox(height: 16),
-                    Text(
-                      'Playlist vazia',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            : ListView.separated(
-                separatorBuilder: (context, index) {
-                  return const Divider(
-                    height: 1,
-                    thickness: 1,
-                    indent: 16,
-                    endIndent: 16,
-                  );
-                },
-                itemCount: playlist.items.length,
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                itemBuilder: (context, index) {
-                  final item = playlist.items[index];
-                  return _buildNavigationItem(context, item, index);
-                },
-              ),
+                  )
+                : ListView.separated(
+                    separatorBuilder: (context, index) {
+                      return const Divider(
+                        height: 1,
+                        thickness: 1,
+                        indent: 16,
+                        endIndent: 16,
+                      );
+                    },
+                    itemCount: playlist.items.length,
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    itemBuilder: (context, index) {
+                      final item = playlist.items[index];
+                      return _buildNavigationItem(context, item, index);
+                    },
+                  ),
           ),
-          
+
           // Footer
           Container(
             padding: const EdgeInsets.all(16),
@@ -118,7 +107,8 @@ class PlaylistNavigationDrawer extends StatelessWidget {
                     return IconButton(
                       icon: const Icon(Icons.visibility),
                       tooltip: 'Configurações de Layout',
-                      onPressed: () => _showLayoutSettings(context, layoutProvider),
+                      onPressed: () =>
+                          _showLayoutSettings(context, layoutProvider),
                     );
                   },
                 ),
@@ -130,14 +120,18 @@ class PlaylistNavigationDrawer extends StatelessWidget {
     );
   }
 
-  Widget _buildNavigationItem(BuildContext context, PlaylistItem item, int index) {
+  Widget _buildNavigationItem(
+    BuildContext context,
+    PlaylistItem item,
+    int index,
+  ) {
     return Consumer2<CipherProvider, TextSectionProvider>(
       builder: (context, cipherProvider, textSectionProvider, child) {
         return FutureBuilder<String>(
           future: _getItemTitle(item, cipherProvider, textSectionProvider),
           builder: (context, snapshot) {
             final title = snapshot.data ?? 'ERROR GETTING CIPHER TITLE';
-            
+
             return ListTile(
               leading: Container(
                 width: 32,
@@ -158,9 +152,7 @@ class PlaylistNavigationDrawer extends StatelessWidget {
               ),
               title: Text(
                 title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w500,
-                ),
+                style: const TextStyle(fontWeight: FontWeight.w500),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -186,7 +178,10 @@ class PlaylistNavigationDrawer extends StatelessWidget {
                 Navigator.pop(context); // Close drawer
                 onItemSelected(index);
               },
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 4,
+              ),
             );
           },
         );
@@ -194,15 +189,21 @@ class PlaylistNavigationDrawer extends StatelessWidget {
     );
   }
 
-  Future<String> _getItemTitle(PlaylistItem item, CipherProvider cipherProvider, TextSectionProvider textSectionProvider) async {
+  Future<String> _getItemTitle(
+    PlaylistItem item,
+    CipherProvider cipherProvider,
+    TextSectionProvider textSectionProvider,
+  ) async {
     switch (item.type) {
       case 'cipher_version':
-        final cipher = await cipherProvider.getCipherVersionById(item.contentId);
+        final cipher = await cipherProvider.getCipherVersionById(
+          item.contentId,
+        );
         if (cipher != null) {
           return cipher.title;
         }
         return 'Cifra ${item.contentId}';
-        
+
       case 'text_section':
         await textSectionProvider.loadTextSection(item.contentId);
         final textSection = textSectionProvider.textSections[item.contentId];
@@ -237,9 +238,11 @@ class PlaylistNavigationDrawer extends StatelessWidget {
     }
   }
 
-  void _showLayoutSettings(BuildContext context, LayoutSettingsProvider layoutProvider) {
+  void _showLayoutSettings(
+    BuildContext context,
+    LayoutSettingsProvider layoutProvider,
+  ) {
     showModalBottomSheet(
-      
       context: context,
       isScrollControlled: true, // Allows the modal to expand based on content
       shape: const RoundedRectangleBorder(
@@ -251,10 +254,7 @@ class PlaylistNavigationDrawer extends StatelessWidget {
           child: SingleChildScrollView(
             child: Align(
               alignment: AlignmentGeometry.center,
-              child: LayoutSettings(
-                  includeFilters: true,
-                  isPresenter: true,
-                ),
+              child: LayoutSettings(includeFilters: true, isPresenter: true),
             ),
           ),
         );

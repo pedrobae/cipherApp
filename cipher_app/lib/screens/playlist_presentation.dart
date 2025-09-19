@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import '../models/domain/playlist/playlist_item.dart';
-import '../providers/playlist_provider.dart';
-import '../widgets/playlist/presentation/presentation_cipher_section.dart';
-import '../widgets/playlist/presentation/presentation_text_section.dart';
-import '../widgets/playlist/presentation/playlist_navigation_drawer.dart';
+import 'package:cipher_app/models/domain/playlist/playlist_item.dart';
+import 'package:cipher_app/providers/playlist_provider.dart';
+import 'package:cipher_app/providers/layout_settings_provider.dart';
+import 'package:cipher_app/widgets/playlist/presentation/presentation_cipher_section.dart';
+import 'package:cipher_app/widgets/playlist/presentation/presentation_text_section.dart';
+import 'package:cipher_app/widgets/playlist/presentation/playlist_navigation_drawer.dart';
+import 'package:cipher_app/widgets/settings/layout_settings.dart';
 
 class PlaylistPresentationScreen extends StatefulWidget {
   final int playlistId;
@@ -47,6 +50,8 @@ class _PlaylistPresentationScreenState
   Widget build(BuildContext context) {
     return Consumer<PlaylistProvider>(
       builder: (context, playlistProvider, child) {
+        final layoutProvider = context.read<LayoutSettingsProvider>();
+
         final playlist = playlistProvider.playlists.firstWhere(
           (p) => p.id == widget.playlistId,
           orElse: () => throw Exception('Playlist not found'),
@@ -68,61 +73,89 @@ class _PlaylistPresentationScreenState
             controller: _scrollController, // Keep your existing controller
             slivers: <Widget>[
               SliverAppBar(
+                backgroundColor: Theme.of(context).colorScheme.primaryFixedDim,
+                foregroundColor: Theme.of(context).colorScheme.onPrimaryFixed,
+                toolbarHeight: kToolbarHeight + 4,
+                actions: [
+                  Consumer<LayoutSettingsProvider>(
+                    builder: (context, layoutProvider, child) {
+                      return IconButton(
+                        icon: const Icon(Icons.visibility),
+                        tooltip: 'Configurações de Layout',
+                        onPressed: () =>
+                            _showLayoutSettings(context, layoutProvider),
+                      );
+                    },
+                  ),
+                  Builder(
+                    builder: (context) => DrawerButton(
+                      onPressed: () {
+                        Scaffold.of(context).openEndDrawer();
+                      },
+                    ),
+                  ),
+                ],
                 floating: true,
                 flexibleSpace: FlexibleSpaceBar(
-                  title: Row(
-                    children: [
-                      Text(
-                        playlist.name,
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
+                  centerTitle: true,
+                  title: Text(
+                    textAlign: TextAlign.center,
+                    playlist.name,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontFamily: layoutProvider.fontFamily,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onPrimaryFixed,
+                    ),
                   ),
                 ),
               ),
               SliverList(
                 delegate: SliverChildListDelegate([
-                  Column(
-                    children: [
-                      const SizedBox(height: 16),
-                      if (playlist.description?.isNotEmpty == true)
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(16),
-                          margin: const EdgeInsets.only(bottom: 8),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).cardColor,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: Theme.of(context).dividerColor,
-                              width: 1,
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      spacing: 4,
+                      children: [
+                        const SizedBox(height: 12),
+                        if (playlist.description?.isNotEmpty == true)
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(16),
+                            margin: const EdgeInsets.only(bottom: 8),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: Theme.of(context).dividerColor,
+                                width: 1,
+                              ),
+                            ),
+                            child: Text(
+                              playlist.description!,
+                              style: Theme.of(context).textTheme.bodyLarge
+                                  ?.copyWith(
+                                    fontStyle: FontStyle.italic,
+                                    fontFamily: layoutProvider.fontFamily,
+                                  ),
+                              textAlign: TextAlign.center,
                             ),
                           ),
-                          child: Text(
-                            playlist.description!,
-                            style: Theme.of(context).textTheme.bodyLarge
-                                ?.copyWith(fontStyle: FontStyle.italic),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
 
-                      ...playlist.items.asMap().entries.map((entry) {
-                        final itemIndex = entry.key;
-                        final item = entry.value;
+                        ...playlist.items.asMap().entries.map((entry) {
+                          final itemIndex = entry.key;
+                          final item = entry.value;
 
-                        return Container(
-                          key: _itemKeys[itemIndex]![-1],
-                          margin: const EdgeInsets.only(bottom: 8),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [_buildItemContent(item, itemIndex)],
-                          ),
-                        );
-                      }),
-                      const SizedBox(height: 200),
-                    ],
+                          return Container(
+                            key: _itemKeys[itemIndex]![-1],
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [_buildItemContent(item, itemIndex)],
+                            ),
+                          );
+                        }),
+                        const SizedBox(height: 200),
+                      ],
+                    ),
                   ),
                 ]),
               ),
@@ -157,14 +190,8 @@ class _PlaylistPresentationScreenState
               children: [
                 const Icon(Icons.help, size: 48),
                 const SizedBox(height: 8),
-                Text(
-                  'Tipo desconhecido: ${item.type}',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                Text(
-                  'ID: ${item.contentId}',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
+                Text('Tipo desconhecido: ${item.type}'),
+                Text('ID: ${item.contentId}'),
               ],
             ),
           ),
@@ -195,5 +222,29 @@ class _PlaylistPresentationScreenState
       );
       _isScrolling = false;
     }
+  }
+
+  void _showLayoutSettings(
+    BuildContext context,
+    LayoutSettingsProvider layoutProvider,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // Allows the modal to expand based on content
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.only(top: 12),
+          child: SingleChildScrollView(
+            child: Align(
+              alignment: AlignmentGeometry.center,
+              child: LayoutSettings(includeFilters: true, isPresenter: true),
+            ),
+          ),
+        );
+      },
+    );
   }
 }

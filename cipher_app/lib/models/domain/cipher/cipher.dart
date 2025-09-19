@@ -72,7 +72,7 @@ class Cipher {
     DateTime? createdAt,
     DateTime? updatedAt,
     bool? isLocal,
-    List<Version>? maps,
+    List<Version>? versions,
   }) {
     return Cipher(
       id: id ?? this.id,
@@ -85,7 +85,7 @@ class Cipher {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       isLocal: isLocal ?? this.isLocal,
-      versions: maps ?? this.versions,
+      versions: versions ?? this.versions,
     );
   }
 }

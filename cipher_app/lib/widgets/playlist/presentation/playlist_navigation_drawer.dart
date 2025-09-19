@@ -1,11 +1,9 @@
-import 'package:cipher_app/providers/layout_settings_provider.dart';
-import 'package:cipher_app/providers/cipher_provider.dart';
-import 'package:cipher_app/providers/text_section_provider.dart';
-import 'package:cipher_app/widgets/settings/layout_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../models/domain/playlist/playlist.dart';
-import '../../../models/domain/playlist/playlist_item.dart';
+import 'package:cipher_app/models/domain/playlist/playlist.dart';
+import 'package:cipher_app/models/domain/playlist/playlist_item.dart';
+import 'package:cipher_app/providers/cipher_provider.dart';
+import 'package:cipher_app/providers/text_section_provider.dart';
 
 class PlaylistNavigationDrawer extends StatelessWidget {
   final Playlist playlist;
@@ -86,34 +84,6 @@ class PlaylistNavigationDrawer extends StatelessWidget {
                       return _buildNavigationItem(context, item, index);
                     },
                   ),
-          ),
-
-          // Footer
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(
-                  color: Theme.of(context).dividerColor,
-                  width: 1,
-                ),
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Consumer<LayoutSettingsProvider>(
-                  builder: (context, layoutProvider, child) {
-                    return IconButton(
-                      icon: const Icon(Icons.visibility),
-                      tooltip: 'Configurações de Layout',
-                      onPressed: () =>
-                          _showLayoutSettings(context, layoutProvider),
-                    );
-                  },
-                ),
-              ],
-            ),
           ),
         ],
       ),
@@ -236,29 +206,5 @@ class PlaylistNavigationDrawer extends StatelessWidget {
       default:
         return Colors.grey;
     }
-  }
-
-  void _showLayoutSettings(
-    BuildContext context,
-    LayoutSettingsProvider layoutProvider,
-  ) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true, // Allows the modal to expand based on content
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.only(top: 12),
-          child: SingleChildScrollView(
-            child: Align(
-              alignment: AlignmentGeometry.center,
-              child: LayoutSettings(includeFilters: true, isPresenter: true),
-            ),
-          ),
-        );
-      },
-    );
   }
 }

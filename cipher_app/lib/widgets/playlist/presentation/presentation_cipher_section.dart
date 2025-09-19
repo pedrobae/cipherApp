@@ -116,7 +116,7 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
             padding: const EdgeInsets.all(8),
             child: Column(
               children: [
-                _buildCipherHeader(),
+                _buildCipherHeader(layoutProvider),
                 Divider(thickness: 1.5),
                 MasonryGridView.builder(
                   padding: EdgeInsets.only(top: 0),
@@ -153,8 +153,9 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
     );
   }
 
-  Widget _buildCipherHeader() {
+  Widget _buildCipherHeader(LayoutSettingsProvider layoutProvider) {
     return Column(
+      spacing: 4,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
@@ -165,26 +166,27 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
               child: Text(
                 _cipher!.title,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontFamily: layoutProvider.fontFamily,
                   fontWeight: FontWeight.bold,
-                  fontSize: 18,
+                  fontSize: layoutProvider.fontSize * .8,
                 ),
               ),
             ),
             if (_cipher!.author.isNotEmpty) ...[
-              const SizedBox(width: 8),
               Text(
                 'por ${_cipher!.author}',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  fontFamily: layoutProvider.fontFamily,
                   fontStyle: FontStyle.italic,
+                  fontSize: layoutProvider.fontSize * .7,
                   color: Theme.of(context).textTheme.bodySmall?.color,
                 ),
               ),
             ],
           ],
         ),
-
-        const SizedBox(height: 6),
         Row(
+          spacing: 6,
           children: [
             if (_cipher!.versions.first.versionName?.isNotEmpty == true) ...[
               Container(
@@ -205,7 +207,6 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
                   ),
                 ),
               ),
-              const SizedBox(width: 6),
             ],
 
             if (_cipher!.musicKey.isNotEmpty)

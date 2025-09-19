@@ -69,15 +69,14 @@ class PresentationTextSection extends StatelessWidget {
                   Text(
                     textSection.title,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontFamily: layoutProvider.fontFamily,
                       fontWeight: FontWeight.bold,
-                      fontSize:
-                          layoutProvider.fontSize +
-                          4, // Slightly larger than content
+                      fontSize: layoutProvider.fontSize * .8,
                     ),
                   ),
                   const SizedBox(height: 8),
                 ],
-
+                Divider(thickness: 1.5, height: 0),
                 // Content
                 SizedBox(
                   width: double.infinity,
@@ -87,7 +86,7 @@ class PresentationTextSection extends StatelessWidget {
                       fontFamily: layoutProvider.fontFamily,
                       fontSize: layoutProvider.fontSize,
                       color: layoutProvider.lyricColor,
-                      height: 1.6, // Good line height for reading
+                      height: 1.2, // Good line height for reading
                     ),
                     textAlign: TextAlign.left,
                   ),

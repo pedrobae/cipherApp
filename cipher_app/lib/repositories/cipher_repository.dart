@@ -287,10 +287,10 @@ class CipherRepository {
   // === PRIVATE HELPERS ===
 
   Future<Cipher> _buildCipher(Map<String, dynamic> row) async {
-    final maps = await getCipherVersions(row['id']);
+    final version = await getCipherVersions(row['id']);
     final tags = await getCipherTags(row['id']);
 
-    return Cipher.fromJson(row).copyWith(maps: maps, tags: tags);
+    return Cipher.fromJson(row).copyWith(versions: version, tags: tags);
   }
 
   Future<Version> _buildCipherVersion(Map<String, dynamic> row) async {
@@ -309,7 +309,9 @@ class CipherRepository {
     final tags = await getCipherTags(results[0]['id'] as int);
 
     if (results.isEmpty) return null;
-    return Cipher.fromJson(results[0]).copyWith(maps: [version], tags: tags);
+    return Cipher.fromJson(
+      results[0],
+    ).copyWith(versions: [version], tags: tags);
   }
 
   // Helper method to add tags within a transaction

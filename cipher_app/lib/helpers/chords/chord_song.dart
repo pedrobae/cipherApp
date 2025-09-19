@@ -21,7 +21,7 @@ class Chord {
   double yOffset;
   final String lyricsBefore;
   final String wordAfter;
-  static double offset = -0.4;
+  static double offset = -0.45;
 
   Chord(
     this.name,

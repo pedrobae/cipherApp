@@ -71,12 +71,12 @@ class _CipherViewerState extends State<CipherViewer> {
 
   void _showVersionSelector() {
     // Only show version selector if there are versions and a current version is selected
-    if (widget.cipher.maps.isEmpty || _currentVersion == null) return;
+    if (widget.cipher.versions.isEmpty || _currentVersion == null) return;
 
     showModalBottomSheet(
       context: context,
       builder: (context) => VersionSelectorBottomSheet(
-        versions: widget.cipher.maps,
+        versions: widget.cipher.versions,
         currentVersion: _currentVersion!,
         onVersionSelected: _selectVersion,
         onNewVersion: _addNewVersion,
@@ -96,7 +96,7 @@ class _CipherViewerState extends State<CipherViewer> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
-            padding: const EdgeInsets.only(top:12),
+            padding: const EdgeInsets.only(top: 12),
             child: LayoutSettings(
               includeTransposer: true,
               includeFilters: true,
@@ -111,7 +111,7 @@ class _CipherViewerState extends State<CipherViewer> {
   Widget build(BuildContext context) {
     final cipherProvider = context.watch<CipherProvider>();
     final settings = context.watch<LayoutSettingsProvider>();
-    final hasVersions = widget.cipher.maps.isNotEmpty;
+    final hasVersions = widget.cipher.versions.isNotEmpty;
 
     final currentCipher = cipherProvider.ciphers.firstWhere(
       (c) => c.id == widget.cipher.id,
@@ -119,13 +119,13 @@ class _CipherViewerState extends State<CipherViewer> {
     );
     // Always refresh _currentVersion from provider by id
     if (_currentVersion != null && hasVersions) {
-      final updatedVersion = currentCipher.maps.firstWhere(
+      final updatedVersion = currentCipher.versions.firstWhere(
         (m) => m.id == _currentVersion!.id,
-        orElse: () => currentCipher.maps.first,
+        orElse: () => currentCipher.versions.first,
       );
       _currentVersion = updatedVersion;
     } else if (hasVersions) {
-      _currentVersion = currentCipher.maps.first;
+      _currentVersion = currentCipher.versions.first;
     } else {
       _currentVersion = null;
     }

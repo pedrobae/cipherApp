@@ -64,7 +64,8 @@ const Map<String, Color> _defaultSectionColors = {
 };
 
 class CipherSectionForm extends StatefulWidget {
-  final TextEditingController? versionNameController;
+  final TextEditingController? nameController;
+  final TextEditingController? keyController;
   final Cipher? cipher;
   final Version? currentVersion;
   final Function(Map<String, Section>) onSectionChanged;
@@ -72,7 +73,8 @@ class CipherSectionForm extends StatefulWidget {
 
   const CipherSectionForm({
     super.key,
-    this.versionNameController,
+    this.nameController,
+    this.keyController,
     this.cipher,
     this.currentVersion,
     required this.onSectionChanged,
@@ -129,6 +131,14 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
       controller.dispose();
     }
     super.dispose();
+  }
+
+  void _notifyNameChanged() {
+    String name = widget.nameController?.text ?? '';
+  }
+
+  void _notifyKeyChanged() {
+    String key = widget.keyController?.text ?? '';
   }
 
   void _notifySectionChanged() {
@@ -274,6 +284,7 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
           child: Padding(
             padding: const EdgeInsets.all(8),
             child: Column(
+              spacing: 8,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -282,22 +293,39 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: widget.versionNameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Nome da Versão',
-                    hintText: 'Ex: Original, Acústica, Tom de C',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.label),
-                  ),
-                  onChanged: (_) => _notifySectionChanged(),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Nome da versão é obrigatório';
-                    }
-                    return null;
-                  },
+                Row(
+                  spacing: 8,
+                  children: [
+                    Expanded(
+                      flex: 3,
+                      child: TextFormField(
+                        controller: widget.nameController,
+                        decoration: const InputDecoration(
+                          labelText: 'Nome da Versão',
+                          hintText: 'Ex: Original, Acústica',
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.queue_music),
+                        ),
+                        onChanged: (_) => _notifyNameChanged(),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Nome da versão é obrigatório';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    Expanded(
+                      child: TextFormField(
+                        controller: widget.keyController,
+                        decoration: const InputDecoration(
+                          labelText: 'Tom',
+                          border: OutlineInputBorder(),
+                        ),
+                        onChanged: (_) => _notifyKeyChanged(),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

@@ -141,7 +141,7 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
                       // In selection mode, filter out already added versions
                       if (widget.selectionMode &&
                           widget.excludeVersionIds != null) {
-                        final hasExcludedVersions = cipher.maps.any(
+                        final hasExcludedVersions = cipher.versions.any(
                           (version) =>
                               widget.excludeVersionIds!.contains(version.id),
                         );

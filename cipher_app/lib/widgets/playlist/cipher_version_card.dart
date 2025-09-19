@@ -39,7 +39,7 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
     if (mounted && cipher != null) {
       setState(() {
         _cipher = cipher;
-        _songStructureList = cipher.maps[0].songStructure
+        _songStructureList = cipher.versions[0].songStructure
             .split(',')
             .map((s) => s.trim())
             .where((s) => s.isNotEmpty)
@@ -61,7 +61,7 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
     final cipherProvider = context.read<CipherProvider>();
     final stringStructure = _songStructureList.toString();
     cipherProvider.updateVersionSongStructure(
-      _cipher!.maps[0].id!,
+      _cipher!.versions[0].id!,
       stringStructure.substring(1, stringStructure.length - 1),
     );
   }
@@ -76,7 +76,7 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
       return const Text('Cifra não encontrada');
     }
 
-    final version = _cipher!.maps[0];
+    final version = _cipher!.versions[0];
 
     return InkWell(
       onTap: () => Navigator.of(context, rootNavigator: true).push(

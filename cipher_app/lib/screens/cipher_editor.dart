@@ -40,8 +40,9 @@ class _EditCipherState extends State<EditCipher>
 
   // Version-specific controllers
   final _versionNameController = TextEditingController();
+  final _versionKeyController = TextEditingController();
 
-  // Content data
+  // Sections data
   Map<String, Section> _versionSections = {};
   List<String> _songStructure = [];
 
@@ -51,7 +52,11 @@ class _EditCipherState extends State<EditCipher>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    if (_isEditMode) {
+      _tabController = TabController(length: 2, vsync: this);
+    } else {
+      _tabController = TabController(length: 1, vsync: this);
+    }
     _initializeFields();
   }
 
@@ -77,6 +82,7 @@ class _EditCipherState extends State<EditCipher>
             .where((s) => s.isNotEmpty)
             .toList();
         _versionNameController.text = widget.currentVersion!.versionName ?? '';
+        _versionKeyController.text = widget.currentVersion!.transposedKey ?? '';
       }
     }
   }
@@ -92,7 +98,12 @@ class _EditCipherState extends State<EditCipher>
   }
 
   void _navigateStartTab() {
-    const Map<String, int> tabMap = {'cipher': 0, 'version': 1};
+    final Map<String, int> tabMap;
+    if (_isEditMode) {
+      tabMap = {'cipher': 0, 'version': 1};
+    } else {
+      tabMap = {'cipher': 0};
+    }
     _tabController.animateTo(tabMap[widget.startTab]!);
   }
 
@@ -106,6 +117,7 @@ class _EditCipherState extends State<EditCipher>
     _languageController.dispose();
     _tagsController.dispose();
     _versionNameController.dispose();
+    _versionKeyController.dispose();
     super.dispose();
   }
 
@@ -123,11 +135,10 @@ class _EditCipherState extends State<EditCipher>
         bottom: TabBar(
           controller: _tabController,
           tabs: [
-            Tab(
-              text: _isNewVersionMode ? 'Informações da Cifra' : 'Informações',
-              icon: const Icon(Icons.info_outline),
-            ),
-            const Tab(text: 'Conteúdo', icon: Icon(Icons.music_note)),
+            const Tab(text: 'Cifra', icon: Icon(Icons.info_outline)),
+            if (_isEditMode) ...[
+              const Tab(text: 'Versão', icon: Icon(Icons.music_note)),
+            ],
           ],
         ),
       ),
@@ -153,25 +164,28 @@ class _EditCipherState extends State<EditCipher>
                 ],
               ),
             ),
-            // Content Tab
-            SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: CipherSectionForm(
-                cipher: widget.cipher,
-                currentVersion: widget.currentVersion,
-                versionNameController: _versionNameController, // Pass this down
-                onSectionChanged: (content) {
-                  setState(() {
-                    _versionSections = content;
-                  });
-                },
-                onStructureChanged: (structure) {
-                  setState(() {
-                    _songStructure = structure;
-                  });
-                },
+            if (_isEditMode) ...[
+              // Content Tab
+              SingleChildScrollView(
+                padding: const EdgeInsets.all(16.0),
+                child: CipherSectionForm(
+                  cipher: widget.cipher,
+                  currentVersion: widget.currentVersion,
+                  nameController: _versionNameController,
+                  keyController: _versionKeyController,
+                  onSectionChanged: (content) {
+                    setState(() {
+                      _versionSections = content;
+                    });
+                  },
+                  onStructureChanged: (structure) {
+                    setState(() {
+                      _songStructure = structure;
+                    });
+                  },
+                ),
               ),
-            ),
+            ],
           ],
         ),
       ),
@@ -209,11 +223,12 @@ class _EditCipherState extends State<EditCipher>
   void _saveCipher() async {
     if (!_formKey.currentState!.validate()) {
       // Check which tab has validation errors
-      if (_versionNameController.text.trim().isEmpty &&
+      if ((_versionNameController.text.trim().isEmpty ||
+              _versionKeyController.text.trim().isEmpty) &&
           (_isEditMode || _isNewVersionMode)) {
-        _tabController.animateTo(1); // Go to content tab for version name
+        _tabController.animateTo(1);
       } else {
-        _tabController.animateTo(0); // Go to basic info tab
+        _tabController.animateTo(0);
       }
       return;
     }
@@ -252,26 +267,28 @@ class _EditCipherState extends State<EditCipher>
           versionName: _versionNameController.text.trim().isNotEmpty
               ? _versionNameController.text.trim()
               : 'Versão sem nome',
-          transposedKey: null,
+          transposedKey: _versionKeyController.text.trim().isNotEmpty
+              ? _versionKeyController.text.trim()
+              : widget.cipher!.musicKey,
           createdAt: _isNewVersionMode
               ? DateTime.now()
               : widget.currentVersion?.createdAt,
         );
       } // Prepare cipher data
-      List<Version> updatedMaps;
+      List<Version> updatedVersions;
       if (_isNewVersionMode && version != null) {
         // Adding new version to existing cipher
-        updatedMaps = [...widget.cipher!.maps, version];
+        updatedVersions = [...widget.cipher!.versions, version];
       } else if (_isEditMode &&
           widget.currentVersion != null &&
           version != null) {
         // Editing existing version
-        updatedMaps = widget.cipher!.maps
+        updatedVersions = widget.cipher!.versions
             .map((map) => map.id == widget.currentVersion!.id ? version! : map)
             .toList();
       } else {
         // Creating new cipher
-        updatedMaps = version != null ? [version] : [];
+        updatedVersions = version != null ? [version] : [];
       }
 
       final cipherData = Cipher(
@@ -283,7 +300,7 @@ class _EditCipherState extends State<EditCipher>
         language: _languageController.text.trim(),
         isLocal: true,
         tags: tags,
-        maps: updatedMaps,
+        versions: updatedVersions,
       );
 
       final cipherProvider = context.read<CipherProvider>();

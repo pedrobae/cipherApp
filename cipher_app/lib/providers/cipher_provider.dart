@@ -103,7 +103,7 @@ class CipherProvider extends ChangeNotifier {
       final cipherId = await _cipherRepository.insertCipher(cipher);
 
       // Insert cipher maps and their content
-      await _createCipherVersionsAndSections(cipherId, cipher.maps);
+      await _createCipherVersionsAndSections(cipherId, cipher.versions);
 
       // Reload all ciphers to get the complete data with relationships
       await loadCiphers();
@@ -175,7 +175,7 @@ class CipherProvider extends ChangeNotifier {
 
   /// Handle updating cipher maps and their content
   Future<void> _updateCipherMapsAndContent(Cipher cipher) async {
-    if (cipher.id == null || cipher.maps.isEmpty) return;
+    if (cipher.id == null || cipher.versions.isEmpty) return;
 
     // Get existing maps to determine which ones to update, create, or delete
     final existingMaps = await _cipherRepository.getCipherVersions(cipher.id!);
@@ -183,7 +183,7 @@ class CipherProvider extends ChangeNotifier {
         .map((m) => m.id)
         .where((id) => id != null)
         .toSet();
-    final newMapIds = cipher.maps
+    final newMapIds = cipher.versions
         .map((m) => m.id)
         .where((id) => id != null)
         .toSet();
@@ -196,7 +196,7 @@ class CipherProvider extends ChangeNotifier {
     }
 
     // Update or create maps
-    for (final map in cipher.maps) {
+    for (final map in cipher.versions) {
       final mapWithCipherId = map.copyWith(cipherId: cipher.id!);
 
       if (map.id != null && existingMapIds.contains(map.id)) {

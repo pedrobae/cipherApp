@@ -86,7 +86,7 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
 
     return Consumer<LayoutSettingsProvider>(
       builder: (context, layoutProvider, child) {
-        final currentVersion = _cipher!.maps.first;
+        final currentVersion = _cipher!.versions.first;
 
         final filteredStructure = currentVersion.songStructure
             .split(',')
@@ -186,7 +186,7 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
         const SizedBox(height: 6),
         Row(
           children: [
-            if (_cipher!.maps.first.versionName?.isNotEmpty == true) ...[
+            if (_cipher!.versions.first.versionName?.isNotEmpty == true) ...[
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
@@ -197,7 +197,7 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
                   ),
                 ),
                 child: Text(
-                  _cipher!.maps.first.versionName!,
+                  _cipher!.versions.first.versionName!,
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w500,

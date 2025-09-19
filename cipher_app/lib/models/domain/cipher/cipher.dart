@@ -12,7 +12,7 @@ class Cipher {
   final DateTime? updatedAt;
   final bool isLocal;
   final List<String> tags;
-  final List<Version> maps;
+  final List<Version> versions;
 
   const Cipher({
     this.id,
@@ -25,7 +25,7 @@ class Cipher {
     this.createdAt,
     this.updatedAt,
     required this.isLocal,
-    this.maps = const [],
+    this.versions = const [],
   });
 
   // From JSON constructor for database
@@ -41,7 +41,7 @@ class Cipher {
       createdAt: DatetimeHelper.parseDateTime(json['created_at']),
       updatedAt: DatetimeHelper.parseDateTime(json['updated_at']),
       isLocal: json['isLocal'] as bool? ?? true, // Default to true for local DB
-      maps: json['maps'] != null
+      versions: json['maps'] != null
           ? (json['maps'] as List).map((m) => Version.fromJson(m)).toList()
           : const [],
     );
@@ -85,7 +85,7 @@ class Cipher {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       isLocal: isLocal ?? this.isLocal,
-      maps: maps ?? this.maps,
+      versions: maps ?? this.versions,
     );
   }
 }

@@ -44,8 +44,8 @@ void main() {
 
       expect(cipher, isNotNull);
       expect(cipher!.title, 'Amazing Grace');
-      expect(cipher.maps.length, 2); // Original + Short version
-      expect(cipher.maps.first.sections != null, true);
+      expect(cipher.versions.length, 2); // Original + Short version
+      expect(cipher.versions.first.sections != null, true);
     });
 
     test('should soft delete cipher', () async {

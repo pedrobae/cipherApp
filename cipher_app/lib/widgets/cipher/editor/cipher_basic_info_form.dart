@@ -39,8 +39,6 @@ class CipherBasicInfoForm extends StatelessWidget {
           controller: authorController,
           label: 'Autor',
           hint: 'Compositor ou artista',
-          validator: (value) =>
-              value?.isEmpty == true ? 'Autor é obrigatório' : null,
           prefixIcon: Icons.person,
         ),
         const SizedBox(height: 16),
@@ -65,8 +63,6 @@ class CipherBasicInfoForm extends StatelessWidget {
                 controller: tempoController,
                 label: 'Tempo',
                 hint: 'Ex: Lento, Médio',
-                validator: (value) =>
-                    value?.isEmpty == true ? 'Tempo é obrigatório' : null,
                 prefixIcon: Icons.speed,
               ),
             ),
@@ -79,8 +75,6 @@ class CipherBasicInfoForm extends StatelessWidget {
           controller: languageController,
           label: 'Idioma',
           hint: 'Ex: Português, Inglês',
-          validator: (value) =>
-              value?.isEmpty == true ? 'Idioma é obrigatório' : null,
           prefixIcon: Icons.language,
         ),
         const SizedBox(height: 16),

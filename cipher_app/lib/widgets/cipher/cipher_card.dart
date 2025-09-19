@@ -122,7 +122,7 @@ class CipherCard extends StatelessWidget {
                   ),
                 ),
               ),
-              ...cipher.maps.map((version) {
+              ...cipher.versions.map((version) {
                 return GestureDetector(
                   onTap: () => selectVersion?.call(version, cipher),
                   child: Container(

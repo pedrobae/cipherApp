@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/domain/playlist/playlist_item.dart';
@@ -20,7 +19,7 @@ class PlaylistPresentationScreen extends StatefulWidget {
 class _PlaylistPresentationScreenState
     extends State<PlaylistPresentationScreen> {
   late ScrollController _scrollController;
-  final Map<int, GlobalKey> _itemKeys = {};
+  final Map<int, Map<int, GlobalKey>> _itemKeys = {};
   bool _isScrolling = false;
 
   @override
@@ -56,14 +55,14 @@ class _PlaylistPresentationScreenState
         // Generate keys for each item for scroll targeting
         for (int i = 0; i < playlist.items.length; i++) {
           if (!_itemKeys.containsKey(i)) {
-            _itemKeys[i] = GlobalKey();
+            _itemKeys[i] = {-1: GlobalKey()};
           }
         }
 
         return Scaffold(
           endDrawer: PlaylistNavigationDrawer(
             playlist: playlist,
-            onItemSelected: _scrollToItem,
+            onItemSelected: (index) => _scrollToItem(index, null),
           ),
           body: CustomScrollView(
             controller: _scrollController, // Keep your existing controller
@@ -92,7 +91,7 @@ class _PlaylistPresentationScreenState
                         Container(
                           width: double.infinity,
                           padding: const EdgeInsets.all(16),
-                          margin: const EdgeInsets.only(bottom: 16),
+                          margin: const EdgeInsets.only(bottom: 8),
                           decoration: BoxDecoration(
                             color: Theme.of(context).cardColor,
                             borderRadius: BorderRadius.circular(8),
@@ -114,11 +113,11 @@ class _PlaylistPresentationScreenState
                         final item = entry.value;
 
                         return Container(
-                          key: _itemKeys[itemIndex],
+                          key: _itemKeys[itemIndex]![-1],
                           margin: const EdgeInsets.only(bottom: 8),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [_buildItemContent(item)],
+                            children: [_buildItemContent(item, itemIndex)],
                           ),
                         );
                       }),
@@ -134,10 +133,20 @@ class _PlaylistPresentationScreenState
     );
   }
 
-  Widget _buildItemContent(PlaylistItem item) {
+  Widget _buildItemContent(PlaylistItem item, int itemIndex) {
     switch (item.type) {
       case 'cipher_version':
-        return PresentationCipherSection(versionId: item.contentId);
+        return PresentationCipherSection(
+          versionId: item.contentId,
+          onSectionKeysCreated: (versionId, sectionKeys) {
+            setState(() {
+              if (!_itemKeys.containsKey(itemIndex)) {
+                _itemKeys[itemIndex] = {-1: GlobalKey()};
+              }
+              _itemKeys[itemIndex]!.addAll(sectionKeys);
+            });
+          },
+        );
       case 'text_section':
         return PresentationTextSection(textSectionId: item.contentId);
       default:
@@ -163,12 +172,13 @@ class _PlaylistPresentationScreenState
     }
   }
 
-  Future<void> _scrollToItem(int itemIndex) async {
+  Future<void> _scrollToItem(int itemIndex, int? sectionIndex) async {
     if (!_itemKeys.containsKey(itemIndex)) return;
 
-    final key = _itemKeys[itemIndex];
+    if (!_itemKeys[itemIndex]!.containsKey(sectionIndex)) sectionIndex = -1;
+
+    final key = _itemKeys[itemIndex]![sectionIndex];
     final context = key?.currentContext;
-    if (kDebugMode) print('$itemIndex, $context');
 
     if (context != null) {
       _isScrolling = true;

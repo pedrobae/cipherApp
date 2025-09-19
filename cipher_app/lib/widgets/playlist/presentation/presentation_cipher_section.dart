@@ -9,19 +9,25 @@ import 'package:cipher_app/utils/section.dart';
 
 class PresentationCipherSection extends StatefulWidget {
   final int versionId;
+  final Function(int versionId, Map<int, GlobalKey> sectionKeys)?
+  onSectionKeysCreated;
 
   const PresentationCipherSection({
     super.key,
     required this.versionId,
+    this.onSectionKeysCreated,
   });
 
   @override
-  State<PresentationCipherSection> createState() => _PresentationCipherSectionState();
+  State<PresentationCipherSection> createState() =>
+      _PresentationCipherSectionState();
 }
 
 class _PresentationCipherSectionState extends State<PresentationCipherSection> {
   Cipher? _cipher;
   bool _isLoading = true;
+  final Map<int, GlobalKey> _sectionKeys = {};
+  bool _keysNotified = false;
 
   @override
   void initState() {
@@ -47,9 +53,7 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
       return const Card(
         child: Padding(
           padding: EdgeInsets.all(32),
-          child: Center(
-            child: CircularProgressIndicator(),
-          ),
+          child: Center(child: CircularProgressIndicator()),
         ),
       );
     }
@@ -61,11 +65,7 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              Icon(
-                Icons.error,
-                color: Colors.red.shade700,
-                size: 32,
-              ),
+              Icon(Icons.error, color: Colors.red.shade700, size: 32),
               const SizedBox(height: 8),
               Text(
                 'Erro ao carregar cifra',
@@ -76,10 +76,7 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
               ),
               Text(
                 'ID: ${widget.versionId}',
-                style: TextStyle(
-                  color: Colors.red.shade600,
-                  fontSize: 12,
-                ),
+                style: TextStyle(color: Colors.red.shade600, fontSize: 12),
               ),
             ],
           ),
@@ -90,15 +87,26 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
     return Consumer<LayoutSettingsProvider>(
       builder: (context, layoutProvider, child) {
         final currentVersion = _cipher!.maps.first;
-        
+
         final filteredStructure = currentVersion.songStructure
             .split(',')
             .map((s) => s.trim())
-            .where((sectionCode) =>
-                sectionCode.isNotEmpty &&
-                (layoutProvider.showAnnotations || !isAnnotation(sectionCode)) &&
-                (layoutProvider.showTransitions || !isTransition(sectionCode)))
+            .where(
+              (sectionCode) =>
+                  sectionCode.isNotEmpty &&
+                  (layoutProvider.showAnnotations ||
+                      !isAnnotation(sectionCode)) &&
+                  (layoutProvider.showTransitions ||
+                      !isTransition(sectionCode)),
+            )
             .toList();
+
+        if (!_keysNotified && filteredStructure.isNotEmpty) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            widget.onSectionKeysCreated?.call(widget.versionId, _sectionKeys);
+            _keysNotified = true;
+          });
+        }
 
         return Card(
           surfaceTintColor: Theme.of(context).primaryColor,
@@ -109,26 +117,33 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
             child: Column(
               children: [
                 _buildCipherHeader(),
-                MasonryGridView.builder(padding: EdgeInsets.only(top: 8),
+                Divider(thickness: 1.5),
+                MasonryGridView.builder(
+                  padding: EdgeInsets.only(top: 0),
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(crossAxisCount: layoutProvider.columnCount,),
+                  gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: layoutProvider.columnCount,
+                  ),
                   itemCount: filteredStructure.length,
-                  itemBuilder: (context, index) {
-                    final sectionCode = filteredStructure[index];
+                  itemBuilder: (context, sectionIndex) {
+                    _sectionKeys.putIfAbsent(sectionIndex, () => GlobalKey());
+
+                    final sectionCode = filteredStructure[sectionIndex];
                     final section = currentVersion.sections?[sectionCode];
                     if (section == null) return const SizedBox.shrink();
-                
+
                     return Padding(
                       padding: const EdgeInsets.all(2.0),
                       child: CipherSectionCard(
+                        key: _sectionKeys[sectionIndex],
                         sectionType: section.contentType,
                         sectionCode: sectionCode,
                         sectionText: section.contentText,
                         sectionColor: section.contentColor,
                       ),
                     );
-                  }
+                  },
                 ),
               ],
             ),
@@ -167,7 +182,7 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
             ],
           ],
         ),
-        
+
         const SizedBox(height: 6),
         Row(
           children: [
@@ -191,17 +206,15 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
                 ),
               ),
               const SizedBox(width: 6),
-              ],
-              
+            ],
+
             if (_cipher!.musicKey.isNotEmpty)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(3),
-                  border: Border.all(
-                    color: Theme.of(context).dividerColor,
-                  ),
+                  border: Border.all(color: Theme.of(context).dividerColor),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,

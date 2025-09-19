@@ -6,10 +6,7 @@ import '../../../providers/layout_settings_provider.dart';
 class PresentationTextSection extends StatelessWidget {
   final int textSectionId;
 
-  const PresentationTextSection({
-    super.key,
-    required this.textSectionId,
-  });
+  const PresentationTextSection({super.key, required this.textSectionId});
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +23,7 @@ class PresentationTextSection extends StatelessWidget {
           return const Card(
             child: Padding(
               padding: EdgeInsets.all(32),
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
+              child: Center(child: CircularProgressIndicator()),
             ),
           );
         }
@@ -42,11 +37,7 @@ class PresentationTextSection extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  Icon(
-                    Icons.error,
-                    color: Colors.red.shade700,
-                    size: 32,
-                  ),
+                  Icon(Icons.error, color: Colors.red.shade700, size: 32),
                   const SizedBox(height: 8),
                   Text(
                     'Erro ao carregar seção de texto',
@@ -57,10 +48,7 @@ class PresentationTextSection extends StatelessWidget {
                   ),
                   Text(
                     'ID: $textSectionId',
-                    style: TextStyle(
-                      color: Colors.red.shade600,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: Colors.red.shade600, fontSize: 12),
                   ),
                 ],
               ),
@@ -71,9 +59,8 @@ class PresentationTextSection extends StatelessWidget {
         return Card(
           surfaceTintColor: Theme.of(context).primaryColor,
           elevation: 2,
-          margin: const EdgeInsets.symmetric(vertical: 0),
           child: Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -83,12 +70,14 @@ class PresentationTextSection extends StatelessWidget {
                     textSection.title,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
-                      fontSize: layoutProvider.fontSize + 4, // Slightly larger than content
+                      fontSize:
+                          layoutProvider.fontSize +
+                          4, // Slightly larger than content
                     ),
                   ),
                   const SizedBox(height: 8),
                 ],
-                
+
                 // Content
                 SizedBox(
                   width: double.infinity,

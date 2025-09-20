@@ -134,11 +134,11 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
   }
 
   void _notifyNameChanged() {
-    String name = widget.nameController?.text ?? '';
+    // String name = widget.nameController?.text ?? '';
   }
 
   void _notifyKeyChanged() {
-    String key = widget.keyController?.text ?? '';
+    // String key = widget.keyController?.text ?? '';
   }
 
   void _notifySectionChanged() {

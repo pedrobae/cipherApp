@@ -38,11 +38,14 @@ class VersionProvider extends ChangeNotifier {
       await _insertVersionSections(newVersionId, version.sections);
 
       // Reload version to get the updated data
-      await loadCipherVersionById(newVersionId);
+      await loadVersionById(newVersionId);
+      if (kDebugMode) {
+        print('Created a new version with id $newVersionId');
+      }
     } catch (e) {
       _error = e.toString();
       if (kDebugMode) {
-        print('Error adding cipher version: $e');
+        print('Error creating cipher version: $e');
       }
     } finally {
       _isSaving = false;
@@ -51,7 +54,7 @@ class VersionProvider extends ChangeNotifier {
   }
 
   /// ===== READ - Load version from versionId =====
-  Future<void> loadCipherVersionById(int versionId) async {
+  Future<void> loadVersionById(int versionId) async {
     if (_isLoading) return;
 
     _isLoading = true;
@@ -60,6 +63,9 @@ class VersionProvider extends ChangeNotifier {
 
     try {
       _version = await _cipherRepository.getCipherVersionWithId(versionId);
+      if (kDebugMode) {
+        print('===== Loaded the version: ${_version!.versionName} ');
+      }
     } catch (e) {
       _error = e.toString();
       if (kDebugMode) {
@@ -73,6 +79,9 @@ class VersionProvider extends ChangeNotifier {
 
   /// ===== UPDATE - update cipher version =====
   Future<void> updateCipherVersion(Version version) async {
+    if (version.id == null) {
+      createNewVersion(version.cipherId, version);
+    }
     if (_isSaving) return;
 
     _isSaving = true;
@@ -84,7 +93,7 @@ class VersionProvider extends ChangeNotifier {
       await _insertVersionSections(version.id!, version.sections);
 
       // Reload version to get the updated data
-      await loadCipherVersionById(version.id!);
+      await loadVersionById(version.id!);
     } catch (e) {
       _error = e.toString();
       if (kDebugMode) {
@@ -113,7 +122,7 @@ class VersionProvider extends ChangeNotifier {
       });
 
       // Reload version to get the updated data
-      await loadCipherVersionById(versionId);
+      await loadVersionById(versionId);
     } catch (e) {
       _error = e.toString();
       if (kDebugMode) {
@@ -137,7 +146,7 @@ class VersionProvider extends ChangeNotifier {
       await _cipherRepository.deleteCipherVersion(versionId);
 
       // Reload version to get the updated data
-      await loadCipherVersionById(versionId);
+      await loadVersionById(versionId);
     } catch (e) {
       _error = e.toString();
       if (kDebugMode) {

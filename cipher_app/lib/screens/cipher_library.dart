@@ -53,7 +53,8 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
     } else {
       Navigator.of(context, rootNavigator: true).push(
         MaterialPageRoute(
-          builder: (context) => CipherViewer(cipher: cipher, version: version),
+          builder: (context) =>
+              CipherViewer(cipherId: cipher.id!, versionId: version.id!),
         ),
       );
     }

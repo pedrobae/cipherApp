@@ -236,12 +236,12 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
     return Consumer<VersionProvider>(
       builder: (context, versionProvider, child) {
         if (widget.versionId != null) {
-          versionProvider.loadCipherVersionById(widget.versionId!);
+          versionProvider.loadVersionById(widget.versionId!);
         }
 
         final version =
             versionProvider.version ??
-            Version(cipherId: widget.cipherId, songStructure: '');
+            Version(cipherId: widget.cipherId, songStructure: '', sections: {});
 
         _songStructure = [];
         _currentSections = {};
@@ -293,7 +293,10 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
                             ),
                             onChanged: (name) =>
                                 versionProvider.updateCipherVersion(
-                                  version.copyWith(versionName: name),
+                                  version.copyWith(
+                                    versionName: name,
+                                    cipherId: widget.cipherId,
+                                  ),
                                 ),
                             validator: (value) {
                               if (value == null || value.trim().isEmpty) {

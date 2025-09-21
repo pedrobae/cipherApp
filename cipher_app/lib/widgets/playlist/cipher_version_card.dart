@@ -32,9 +32,7 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
   }
 
   Future<void> _loadCipher() async {
-    context.read<VersionProvider>().loadCipherVersionById(
-      widget.cipherVersionId,
-    );
+    context.read<VersionProvider>().loadVersionById(widget.cipherVersionId);
 
     final version = context.read<VersionProvider>().version;
 
@@ -81,8 +79,8 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
       onTap: () => Navigator.of(context, rootNavigator: true).push(
         MaterialPageRoute(
           builder: (context) => CipherViewer(
-            cipher: cipherProvider.currentCipher!,
-            version: _version!,
+            cipherId: cipherProvider.currentCipher!.id!,
+            versionId: _version!.id!,
           ),
         ),
       ),

@@ -79,6 +79,9 @@ class VersionProvider extends ChangeNotifier {
 
   /// ===== UPDATE - update cipher version =====
   Future<void> updateCipherVersion(Version version) async {
+    print(
+      'UPDATING CIPHER VERSION - ${version.versionName} - ${version.transposedKey}',
+    );
     if (version.id == null) {
       createNewVersion(version.cipherId, version);
     }

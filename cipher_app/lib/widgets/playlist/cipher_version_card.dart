@@ -79,8 +79,8 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
       onTap: () => Navigator.of(context, rootNavigator: true).push(
         MaterialPageRoute(
           builder: (context) => CipherViewer(
-            cipherId: cipherProvider.currentCipher!.id!,
-            versionId: _version!.id!,
+            cipher: cipherProvider.currentCipher!,
+            version: _version!,
           ),
         ),
       ),

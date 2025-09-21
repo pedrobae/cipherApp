@@ -131,13 +131,13 @@ class CipherRepository {
     return await db.insert('version', map.toJson());
   }
 
-  Future<void> updateCipherVersion(Version map) async {
+  Future<void> updateCipherVersion(Version version) async {
     final db = await _databaseHelper.database;
     await db.update(
       'version',
-      map.toJson(),
+      version.toJson(),
       where: 'id = ?',
-      whereArgs: [map.id],
+      whereArgs: [version.id],
     );
   }
 

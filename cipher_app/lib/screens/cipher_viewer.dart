@@ -45,7 +45,7 @@ class _CipherViewerState extends State<CipherViewer> {
       MaterialPageRoute(
         builder: (context) => EditCipher(
           cipher: widget.cipher,
-          currentVersion: _currentVersion,
+          currentVersion: null,
           isNewVersion: true,
         ),
       ),
@@ -186,13 +186,15 @@ class _CipherViewerState extends State<CipherViewer> {
                   child: CipherVersionHeader(currentVersion: _currentVersion!),
                 ),
                 // Cipher content section
-                Expanded(
-                  child: CipherContentSection(
-                    cipher: currentCipher,
-                    currentVersion: _currentVersion!,
-                    columnCount: settings.columnCount,
+                if (_currentVersion!.songStructure != '') ...[
+                  Expanded(
+                    child: CipherContentSection(
+                      cipher: currentCipher,
+                      currentVersion: _currentVersion!,
+                      columnCount: settings.columnCount,
+                    ),
                   ),
-                ),
+                ],
               ],
             )
           : _buildEmptyState(),

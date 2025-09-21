@@ -1,9 +1,10 @@
+import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:cipher_app/models/domain/cipher/section.dart';
 import 'package:cipher_app/models/domain/cipher/version.dart';
-import 'package:flutter/material.dart';
-import 'dart:async';
-import '../../../models/domain/cipher/cipher.dart';
-import 'reorderable_structure_chips.dart';
+import 'package:cipher_app/providers/version_provider.dart';
+import 'package:cipher_app/widgets/cipher/editor/reorderable_structure_chips.dart';
 
 // Available colors for section selection
 const List<Color> _availableColors = [
@@ -64,21 +65,15 @@ const Map<String, Color> _defaultSectionColors = {
 };
 
 class CipherSectionForm extends StatefulWidget {
-  final TextEditingController? nameController;
-  final TextEditingController? keyController;
-  final Cipher? cipher;
-  final Version? currentVersion;
-  final Function(Map<String, Section>) onSectionChanged;
-  final Function(List<String>)? onStructureChanged;
+  final String originalKey;
+  final int? versionId;
+  final int cipherId;
 
   const CipherSectionForm({
     super.key,
-    this.nameController,
-    this.keyController,
-    this.cipher,
-    this.currentVersion,
-    required this.onSectionChanged,
-    this.onStructureChanged,
+    required this.cipherId,
+    required this.originalKey,
+    this.versionId,
   });
 
   @override
@@ -87,6 +82,7 @@ class CipherSectionForm extends StatefulWidget {
 
 class _CipherSectionFormState extends State<CipherSectionForm> {
   final Map<String, TextEditingController> _sectionControllers = {};
+
   Map<String, Section> _currentSections = {};
   List<String> _songStructure = [];
   Timer? _debounceTimer;
@@ -94,34 +90,6 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
   @override
   void initState() {
     super.initState();
-    _initializeSections();
-  }
-
-  void _initializeSections() {
-    // Always start with blank state for new version
-    _songStructure = [];
-    _currentSections = {};
-
-    if (widget.currentVersion != null) {
-      _songStructure = widget.currentVersion!.songStructure
-          .split(',')
-          .map((s) => s.trim())
-          .where((s) => s.isNotEmpty)
-          .toList();
-      _currentSections = Map.from(widget.currentVersion!.sections!);
-
-      // Create controllers for all existing sections
-      _currentSections.forEach((key, section) {
-        _sectionControllers[key] = TextEditingController(
-          text: section.contentText,
-        );
-      });
-    }
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      widget.onStructureChanged?.call(_songStructure);
-      _notifySectionChanged();
-    });
   }
 
   @override
@@ -131,14 +99,6 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
       controller.dispose();
     }
     super.dispose();
-  }
-
-  void _notifyNameChanged() {
-    // String name = widget.nameController?.text ?? '';
-  }
-
-  void _notifyKeyChanged() {
-    // String key = widget.keyController?.text ?? '';
   }
 
   void _notifySectionChanged() {
@@ -178,8 +138,6 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
 
     // Remove sections that are no longer in structure
     _currentSections.removeWhere((key, value) => !_songStructure.contains(key));
-
-    widget.onSectionChanged(_currentSections);
   }
 
   void _addSection(
@@ -275,210 +233,248 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
 
   @override
   Widget build(BuildContext context) {
-    final uniqueSections = _songStructure.toSet().toList();
+    return Consumer<VersionProvider>(
+      builder: (context, versionProvider, child) {
+        if (widget.versionId != null) {
+          versionProvider.loadCipherVersionById(widget.versionId!);
+        }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(8),
-            child: Column(
-              spacing: 8,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Informações da Versão',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Row(
-                  spacing: 8,
-                  children: [
-                    Expanded(
-                      flex: 3,
-                      child: TextFormField(
-                        controller: widget.nameController,
-                        decoration: const InputDecoration(
-                          labelText: 'Nome da Versão',
-                          hintText: 'Ex: Original, Acústica',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.queue_music),
-                        ),
-                        onChanged: (_) => _notifyNameChanged(),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Nome da versão é obrigatório';
-                          }
-                          return null;
-                        },
-                      ),
-                    ),
-                    Expanded(
-                      child: TextFormField(
-                        controller: widget.keyController,
-                        decoration: const InputDecoration(
-                          labelText: 'Tom',
-                          border: OutlineInputBorder(),
-                        ),
-                        onChanged: (_) => _notifyKeyChanged(),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
+        final version =
+            versionProvider.version ??
+            Version(cipherId: widget.cipherId, songStructure: '');
 
-        // Song Structure Section
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Estrutura da Versão',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+        _songStructure = [];
+        _currentSections = {};
 
-                // Quick Add Buttons Row
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: _showPresetSectionsDialog,
-                        icon: const Icon(Icons.library_music),
-                        label: const Text('Seções Predefinidas'),
-                        style: OutlinedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadiusGeometry.all(
-                              Radius.circular(24),
-                            ),
-                          ),
-                          padding: const EdgeInsets.all(6),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: FilledButton.icon(
-                        onPressed: _showCustomSectionDialog,
-                        icon: const Icon(Icons.add),
-                        label: const Text('Seção Personalizada'),
-                        style: FilledButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadiusGeometry.all(
-                              Radius.circular(24),
-                            ),
-                          ),
-                          padding: const EdgeInsets.all(6),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+        _songStructure = version.songStructure
+            .split(',')
+            .map((s) => s.trim())
+            .where((s) => s.isNotEmpty)
+            .toList();
+        _currentSections = Map.from(version.sections!);
 
-                // Draggable Section Chips
-                ReorderableStructureChips(
-                  songStructure: _songStructure,
-                  sectionTypes: _predefinedSectionTypes,
-                  customSections: _currentSections,
-                  onReorder: _reorderSection,
-                  onRemoveSection: _removeSection,
-                ),
-              ],
-            ),
-          ),
-        ),
+        // Create controllers for all existing sections
+        _currentSections.forEach((key, section) {
+          _sectionControllers[key] = TextEditingController(
+            text: section.contentText,
+          );
+        });
 
-        const SizedBox(height: 16),
+        final uniqueSections = _songStructure.toSet().toList();
 
-        // Content Section
-        if (uniqueSections.isEmpty)
-          const Padding(
-            padding: EdgeInsets.all(24),
-            child: Text(
-              'Adicione seções para começar a criar o conteúdo',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey),
-            ),
-          )
-        else
-          ...uniqueSections.map((section) {
-            final sectionType = _getSectionType(section);
-
-            return Card(
-              margin: const EdgeInsets.only(bottom: 16),
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Card(
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(8),
                 child: Column(
+                  spacing: 8,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Text(
+                      'Informações da Versão',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      spacing: 8,
                       children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: sectionType?.contentColor ?? Colors.grey,
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                section,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
+                        Expanded(
+                          flex: 3,
+                          child: TextFormField(
+                            initialValue: version.versionName,
+                            decoration: const InputDecoration(
+                              labelText: 'Nome da Versão',
+                              hintText: 'Ex: Original, Acústica',
+                              border: OutlineInputBorder(),
+                              prefixIcon: Icon(Icons.queue_music),
+                            ),
+                            onChanged: (name) =>
+                                versionProvider.updateCipherVersion(
+                                  version.copyWith(versionName: name),
                                 ),
-                              ),
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Nome da versão é obrigatório';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        Expanded(
+                          child: TextFormField(
+                            initialValue:
+                                version.transposedKey ?? widget.originalKey,
+                            decoration: const InputDecoration(
+                              labelText: 'Tom',
+                              border: OutlineInputBorder(),
                             ),
-                            const SizedBox(width: 8),
-                            Text(
-                              sectionType?.contentType ?? section,
-                              style: Theme.of(context).textTheme.titleSmall
-                                  ?.copyWith(fontWeight: FontWeight.w600),
-                            ),
-                          ],
+                            onChanged: (key) =>
+                                versionProvider.updateCipherVersion(
+                                  version.copyWith(transposedKey: key),
+                                ),
+                          ),
                         ),
                       ],
-                    ),
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      controller: _sectionControllers[section],
-                      decoration: InputDecoration(
-                        hintText:
-                            'Conteúdo da seção ${sectionType?.contentType ?? section}',
-                        border: const OutlineInputBorder(),
-                      ),
-                      maxLines: null,
-                      keyboardType: TextInputType.multiline,
-                      onChanged: (_) {
-                        _debounceTimer?.cancel();
-                        _debounceTimer = Timer(
-                          const Duration(milliseconds: 300),
-                          () {
-                            _notifySectionChanged();
-                            if (mounted) setState(() {});
-                          },
-                        );
-                      },
                     ),
                   ],
                 ),
               ),
-            );
-          }),
-      ],
+            ),
+
+            // Song Structure Section
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Estrutura da Versão',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    // Quick Add Buttons Row
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: _showPresetSectionsDialog,
+                            icon: const Icon(Icons.library_music),
+                            label: const Text('Seções Predefinidas'),
+                            style: OutlinedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadiusGeometry.all(
+                                  Radius.circular(24),
+                                ),
+                              ),
+                              padding: const EdgeInsets.all(6),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: FilledButton.icon(
+                            onPressed: _showCustomSectionDialog,
+                            icon: const Icon(Icons.add),
+                            label: const Text('Seção Personalizada'),
+                            style: FilledButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadiusGeometry.all(
+                                  Radius.circular(24),
+                                ),
+                              ),
+                              padding: const EdgeInsets.all(6),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    // Draggable Section Chips
+                    ReorderableStructureChips(
+                      songStructure: _songStructure,
+                      sectionTypes: _predefinedSectionTypes,
+                      customSections: _currentSections,
+                      onReorder: _reorderSection,
+                      onRemoveSection: _removeSection,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // Content Section
+            if (uniqueSections.isEmpty)
+              const Padding(
+                padding: EdgeInsets.all(24),
+                child: Text(
+                  'Adicione seções para começar a criar o conteúdo',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.grey),
+                ),
+              )
+            else
+              ...uniqueSections.map((section) {
+                final sectionType = _getSectionType(section);
+
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        sectionType?.contentColor ??
+                                        Colors.grey,
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Text(
+                                    section,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  sectionType?.contentType ?? section,
+                                  style: Theme.of(context).textTheme.titleSmall
+                                      ?.copyWith(fontWeight: FontWeight.w600),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: _sectionControllers[section],
+                          decoration: InputDecoration(
+                            hintText:
+                                'Conteúdo da seção ${sectionType?.contentType ?? section}',
+                            border: const OutlineInputBorder(),
+                          ),
+                          maxLines: null,
+                          keyboardType: TextInputType.multiline,
+                          onChanged: (_) {
+                            _debounceTimer?.cancel();
+                            _debounceTimer = Timer(
+                              const Duration(milliseconds: 300),
+                              () {
+                                _notifySectionChanged();
+                                if (mounted) setState(() {});
+                              },
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+          ],
+        );
+      },
     );
   }
 }

@@ -98,13 +98,13 @@ class PlaylistViewer extends StatelessWidget {
       floatingActionButton: SpeedDial(
         children: [
           SpeedDialChild(
-            onTap: () => _navigateToAddCiphers(context, playlist), 
-            child: Icon(Icons.library_music)
-          ), 
+            onTap: () => _navigateToAddCiphers(context, playlist),
+            child: Icon(Icons.library_music),
+          ),
           SpeedDialChild(
-            onTap: () => _addTextSection(context, playlist), 
-            child: Icon(Icons.text_snippet)
-          )
+            onTap: () => _addTextSection(context, playlist),
+            child: Icon(Icons.text_snippet),
+          ),
         ],
         tooltip: 'Adicionar Cifras',
         child: const Icon(Icons.add),
@@ -175,9 +175,13 @@ class PlaylistViewer extends StatelessWidget {
     if (newIndex > oldIndex) {
       newIndex -= 1;
     }
-    
+
     try {
-      await context.read<PlaylistProvider>().reorderItems(oldIndex, newIndex, playlist);
+      await context.read<PlaylistProvider>().reorderItems(
+        oldIndex,
+        newIndex,
+        playlist,
+      );
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -187,7 +191,8 @@ class PlaylistViewer extends StatelessWidget {
             action: SnackBarAction(
               label: 'Tentar Novamente',
               textColor: Colors.white,
-              onPressed: () => _onReorder(context, playlist, oldIndex, newIndex),
+              onPressed: () =>
+                  _onReorder(context, playlist, oldIndex, newIndex),
             ),
           ),
         );
@@ -233,9 +238,8 @@ class PlaylistViewer extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => PlaylistPresentationScreen(
-          playlistId: playlist.id,
-        ),
+        builder: (context) =>
+            PlaylistPresentationScreen(playlistId: playlist.id),
       ),
     );
   }

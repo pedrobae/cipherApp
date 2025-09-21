@@ -1,7 +1,8 @@
+import 'package:cipher_app/models/domain/cipher/version.dart';
+import 'package:cipher_app/providers/version_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../screens/cipher_viewer.dart';
-import '../../models/domain/cipher/cipher.dart';
 import '../../providers/cipher_provider.dart';
 import '../cipher/editor/custom_reorderable_delayed.dart';
 
@@ -20,7 +21,7 @@ class CipherVersionCard extends StatefulWidget {
 }
 
 class _CipherVersionCardState extends State<CipherVersionCard> {
-  Cipher? _cipher;
+  Version? _version;
   List<String> _songStructureList = [];
   bool _isLoading = true;
 
@@ -31,15 +32,16 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
   }
 
   Future<void> _loadCipher() async {
-    final cipherProvider = context.read<CipherProvider>();
-    final cipher = await cipherProvider.getCipherVersionById(
+    context.read<VersionProvider>().loadCipherVersionById(
       widget.cipherVersionId,
     );
 
-    if (mounted && cipher != null) {
+    final version = context.read<VersionProvider>().version;
+
+    if (mounted && version != null) {
       setState(() {
-        _cipher = cipher;
-        _songStructureList = cipher.versions[0].songStructure
+        _version = version;
+        _songStructureList = version.songStructure
             .split(',')
             .map((s) => s.trim())
             .where((s) => s.isNotEmpty)
@@ -58,10 +60,10 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
     });
 
     // Persist to database (async, no UI blocking)
-    final cipherProvider = context.read<CipherProvider>();
+    final versionProvider = context.read<VersionProvider>();
     final stringStructure = _songStructureList.toString();
-    cipherProvider.updateVersionSongStructure(
-      _cipher!.versions[0].id!,
+    versionProvider.updateVersionSongStructure(
+      _version!.id!,
       stringStructure.substring(1, stringStructure.length - 1),
     );
   }
@@ -71,18 +73,17 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
     if (_isLoading) {
       return const CircularProgressIndicator();
     }
+    final cipherProvider = context.read<CipherProvider>();
 
-    if (_cipher == null) {
-      return const Text('Cifra não encontrada');
-    }
-
-    final version = _cipher!.versions[0];
+    cipherProvider.loadCipherOfVersion(widget.cipherVersionId);
 
     return InkWell(
       onTap: () => Navigator.of(context, rootNavigator: true).push(
         MaterialPageRoute(
-          builder: (context) =>
-              CipherViewer(cipher: _cipher!, version: version),
+          builder: (context) => CipherViewer(
+            cipher: cipherProvider.currentCipher!,
+            version: _version!,
+          ),
         ),
       ),
       child: Card(
@@ -102,12 +103,10 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
                       spacing: 10,
                       children: [
                         Text(
-                          _cipher!.title,
+                          cipherProvider.currentCipher!.title,
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
-                        Text(
-                          'Tom: ${version.transposedKey ?? _cipher!.musicKey}',
-                        ),
+                        Text('Tom: ${_version!.transposedKey!}'),
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -126,7 +125,7 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
                         onReorder: _onReorder,
                         itemBuilder: (context, index) {
                           final sectionCode = _songStructureList[index];
-                          final section = version.sections![sectionCode];
+                          final section = _version!.sections![sectionCode];
 
                           return CustomReorderableDelayed(
                             delay: Duration(milliseconds: 100),

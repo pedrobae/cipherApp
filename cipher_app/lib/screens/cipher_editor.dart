@@ -1,11 +1,10 @@
-import 'package:cipher_app/models/domain/cipher/section.dart';
 import 'package:cipher_app/models/domain/cipher/version.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/cipher_provider.dart';
-import '../models/domain/cipher/cipher.dart';
-import '../widgets/cipher/editor/cipher_basic_info_form.dart';
-import '../widgets/cipher/editor/cipher_section_form.dart';
+import 'package:cipher_app/providers/cipher_provider.dart';
+import 'package:cipher_app/models/domain/cipher/cipher.dart';
+import 'package:cipher_app/widgets/cipher/editor/cipher_basic_info_form.dart';
+import 'package:cipher_app/widgets/cipher/editor/cipher_section_form.dart';
 
 class EditCipher extends StatefulWidget {
   final Cipher? cipher; // Null for create, populated for edit
@@ -38,14 +37,6 @@ class _EditCipherState extends State<EditCipher>
   final _languageController = TextEditingController();
   final _tagsController = TextEditingController();
 
-  // Version-specific controllers
-  final _versionNameController = TextEditingController();
-  final _versionKeyController = TextEditingController();
-
-  // Sections data
-  Map<String, Section> _versionSections = {};
-  List<String> _songStructure = [];
-
   bool get _isEditMode => widget.cipher != null;
   bool get _isNewVersionMode => widget.isNewVersion;
 
@@ -62,9 +53,6 @@ class _EditCipherState extends State<EditCipher>
 
   void _initializeFields() {
     // Always start with blank state for new cipher/version
-    _versionSections = {};
-    _songStructure = [];
-
     if (_isEditMode) {
       final cipher = widget.cipher!;
       _titleController.text = cipher.title;
@@ -73,17 +61,6 @@ class _EditCipherState extends State<EditCipher>
       _musicKeyController.text = cipher.musicKey;
       _languageController.text = cipher.language;
       _tagsController.text = cipher.tags.join(', ');
-
-      if (!_isNewVersionMode && widget.currentVersion != null) {
-        _versionSections = Map.from(widget.currentVersion!.sections!);
-        _songStructure = widget.currentVersion!.songStructure
-            .split(',')
-            .map((s) => s.trim())
-            .where((s) => s.isNotEmpty)
-            .toList();
-        _versionNameController.text = widget.currentVersion!.versionName ?? '';
-        _versionKeyController.text = widget.currentVersion!.transposedKey ?? '';
-      }
     }
   }
 
@@ -116,8 +93,6 @@ class _EditCipherState extends State<EditCipher>
     _musicKeyController.dispose();
     _languageController.dispose();
     _tagsController.dispose();
-    _versionNameController.dispose();
-    _versionKeyController.dispose();
     super.dispose();
   }
 
@@ -169,20 +144,11 @@ class _EditCipherState extends State<EditCipher>
               SingleChildScrollView(
                 padding: const EdgeInsets.all(16.0),
                 child: CipherSectionForm(
-                  cipher: widget.cipher,
-                  currentVersion: widget.currentVersion,
-                  nameController: _versionNameController,
-                  keyController: _versionKeyController,
-                  onSectionChanged: (content) {
-                    setState(() {
-                      _versionSections = content;
-                    });
-                  },
-                  onStructureChanged: (structure) {
-                    setState(() {
-                      _songStructure = structure;
-                    });
-                  },
+                  cipherId: widget.cipher!.id!,
+                  originalKey: widget.cipher!.musicKey,
+                  versionId: widget.isNewVersion
+                      ? null
+                      : widget.currentVersion!.id,
                 ),
               ),
             ],
@@ -200,155 +166,9 @@ class _EditCipherState extends State<EditCipher>
               child: Icon(Icons.delete, color: colorScheme.onErrorContainer),
             ),
           if (_isEditMode) const SizedBox(width: 8),
-          FloatingActionButton.extended(
-            heroTag: 'save',
-            onPressed: _saveCipher,
-            icon: context.watch<CipherProvider>().isSaving
-                ? SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: colorScheme.onPrimary,
-                    ),
-                  )
-                : Icon(_isEditMode ? Icons.save : Icons.add),
-            label: Text('Salvar'),
-          ),
         ],
       ),
     );
-  }
-
-  void _saveCipher() async {
-    if (!_formKey.currentState!.validate()) {
-      // Check which tab has validation errors
-      if ((_versionNameController.text.trim().isEmpty ||
-              _versionKeyController.text.trim().isEmpty) &&
-          (_isEditMode || _isNewVersionMode)) {
-        _tabController.animateTo(1);
-      } else {
-        _tabController.animateTo(0);
-      }
-      return;
-    }
-
-    // Validate that version has content (except when creating cipher without content)
-    if ((_songStructure.isEmpty || _versionSections.isEmpty) &&
-        (_isEditMode || _isNewVersionMode)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Adicione pelo menos uma seção com conteúdo antes de salvar',
-          ),
-          backgroundColor: Colors.orange,
-        ),
-      );
-      _tabController.animateTo(1); // Switch to content tab
-      return;
-    }
-
-    try {
-      // Parse tags
-      final tags = _tagsController.text
-          .split(',')
-          .map((tag) => tag.trim())
-          .where((tag) => tag.isNotEmpty)
-          .toList();
-
-      // Create cipher map for this version (only if has content)
-      Version? version;
-      if (_songStructure.isNotEmpty && _versionSections.isNotEmpty) {
-        version = Version(
-          id: _isNewVersionMode ? null : widget.currentVersion?.id,
-          cipherId: _isEditMode ? widget.cipher!.id! : 0,
-          songStructure: _songStructure.join(','),
-          sections: _versionSections,
-          versionName: _versionNameController.text.trim().isNotEmpty
-              ? _versionNameController.text.trim()
-              : 'Versão sem nome',
-          transposedKey: _versionKeyController.text.trim().isNotEmpty
-              ? _versionKeyController.text.trim()
-              : widget.cipher!.musicKey,
-          createdAt: _isNewVersionMode
-              ? DateTime.now()
-              : widget.currentVersion?.createdAt,
-        );
-      } // Prepare cipher data
-      List<Version> updatedVersions;
-      if (_isNewVersionMode && version != null) {
-        // Adding new version to existing cipher
-        updatedVersions = [...widget.cipher!.versions, version];
-      } else if (_isEditMode &&
-          widget.currentVersion != null &&
-          version != null) {
-        // Editing existing version
-        updatedVersions = widget.cipher!.versions
-            .map((map) => map.id == widget.currentVersion!.id ? version! : map)
-            .toList();
-      } else {
-        // Creating new cipher
-        updatedVersions = version != null ? [version] : [];
-      }
-
-      final cipherData = Cipher(
-        id: _isEditMode ? widget.cipher!.id : null,
-        title: _titleController.text.trim(),
-        author: _authorController.text.trim(),
-        tempo: _tempoController.text.trim(),
-        musicKey: _musicKeyController.text.trim(),
-        language: _languageController.text.trim(),
-        isLocal: true,
-        tags: tags,
-        versions: updatedVersions,
-      );
-
-      final cipherProvider = context.read<CipherProvider>();
-
-      if (_isEditMode) {
-        if (_isNewVersionMode && version != null) {
-          // Adding new version to existing cipher - use specific method
-          await cipherProvider.addCipherVersion(widget.cipher!.id!, version);
-        } else {
-          // Updating existing cipher and/or version
-          await cipherProvider.updateCipher(cipherData);
-        }
-
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                _isNewVersionMode
-                    ? 'Nova versão criada com sucesso!'
-                    : 'Cifra atualizada com sucesso!',
-              ),
-              backgroundColor: Theme.of(context).colorScheme.primary,
-            ),
-          );
-        }
-      } else {
-        await cipherProvider.createCipher(cipherData);
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text('Cifra criada com sucesso!'),
-              backgroundColor: Theme.of(context).colorScheme.primary,
-            ),
-          );
-        }
-      }
-
-      if (mounted) Navigator.pop(context, true);
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erro: ${e.toString()}'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
-      }
-    }
   }
 
   void _showDeleteDialog() {

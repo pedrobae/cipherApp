@@ -103,7 +103,7 @@ class CipherRepository {
     return Future.wait(results.map((row) => _buildCipherVersion(row)));
   }
 
-  Future<Cipher?> getCipherVersionWithId(int versionId) async {
+  Future<Version?> getCipherVersionWithId(int versionId) async {
     final db = await _databaseHelper.database;
     final result = await db.query(
       'version',
@@ -113,10 +113,20 @@ class CipherRepository {
 
     Version version = await (_buildCipherVersion(result[0]));
 
-    return _buildPrunedCipherByVersion(version.cipherId, version);
+    return version;
   }
 
-  Future<int> insertCipherVersion(Version map) async {
+  Future<Cipher?> getCipherWithVersionId(int versionId) async {
+    final db = await _databaseHelper.database;
+    final result = await db.query(
+      'version',
+      where: 'id = ?',
+      whereArgs: [versionId],
+    );
+    return getCipherById(result[0]['cipher_id'] as int);
+  }
+
+  Future<int> insertVersionToCipher(Version map) async {
     final db = await _databaseHelper.database;
     return await db.insert('version', map.toJson());
   }
@@ -296,22 +306,6 @@ class CipherRepository {
   Future<Version> _buildCipherVersion(Map<String, dynamic> row) async {
     final section = await getAllSections(row['id']);
     return Version.fromRow(row).copyWith(content: section);
-  }
-
-  Future<Cipher?> _buildPrunedCipherByVersion(int id, Version version) async {
-    final db = await _databaseHelper.database;
-    final results = await db.query(
-      'cipher',
-      where: 'id = ? AND is_deleted = 0',
-      whereArgs: [id],
-    );
-
-    final tags = await getCipherTags(results[0]['id'] as int);
-
-    if (results.isEmpty) return null;
-    return Cipher.fromJson(
-      results[0],
-    ).copyWith(versions: [version], tags: tags);
   }
 
   // Helper method to add tags within a transaction

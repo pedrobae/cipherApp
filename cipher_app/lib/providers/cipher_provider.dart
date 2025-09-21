@@ -1,9 +1,8 @@
-import 'package:cipher_app/models/domain/cipher/section.dart';
-import 'package:cipher_app/models/domain/cipher/version.dart';
-import 'package:flutter/foundation.dart';
 import 'dart:async';
-import '../models/domain/cipher/cipher.dart';
-import '../repositories/cipher_repository.dart';
+import 'package:flutter/foundation.dart';
+import 'package:cipher_app/models/domain/cipher/cipher.dart';
+import 'package:cipher_app/models/domain/cipher/version.dart';
+import 'package:cipher_app/repositories/cipher_repository.dart';
 
 class CipherProvider extends ChangeNotifier {
   final CipherRepository _cipherRepository = CipherRepository();
@@ -12,6 +11,7 @@ class CipherProvider extends ChangeNotifier {
 
   List<Cipher> _ciphers = [];
   List<Cipher> _filteredCiphers = [];
+  Cipher? _currentCipher;
   bool _isLoading = false;
   bool _isSaving = false;
   String? _error;
@@ -24,12 +24,14 @@ class CipherProvider extends ChangeNotifier {
 
   // Getters
   List<Cipher> get ciphers => _filteredCiphers;
+  Cipher? get currentCipher => _currentCipher;
   bool get isLoading => _isLoading;
   bool get isSaving => _isSaving;
   String? get error => _error;
   bool get useMemoryFiltering => _useMemoryFiltering;
   bool get hasInitialized => _hasInitialized;
 
+  /// ===== READ =====
   // Load ciphers from local SQLite database
   Future<void> loadCiphers() async {
     if (_isLoading) return;
@@ -47,6 +49,48 @@ class CipherProvider extends ChangeNotifier {
       if (kDebugMode) {
         print('Loaded ${_ciphers.length} ciphers from SQLite');
       }
+    } catch (e) {
+      _error = e.toString();
+      if (kDebugMode) {
+        print('Error loading ciphers: $e');
+      }
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> loadCipher(int cipherId) async {
+    if (_isLoading) return;
+
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      _currentCipher = await _cipherRepository.getCipherById(cipherId);
+    } catch (e) {
+      _error = e.toString();
+      if (kDebugMode) {
+        print('Error loading ciphers: $e');
+      }
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> loadCipherOfVersion(int versionId) async {
+    if (_isLoading) return null;
+
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      _currentCipher = await _cipherRepository.getCipherWithVersionId(
+        versionId,
+      );
     } catch (e) {
       _error = e.toString();
       if (kDebugMode) {
@@ -91,6 +135,7 @@ class CipherProvider extends ChangeNotifier {
     _filteredCiphers = List.from(_ciphers);
   }
 
+  /// ===== CREATE =====
   Future<void> createCipher(Cipher cipher) async {
     if (_isSaving) return;
 
@@ -126,7 +171,7 @@ class CipherProvider extends ChangeNotifier {
     for (final version in versions) {
       // Create Version with the correct cipher ID
       final versionWithCipherId = version.copyWith(cipherId: cipherId);
-      final newVersionId = await _cipherRepository.insertCipherVersion(
+      final newVersionId = await _cipherRepository.insertVersionToCipher(
         versionWithCipherId,
       );
 
@@ -146,6 +191,7 @@ class CipherProvider extends ChangeNotifier {
     }
   }
 
+  /// ===== UPDATE =====
   Future<void> updateCipher(Cipher cipher) async {
     if (_isSaving) return;
 
@@ -156,9 +202,6 @@ class CipherProvider extends ChangeNotifier {
     try {
       // Update basic cipher info and tags
       await _cipherRepository.updateCipher(cipher);
-
-      // Update cipher maps and their content
-      await _updateCipherMapsAndContent(cipher);
 
       // Reload all ciphers to get the updated data with relationships
       await loadCiphers();
@@ -173,82 +216,7 @@ class CipherProvider extends ChangeNotifier {
     }
   }
 
-  /// Handle updating cipher maps and their content
-  Future<void> _updateCipherMapsAndContent(Cipher cipher) async {
-    if (cipher.id == null || cipher.versions.isEmpty) return;
-
-    // Get existing maps to determine which ones to update, create, or delete
-    final existingMaps = await _cipherRepository.getCipherVersions(cipher.id!);
-    final existingMapIds = existingMaps
-        .map((m) => m.id)
-        .where((id) => id != null)
-        .toSet();
-    final newMapIds = cipher.versions
-        .map((m) => m.id)
-        .where((id) => id != null)
-        .toSet();
-
-    // Delete maps that are no longer present
-    for (final existingMap in existingMaps) {
-      if (existingMap.id != null && !newMapIds.contains(existingMap.id)) {
-        await _cipherRepository.deleteCipherVersion(existingMap.id!);
-      }
-    }
-
-    // Update or create maps
-    for (final map in cipher.versions) {
-      final mapWithCipherId = map.copyWith(cipherId: cipher.id!);
-
-      if (map.id != null && existingMapIds.contains(map.id)) {
-        // Update existing map
-        await _cipherRepository.updateCipherVersion(mapWithCipherId);
-        await _updateVersionSection(map.id!, map.sections);
-      } else {
-        // Create new map
-        final newMapId = await _cipherRepository.insertCipherVersion(
-          mapWithCipherId,
-        );
-        await _updateVersionSection(newMapId, map.sections);
-      }
-    }
-  }
-
-  /// Handle updating map content
-  Future<void> _updateVersionSection(
-    int mapId,
-    Map<String, Section>? newSection,
-  ) async {
-    if (newSection != null) {
-      // Get existing content
-      final existingContent = await _cipherRepository.getAllSections(mapId);
-
-      // Delete content types that are no longer present
-      for (final contentCode in existingContent.keys) {
-        if (!newSection.containsKey(contentCode)) {
-          // Note: We need a method to delete by mapId and contentType
-          // For now, we'll delete all and recreate (simpler approach)
-        }
-      }
-      // For simplicity, delete all existing content and recreate
-      // This could be optimized later to only update changed content
-      await _cipherRepository.deleteAllVersionSections(mapId);
-
-      // Insert new content
-      for (final entry in newSection.entries) {
-        if (entry.key.isNotEmpty) {
-          final sectionJson = entry.value.toJson();
-          await _cipherRepository.insertSection(
-            mapId,
-            sectionJson['content_type'],
-            sectionJson['content_code'],
-            sectionJson['content_text'],
-            sectionJson['color'],
-          );
-        }
-      }
-    }
-  }
-
+  /// ===== DELETE =====
   Future<void> deleteCipher(int cipherID) async {
     if (_isSaving) return;
 
@@ -280,122 +248,6 @@ class CipherProvider extends ChangeNotifier {
     _error = null;
     _searchTerm = '';
     notifyListeners();
-  }
-
-  // === CIPHER VERSION SPECIFIC OPERATIONS ===
-
-  /// Get cipher data from versionId
-  Future<Cipher?> getCipherVersionById(int versionId) async {
-    return await _cipherRepository.getCipherVersionWithId(versionId);
-  }
-
-  /// Add a new version (CipherMap) to an existing cipher
-  Future<void> addCipherVersion(int cipherId, Version cipherMap) async {
-    if (_isSaving) return;
-
-    _isSaving = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      // Create map with the correct cipher ID
-      final mapWithCipherId = cipherMap.copyWith(cipherId: cipherId);
-      final newMapId = await _cipherRepository.insertCipherVersion(
-        mapWithCipherId,
-      );
-
-      // Insert content for this map
-      await _updateVersionSection(newMapId, cipherMap.sections);
-
-      // Reload all ciphers to get the updated data
-      await loadCiphers();
-    } catch (e) {
-      _error = e.toString();
-      if (kDebugMode) {
-        print('Error adding cipher version: $e');
-      }
-    } finally {
-      _isSaving = false;
-      notifyListeners();
-    }
-  }
-
-  /// Update a specific cipher version (CipherMap)
-  Future<void> updateCipherVersion(Version cipherMap) async {
-    if (_isSaving) return;
-
-    _isSaving = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      await _cipherRepository.updateCipherVersion(cipherMap);
-      await _updateVersionSection(cipherMap.id!, cipherMap.sections);
-
-      // Reload all ciphers to get the updated data
-      await loadCiphers();
-    } catch (e) {
-      _error = e.toString();
-      if (kDebugMode) {
-        print('Error updating cipher version: $e');
-      }
-    } finally {
-      _isSaving = false;
-      notifyListeners();
-    }
-  }
-
-  /// Update the song structure of a specific cipher version
-  Future<void> updateVersionSongStructure(
-    int versionId,
-    String songStructure,
-  ) async {
-    if (_isSaving) return;
-
-    _isSaving = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      await _cipherRepository.updateFieldOfCipherVersion(versionId, {
-        'song_structure': songStructure,
-      });
-
-      // Reload all ciphers to get the updated data
-      await loadCiphers();
-    } catch (e) {
-      _error = e.toString();
-      if (kDebugMode) {
-        print('Error updating cipher version: $e');
-      }
-    } finally {
-      _isSaving = false;
-      notifyListeners();
-    }
-  }
-
-  /// Delete a specific cipher version (CipherMap)
-  Future<void> deleteCipherVersion(int mapId) async {
-    if (_isSaving) return;
-
-    _isSaving = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      await _cipherRepository.deleteCipherVersion(mapId);
-
-      // Reload all ciphers to get the updated data
-      await loadCiphers();
-    } catch (e) {
-      _error = e.toString();
-      if (kDebugMode) {
-        print('Error deleting cipher version: $e');
-      }
-    } finally {
-      _isSaving = false;
-      notifyListeners();
-    }
   }
 
   @override

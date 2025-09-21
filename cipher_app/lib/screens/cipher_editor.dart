@@ -1,21 +1,19 @@
-import 'package:cipher_app/models/domain/cipher/version.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/providers/cipher_provider.dart';
-import 'package:cipher_app/models/domain/cipher/cipher.dart';
 import 'package:cipher_app/widgets/cipher/editor/cipher_basic_info_form.dart';
 import 'package:cipher_app/widgets/cipher/editor/cipher_section_form.dart';
 
 class EditCipher extends StatefulWidget {
-  final Cipher? cipher; // Null for create, populated for edit
-  final Version? currentVersion; // Specific version to edit
+  final int? cipherId; // Null for create, populated for edit
+  final int? versionId; // Specific version to edit
   final bool isNewVersion; // Creating a new version of existing cipher
   final String startTab;
 
   const EditCipher({
     super.key,
-    this.cipher,
-    this.currentVersion,
+    this.cipherId,
+    this.versionId,
     this.isNewVersion = false,
     this.startTab = 'cipher',
   });
@@ -30,14 +28,7 @@ class _EditCipherState extends State<EditCipher>
   late TabController _tabController;
 
   // Basic info controllers
-  final _titleController = TextEditingController();
-  final _authorController = TextEditingController();
-  final _tempoController = TextEditingController();
-  final _musicKeyController = TextEditingController();
-  final _languageController = TextEditingController();
-  final _tagsController = TextEditingController();
-
-  bool get _isEditMode => widget.cipher != null;
+  bool get _isEditMode => widget.cipherId != null;
   bool get _isNewVersionMode => widget.isNewVersion;
 
   @override
@@ -47,20 +38,6 @@ class _EditCipherState extends State<EditCipher>
       _tabController = TabController(length: 2, vsync: this);
     } else {
       _tabController = TabController(length: 1, vsync: this);
-    }
-    _initializeFields();
-  }
-
-  void _initializeFields() {
-    // Always start with blank state for new cipher/version
-    if (_isEditMode) {
-      final cipher = widget.cipher!;
-      _titleController.text = cipher.title;
-      _authorController.text = cipher.author;
-      _tempoController.text = cipher.tempo;
-      _musicKeyController.text = cipher.musicKey;
-      _languageController.text = cipher.language;
-      _tagsController.text = cipher.tags.join(', ');
     }
   }
 
@@ -87,12 +64,6 @@ class _EditCipherState extends State<EditCipher>
   @override
   void dispose() {
     _tabController.dispose();
-    _titleController.dispose();
-    _authorController.dispose();
-    _tempoController.dispose();
-    _musicKeyController.dispose();
-    _languageController.dispose();
-    _tagsController.dispose();
     super.dispose();
   }
 
@@ -128,14 +99,7 @@ class _EditCipherState extends State<EditCipher>
               child: Column(
                 children: [
                   // Basic cipher info
-                  CipherBasicInfoForm(
-                    titleController: _titleController,
-                    authorController: _authorController,
-                    tempoController: _tempoController,
-                    musicKeyController: _musicKeyController,
-                    languageController: _languageController,
-                    tagsController: _tagsController,
-                  ),
+                  CipherBasicInfoForm(cipherId: widget.cipherId!),
                 ],
               ),
             ),
@@ -144,11 +108,8 @@ class _EditCipherState extends State<EditCipher>
               SingleChildScrollView(
                 padding: const EdgeInsets.all(16.0),
                 child: CipherSectionForm(
-                  cipherId: widget.cipher!.id!,
-                  originalKey: widget.cipher!.musicKey,
-                  versionId: widget.isNewVersion
-                      ? null
-                      : widget.currentVersion!.id,
+                  cipherId: widget.cipherId!,
+                  versionId: widget.isNewVersion ? null : widget.versionId,
                 ),
               ),
             ],
@@ -198,7 +159,7 @@ class _EditCipherState extends State<EditCipher>
 
   void _deleteCipher() async {
     try {
-      await context.read<CipherProvider>().deleteCipher(widget.cipher!.id!);
+      await context.read<CipherProvider>().deleteCipher(widget.cipherId!);
       if (mounted) {
         Navigator.pop(context); // Close dialog
         Navigator.pop(context, true); // Close screen

@@ -65,16 +65,10 @@ const Map<String, Color> _defaultSectionColors = {
 };
 
 class CipherSectionForm extends StatefulWidget {
-  final String originalKey;
   final int? versionId;
   final int cipherId;
 
-  const CipherSectionForm({
-    super.key,
-    required this.cipherId,
-    required this.originalKey,
-    this.versionId,
-  });
+  const CipherSectionForm({super.key, required this.cipherId, this.versionId});
 
   @override
   State<CipherSectionForm> createState() => _CipherSectionFormState();
@@ -308,8 +302,7 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
                         ),
                         Expanded(
                           child: TextFormField(
-                            initialValue:
-                                version.transposedKey ?? widget.originalKey,
+                            initialValue: version.transposedKey ?? '',
                             decoration: const InputDecoration(
                               labelText: 'Tom',
                               border: OutlineInputBorder(),

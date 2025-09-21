@@ -1,22 +1,29 @@
 import 'package:flutter/material.dart';
 
 class CipherBasicInfoForm extends StatelessWidget {
-  final TextEditingController titleController;
-  final TextEditingController authorController;
-  final TextEditingController tempoController;
-  final TextEditingController musicKeyController;
-  final TextEditingController languageController;
-  final TextEditingController tagsController;
+  final int cipherId;
 
-  const CipherBasicInfoForm({
-    super.key,
-    required this.titleController,
-    required this.authorController,
-    required this.tempoController,
-    required this.musicKeyController,
-    required this.languageController,
-    required this.tagsController,
-  });
+  CipherBasicInfoForm({super.key, required this.cipherId});
+
+  void _initializeFields() {
+    // Always start with blank state for new cipher/version
+    if (_isEditMode) {
+      final cipher = widget.cipher!;
+      _titleController.text = cipher.title;
+      _authorController.text = cipher.author;
+      _tempoController.text = cipher.tempo;
+      _musicKeyController.text = cipher.musicKey;
+      _languageController.text = cipher.language;
+      _tagsController.text = cipher.tags.join(', ');
+    }
+  }
+
+  final _titleController = TextEditingController();
+  final _authorController = TextEditingController();
+  final _tempoController = TextEditingController();
+  final _musicKeyController = TextEditingController();
+  final _languageController = TextEditingController();
+  final _tagsController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {

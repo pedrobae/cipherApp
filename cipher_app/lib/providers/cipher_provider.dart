@@ -81,7 +81,7 @@ class CipherProvider extends ChangeNotifier {
   }
 
   Future<void> loadCipherOfVersion(int versionId) async {
-    if (_isLoading) return null;
+    if (_isLoading) return;
 
     _isLoading = true;
     _error = null;

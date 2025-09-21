@@ -99,7 +99,7 @@ class _EditCipherState extends State<EditCipher>
               child: Column(
                 children: [
                   // Basic cipher info
-                  CipherBasicInfoForm(cipherId: widget.cipherId!),
+                  CipherBasicInfoForm(),
                 ],
               ),
             ),
@@ -107,10 +107,7 @@ class _EditCipherState extends State<EditCipher>
               // Content Tab
               SingleChildScrollView(
                 padding: const EdgeInsets.all(16.0),
-                child: CipherSectionForm(
-                  cipherId: widget.cipherId!,
-                  versionId: widget.isNewVersion ? null : widget.versionId,
-                ),
+                child: CipherSectionForm(),
               ),
             ],
           ],

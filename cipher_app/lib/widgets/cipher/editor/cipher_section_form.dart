@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cipher_app/providers/cipher_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/models/domain/cipher/section.dart';
@@ -65,10 +66,7 @@ const Map<String, Color> _defaultSectionColors = {
 };
 
 class CipherSectionForm extends StatefulWidget {
-  final int? versionId;
-  final int cipherId;
-
-  const CipherSectionForm({super.key, required this.cipherId, this.versionId});
+  const CipherSectionForm({super.key});
 
   @override
   State<CipherSectionForm> createState() => _CipherSectionFormState();
@@ -227,15 +225,12 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<VersionProvider>(
-      builder: (context, versionProvider, child) {
-        if (widget.versionId != null) {
-          versionProvider.loadVersionById(widget.versionId!);
-        }
-
+    return Consumer2<VersionProvider, CipherProvider>(
+      builder: (context, versionProvider, cipherProvider, child) {
+        final cipher = cipherProvider.currentCipher;
         final version =
             versionProvider.version ??
-            Version(cipherId: widget.cipherId, songStructure: '', sections: {});
+            Version(cipherId: cipher!.id!, songStructure: '', sections: {});
 
         _songStructure = [];
         _currentSections = {};
@@ -289,7 +284,7 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
                                 versionProvider.updateCipherVersion(
                                   version.copyWith(
                                     versionName: name,
-                                    cipherId: widget.cipherId,
+                                    cipherId: cipher!.id,
                                   ),
                                 ),
                             validator: (value) {

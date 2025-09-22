@@ -1,34 +1,8 @@
-# Copilot Instructions for Cipher App
-
-This file was moved from `cipher_app/.github/copilot-instructions.md` to the repository root `.github/copilot-instructions.md` for proper visibility.
-
----
-
-# AI Agent Directives for cipherApp
-
-## Guidance and Mentorship
-- The AI agent should take the role of a mentor by default, guiding users through solutions and best practices rather than directly implementing changes, unless explicitly requested.
-- Encourage user learning and understanding by explaining concepts, suggesting next steps, and providing context for decisions.
-
-## Uncertainty and Honesty
-- If the AI agent is not sure about an answer, it is encouraged to clearly state that it does not know, rather than guessing or making unsupported claims.
-- When information is incomplete or ambiguous, prompt the user for clarification or suggest possible avenues for investigation.
-
-## Collaboration
-- Prioritize collaborative problem-solving and empower users to make informed decisions.
-- Only take direct action (e.g., code changes) when the user requests it or when the situation clearly requires it for progress.
-
----
-
-*These directives are intended to foster a supportive, educational, and transparent environment for all contributors and future AI agents working on the cipherApp project.*
-
 # GitHub Copilot Instructions for Cipher App
 
 ## ✅ Language Configuration - PORTUGUESE UI
 
 **IMPORTANT: The default user interface (UI) language is PORTUGUESE BRAZILIAN.**
-
-✅ **STATUS: SUCCESSFULLY IMPLEMENTED - All user interface has been translated to Brazilian Portuguese.**
 
 ### UI Text Guidelines:
 
@@ -36,7 +10,7 @@ This file was moved from `cipher_app/.github/copilot-instructions.md` to the rep
 2. **Screen titles and buttons must use Portuguese**
 3. **Error messages and feedback must be in Portuguese**
 4. **Tooltips and labels must be in Portuguese**
-5. **Communication and Devlopment should be in english**
+5. **Communication and Development should be in English**
 
 ### Translation Examples Already Implemented:
 
@@ -69,57 +43,182 @@ This file was moved from `cipher_app/.github/copilot-instructions.md` to the rep
 3. Strings shown to users MUST be in Portuguese
 4. Documentation and README can be in Portuguese or English
 
-## Architecture Overview
+## 🏗️ Architecture Overview
 
-This is a Flutter app for managing musical ciphers (chord charts) using a layered architecture:
+This Flutter app manages musical ciphers (chord charts) with a strict layered architecture:
 
-- **Models**: Domain models (`Cipher`, `CipherMap`, `MapContent`, `InfoItem`) in `lib/models/domain/`
-- **Database Layer**: `DatabaseHelper` (singleton) manages SQLite with automatic seeding
-- **Repository Layer**: `CipherRepository`, `InfoRepository` abstract data access and build complete domain objects
-- **Provider Layer**: State management using `ChangeNotifier` pattern (e.g., `CipherProvider`, `InfoProvider`)
-- **UI Layer**: Screens consume providers, widgets are reusable components
+### Core Architecture Pattern
+```
+Database (SQLite) → Repository → Provider (ChangeNotifier) → UI (Screens/Widgets)
+```
 
-**Important**: Both CipherProvider and InfoProvider follow the same architectural pattern:
-`Repository → Provider → UI` (no service layer in between for consistency)
+**Critical**: No service layer exists between Repository and Provider for consistency.
 
-## Critical Database Patterns
+### Domain Model Evolution (UPDATED)
+The app has evolved from legacy `cipher_map`/`map_content` to modern `version`/`section`:
 
-### Database Schema & Relationships
-The app uses a complex relational schema:
-- `cipher` → `cipher_map` (1:many, different versions/keys of same song)
-- `cipher_map` → `map_content` (1:many, verses/chorus blocks in ChordPro format)
-- `cipher` ↔ `tag` (many:many via `cipher_tags` junction table)
-- `app_info` - Standalone table for announcements, news, and events
+- **Cipher**: Base song entity with metadata (`title`, `author`, `musicKey`, `language`, `tags`)
+- **Version**: Different arrangements of same cipher (`song_structure`, `transposed_key`, `version_name`)
+- **Section**: Content blocks within versions (`content_type`, `content_code`, `content_text`, `content_color`)
 
-### Database Helper Singleton
+### Key Directory Structure
+```
+lib/
+├── models/domain/cipher/     # Core domain models (Cipher, Version, Section)
+├── repositories/             # Data access layer (no business logic)
+├── providers/               # State management (ChangeNotifier pattern)
+├── screens/                 # Full-screen UI components
+├── widgets/cipher/editor/   # Specialized cipher editing widgets
+├── helpers/                 # Database setup and utilities
+└── utils/                   # Project-specific utilities (color, string)
+```
+
+## 🗄️ Critical Database Patterns
+
+### Modern Schema (v3)
+```sql
+cipher → version (1:many, different arrangements)
+version → section (1:many, content blocks like verses/chorus)
+cipher ↔ tag (many:many via cipher_tags)
+```
+
+### Database Singleton Pattern
 ```dart
-// Always use the singleton instance
 final dbHelper = DatabaseHelper();
 final db = await dbHelper.database;
 ```
 
-### Automatic Seeding
-Database automatically seeds with sample data on first creation via two mechanisms:
-1. **Primary**: `_onCreate` callback seeds immediately after table creation
-2. **Fallback**: `_initDatabase` checks for empty database and seeds if needed
-
-See `lib/helpers/seed_database.dart` for initial hymns with ChordPro formatted content.
-See `lib/helpers/seed_info.dart` for initial church announcements, events, and news.
-
-### Database Factory Initialization
-Cross-platform database initialization is handled by `DatabaseFactoryHelper`:
-
+### Cross-Platform Database Setup
+**CRITICAL**: Must initialize DatabaseFactory before any database operations:
 ```dart
 // In main.dart
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await DatabaseFactoryHelper.initialize(); // Platform-specific setup
-  runApp(const MyApp());
-}
+await DatabaseFactoryHelper.initialize(); // Handles desktop vs mobile
 
 // In tests
+DatabaseFactoryHelper.initializeForTesting(); // Always uses FFI
+```
+
+### Automatic Seeding
+Database seeds with sample hymns on first creation. Seeds are in `lib/helpers/seed_data/`.
+
+## 🔄 State Management Patterns
+
+### Provider Usage Pattern
+All providers follow identical patterns:
+```dart
+class CipherProvider extends ChangeNotifier {
+  final CipherRepository _repository = CipherRepository();
+  
+  List<Cipher> _ciphers = [];
+  bool _isLoading = false;
+  String? _error;
+  
+  // Load, Create, Update, Delete methods with error handling
+  // Always call notifyListeners() after state changes
+}
+```
+
+### Multi-Provider Setup
+App uses multiple providers in `main.dart`:
+- `CipherProvider` + `VersionProvider` work together for editing
+- `SettingsProvider` + `LayoutSettingsProvider` for configuration
+- Each provider has independent lifecycle
+
+### Critical Provider Patterns
+1. **Always check `_isLoading`** before async operations
+2. **Use `Timer` for debouncing** rapid user input (see `cipher_section_form.dart`)
+3. **Sync state in `didChangeDependencies`** for complex widgets
+4. **Consumer2/Consumer3** for widgets needing multiple providers
+
+## 🎵 Cipher-Specific Patterns
+
+### Section Color System
+Predefined section types with default colors in `cipher_section_form.dart`:
+```dart
+const Map<String, Color> _defaultSectionColors = {
+  'V1': Colors.blue,    // Verse 1
+  'C': Colors.red,      // Chorus  
+  'B': Colors.green,    // Bridge
+  'I': Colors.purple,   // Intro
+};
+```
+
+### Song Structure Format
+Stored as comma-separated codes: `"I,V1,C,V2,C,B,C,F"`
+- Allows reuse of sections (multiple chorus occurrences)
+- Order defines playback sequence
+
+### ChordPro Content Format
+Sections contain ChordPro-formatted text for chord charts:
+```
+[Am]Amazing [F]grace, how [C]sweet the [G]sound
+That [Am]saved a [F]wretch like [C]me
+```
+
+## 🧪 Testing Conventions
+
+### Test Setup Pattern
+```dart
 setUpAll(() {
-  DatabaseFactoryHelper.initializeForTesting(); // Always uses FFI
+  DatabaseFactoryHelper.initializeForTesting();
+});
+
+setUp(() async {
+  dbHelper = DatabaseHelper();
+  await dbHelper.resetDatabase(); // Recreates and seeds
+  repository = CipherRepository();
 });
 ```
+
+### Test Data Expectations
+Seeded database contains 4 hymns: "Amazing Grace", "How Great Thou Art", "Holy Holy Holy", "Be Thou My Vision"
+
+## 🎨 UI Component Patterns
+
+### Widget Organization
+- `lib/widgets/cipher/editor/` - Complex form components for cipher editing
+- `lib/widgets/cipher/viewer/` - Display components for cipher viewing
+- Widgets are highly reusable and provider-agnostic when possible
+
+### Color Utilities
+Custom color handling in `lib/utils/color.dart`:
+```dart
+Color colorFromHex(String? hexColor)  // Handles null safely
+String colorToHex(Color? color)       // Converts back for storage
+```
+
+### Navigation Pattern
+- `AppRoutes` defines static routes and content routes
+- Complex navigation (with parameters) uses `Navigator.push` directly
+- `NavigationProvider` manages bottom navigation state
+
+## 🔧 Development Workflows
+
+### Build & Test Commands
+```powershell
+flutter pub get                    # Install dependencies
+flutter test                       # Run unit tests
+flutter analyze                    # Lint analysis
+flutter run                        # Debug build
+flutter build windows              # Windows desktop build
+```
+
+### Database Operations
+- Database version is currently 3 (handles table renaming migration)
+- Use `resetDatabase()` in tests to ensure clean state
+- Database file: `cipher_app.db` in platform-specific location
+
+### Key Dependencies
+- `provider: ^6.0.5` - State management
+- `sqflite: ^2.3.0` + `sqflite_common_ffi: ^2.3.0` - Cross-platform database
+- `flutter_colorpicker: ^1.0.3` - Section color selection
+- `shared_preferences: ^2.2.2` - Settings persistence
+
+## 🚨 Common Pitfalls
+
+1. **Don't skip `DatabaseFactoryHelper.initialize()`** - causes runtime errors on desktop
+2. **Always dispose TextControllers** in complex forms like `cipher_section_form.dart`
+3. **Use debouncing for form inputs** that trigger provider updates
+4. **Check provider loading states** before navigation or operations
+5. **Maintain Portuguese UI strings** - never hardcode English in user-facing text
 

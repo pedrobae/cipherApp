@@ -6,8 +6,8 @@ import 'package:cipher_app/widgets/cipher/editor/cipher_basic_info_form.dart';
 import 'package:cipher_app/widgets/cipher/editor/cipher_section_form.dart';
 
 class EditCipher extends StatefulWidget {
-  final int? cipherId; // Null for create, populated for edit
-  final int? versionId; // Specific version to edit
+  final int? cipherId; // Null for new cipher, populated for edit
+  final int? versionId; // Null for new version, populate for edit
 
   const EditCipher({super.key, this.cipherId, this.versionId});
 
@@ -17,22 +17,21 @@ class EditCipher extends StatefulWidget {
 
 class _EditCipherState extends State<EditCipher>
     with SingleTickerProviderStateMixin {
-  final _formKey = GlobalKey<FormState>();
   late TabController _tabController;
-  bool _isLoading = true;
+  bool _isLoading = true; // To render the loading screen
   String? _loadError;
 
   // Basic info controllers
-  bool get _isEditMode => widget.cipherId != null;
+  bool get _isNewCipher => widget.cipherId == null;
   bool get _isNewVersion => widget.versionId == null;
 
   @override
   void initState() {
     super.initState();
-    if (_isEditMode) {
-      _tabController = TabController(length: 2, vsync: this);
-    } else {
+    if (_isNewCipher) {
       _tabController = TabController(length: 1, vsync: this);
+    } else {
+      _tabController = TabController(length: 2, vsync: this);
     }
 
     // Load data after the widget is built
@@ -46,29 +45,19 @@ class _EditCipherState extends State<EditCipher>
       final cipherProvider = context.read<CipherProvider>();
       final versionProvider = context.read<VersionProvider>();
 
-      if (_isEditMode && widget.cipherId != null) {
-        // Load the cipher
-        await cipherProvider.loadCipher(widget.cipherId!);
-
-        if (_isNewVersion) {
-          // For new version: load cipher but don't load any existing version
-          // Clear any existing version data to start fresh
-          versionProvider.clearCache();
-        } else {
-          // For editing existing cipher/version: load the specific version if provided
-          if (widget.versionId != null) {
-            await versionProvider.loadVersionById(widget.versionId!);
-          } else {
-            // Load the first version of the cipher for edit mode
-            final cipher = cipherProvider.currentCipher;
-            if (cipher != null && cipher.versions.isNotEmpty) {
-              await versionProvider.loadVersionById(cipher.versions.first.id!);
-            }
-          }
-        }
-      } else {
+      if (_isNewCipher) {
         // For new cipher, clear any existing data
         cipherProvider.clearCurrentCipher();
+      } else {
+        // Load the cipher
+        await cipherProvider.loadCipher(widget.cipherId!);
+        if (_isNewVersion) {
+          // For new version, clear any existing data
+          versionProvider.clearCache();
+        } else {
+          // Load the version
+          await versionProvider.loadVersionById(widget.versionId!);
+        }
       }
 
       if (mounted) {
@@ -89,18 +78,18 @@ class _EditCipherState extends State<EditCipher>
   String _getAppBarTitle() {
     if (_isNewVersion) {
       return 'Nova Versão';
-    } else if (_isEditMode) {
-      return 'Editar Cifra';
-    } else {
+    } else if (_isNewCipher) {
       return 'Nova Cifra';
+    } else {
+      return 'Editar Cifra';
     }
   }
 
   void _navigateStartTab() {
-    if (_isEditMode) {
-      _tabController.animateTo(1);
-    } else {
+    if (_isNewCipher) {
       _tabController.animateTo(0);
+    } else {
+      _tabController.animateTo(1);
     }
   }
 
@@ -164,50 +153,47 @@ class _EditCipherState extends State<EditCipher>
           controller: _tabController,
           tabs: [
             const Tab(text: 'Cifra', icon: Icon(Icons.info_outline)),
-            if (_isEditMode) ...[
+            if (!_isNewCipher) ...[
               const Tab(text: 'Versão', icon: Icon(Icons.music_note)),
             ],
           ],
         ),
       ),
-      body: Form(
-        key: _formKey,
-        child: TabBarView(
-          controller: _tabController,
-          children: [
-            // Basic Info Tab
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          // Basic Info Tab
+          SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                // Basic cipher info
+                CipherBasicInfoForm(),
+              ],
+            ),
+          ),
+          if (!_isNewCipher) ...[
+            // Content Tab
             SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  // Basic cipher info
-                  CipherBasicInfoForm(),
-                ],
-              ),
+              child: CipherSectionForm(),
             ),
-            if (_isEditMode) ...[
-              // Content Tab
-              SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
-                child: CipherSectionForm(),
-              ),
-            ],
           ],
-        ),
-      ),
-      floatingActionButton: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (_isEditMode)
-            FloatingActionButton(
-              heroTag: 'delete',
-              onPressed: _showDeleteDialog,
-              backgroundColor: colorScheme.errorContainer,
-              child: Icon(Icons.delete, color: colorScheme.onErrorContainer),
-            ),
-          if (_isEditMode) const SizedBox(width: 8),
         ],
       ),
+      // floatingActionButton: Row(
+      //   mainAxisSize: MainAxisSize.min,
+      //   children: [
+      //     if (!_isNewCipher)
+      //       FloatingActionButton(
+      //         heroTag: 'delete',
+      //         onPressed: _showDeleteDialog,
+      //         backgroundColor: colorScheme.errorContainer,
+      //         child: Icon(Icons.delete, color: colorScheme.onErrorContainer),
+      //       ),
+      //     if (!_isNewCipher) const SizedBox(width: 8),
+      //   ],
+      // ),
     );
   }
 

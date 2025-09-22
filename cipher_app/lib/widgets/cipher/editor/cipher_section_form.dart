@@ -156,13 +156,6 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
   }
 
   void _notifySectionChanged() {
-    // Ensure controller exists for every section in structure
-    for (final section in _songStructure) {
-      if (!_sectionControllers.containsKey(section)) {
-        _sectionControllers[section] = TextEditingController();
-      }
-    }
-
     // Update content for all sections in structure
     for (final sectionCode in _songStructure) {
       final controller = _sectionControllers[sectionCode];

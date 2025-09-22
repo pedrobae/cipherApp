@@ -18,7 +18,7 @@ class CipherRepository {
       orderBy: 'created_at DESC',
     );
 
-    return Future.wait(results.map((row) => _buildCipher(row)));
+    return Future.wait(results.map((row) => _buildPrunedCipher(row)));
   }
 
   Future<Cipher?> getCipherById(int id) async {
@@ -297,6 +297,13 @@ class CipherRepository {
   // === PRIVATE HELPERS ===
 
   Future<Cipher> _buildCipher(Map<String, dynamic> row) async {
+    final version = await getCipherVersions(row['id']);
+    final tags = await getCipherTags(row['id']);
+
+    return Cipher.fromJson(row).copyWith(versions: version, tags: tags);
+  }
+
+  Future<Cipher> _buildPrunedCipher(Map<String, dynamic> row) async {
     final tags = await getCipherTags(row['id']);
 
     return Cipher.fromJson(row).copyWith(tags: tags);

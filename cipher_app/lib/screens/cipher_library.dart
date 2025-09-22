@@ -1,13 +1,14 @@
-import 'package:cipher_app/models/domain/cipher/cipher.dart';
-import 'package:cipher_app/models/domain/cipher/version.dart';
-import 'package:cipher_app/screens/cipher_viewer.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../widgets/search_app_bar.dart';
-import '../widgets/cipher/cipher_card.dart';
-import '../providers/cipher_provider.dart';
-import '../providers/playlist_provider.dart';
-import 'cipher_editor.dart';
+import 'package:cipher_app/models/domain/cipher/cipher.dart';
+import 'package:cipher_app/models/domain/cipher/version.dart';
+import 'package:cipher_app/widgets/search_app_bar.dart';
+import 'package:cipher_app/widgets/cipher/cipher_card.dart';
+import 'package:cipher_app/providers/cipher_provider.dart';
+import 'package:cipher_app/providers/playlist_provider.dart';
+import 'package:cipher_app/screens/cipher_viewer.dart';
+import 'package:cipher_app/screens/cipher_editor.dart';
 
 class CipherLibraryScreen extends StatefulWidget {
   final bool selectionMode;
@@ -52,15 +53,32 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
   }
 
   void _selectVersion(Version version, Cipher cipher) {
-    if (widget.selectionMode) {
-      context.read<PlaylistProvider>().addCipherMap(
-        widget.playlistId!,
-        version.id!,
+    if (kDebugMode) {
+      print(
+        '_selectVersion called with version: ${version.versionName}, cipher: ${cipher.title}',
       );
+      print('Selection mode: ${widget.selectionMode}');
+      print('Playlist ID: ${widget.playlistId}');
+    }
 
-      context.read<CipherProvider>().clearSearch();
+    if (widget.selectionMode) {
+      try {
+        context.read<PlaylistProvider>().addCipherMap(
+          widget.playlistId!,
+          version.id!,
+        );
 
-      Navigator.pop(context);
+        context.read<CipherProvider>().clearSearch();
+
+        Navigator.pop(context);
+      } catch (error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao adicionar à playlist: $error'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
     } else {
       Navigator.of(context, rootNavigator: true).push(
         MaterialPageRoute(
@@ -192,27 +210,11 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
 
             final cipher = cipherProvider.ciphers[index];
 
-            // In selection mode, filter out ciphers with all versions already added
-            if (widget.selectionMode && widget.excludeVersionIds != null) {
-              final availableVersions = cipher.versions
-                  .where(
-                    (version) =>
-                        !widget.excludeVersionIds!.contains(version.id),
-                  )
-                  .toList();
+            // In selection mode, we can't filter by versions until they're loaded
+            // The filtering will happen in the CipherCard when versions are expanded
+            // For now, show all ciphers and let user expand to see available versions
 
-              // Hide cipher if no available versions
-              if (availableVersions.isEmpty) {
-                return const SizedBox.shrink();
-              }
-            }
-
-            return CipherCard(
-              cipher: cipher,
-              isExpanded: cipherProvider.expandedCipher?.id == cipher.id,
-              onExpand: () => cipherProvider.toggleExpandCipher(cipher.id!),
-              selectVersion: _selectVersion,
-            );
+            return CipherCard(cipher: cipher, selectVersion: _selectVersion);
           },
         ),
       ),

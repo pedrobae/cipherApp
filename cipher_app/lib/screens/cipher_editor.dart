@@ -115,7 +115,6 @@ class _EditCipherState extends State<EditCipher>
         body: const Center(child: CircularProgressIndicator()),
       );
     }
-
     // Handle error state
     if (_loadError != null) {
       return Scaffold(
@@ -141,9 +140,7 @@ class _EditCipherState extends State<EditCipher>
         ),
       );
     }
-
     _navigateStartTab();
-
     return Scaffold(
       appBar: AppBar(
         title: Text(_getAppBarTitle()),

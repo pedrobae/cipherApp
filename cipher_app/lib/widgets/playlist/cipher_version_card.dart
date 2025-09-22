@@ -36,7 +36,7 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
 
     final version = context.read<VersionProvider>().version;
 
-    if (mounted && version != null) {
+    if (mounted) {
       setState(() {
         _version = version;
         _songStructure = version.songStructure
@@ -74,7 +74,7 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
       onTap: () => Navigator.of(context, rootNavigator: true).push(
         MaterialPageRoute(
           builder: (context) => CipherViewer(
-            cipher: cipherProvider.currentCipher!,
+            cipher: cipherProvider.currentCipher,
             version: _version!,
           ),
         ),
@@ -96,7 +96,7 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
                       spacing: 10,
                       children: [
                         Text(
-                          cipherProvider.currentCipher!.title,
+                          cipherProvider.currentCipher.title,
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         Text('Tom: ${_version!.transposedKey!}'),

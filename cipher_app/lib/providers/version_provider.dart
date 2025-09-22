@@ -14,7 +14,7 @@ class VersionProvider extends ChangeNotifier {
   String? _error;
 
   // Getters
-  Version? get version => _version;
+  Version get version => _version;
   bool get isLoading => _isLoading;
   bool get isSaving => _isSaving;
   String? get error => _error;
@@ -129,8 +129,8 @@ class VersionProvider extends ChangeNotifier {
   // Reorder and cache a new structure
   void cacheReorderedStructure(int oldIndex, int newIndex) {
     if (newIndex > oldIndex) newIndex--;
-    final item = version!.songStructure.removeAt(oldIndex);
-    version!.songStructure.insert(newIndex, item);
+    final item = version.songStructure.removeAt(oldIndex);
+    version.songStructure.insert(newIndex, item);
   }
 
   /// ===== DELETE - cipher version =====
@@ -165,13 +165,13 @@ class VersionProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _cipherRepository.updateCipherVersion(version!);
+      await _cipherRepository.updateCipherVersion(version);
       // Insert content for this map
       await _saveSections();
 
       // Reload version to get the updated data
       if (kDebugMode) {
-        print('Saved version with id ${version!.id}');
+        print('Saved version with id ${version.id}');
       }
     } catch (e) {
       _error = e.toString();
@@ -222,17 +222,17 @@ class VersionProvider extends ChangeNotifier {
   /// ===== SAVE =====
   // Persist the data to the database
   Future<void> _saveSections() async {
-    if (version!.sections != null) {
+    if (version.sections != null) {
       // For simplicity, delete all existing content and recreate
       // This could be optimized later to only update changed content
-      await _cipherRepository.deleteAllVersionSections(version!.id!);
+      await _cipherRepository.deleteAllVersionSections(version.id!);
 
       // Insert new content
-      for (final entry in version!.sections!.entries) {
+      for (final entry in version.sections!.entries) {
         if (entry.key.isNotEmpty) {
           final sectionJson = entry.value.toJson();
           await _cipherRepository.insertSection(
-            version!.id!,
+            version.id!,
             sectionJson['content_type'],
             sectionJson['content_code'],
             sectionJson['content_text'],

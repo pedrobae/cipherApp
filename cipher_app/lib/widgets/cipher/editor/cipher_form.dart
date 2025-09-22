@@ -35,23 +35,13 @@ class _CipherFormState extends State<CipherForm> {
     final cipher = cipherProvider.currentCipher;
 
     // Only sync if cipher has changed or if we haven't initialized yet
-    if (!_hasInitialized || _lastSyncedCipher?.id != cipher?.id) {
-      if (cipher != null) {
-        titleController.text = cipher.title;
-        authorController.text = cipher.author;
-        tempoController.text = cipher.tempo;
-        musicKeyController.text = cipher.musicKey;
-        languageController.text = cipher.language;
-        tagsController.text = cipher.tags.join(', ');
-      } else {
-        // Clear form for new cipher
-        titleController.clear();
-        authorController.clear();
-        tempoController.clear();
-        musicKeyController.clear();
-        languageController.clear();
-        tagsController.clear();
-      }
+    if (!_hasInitialized || _lastSyncedCipher?.id != cipher.id) {
+      titleController.text = cipher.title;
+      authorController.text = cipher.author;
+      tempoController.text = cipher.tempo;
+      musicKeyController.text = cipher.musicKey;
+      languageController.text = cipher.language;
+      tagsController.text = cipher.tags.join(', ');
       _hasInitialized = true;
       _lastSyncedCipher = cipher;
     }

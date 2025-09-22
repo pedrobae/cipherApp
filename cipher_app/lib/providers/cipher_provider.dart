@@ -11,6 +11,7 @@ class CipherProvider extends ChangeNotifier {
   List<Cipher> _ciphers = [];
   List<Cipher> _filteredCiphers = [];
   Cipher _currentCipher = Cipher.empty();
+  Cipher? _expandedCipher;
   bool _isLoading = false;
   bool _isSaving = false;
   String? _error;
@@ -23,7 +24,8 @@ class CipherProvider extends ChangeNotifier {
 
   // Getters
   List<Cipher> get ciphers => _filteredCiphers;
-  Cipher? get currentCipher => _currentCipher;
+  Cipher get currentCipher => _currentCipher;
+  Cipher? get expandedCipher => _expandedCipher;
   bool get isLoading => _isLoading;
   bool get isSaving => _isSaving;
   String? get error => _error;
@@ -41,7 +43,7 @@ class CipherProvider extends ChangeNotifier {
 
     try {
       _useMemoryFiltering = true;
-      _ciphers = await _cipherRepository.getAllCiphers();
+      _ciphers = await _cipherRepository.getAllCiphersPruned();
       _filterCiphers();
       _hasLoadedCiphers = true;
 
@@ -104,6 +106,27 @@ class CipherProvider extends ChangeNotifier {
     }
   }
 
+  // Load expanded cipher for detailed view
+  Future<void> loadExpandedCipher(int cipherId) async {
+    if (_isLoading) return;
+
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      _expandedCipher = (await _cipherRepository.getCipherById(cipherId))!;
+    } catch (e) {
+      _error = e.toString();
+      if (kDebugMode) {
+        print('Error loading expanded cipher: $e');
+      }
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   // Search functionality
   Future<void> searchCiphers(String term) async {
     _searchTerm = term.toLowerCase();
@@ -147,7 +170,7 @@ class CipherProvider extends ChangeNotifier {
 
     try {
       // Insert basic cipher info and tags
-      final cipherId = await _cipherRepository.insertCipher(currentCipher!);
+      final cipherId = await _cipherRepository.insertCipher(currentCipher);
 
       // Load the new ID into the current cipher cache
       _currentCipher = _currentCipher.copyWith(id: cipherId);
@@ -158,6 +181,7 @@ class CipherProvider extends ChangeNotifier {
       }
     } finally {
       _isSaving = false;
+      updateCurrentCipherInList();
       notifyListeners();
     }
   }
@@ -172,7 +196,7 @@ class CipherProvider extends ChangeNotifier {
 
     try {
       // Update basic cipher info and tags
-      await _cipherRepository.updateCipher(currentCipher!);
+      await _cipherRepository.updateCipher(currentCipher);
     } catch (e) {
       _error = e.toString();
       if (kDebugMode) {
@@ -180,6 +204,7 @@ class CipherProvider extends ChangeNotifier {
       }
     } finally {
       _isSaving = false;
+      updateCurrentCipherInList();
       notifyListeners();
     }
   }
@@ -190,15 +215,15 @@ class CipherProvider extends ChangeNotifier {
       print('Caching change for field $field: $change');
     }
     if (field == 'title') {
-      _currentCipher = currentCipher!.copyWith(title: change);
+      _currentCipher = currentCipher.copyWith(title: change);
     } else if (field == 'author') {
-      _currentCipher = currentCipher!.copyWith(author: change);
+      _currentCipher = currentCipher.copyWith(author: change);
     } else if (field == 'tempo') {
-      _currentCipher = currentCipher!.copyWith(tempo: change);
+      _currentCipher = currentCipher.copyWith(tempo: change);
     } else if (field == 'musicKey') {
-      _currentCipher = currentCipher!.copyWith(musicKey: change);
+      _currentCipher = currentCipher.copyWith(musicKey: change);
     } else if (field == 'language') {
-      _currentCipher = currentCipher!.copyWith(language: change);
+      _currentCipher = currentCipher.copyWith(language: change);
     }
   }
 
@@ -209,7 +234,7 @@ class CipherProvider extends ChangeNotifier {
         .map((tag) => tag.trim())
         .where((tag) => tag.isNotEmpty)
         .toList();
-    _currentCipher = currentCipher!.copyWith(tags: tagList);
+    _currentCipher = currentCipher.copyWith(tags: tagList);
   }
 
   /// ===== DELETE =====
@@ -251,6 +276,34 @@ class CipherProvider extends ChangeNotifier {
   /// Clear current cipher to create a new cipher
   void clearCurrentCipher() {
     _currentCipher = Cipher.empty();
+    notifyListeners();
+  }
+
+  /// On currentCipher database persistence update the _ciphers list to reflect changes
+  void updateCurrentCipherInList() {
+    if (_currentCipher.id == null) {
+      if (kDebugMode) {
+        print('Current cipher has no ID, cannot update in list');
+      }
+      return;
+    }
+
+    int index = _ciphers.indexWhere((c) => c.id == _currentCipher.id);
+    if (index != -1) {
+      _ciphers[index] = _currentCipher;
+    } else {
+      _ciphers.add(_currentCipher);
+    }
+    _filterCiphers();
+  }
+
+  /// Toggle expanded cipher for detailed view
+  void toggleExpandCipher(int cipherId) {
+    if (_expandedCipher?.id == cipherId) {
+      _expandedCipher = null;
+    } else {
+      loadExpandedCipher(cipherId);
+    }
     notifyListeners();
   }
 

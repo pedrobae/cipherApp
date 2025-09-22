@@ -38,7 +38,7 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
   Future<void> _loadCipher() async {
     final cipherProvider = context.read<CipherProvider>();
     cipherProvider.loadCipherOfVersion(widget.versionId);
-    final Cipher? cipher = cipherProvider.currentCipher;
+    final Cipher cipher = cipherProvider.currentCipher;
 
     if (mounted) {
       setState(() {

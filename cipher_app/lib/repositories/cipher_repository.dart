@@ -10,7 +10,7 @@ class CipherRepository {
 
   // === CORE CIPHER OPERATIONS ===
 
-  Future<List<Cipher>> getAllCiphers() async {
+  Future<List<Cipher>> getAllCiphersPruned() async {
     final db = await _databaseHelper.database;
     final results = await db.query(
       'cipher',
@@ -297,10 +297,9 @@ class CipherRepository {
   // === PRIVATE HELPERS ===
 
   Future<Cipher> _buildCipher(Map<String, dynamic> row) async {
-    final version = await getCipherVersions(row['id']);
     final tags = await getCipherTags(row['id']);
 
-    return Cipher.fromJson(row).copyWith(versions: version, tags: tags);
+    return Cipher.fromJson(row).copyWith(tags: tags);
   }
 
   Future<Version> _buildCipherVersion(Map<String, dynamic> row) async {

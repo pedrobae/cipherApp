@@ -31,7 +31,6 @@ class CipherLibraryScreen extends StatefulWidget {
 
 class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
   final TextEditingController _searchController = TextEditingController();
-  int? _expandedCipherId;
   bool _hasInitialized = false;
 
   @override
@@ -50,12 +49,6 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
         }
       });
     }
-  }
-
-  void _onExpand(int cipherId) {
-    setState(() {
-      _expandedCipherId = cipherId;
-    });
   }
 
   void _selectVersion(Version version, Cipher cipher) {
@@ -216,8 +209,8 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
 
             return CipherCard(
               cipher: cipher,
-              isExpanded: _expandedCipherId == cipher.id,
-              onExpand: () => _onExpand(cipher.id!),
+              isExpanded: cipherProvider.expandedCipher?.id == cipher.id,
+              onExpand: () => cipherProvider.toggleExpandCipher(cipher.id!),
               selectVersion: _selectVersion,
             );
           },

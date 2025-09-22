@@ -36,10 +36,10 @@ class _VersionFormState extends State<VersionForm> {
     );
     final version = versionProvider.version;
 
-    if (version?.sections != null) {
-      if (!_hasInitialized || _lastSyncedVersion?.id != version?.id) {
+    if (version.sections != null) {
+      if (!_hasInitialized || _lastSyncedVersion?.id != version.id) {
         // Update controllers for existing sections
-        version!.sections!.forEach((key, section) {
+        version.sections!.forEach((key, section) {
           if (!_sectionControllers.containsKey(key)) {
             _sectionControllers[key] = TextEditingController();
           }
@@ -152,10 +152,7 @@ class _VersionFormState extends State<VersionForm> {
           _syncWithProviderData();
         });
 
-        final cipher = cipherProvider.currentCipher;
-        final version =
-            versionProvider.version ??
-            Version(cipherId: cipher?.id ?? 0, songStructure: [], sections: {});
+        final version = versionProvider.version;
 
         final uniqueSections = version.songStructure.toSet().toList();
 

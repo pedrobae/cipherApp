@@ -239,6 +239,7 @@ class CipherProvider extends ChangeNotifier {
     }
   }
 
+  /// ===== UTILS =====
   /// Clear cached data and reset state for debugging
   void clearCache() {
     _ciphers.clear();
@@ -247,6 +248,12 @@ class CipherProvider extends ChangeNotifier {
     _isSaving = false;
     _error = null;
     _searchTerm = '';
+    notifyListeners();
+  }
+
+  /// Clear current cipher to create a new cipher
+  void clearCurrentCipher() {
+    _currentCipher = null;
     notifyListeners();
   }
 

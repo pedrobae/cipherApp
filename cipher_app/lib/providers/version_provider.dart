@@ -158,6 +158,12 @@ class VersionProvider extends ChangeNotifier {
     }
   }
 
+  /// ===== UTILS =====
+  // Clear Cache to create a new version
+  void clearCache() {
+    _version = null;
+  }
+
   /// Handle updating / creating version section
   Future<void> _insertVersionSections(
     int mapId,

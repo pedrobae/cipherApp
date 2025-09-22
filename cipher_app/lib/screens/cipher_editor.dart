@@ -58,20 +58,25 @@ class _EditCipherState extends State<EditCipher>
         // Load the cipher
         await cipherProvider.loadCipher(widget.cipherId!);
 
-        // Load the specific version if provided
-        if (widget.versionId != null) {
-          await versionProvider.loadVersionById(widget.versionId!);
+        if (_isNewVersionMode) {
+          // For new version: load cipher but don't load any existing version
+          // Clear any existing version data to start fresh
+          versionProvider.clearCache();
         } else {
-          // Load the first version of the cipher for edit mode
-          final cipher = cipherProvider.currentCipher;
-          if (cipher != null && cipher.versions.isNotEmpty) {
-            await versionProvider.loadVersionById(cipher.versions.first.id!);
+          // For editing existing cipher/version: load the specific version if provided
+          if (widget.versionId != null) {
+            await versionProvider.loadVersionById(widget.versionId!);
+          } else {
+            // Load the first version of the cipher for edit mode
+            final cipher = cipherProvider.currentCipher;
+            if (cipher != null && cipher.versions.isNotEmpty) {
+              await versionProvider.loadVersionById(cipher.versions.first.id!);
+            }
           }
         }
       } else {
         // For new cipher, clear any existing data
-        cipherProvider.clearCache();
-        // VersionProvider doesn't need clearing as it will be null
+        cipherProvider.clearCurrentCipher();
       }
 
       if (mounted) {

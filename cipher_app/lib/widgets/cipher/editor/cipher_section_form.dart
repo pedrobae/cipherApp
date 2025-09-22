@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cipher_app/models/domain/cipher/cipher.dart';
 import 'package:cipher_app/providers/cipher_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -79,9 +80,70 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
   List<String> _songStructure = [];
   Timer? _debounceTimer;
 
+  // Track last synced data to avoid unnecessary rebuilds
+  Version? _lastSyncedVersion;
+  bool _hasInitialized = false;
+
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _syncWithProviderData();
+  }
+
+  void _syncWithProviderData() {
+    final versionProvider = Provider.of<VersionProvider>(
+      context,
+      listen: false,
+    );
+    final cipherProvider = Provider.of<CipherProvider>(context, listen: false);
+
+    final cipher = cipherProvider.currentCipher;
+    final version = versionProvider.version;
+
+    // Only sync if version has changed or if we haven't initialized yet
+    if (!_hasInitialized || _lastSyncedVersion?.id != version?.id) {
+      _updateStateFromProviders(cipher, version);
+      _hasInitialized = true;
+      _lastSyncedVersion = version;
+    }
+  }
+
+  void _updateStateFromProviders(Cipher? cipher, Version? version) {
+    // Handle the case where we have providers with data
+    if (version != null) {
+      _songStructure = version.songStructure
+          .split(',')
+          .map((s) => s.trim())
+          .where((s) => s.isNotEmpty)
+          .toList();
+      _currentSections = Map.from(version.sections ?? {});
+    } else {
+      // For new ciphers, start with empty state
+      _songStructure = [];
+      _currentSections = {};
+    }
+
+    // Update controllers for existing sections
+    _currentSections.forEach((key, section) {
+      if (!_sectionControllers.containsKey(key)) {
+        _sectionControllers[key] = TextEditingController();
+      }
+      _sectionControllers[key]!.text = section.contentText;
+    });
+
+    // Remove controllers for sections that no longer exist
+    final keysToRemove = _sectionControllers.keys
+        .where((key) => !_currentSections.containsKey(key))
+        .toList();
+    for (final key in keysToRemove) {
+      _sectionControllers[key]?.dispose();
+      _sectionControllers.remove(key);
+    }
   }
 
   @override
@@ -227,27 +289,15 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
   Widget build(BuildContext context) {
     return Consumer2<VersionProvider, CipherProvider>(
       builder: (context, versionProvider, cipherProvider, child) {
+        // Trigger sync after the current build if needed
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _syncWithProviderData();
+        });
+
         final cipher = cipherProvider.currentCipher;
         final version =
             versionProvider.version ??
-            Version(cipherId: cipher!.id!, songStructure: '', sections: {});
-
-        _songStructure = [];
-        _currentSections = {};
-
-        _songStructure = version.songStructure
-            .split(',')
-            .map((s) => s.trim())
-            .where((s) => s.isNotEmpty)
-            .toList();
-        _currentSections = Map.from(version.sections!);
-
-        // Create controllers for all existing sections
-        _currentSections.forEach((key, section) {
-          _sectionControllers[key] = TextEditingController(
-            text: section.contentText,
-          );
-        });
+            Version(cipherId: cipher?.id ?? 0, songStructure: '', sections: {});
 
         final uniqueSections = _songStructure.toSet().toList();
 

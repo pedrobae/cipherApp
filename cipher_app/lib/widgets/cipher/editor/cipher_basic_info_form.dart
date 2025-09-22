@@ -1,31 +1,78 @@
+import 'package:cipher_app/models/domain/cipher/cipher.dart';
 import 'package:cipher_app/providers/cipher_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class CipherBasicInfoForm extends StatelessWidget {
+class CipherBasicInfoForm extends StatefulWidget {
   const CipherBasicInfoForm({super.key});
+
+  @override
+  State<CipherBasicInfoForm> createState() => _CipherBasicInfoFormState();
+}
+
+class _CipherBasicInfoFormState extends State<CipherBasicInfoForm> {
+  final titleController = TextEditingController();
+  final authorController = TextEditingController();
+  final tempoController = TextEditingController();
+  final musicKeyController = TextEditingController();
+  final languageController = TextEditingController();
+  final tagsController = TextEditingController();
+  
+  Cipher? _lastSyncedCipher;
+  bool _hasInitialized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _syncWithProviderData();
+  }
+
+  void _syncWithProviderData() {
+    final cipherProvider = Provider.of<CipherProvider>(context, listen: false);
+    final cipher = cipherProvider.currentCipher;
+
+    // Only sync if cipher has changed or if we haven't initialized yet
+    if (!_hasInitialized || _lastSyncedCipher?.id != cipher?.id) {
+      if (cipher != null) {
+        titleController.text = cipher.title;
+        authorController.text = cipher.author;
+        tempoController.text = cipher.tempo;
+        musicKeyController.text = cipher.musicKey;
+        languageController.text = cipher.language;
+        tagsController.text = cipher.tags.join(', ');
+      } else {
+        // Clear form for new cipher
+        titleController.clear();
+        authorController.clear();
+        tempoController.clear();
+        musicKeyController.clear();
+        languageController.clear();
+        tagsController.clear();
+      }
+      _hasInitialized = true;
+      _lastSyncedCipher = cipher;
+    }
+  }
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    authorController.dispose();
+    tempoController.dispose();
+    musicKeyController.dispose();
+    languageController.dispose();
+    tagsController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<CipherProvider>(
       builder: (context, cipherProvider, child) {
-        final cipher = cipherProvider.currentCipher;
-
-        final titleController = TextEditingController();
-        final authorController = TextEditingController();
-        final tempoController = TextEditingController();
-        final musicKeyController = TextEditingController();
-        final languageController = TextEditingController();
-        final tagsController = TextEditingController();
-
-        if (cipher != null) {
-          titleController.text = cipher.title;
-          authorController.text = cipher.author;
-          tempoController.text = cipher.tempo;
-          musicKeyController.text = cipher.musicKey;
-          languageController.text = cipher.language;
-          tagsController.text = cipher.tags.join(', ');
-        }
+        // Trigger sync after the current build if needed
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _syncWithProviderData();
+        });
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

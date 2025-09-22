@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/providers/cipher_provider.dart';
+import 'package:cipher_app/providers/version_provider.dart';
 import 'package:cipher_app/widgets/cipher/editor/cipher_basic_info_form.dart';
 import 'package:cipher_app/widgets/cipher/editor/cipher_section_form.dart';
 
@@ -26,6 +27,8 @@ class _EditCipherState extends State<EditCipher>
     with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   late TabController _tabController;
+  bool _isLoading = true;
+  String? _loadError;
 
   // Basic info controllers
   bool get _isEditMode => widget.cipherId != null;
@@ -38,6 +41,51 @@ class _EditCipherState extends State<EditCipher>
       _tabController = TabController(length: 2, vsync: this);
     } else {
       _tabController = TabController(length: 1, vsync: this);
+    }
+
+    // Load data after the widget is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadData();
+    });
+  }
+
+  Future<void> _loadData() async {
+    try {
+      final cipherProvider = context.read<CipherProvider>();
+      final versionProvider = context.read<VersionProvider>();
+
+      if (_isEditMode && widget.cipherId != null) {
+        // Load the cipher
+        await cipherProvider.loadCipher(widget.cipherId!);
+
+        // Load the specific version if provided
+        if (widget.versionId != null) {
+          await versionProvider.loadVersionById(widget.versionId!);
+        } else {
+          // Load the first version of the cipher for edit mode
+          final cipher = cipherProvider.currentCipher;
+          if (cipher != null && cipher.versions.isNotEmpty) {
+            await versionProvider.loadVersionById(cipher.versions.first.id!);
+          }
+        }
+      } else {
+        // For new cipher, clear any existing data
+        cipherProvider.clearCache();
+        // VersionProvider doesn't need clearing as it will be null
+      }
+
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _loadError = e.toString();
+        });
+      }
     }
   }
 
@@ -71,6 +119,45 @@ class _EditCipherState extends State<EditCipher>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+
+    // Handle loading state
+    if (_isLoading) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(_getAppBarTitle()),
+          backgroundColor: colorScheme.surface,
+          foregroundColor: colorScheme.onSurface,
+        ),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    // Handle error state
+    if (_loadError != null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(_getAppBarTitle()),
+          backgroundColor: colorScheme.surface,
+          foregroundColor: colorScheme.onSurface,
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.error_outline, size: 64, color: colorScheme.error),
+              const SizedBox(height: 16),
+              Text('Erro ao carregar dados: $_loadError'),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Voltar'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     _navigateStartTab();
 
     return Scaffold(

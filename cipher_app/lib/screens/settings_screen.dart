@@ -325,12 +325,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
         'cipher',
         'tag',
         'cipher_tags',
-        'cipher_map',
-        'map_content',
+        'version',
+        'section',
         'user',
         'playlist',
-        'playlist_cipher_map',
-        'user_playlist',
+        'playlist_text',
         'app_info',
       ];
       final Map<String, int> tableCounts = {};

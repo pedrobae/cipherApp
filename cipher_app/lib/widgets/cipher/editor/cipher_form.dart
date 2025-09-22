@@ -59,6 +59,7 @@ class _CipherFormState extends State<CipherForm> {
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
     titleController.dispose();
     authorController.dispose();
     tempoController.dispose();
@@ -81,6 +82,8 @@ class _CipherFormState extends State<CipherForm> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _buildTextField(
+              field: 'title',
+              cipherProvider: cipherProvider,
               context: context,
               controller: titleController,
               label: 'Título',
@@ -92,6 +95,8 @@ class _CipherFormState extends State<CipherForm> {
             const SizedBox(height: 16),
 
             _buildTextField(
+              field: 'author',
+              cipherProvider: cipherProvider,
               context: context,
               controller: authorController,
               label: 'Autor',
@@ -104,6 +109,8 @@ class _CipherFormState extends State<CipherForm> {
               children: [
                 Expanded(
                   child: _buildTextField(
+                    field: 'musicKey',
+                    cipherProvider: cipherProvider,
                     context: context,
                     controller: musicKeyController,
                     label: 'Tom',
@@ -116,6 +123,8 @@ class _CipherFormState extends State<CipherForm> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: _buildTextField(
+                    field: 'tempo',
+                    cipherProvider: cipherProvider,
                     context: context,
                     controller: tempoController,
                     label: 'Tempo',
@@ -128,6 +137,8 @@ class _CipherFormState extends State<CipherForm> {
             const SizedBox(height: 16),
 
             _buildTextField(
+              field: 'language',
+              cipherProvider: cipherProvider,
               context: context,
               controller: languageController,
               label: 'Idioma',
@@ -137,6 +148,8 @@ class _CipherFormState extends State<CipherForm> {
             const SizedBox(height: 16),
 
             _buildTextField(
+              field: 'tags',
+              cipherProvider: cipherProvider,
               context: context,
               controller: tagsController,
               label: 'Tags (opcional)',
@@ -155,6 +168,8 @@ class _CipherFormState extends State<CipherForm> {
     required TextEditingController controller,
     required String label,
     required String hint,
+    required CipherProvider cipherProvider,
+    required String field,
     String? Function(String?)? validator,
     IconData? prefixIcon,
     int? maxLines = 1,
@@ -163,6 +178,16 @@ class _CipherFormState extends State<CipherForm> {
     final colorScheme = theme.colorScheme;
 
     return TextFormField(
+      onChanged: (value) {
+        _debounceTimer?.cancel();
+        _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+          if (field != 'tags') {
+            cipherProvider.cacheCipherUpdates(field, value);
+          } else {
+            cipherProvider.cacheCipherTagUpdates(value);
+          }
+        });
+      },
       controller: controller,
       validator: validator,
       maxLines: maxLines,

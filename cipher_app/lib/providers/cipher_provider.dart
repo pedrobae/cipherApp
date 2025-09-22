@@ -32,7 +32,7 @@ class CipherProvider extends ChangeNotifier {
   bool get hasInitialized => _hasInitialized;
 
   /// ===== READ =====
-  // Load ciphers from local SQLite database
+  // Load all ciphers from local SQLite database into cache
   Future<void> loadCiphers() async {
     if (_isLoading) return;
 
@@ -60,6 +60,7 @@ class CipherProvider extends ChangeNotifier {
     }
   }
 
+  // Load single cipher into cache
   Future<void> loadCipher(int cipherId) async {
     if (_isLoading) return;
 
@@ -80,6 +81,7 @@ class CipherProvider extends ChangeNotifier {
     }
   }
 
+  // Load single cipher into cache by Version Id
   Future<void> loadCipherOfVersion(int versionId) async {
     if (_isLoading) return;
 
@@ -234,6 +236,31 @@ class CipherProvider extends ChangeNotifier {
       _isSaving = false;
       notifyListeners();
     }
+  }
+
+  // Update cache with non tag changes
+  void cacheCipherUpdates(String field, String change) {
+    if (field == 'title') {
+      _currentCipher = currentCipher!.copyWith(title: change);
+    } else if (field == 'author') {
+      _currentCipher = currentCipher!.copyWith(author: change);
+    } else if (field == 'tempo') {
+      _currentCipher = currentCipher!.copyWith(tempo: change);
+    } else if (field == 'musicKey') {
+      _currentCipher = currentCipher!.copyWith(musicKey: change);
+    } else if (field == 'language') {
+      _currentCipher = currentCipher!.copyWith(language: change);
+    }
+  }
+
+  // Update cache with tag changes
+  void cacheCipherTagUpdates(String tags) {
+    List<String> tagList = tags
+        .split(',')
+        .map((tag) => tag.trim())
+        .where((tag) => tag.isNotEmpty)
+        .toList();
+    _currentCipher = currentCipher!.copyWith(tags: tagList);
   }
 
   /// ===== DELETE =====

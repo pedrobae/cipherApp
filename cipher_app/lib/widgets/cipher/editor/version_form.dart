@@ -17,17 +17,11 @@ class VersionForm extends StatefulWidget {
 
 class _VersionFormState extends State<VersionForm> {
   final Map<String, TextEditingController> _sectionControllers = {};
-
   Timer? _debounceTimer;
 
   // Track last synced data to avoid unnecessary rebuilds
   Version? _lastSyncedVersion;
   bool _hasInitialized = false;
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   void didChangeDependencies() {
@@ -365,7 +359,6 @@ class _VersionFormState extends State<VersionForm> {
                               const Duration(milliseconds: 300),
                               () {
                                 _changeSection(sectionCode, versionProvider);
-                                if (mounted) setState(() {});
                               },
                             );
                           },

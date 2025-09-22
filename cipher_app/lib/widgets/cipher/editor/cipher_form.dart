@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:cipher_app/models/domain/cipher/cipher.dart';
 import 'package:cipher_app/providers/cipher_provider.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,8 @@ class _CipherFormState extends State<CipherForm> {
   final musicKeyController = TextEditingController();
   final languageController = TextEditingController();
   final tagsController = TextEditingController();
+
+  Timer? _debounceTimer;
 
   Cipher? _lastSyncedCipher;
   bool _hasInitialized = false;

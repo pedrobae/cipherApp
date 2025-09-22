@@ -41,7 +41,15 @@ class Version {
 
   // Factory for database row (without content - populated separately)
   factory Version.fromRow(Map<String, dynamic> row) {
-    List<String> songStructure = (row['song_structure'] as String).split(',');
+    List<String> songStructure = [];
+    final structureString = row['song_structure'] as String?;
+    if (structureString != null && structureString.isNotEmpty) {
+      songStructure = structureString
+          .split(',')
+          .map((s) => s.trim())
+          .where((s) => s.isNotEmpty)
+          .toList();
+    }
 
     return Version(
       id: row['id'] as int?,
@@ -58,12 +66,10 @@ class Version {
 
   // To JSON for database (without content - sections handled separately)
   Map<String, dynamic> toJson() {
-    String songStruct = songStructure.toString();
-    songStruct = songStruct.substring(1, songStruct.length - 1);
     return {
       'id': id,
       'cipher_id': cipherId,
-      'song_structure': songStruct,
+      'song_structure': songStructure.join(','),
       'transposed_key': transposedKey,
       'version_name': versionName,
       'created_at': createdAt?.toIso8601String(),
@@ -74,10 +80,19 @@ class Version {
     return (sections ?? {}).values.toList();
   }
 
-  bool hasAllSections() {
+  bool get hasAllSections {
     final requiredSections = songStructure.toSet();
     return requiredSections.every((section) => sections!.containsKey(section));
   }
+
+  List<String> get uniqueSections => songStructure.toSet().toList();
+
+  bool get isEmpty => songStructure.isEmpty;
+
+  int get sectionCount => songStructure.length;
+
+  bool containsSection(String sectionCode) =>
+      songStructure.contains(sectionCode);
 
   Version copyWith({
     int? id,

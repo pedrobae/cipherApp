@@ -64,7 +64,9 @@ class VersionProvider extends ChangeNotifier {
     try {
       _version = await _cipherRepository.getCipherVersionWithId(versionId);
       if (kDebugMode) {
-        print('===== Loaded the version: ${_version!.versionName} ');
+        print(
+          '===== Loaded the version: ${_version!.versionName} into cache =====',
+        );
       }
     } catch (e) {
       _error = e.toString();
@@ -90,10 +92,8 @@ class VersionProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      String songStruct = songStructure.toString();
-      songStruct = songStruct.substring(1, songStruct.length - 1);
       _cipherRepository.updateFieldOfCipherVersion(versionId, {
-        'song_structure': songStruct,
+        'song_structure': songStructure.join(','),
       });
 
       if (kDebugMode) {

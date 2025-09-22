@@ -181,44 +181,129 @@ class _EditCipherState extends State<EditCipher>
           ],
         ],
       ),
-      // floatingActionButton: Row(
-      //   mainAxisSize: MainAxisSize.min,
-      //   children: [
-      //     if (!_isNewCipher)
-      //       FloatingActionButton(
-      //         heroTag: 'delete',
-      //         onPressed: _showDeleteDialog,
-      //         backgroundColor: colorScheme.errorContainer,
-      //         child: Icon(Icons.delete, color: colorScheme.onErrorContainer),
-      //       ),
-      //     if (!_isNewCipher) const SizedBox(width: 8),
-      //   ],
-      // ),
+      floatingActionButton: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (!_isNewCipher)
+            FloatingActionButton(
+              heroTag: 'delete',
+              onPressed: _showDeleteDialog,
+              backgroundColor: colorScheme.errorContainer,
+              child: Icon(Icons.delete, color: colorScheme.onErrorContainer),
+            ),
+          if (!_isNewCipher) const SizedBox(width: 10),
+          FloatingActionButton.extended(
+            heroTag: 'save',
+            onPressed: () {
+              if (_tabController.index == 0) {
+                _saveCipher();
+              } else {
+                _saveVersion();
+              }
+            },
+            backgroundColor: colorScheme.primary,
+            label: Text(
+              'Salvar',
+              style: theme.textTheme.labelLarge!.copyWith(
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onPrimary,
+              ),
+            ),
+            icon: Icon(Icons.save, color: colorScheme.onPrimary),
+          ),
+        ],
+      ),
     );
+  }
+
+  void _saveCipher() async {
+    try {
+      await context.read<CipherProvider>().saveCipher();
+      if (mounted) {
+        Navigator.pop(context, true); // Close screen
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Cifra salva com sucesso!')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao salvar: ${e.toString()}'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
+  }
+
+  void _saveVersion() async {
+    try {
+      await context.read<VersionProvider>().saveVersion();
+      if (mounted) {
+        Navigator.pop(context, true); // Close screen
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Cifra salva com sucesso!')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao salvar: ${e.toString()}'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
   }
 
   void _showDeleteDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Excluir Cifra'),
-        content: const Text(
-          'Tem certeza que deseja excluir esta cifra? Esta ação não pode ser desfeita.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
-          ),
-          FilledButton(
-            onPressed: _deleteCipher,
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
+      builder: (context) {
+        if (_tabController.index == 0) {
+          return AlertDialog(
+            title: const Text('Excluir Cifra'),
+            content: const Text(
+              'Tem certeza que deseja excluir esta cifra? Excluir uma cifra excluirá todas as suas versões.',
             ),
-            child: const Text('Excluir'),
-          ),
-        ],
-      ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancelar'),
+              ),
+              FilledButton(
+                onPressed: _deleteCipher,
+                style: FilledButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                ),
+                child: const Text('Excluir'),
+              ),
+            ],
+          );
+        } else {
+          return AlertDialog(
+            title: const Text('Excluir Versão'),
+            content: const Text(
+              'Tem certeza que deseja excluir esta versão? Esta ação não pode ser desfeita.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancelar'),
+              ),
+              FilledButton(
+                onPressed: _deleteVersion,
+                style: FilledButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                ),
+                child: const Text('Excluir'),
+              ),
+            ],
+          );
+        }
+      },
     );
   }
 
@@ -231,6 +316,31 @@ class _EditCipherState extends State<EditCipher>
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Cifra excluída com sucesso!')),
         );
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.pop(context); // Close dialog
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao excluir: ${e.toString()}'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
+  }
+
+  void _deleteVersion() async {
+    try {
+      await context.read<VersionProvider>().deleteCipherVersion(
+        widget.versionId!,
+      );
+      if (mounted) {
+        Navigator.pop(context);
+        Navigator.pop(context, true);
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Versão excluída com sucesso!')));
       }
     } catch (e) {
       if (mounted) {

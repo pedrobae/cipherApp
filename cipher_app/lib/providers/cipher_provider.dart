@@ -216,6 +216,26 @@ class CipherProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> saveCipher() async {
+    if (_isSaving) return;
+    _isSaving = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      // Update basic cipher info and tags
+      await _cipherRepository.updateCipher(currentCipher!);
+    } catch (e) {
+      _error = e.toString();
+      if (kDebugMode) {
+        print('Error saving cipher: $e');
+      }
+    } finally {
+      _isSaving = false;
+      notifyListeners();
+    }
+  }
+
   /// ===== DELETE =====
   Future<void> deleteCipher(int cipherID) async {
     if (_isSaving) return;

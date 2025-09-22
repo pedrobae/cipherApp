@@ -54,12 +54,15 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
 
         // Remove controllers for sections that no longer exist
         final keysToRemove = _sectionControllers.keys
-            .where((key) => version.sections!.containsKey(key))
+            .where(
+              (key) => !version.sections!.containsKey(key),
+            ) // ✅ Fixed: NOT containsKey
             .toList();
         for (final key in keysToRemove) {
           _sectionControllers[key]?.dispose();
           _sectionControllers.remove(key);
         }
+
         _hasInitialized = true;
         _lastSyncedVersion = version;
       }
@@ -88,14 +91,13 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
     String? sectionType,
     Color? customColor,
   }) {
-    setState(() {
-      // Create text controller for this section
-      if (!_sectionControllers.containsKey(sectionCode)) {
-        _sectionControllers[sectionCode] = TextEditingController();
-      }
-    });
-    final Section newSection;
+    // Create text controller for this section
+    if (!_sectionControllers.containsKey(sectionCode)) {
+      _sectionControllers[sectionCode] = TextEditingController();
+    }
+
     // Create the section - either custom or use predefined values
+    Section newSection;
     if (sectionType != null && customColor != null) {
       // This is a custom section created by user
       newSection = Section(
@@ -117,7 +119,6 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
         contentText: '',
         contentColor: color ?? Colors.grey,
       );
-
       versionProvider.cacheAddSection(newSection);
     }
   }
@@ -310,7 +311,6 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
             else
               ...uniqueSections.map((sectionCode) {
                 final section = version.sections![sectionCode];
-
                 return Card(
                   margin: const EdgeInsets.only(bottom: 16),
                   child: Padding(

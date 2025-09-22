@@ -8,14 +8,14 @@ import 'package:cipher_app/providers/version_provider.dart';
 import 'package:cipher_app/widgets/cipher/editor/reorderable_structure_chips.dart';
 import 'package:cipher_app/utils/section_constants.dart';
 
-class CipherSectionForm extends StatefulWidget {
-  const CipherSectionForm({super.key});
+class VersionForm extends StatefulWidget {
+  const VersionForm({super.key});
 
   @override
-  State<CipherSectionForm> createState() => _CipherSectionFormState();
+  State<VersionForm> createState() => _VersionFormState();
 }
 
-class _CipherSectionFormState extends State<CipherSectionForm> {
+class _VersionFormState extends State<VersionForm> {
   final Map<String, TextEditingController> _sectionControllers = {};
 
   Timer? _debounceTimer;

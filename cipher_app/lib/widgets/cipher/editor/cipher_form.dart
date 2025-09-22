@@ -3,21 +3,21 @@ import 'package:cipher_app/providers/cipher_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class CipherBasicInfoForm extends StatefulWidget {
-  const CipherBasicInfoForm({super.key});
+class CipherForm extends StatefulWidget {
+  const CipherForm({super.key});
 
   @override
-  State<CipherBasicInfoForm> createState() => _CipherBasicInfoFormState();
+  State<CipherForm> createState() => _CipherFormState();
 }
 
-class _CipherBasicInfoFormState extends State<CipherBasicInfoForm> {
+class _CipherFormState extends State<CipherForm> {
   final titleController = TextEditingController();
   final authorController = TextEditingController();
   final tempoController = TextEditingController();
   final musicKeyController = TextEditingController();
   final languageController = TextEditingController();
   final tagsController = TextEditingController();
-  
+
   Cipher? _lastSyncedCipher;
   bool _hasInitialized = false;
 

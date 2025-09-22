@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/providers/cipher_provider.dart';
 import 'package:cipher_app/providers/version_provider.dart';
-import 'package:cipher_app/widgets/cipher/editor/cipher_basic_info_form.dart';
-import 'package:cipher_app/widgets/cipher/editor/cipher_section_form.dart';
+import 'package:cipher_app/widgets/cipher/editor/cipher_form.dart';
+import 'package:cipher_app/widgets/cipher/editor/version_form.dart';
 
 class EditCipher extends StatefulWidget {
   final int? cipherId; // Null for new cipher, populated for edit
@@ -168,7 +168,7 @@ class _EditCipherState extends State<EditCipher>
             child: Column(
               children: [
                 // Basic cipher info
-                CipherBasicInfoForm(),
+                CipherForm(),
               ],
             ),
           ),
@@ -176,7 +176,7 @@ class _EditCipherState extends State<EditCipher>
             // Content Tab
             SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
-              child: CipherSectionForm(),
+              child: VersionForm(),
             ),
           ],
         ],

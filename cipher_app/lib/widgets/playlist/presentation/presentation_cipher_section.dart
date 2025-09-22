@@ -90,7 +90,6 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
         final currentVersion = _cipher!.versions.first;
 
         final filteredStructure = currentVersion.songStructure
-            .split(',')
             .map((s) => s.trim())
             .where(
               (sectionCode) =>
@@ -189,7 +188,7 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
         Row(
           spacing: 6,
           children: [
-            if (_cipher!.versions.first.versionName?.isNotEmpty == true) ...[
+            if (_cipher!.versions.first.versionName.isNotEmpty == true) ...[
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
@@ -200,7 +199,7 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
                   ),
                 ),
                 child: Text(
-                  _cipher!.versions.first.versionName!,
+                  _cipher!.versions.first.versionName,
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w500,

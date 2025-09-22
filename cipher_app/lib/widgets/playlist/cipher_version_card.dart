@@ -22,7 +22,7 @@ class CipherVersionCard extends StatefulWidget {
 
 class _CipherVersionCardState extends State<CipherVersionCard> {
   Version? _version;
-  List<String> _songStructureList = [];
+  List<String> _songStructure = [];
   bool _isLoading = true;
 
   @override
@@ -39,8 +39,7 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
     if (mounted && version != null) {
       setState(() {
         _version = version;
-        _songStructureList = version.songStructure
-            .split(',')
+        _songStructure = version.songStructure
             .map((s) => s.trim())
             .where((s) => s.isNotEmpty)
             .toList();
@@ -53,17 +52,13 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
     // Update UI immediately (optimistic update)
     setState(() {
       if (newIndex > oldIndex) newIndex--;
-      final item = _songStructureList.removeAt(oldIndex);
-      _songStructureList.insert(newIndex, item);
+      final item = _songStructure.removeAt(oldIndex);
+      _songStructure.insert(newIndex, item);
     });
 
     // Persist to database (async, no UI blocking)
     final versionProvider = context.read<VersionProvider>();
-    final stringStructure = _songStructureList.toString();
-    versionProvider.updateVersionSongStructure(
-      _version!.id!,
-      stringStructure.substring(1, stringStructure.length - 1),
-    );
+    versionProvider.saveUpdatedSongStructure(_version!.id!, _songStructure);
   }
 
   @override
@@ -119,10 +114,10 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
                         buildDefaultDragHandles: false,
                         physics: const ClampingScrollPhysics(),
                         scrollDirection: Axis.horizontal,
-                        itemCount: _songStructureList.length,
+                        itemCount: _songStructure.length,
                         onReorder: _onReorder,
                         itemBuilder: (context, index) {
-                          final sectionCode = _songStructureList[index];
+                          final sectionCode = _songStructure[index];
                           final section = _version!.sections![sectionCode];
 
                           return CustomReorderableDelayed(

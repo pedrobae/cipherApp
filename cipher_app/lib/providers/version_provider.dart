@@ -35,7 +35,7 @@ class VersionProvider extends ChangeNotifier {
       );
 
       // Insert content for this map
-      await _insertVersionSections(newVersionId, version.sections);
+      await _saveSections();
 
       // Reload version to get the updated data
       await loadVersionById(newVersionId);
@@ -78,37 +78,10 @@ class VersionProvider extends ChangeNotifier {
   }
 
   /// ===== UPDATE - update cipher version =====
-  Future<void> updateCipherVersion(Version version) async {
-    if (version.id == null) {
-      createNewVersion(version.cipherId, version);
-    }
-    if (_isSaving) return;
-
-    _isSaving = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      await _cipherRepository.updateCipherVersion(version);
-      await _insertVersionSections(version.id!, version.sections);
-
-      // Reload version to get the updated data
-      await loadVersionById(version.id!);
-    } catch (e) {
-      _error = e.toString();
-      if (kDebugMode) {
-        print('Error updating cipher version: $e');
-      }
-    } finally {
-      _isSaving = false;
-      notifyListeners();
-    }
-  }
-
-  /// ===== UPDATE - version's song structure =====
-  Future<void> updateVersionSongStructure(
+  // Saves a new structure of a version
+  Future<void> saveUpdatedSongStructure(
     int versionId,
-    String songStructure,
+    List<String> songStructure,
   ) async {
     if (_isSaving) return;
 
@@ -117,21 +90,46 @@ class VersionProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _cipherRepository.updateFieldOfCipherVersion(versionId, {
-        'song_structure': songStructure,
+      String songStruct = songStructure.toString();
+      songStruct = songStruct.substring(1, songStruct.length - 1);
+      _cipherRepository.updateFieldOfCipherVersion(versionId, {
+        'song_structure': songStruct,
       });
 
-      // Reload version to get the updated data
-      await loadVersionById(versionId);
+      if (kDebugMode) {
+        print('Updated the songStructure of version: $versionId');
+      }
     } catch (e) {
       _error = e.toString();
       if (kDebugMode) {
-        print('Error updating cipher version: $e');
+        print('Error updating cipher version song structure: $e');
       }
     } finally {
       _isSaving = false;
       notifyListeners();
     }
+  }
+
+  // Cache changes to the version data (Version Name / Transposed Key)
+  void cacheUpdatedVersion({String? newVersionName, String? newTransposedKey}) {
+    _version = _version!.copyWith(
+      versionName: newVersionName,
+      transposedKey: newTransposedKey,
+    );
+    notifyListeners();
+  }
+
+  // Cache a version's song structure =====
+  void cacheUpdatedSongStructure(List<String> songStructure) {
+    _version = _version!.copyWith(songStructure: songStructure);
+    notifyListeners();
+  }
+
+  // Reorder and cache a new structure
+  void cacheReorderedStructure(int oldIndex, int newIndex) {
+    if (newIndex > oldIndex) newIndex--;
+    final item = version!.songStructure.removeAt(oldIndex);
+    version!.songStructure.insert(newIndex, item);
   }
 
   /// ===== DELETE - cipher version =====
@@ -144,13 +142,40 @@ class VersionProvider extends ChangeNotifier {
 
     try {
       await _cipherRepository.deleteCipherVersion(versionId);
-
-      // Reload version to get the updated data
-      await loadVersionById(versionId);
+      clearCache();
     } catch (e) {
       _error = e.toString();
       if (kDebugMode) {
         print('Error deleting cipher version: $e');
+      }
+    } finally {
+      _isSaving = false;
+      notifyListeners();
+    }
+  }
+
+  /// ===== SAVE =====
+  // Persist the cache to the database
+  Future<void> saveVersion() async {
+    if (_isSaving) return;
+
+    _isSaving = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _cipherRepository.updateCipherVersion(version!);
+      // Insert content for this map
+      await _saveSections();
+
+      // Reload version to get the updated data
+      if (kDebugMode) {
+        print('Saved version with id ${version!.id}');
+      }
+    } catch (e) {
+      _error = e.toString();
+      if (kDebugMode) {
+        print('Error updating cipher version: $e');
       }
     } finally {
       _isSaving = false;
@@ -164,22 +189,49 @@ class VersionProvider extends ChangeNotifier {
     _version = null;
   }
 
-  /// Handle updating / creating version section
-  Future<void> _insertVersionSections(
-    int mapId,
-    Map<String, Section>? newSection,
-  ) async {
-    if (newSection != null) {
+  /// ===== SECTION MANAGEMENT =====
+  /// ===== CREATE =====
+  // Add a new section
+  void cacheAddSection(Section newSection) {
+    _version!.sections![newSection.contentCode] = newSection;
+
+    _version!.songStructure.add(newSection.contentCode);
+
+    notifyListeners();
+  }
+
+  /// ===== UPDATE =====
+  // Modify a section (content_text)
+  void cacheUpdatedSection(String contentCode, String newContentText) {
+    _version!.sections![contentCode]!.contentText = newContentText;
+    notifyListeners();
+  }
+
+  /// ===== DELETE =====
+  // Remove a section from cache
+  void cacheRemoveSection(int index) {
+    final sectionCode = version!.songStructure.removeAt(index);
+
+    if (!version!.songStructure.contains(sectionCode)) {
+      _version!.sections!.remove(sectionCode);
+    }
+    notifyListeners();
+  }
+
+  /// ===== SAVE =====
+  // Persist the data to the database
+  Future<void> _saveSections() async {
+    if (version!.sections != null) {
       // For simplicity, delete all existing content and recreate
       // This could be optimized later to only update changed content
-      await _cipherRepository.deleteAllVersionSections(mapId);
+      await _cipherRepository.deleteAllVersionSections(version!.id!);
 
       // Insert new content
-      for (final entry in newSection.entries) {
+      for (final entry in version!.sections!.entries) {
         if (entry.key.isNotEmpty) {
           final sectionJson = entry.value.toJson();
           await _cipherRepository.insertSection(
-            mapId,
+            version!.id!,
             sectionJson['content_type'],
             sectionJson['content_code'],
             sectionJson['content_text'],

@@ -139,7 +139,7 @@ class CipherCard extends StatelessWidget {
                       spacing: 16,
                       children: [
                         Text(
-                          version.versionName!,
+                          version.versionName,
                           style: Theme.of(context).textTheme.titleMedium
                               ?.copyWith(
                                 color: Theme.of(context).colorScheme.onSurface,

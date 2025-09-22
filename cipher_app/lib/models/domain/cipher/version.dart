@@ -3,18 +3,18 @@ import 'package:cipher_app/models/domain/cipher/section.dart';
 class Version {
   final int? id;
   final int cipherId;
-  final String songStructure;
+  final String versionName;
   final String? transposedKey;
-  final String? versionName;
+  final List<String> songStructure; // Changed from String to List<String>
   final DateTime? createdAt;
   final Map<String, Section>? sections;
 
   const Version({
     this.id,
     required this.cipherId,
-    required this.songStructure,
+    this.versionName = 'Original',
     this.transposedKey,
-    this.versionName,
+    this.songStructure = const [],
     this.createdAt,
     this.sections,
   });
@@ -29,9 +29,9 @@ class Version {
     return Version(
       id: json['id'] as int?,
       cipherId: json['cipher_id'] as int,
-      songStructure: json['song_structure'] as String? ?? '',
+      songStructure: json['song_structure'] as List<String>,
       transposedKey: json['transposed_key'] as String?,
-      versionName: json['version_name'] as String?,
+      versionName: json['version_name'] as String,
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'])
           : null,
@@ -41,12 +41,14 @@ class Version {
 
   // Factory for database row (without content - populated separately)
   factory Version.fromRow(Map<String, dynamic> row) {
+    List<String> songStructure = (row['song_structure'] as String).split(',');
+
     return Version(
       id: row['id'] as int?,
       cipherId: row['cipher_id'] as int,
-      songStructure: row['song_structure'] as String? ?? '',
+      songStructure: songStructure,
       transposedKey: row['transposed_key'] as String?,
-      versionName: row['version_name'] as String?,
+      versionName: row['version_name'] as String,
       createdAt: row['created_at'] != null
           ? DateTime.parse(row['created_at'])
           : null,
@@ -56,10 +58,12 @@ class Version {
 
   // To JSON for database (without content - sections handled separately)
   Map<String, dynamic> toJson() {
+    String songStruct = songStructure.toString();
+    songStruct = songStruct.substring(1, songStruct.length - 1);
     return {
       'id': id,
       'cipher_id': cipherId,
-      'song_structure': songStructure,
+      'song_structure': songStruct,
       'transposed_key': transposedKey,
       'version_name': versionName,
       'created_at': createdAt?.toIso8601String(),
@@ -71,14 +75,14 @@ class Version {
   }
 
   bool hasAllSections() {
-    final requiredSections = songStructure.split(',').toSet();
+    final requiredSections = songStructure.toSet();
     return requiredSections.every((section) => sections!.containsKey(section));
   }
 
   Version copyWith({
     int? id,
     int? cipherId,
-    String? songStructure,
+    List<String>? songStructure,
     String? transposedKey,
     String? versionName,
     DateTime? createdAt,

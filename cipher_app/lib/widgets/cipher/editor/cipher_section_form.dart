@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:cipher_app/models/domain/cipher/cipher.dart';
 import 'package:cipher_app/providers/cipher_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -19,8 +18,6 @@ class CipherSectionForm extends StatefulWidget {
 class _CipherSectionFormState extends State<CipherSectionForm> {
   final Map<String, TextEditingController> _sectionControllers = {};
 
-  Map<String, Section> _currentSections = {};
-  List<String> _songStructure = [];
   Timer? _debounceTimer;
 
   // Track last synced data to avoid unnecessary rebuilds
@@ -43,49 +40,29 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
       context,
       listen: false,
     );
-    final cipherProvider = Provider.of<CipherProvider>(context, listen: false);
-
-    final cipher = cipherProvider.currentCipher;
     final version = versionProvider.version;
 
-    // Only sync if version has changed or if we haven't initialized yet
-    if (!_hasInitialized || _lastSyncedVersion?.id != version?.id) {
-      _updateStateFromProviders(cipher, version);
-      _hasInitialized = true;
-      _lastSyncedVersion = version;
-    }
-  }
+    if (version?.sections != null) {
+      if (!_hasInitialized || _lastSyncedVersion?.id != version?.id) {
+        // Update controllers for existing sections
+        version!.sections!.forEach((key, section) {
+          if (!_sectionControllers.containsKey(key)) {
+            _sectionControllers[key] = TextEditingController();
+          }
+          _sectionControllers[key]!.text = section.contentText;
+        });
 
-  void _updateStateFromProviders(Cipher? cipher, Version? version) {
-    // Handle the case where we have providers with data
-    if (version != null) {
-      _songStructure = version.songStructure
-          .split(',')
-          .map((s) => s.trim())
-          .where((s) => s.isNotEmpty)
-          .toList();
-      _currentSections = Map.from(version.sections ?? {});
-    } else {
-      // For new ciphers, start with empty state
-      _songStructure = [];
-      _currentSections = {};
-    }
-
-    // Update controllers for existing sections
-    _currentSections.forEach((key, section) {
-      if (!_sectionControllers.containsKey(key)) {
-        _sectionControllers[key] = TextEditingController();
+        // Remove controllers for sections that no longer exist
+        final keysToRemove = _sectionControllers.keys
+            .where((key) => version.sections!.containsKey(key))
+            .toList();
+        for (final key in keysToRemove) {
+          _sectionControllers[key]?.dispose();
+          _sectionControllers.remove(key);
+        }
+        _hasInitialized = true;
+        _lastSyncedVersion = version;
       }
-      _sectionControllers[key]!.text = section.contentText;
-    });
-
-    // Remove controllers for sections that no longer exist
-    final keysToRemove = _sectionControllers.keys
-        .where((key) => !_currentSections.containsKey(key))
-        .toList();
-    for (final key in keysToRemove) {
-      _sectionControllers[key]?.dispose();
-      _sectionControllers.remove(key);
     }
   }
 
@@ -98,125 +75,77 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
     super.dispose();
   }
 
-  void _notifySectionChanged() {
-    // Update content for all sections in structure
-    for (final sectionCode in _songStructure) {
-      final controller = _sectionControllers[sectionCode];
-      final contentText = controller?.text ?? '';
+  void _changeSection(String sectionCode, VersionProvider versionProvider) {
+    final controller = _sectionControllers[sectionCode];
+    final contentText = controller?.text ?? '';
 
-      // Check if we have a section in current sections
-      if (_currentSections.containsKey(sectionCode)) {
-        // Update existing section content
-        _currentSections[sectionCode]!.contentText = contentText;
-      } else {
-        // Create new section - use predefined values if available, otherwise default
-        final displayName = predefinedSectionTypes[sectionCode];
-        final color = defaultSectionColors[sectionCode];
-
-        _currentSections[sectionCode] = Section(
-          versionId: 0,
-          contentType:
-              displayName ??
-              sectionCode, // Use display name or code as fallback
-          contentCode: sectionCode,
-          contentText: contentText,
-          contentColor:
-              color ?? Colors.grey, // Use predefined color or grey as fallback
-        );
-      }
-    }
-
-    // Remove sections that are no longer in structure
-    _currentSections.removeWhere((key, value) => !_songStructure.contains(key));
+    versionProvider.cacheUpdatedSection(sectionCode, contentText);
   }
 
   void _addSection(
-    String sectionCode, {
+    String sectionCode,
+    VersionProvider versionProvider, {
     String? sectionType,
     Color? customColor,
   }) {
     setState(() {
-      _songStructure.add(sectionCode);
-
       // Create text controller for this section
       if (!_sectionControllers.containsKey(sectionCode)) {
         _sectionControllers[sectionCode] = TextEditingController();
       }
-
-      // Create the section - either custom or use predefined values
-      if (sectionType != null && customColor != null) {
-        // This is a custom section created by user
-        _currentSections[sectionCode] = Section(
-          versionId: 0, // Will be set when saving
-          contentType: sectionType,
-          contentCode: sectionCode,
-          contentText: '',
-          contentColor: customColor,
-        );
-      } else {
-        // This is a predefined section - create it if not exists
-        if (!_currentSections.containsKey(sectionCode)) {
-          final displayName = predefinedSectionTypes[sectionCode];
-          final color = defaultSectionColors[sectionCode];
-
-          _currentSections[sectionCode] = Section(
-            versionId: 0,
-            contentType: displayName ?? sectionCode,
-            contentCode: sectionCode,
-            contentText: '',
-            contentColor: color ?? Colors.grey,
-          );
-        }
-      }
     });
-    _notifySectionChanged();
+    final Section newSection;
+    // Create the section - either custom or use predefined values
+    if (sectionType != null && customColor != null) {
+      // This is a custom section created by user
+      newSection = Section(
+        versionId: 0, // Will be set when saving
+        contentType: sectionType,
+        contentCode: sectionCode,
+        contentText: '',
+        contentColor: customColor,
+      );
+    } else {
+      // This is a preset section
+      final displayName = predefinedSectionTypes[sectionCode];
+      final color = defaultSectionColors[sectionCode];
+
+      newSection = Section(
+        versionId: 0,
+        contentType: displayName!,
+        contentCode: sectionCode,
+        contentText: '',
+        contentColor: color ?? Colors.grey,
+      );
+
+      versionProvider.cacheAddSection(newSection);
+    }
   }
 
-  void _removeSection(int index) {
-    setState(() {
-      final sectionKey = _songStructure[index];
-      _songStructure.removeAt(index);
-
-      // Only remove content if this section is not used elsewhere
-      if (!_songStructure.contains(sectionKey)) {
-        _sectionControllers[sectionKey]?.dispose();
-        _sectionControllers.remove(sectionKey);
-        _currentSections.remove(sectionKey);
-      }
-    });
-    _notifySectionChanged();
+  void _removeSection(int index, VersionProvider versionProvider) {
+    versionProvider.cacheRemoveSection(index);
   }
 
-  void _reorderSection(int oldIndex, int newIndex) {
-    setState(() {
-      if (newIndex > oldIndex) newIndex--;
-      final item = _songStructure.removeAt(oldIndex);
-      _songStructure.insert(newIndex, item);
-    });
-    _notifySectionChanged();
-  }
-
-  Section? _getSectionType(String key) {
-    return _currentSections[key];
-  }
-
-  void _showPresetSectionsDialog() {
+  void _showPresetSectionsDialog(VersionProvider versionProvider) {
     showDialog(
       context: context,
       builder: (context) => _PresetSectionsDialog(
         sectionTypes: predefinedSectionTypes,
-        usedSections: _songStructure.toSet(),
-        onAdd: (sectionKey) => _addSection(sectionKey),
+        onAdd: (sectionKey) => _addSection(sectionKey, versionProvider),
       ),
     );
   }
 
-  void _showCustomSectionDialog() {
+  void _showCustomSectionDialog(VersionProvider versionProvider) {
     showDialog(
       context: context,
       builder: (context) => _CustomSectionDialog(
-        onAdd: (sectionKey, name, color) =>
-            _addSection(sectionKey, sectionType: name, customColor: color),
+        onAdd: (sectionKey, name, color) => _addSection(
+          sectionKey,
+          versionProvider,
+          sectionType: name,
+          customColor: color,
+        ),
       ),
     );
   }
@@ -233,9 +162,9 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
         final cipher = cipherProvider.currentCipher;
         final version =
             versionProvider.version ??
-            Version(cipherId: cipher?.id ?? 0, songStructure: '', sections: {});
+            Version(cipherId: cipher?.id ?? 0, songStructure: [], sections: {});
 
-        final uniqueSections = _songStructure.toSet().toList();
+        final uniqueSections = version.songStructure.toSet().toList();
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -266,13 +195,8 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
                               border: OutlineInputBorder(),
                               prefixIcon: Icon(Icons.queue_music),
                             ),
-                            onChanged: (name) =>
-                                versionProvider.updateCipherVersion(
-                                  version.copyWith(
-                                    versionName: name,
-                                    cipherId: cipher!.id,
-                                  ),
-                                ),
+                            onChanged: (name) => versionProvider
+                                .cacheUpdatedVersion(newVersionName: name),
                             validator: (value) {
                               if (value == null || value.trim().isEmpty) {
                                 return 'Nome da versão é obrigatório';
@@ -288,10 +212,8 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
                               labelText: 'Tom',
                               border: OutlineInputBorder(),
                             ),
-                            onChanged: (key) =>
-                                versionProvider.updateCipherVersion(
-                                  version.copyWith(transposedKey: key),
-                                ),
+                            onChanged: (key) => versionProvider
+                                .cacheUpdatedVersion(newTransposedKey: key),
                           ),
                         ),
                       ],
@@ -320,7 +242,8 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
                       children: [
                         Expanded(
                           child: OutlinedButton.icon(
-                            onPressed: _showPresetSectionsDialog,
+                            onPressed: () =>
+                                _showPresetSectionsDialog(versionProvider),
                             icon: const Icon(Icons.library_music),
                             label: const Text('Seções Predefinidas'),
                             style: OutlinedButton.styleFrom(
@@ -336,7 +259,8 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: FilledButton.icon(
-                            onPressed: _showCustomSectionDialog,
+                            onPressed: () =>
+                                _showCustomSectionDialog(versionProvider),
                             icon: const Icon(Icons.add),
                             label: const Text('Seção Personalizada'),
                             style: FilledButton.styleFrom(
@@ -354,11 +278,17 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
 
                     // Draggable Section Chips
                     ReorderableStructureChips(
-                      songStructure: _songStructure,
-                      sectionTypes: predefinedSectionTypes,
-                      customSections: _currentSections,
-                      onReorder: _reorderSection,
-                      onRemoveSection: _removeSection,
+                      songStructure: version.songStructure,
+                      customSections: version.sections!,
+                      onReorder: (int oldIndex, int newIndex) {
+                        versionProvider.cacheReorderedStructure(
+                          oldIndex,
+                          newIndex,
+                        );
+                      },
+                      onRemoveSection: (int index) {
+                        _removeSection(index, versionProvider);
+                      },
                     ),
                   ],
                 ),
@@ -378,8 +308,8 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
                 ),
               )
             else
-              ...uniqueSections.map((section) {
-                final sectionType = _getSectionType(section);
+              ...uniqueSections.map((sectionCode) {
+                final section = version.sections![sectionCode];
 
                 return Card(
                   margin: const EdgeInsets.only(bottom: 16),
@@ -399,13 +329,11 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
                                     vertical: 4,
                                   ),
                                   decoration: BoxDecoration(
-                                    color:
-                                        sectionType?.contentColor ??
-                                        Colors.grey,
+                                    color: section?.contentColor ?? Colors.grey,
                                     borderRadius: BorderRadius.circular(6),
                                   ),
                                   child: Text(
-                                    section,
+                                    sectionCode,
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
@@ -415,7 +343,7 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  sectionType?.contentType ?? section,
+                                  section?.contentType ?? sectionCode,
                                   style: Theme.of(context).textTheme.titleSmall
                                       ?.copyWith(fontWeight: FontWeight.w600),
                                 ),
@@ -425,10 +353,10 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
                         ),
                         const SizedBox(height: 12),
                         TextFormField(
-                          controller: _sectionControllers[section],
+                          controller: _sectionControllers[sectionCode],
                           decoration: InputDecoration(
                             hintText:
-                                'Conteúdo da seção ${sectionType?.contentType ?? section}',
+                                'Conteúdo da seção ${section?.contentType ?? sectionCode}',
                             border: const OutlineInputBorder(),
                           ),
                           maxLines: null,
@@ -438,7 +366,7 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
                             _debounceTimer = Timer(
                               const Duration(milliseconds: 300),
                               () {
-                                _notifySectionChanged();
+                                _changeSection(sectionCode, versionProvider);
                                 if (mounted) setState(() {});
                               },
                             );
@@ -458,12 +386,10 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
 
 class _PresetSectionsDialog extends StatelessWidget {
   final Map<String, String> sectionTypes;
-  final Set<String> usedSections;
   final Function(String) onAdd;
 
   const _PresetSectionsDialog({
     required this.sectionTypes,
-    required this.usedSections,
     required this.onAdd,
   });
 

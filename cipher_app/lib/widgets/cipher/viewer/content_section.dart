@@ -22,13 +22,11 @@ class CipherContentSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ls = context.watch<LayoutSettingsProvider>();
-    final filteredStructure = currentVersion.songStructure
-        .split(',')
-        .where(
-          (sectionCode) =>
-              ((ls.showAnnotations || !isAnnotation(sectionCode)) &&
-              (ls.showTransitions || !isTransition(sectionCode))),
-        );
+    final filteredStructure = currentVersion.songStructure.where(
+      (sectionCode) =>
+          ((ls.showAnnotations || !isAnnotation(sectionCode)) &&
+          (ls.showTransitions || !isTransition(sectionCode))),
+    );
     final sectionCardList = filteredStructure.map((sectionCode) {
       String trimmedCode = sectionCode.trim();
       return CipherSectionCard(

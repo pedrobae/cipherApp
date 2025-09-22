@@ -89,7 +89,7 @@ class VersionSelectorBottomSheet extends StatelessWidget {
                     ),
                   ),
                   title: Text(
-                    version.versionName ?? 'Versão ${index + 1}',
+                    version.versionName,
                     style: TextStyle(
                       fontWeight: isSelected
                           ? FontWeight.bold

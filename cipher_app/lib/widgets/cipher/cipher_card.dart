@@ -83,11 +83,7 @@ class CipherCard extends StatelessWidget {
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => EditCipher(
-                      cipherId: cipher.id,
-                      isNewVersion: true,
-                      startTab: 'version',
-                    ),
+                    builder: (context) => EditCipher(cipherId: cipher.id),
                   ),
                 ),
                 child: Container(

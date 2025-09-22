@@ -8,16 +8,8 @@ import 'package:cipher_app/widgets/cipher/editor/cipher_section_form.dart';
 class EditCipher extends StatefulWidget {
   final int? cipherId; // Null for create, populated for edit
   final int? versionId; // Specific version to edit
-  final bool isNewVersion; // Creating a new version of existing cipher
-  final String startTab;
 
-  const EditCipher({
-    super.key,
-    this.cipherId,
-    this.versionId,
-    this.isNewVersion = false,
-    this.startTab = 'cipher',
-  });
+  const EditCipher({super.key, this.cipherId, this.versionId});
 
   @override
   State<EditCipher> createState() => _EditCipherState();
@@ -32,7 +24,7 @@ class _EditCipherState extends State<EditCipher>
 
   // Basic info controllers
   bool get _isEditMode => widget.cipherId != null;
-  bool get _isNewVersionMode => widget.isNewVersion;
+  bool get _isNewVersion => widget.versionId == null;
 
   @override
   void initState() {
@@ -58,7 +50,7 @@ class _EditCipherState extends State<EditCipher>
         // Load the cipher
         await cipherProvider.loadCipher(widget.cipherId!);
 
-        if (_isNewVersionMode) {
+        if (_isNewVersion) {
           // For new version: load cipher but don't load any existing version
           // Clear any existing version data to start fresh
           versionProvider.clearCache();
@@ -95,7 +87,7 @@ class _EditCipherState extends State<EditCipher>
   }
 
   String _getAppBarTitle() {
-    if (_isNewVersionMode) {
+    if (_isNewVersion) {
       return 'Nova Versão';
     } else if (_isEditMode) {
       return 'Editar Cifra';
@@ -105,13 +97,11 @@ class _EditCipherState extends State<EditCipher>
   }
 
   void _navigateStartTab() {
-    final Map<String, int> tabMap;
     if (_isEditMode) {
-      tabMap = {'cipher': 0, 'version': 1};
+      _tabController.animateTo(1);
     } else {
-      tabMap = {'cipher': 0};
+      _tabController.animateTo(0);
     }
-    _tabController.animateTo(tabMap[widget.startTab]!);
   }
 
   @override

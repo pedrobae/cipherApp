@@ -43,11 +43,7 @@ class _CipherViewerState extends State<CipherViewer> {
   void _addNewVersion() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => EditCipher(
-          cipherId: widget.cipher.id,
-          versionId: null,
-          isNewVersion: true,
-        ),
+        builder: (context) => EditCipher(cipherId: widget.cipher.id),
       ),
     );
   }
@@ -62,8 +58,6 @@ class _CipherViewerState extends State<CipherViewer> {
         builder: (context) => EditCipher(
           cipherId: widget.cipher.id,
           versionId: _currentVersion?.id,
-          isNewVersion: false,
-          startTab: 'version',
         ),
       ),
     );

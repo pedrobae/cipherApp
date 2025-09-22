@@ -116,6 +116,9 @@ class CipherProvider extends ChangeNotifier {
 
     try {
       _expandedCipher = (await _cipherRepository.getCipherById(cipherId))!;
+      if (kDebugMode) {
+        print('Loaded expanded cipher: ${_expandedCipher?.title}');
+      }
     } catch (e) {
       _error = e.toString();
       if (kDebugMode) {

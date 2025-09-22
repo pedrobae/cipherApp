@@ -113,4 +113,18 @@ class Version {
       sections: content ?? sections,
     );
   }
+
+  // Factory for creating empty version
+  factory Version.empty({int? cipherId}) {
+    return Version(
+      cipherId: cipherId ?? -1,
+      versionName: 'Versão 1',
+      songStructure: [],
+      transposedKey: '',
+      sections: {},
+    );
+  }
+
+  // Check if version is new (no ID)
+  bool get isNew => id == -1;
 }

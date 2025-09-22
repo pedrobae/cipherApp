@@ -8,7 +8,7 @@ class VersionProvider extends ChangeNotifier {
 
   VersionProvider();
 
-  Version? _version;
+  Version _version = Version.empty();
   bool _isLoading = false;
   bool _isSaving = false;
   String? _error;
@@ -20,7 +20,7 @@ class VersionProvider extends ChangeNotifier {
   String? get error => _error;
 
   /// ===== CREATE - new version to an existing cipher =====
-  Future<void> createNewVersion(int cipherId, Version version) async {
+  Future<void> createVersion(int cipherId) async {
     if (_isSaving) return;
 
     _isSaving = true;
@@ -29,18 +29,18 @@ class VersionProvider extends ChangeNotifier {
 
     try {
       // Create version with the correct cipher ID
-      final versionWithCipherId = version.copyWith(cipherId: cipherId);
-      final newVersionId = await _cipherRepository.insertVersionToCipher(
+      final versionWithCipherId = _version.copyWith(cipherId: cipherId);
+      final versionId = await _cipherRepository.insertVersionToCipher(
         versionWithCipherId,
       );
+      // Load the new ID into the version cache
+      _version = versionWithCipherId.copyWith(id: versionId);
 
       // Insert content for this map
       await _saveSections();
 
-      // Reload version to get the updated data
-      await loadVersionById(newVersionId);
       if (kDebugMode) {
-        print('Created a new version with id $newVersionId');
+        print('Created a new version with id $versionId');
       }
     } catch (e) {
       _error = e.toString();
@@ -62,14 +62,15 @@ class VersionProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _version = await _cipherRepository.getCipherVersionWithId(versionId);
+      _version = (await _cipherRepository.getCipherVersionWithId(versionId))!;
       if (kDebugMode) {
         print(
-          '===== Loaded the version: ${_version!.versionName} into cache =====',
+          '===== Loaded the version: ${_version.versionName} into cache =====',
         );
       }
     } catch (e) {
       _error = e.toString();
+      _version = Version.empty();
       if (kDebugMode) {
         print('Error adding cipher version: $e');
       }
@@ -112,7 +113,7 @@ class VersionProvider extends ChangeNotifier {
 
   // Cache changes to the version data (Version Name / Transposed Key)
   void cacheUpdatedVersion({String? newVersionName, String? newTransposedKey}) {
-    _version = _version!.copyWith(
+    _version = _version.copyWith(
       versionName: newVersionName,
       transposedKey: newTransposedKey,
     );
@@ -121,7 +122,7 @@ class VersionProvider extends ChangeNotifier {
 
   // Cache a version's song structure =====
   void cacheUpdatedSongStructure(List<String> songStructure) {
-    _version = _version!.copyWith(songStructure: songStructure);
+    _version = _version.copyWith(songStructure: songStructure);
     notifyListeners();
   }
 
@@ -186,16 +187,16 @@ class VersionProvider extends ChangeNotifier {
   /// ===== UTILS =====
   // Clear Cache to create a new version
   void clearCache() {
-    _version = null;
+    _version = Version.empty();
   }
 
   /// ===== SECTION MANAGEMENT =====
   /// ===== CREATE =====
   // Add a new section
   void cacheAddSection(Section newSection) {
-    _version!.sections![newSection.contentCode] = newSection;
+    _version.sections![newSection.contentCode] = newSection;
 
-    _version!.songStructure.add(newSection.contentCode);
+    _version.songStructure.add(newSection.contentCode);
 
     notifyListeners();
   }
@@ -203,17 +204,17 @@ class VersionProvider extends ChangeNotifier {
   /// ===== UPDATE =====
   // Modify a section (content_text)
   void cacheUpdatedSection(String contentCode, String newContentText) {
-    _version!.sections![contentCode]!.contentText = newContentText;
+    _version.sections![contentCode]!.contentText = newContentText;
     notifyListeners();
   }
 
   /// ===== DELETE =====
   // Remove a section from cache
   void cacheRemoveSection(int index) {
-    final sectionCode = version!.songStructure.removeAt(index);
+    final sectionCode = _version.songStructure.removeAt(index);
 
-    if (!version!.songStructure.contains(sectionCode)) {
-      _version!.sections!.remove(sectionCode);
+    if (!_version.songStructure.contains(sectionCode)) {
+      _version.sections!.remove(sectionCode);
     }
     notifyListeners();
   }

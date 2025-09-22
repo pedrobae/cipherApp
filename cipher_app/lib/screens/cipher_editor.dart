@@ -192,10 +192,16 @@ class _EditCipherState extends State<EditCipher>
           FloatingActionButton.extended(
             heroTag: 'save',
             onPressed: () {
-              if (_tabController.index == 0) {
-                _saveCipher();
+              if (_isNewCipher) {
+                _createCipher();
+              } else if (_isNewVersion) {
+                _createVersion(widget.cipherId!);
               } else {
-                _saveVersion();
+                if (_tabController.index == 0) {
+                  _saveCipher();
+                } else {
+                  _saveVersion();
+                }
               }
             },
             backgroundColor: colorScheme.primary,
@@ -211,6 +217,48 @@ class _EditCipherState extends State<EditCipher>
         ],
       ),
     );
+  }
+
+  void _createCipher() async {
+    try {
+      await context.read<CipherProvider>().createCipher();
+      if (mounted) {
+        Navigator.pop(context, true); // Close screen
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Cifra criada com sucesso!')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao criar: ${e.toString()}'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
+  }
+
+  void _createVersion(int cipherId) async {
+    try {
+      await context.read<VersionProvider>().createVersion(cipherId);
+      if (mounted) {
+        Navigator.pop(context, true); // Close screen
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Versão criada com sucesso!')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao criar: ${e.toString()}'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
   }
 
   void _saveCipher() async {

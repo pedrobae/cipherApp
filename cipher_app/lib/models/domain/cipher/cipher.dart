@@ -47,6 +47,22 @@ class Cipher {
     );
   }
 
+  bool get isNew => id == null;
+
+  // Empty Cipher factory
+  factory Cipher.empty() {
+    return Cipher(
+      title: '',
+      author: '',
+      musicKey: 'C',
+      language: 'pt-BR',
+      tempo: '',
+      isLocal: true,
+      tags: [],
+      versions: [],
+    );
+  }
+
   // To JSON for database
   Map<String, dynamic> toJson() {
     return {

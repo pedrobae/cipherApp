@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:cipher_app/models/domain/cipher/cipher.dart';
-import 'package:cipher_app/models/domain/cipher/version.dart';
 import 'package:cipher_app/repositories/cipher_repository.dart';
 
 class CipherProvider extends ChangeNotifier {
@@ -11,13 +10,13 @@ class CipherProvider extends ChangeNotifier {
 
   List<Cipher> _ciphers = [];
   List<Cipher> _filteredCiphers = [];
-  Cipher? _currentCipher;
+  Cipher _currentCipher = Cipher.empty();
   bool _isLoading = false;
   bool _isSaving = false;
   String? _error;
   String _searchTerm = '';
   bool _useMemoryFiltering = true;
-  bool _hasInitialized = false;
+  bool _hasLoadedCiphers = false;
 
   // Add debouncing for rapid calls
   Timer? _loadTimer;
@@ -29,7 +28,7 @@ class CipherProvider extends ChangeNotifier {
   bool get isSaving => _isSaving;
   String? get error => _error;
   bool get useMemoryFiltering => _useMemoryFiltering;
-  bool get hasInitialized => _hasInitialized;
+  bool get hasLoadedCiphers => _hasLoadedCiphers;
 
   /// ===== READ =====
   // Load all ciphers from local SQLite database into cache
@@ -44,7 +43,7 @@ class CipherProvider extends ChangeNotifier {
       _useMemoryFiltering = true;
       _ciphers = await _cipherRepository.getAllCiphers();
       _filterCiphers();
-      _hasInitialized = true;
+      _hasLoadedCiphers = true;
 
       if (kDebugMode) {
         print('Loaded ${_ciphers.length} ciphers from SQLite');
@@ -69,9 +68,10 @@ class CipherProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _currentCipher = await _cipherRepository.getCipherById(cipherId);
+      _currentCipher = (await _cipherRepository.getCipherById(cipherId))!;
     } catch (e) {
       _error = e.toString();
+      _currentCipher = Cipher.empty();
       if (kDebugMode) {
         print('Error loading ciphers: $e');
       }
@@ -90,9 +90,9 @@ class CipherProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _currentCipher = await _cipherRepository.getCipherWithVersionId(
+      _currentCipher = (await _cipherRepository.getCipherWithVersionId(
         versionId,
-      );
+      ))!;
     } catch (e) {
       _error = e.toString();
       if (kDebugMode) {
@@ -138,7 +138,7 @@ class CipherProvider extends ChangeNotifier {
   }
 
   /// ===== CREATE =====
-  Future<void> createCipher(Cipher cipher) async {
+  Future<void> createCipher() async {
     if (_isSaving) return;
 
     _isSaving = true;
@@ -147,13 +147,10 @@ class CipherProvider extends ChangeNotifier {
 
     try {
       // Insert basic cipher info and tags
-      final cipherId = await _cipherRepository.insertCipher(cipher);
+      final cipherId = await _cipherRepository.insertCipher(currentCipher!);
 
-      // Insert cipher maps and their content
-      await _createCipherVersionsAndSections(cipherId, cipher.versions);
-
-      // Reload all ciphers to get the complete data with relationships
-      await loadCiphers();
+      // Load the new ID into the current cipher cache
+      _currentCipher = _currentCipher.copyWith(id: cipherId);
     } catch (e) {
       _error = e.toString();
       if (kDebugMode) {
@@ -162,34 +159,6 @@ class CipherProvider extends ChangeNotifier {
     } finally {
       _isSaving = false;
       notifyListeners();
-    }
-  }
-
-  /// Handle creating cipher versions and their sections for a new cipher
-  Future<void> _createCipherVersionsAndSections(
-    int cipherId,
-    List<Version> versions,
-  ) async {
-    for (final version in versions) {
-      // Create Version with the correct cipher ID
-      final versionWithCipherId = version.copyWith(cipherId: cipherId);
-      final newVersionId = await _cipherRepository.insertVersionToCipher(
-        versionWithCipherId,
-      );
-
-      // Insert content for this map
-      for (final section in version.sections!.entries) {
-        if (section.key.isNotEmpty) {
-          final sectionJson = section.value.toJson();
-          await _cipherRepository.insertSection(
-            newVersionId,
-            sectionJson['content_type'],
-            sectionJson['content_code'],
-            sectionJson['content_text'],
-            sectionJson['color'],
-          );
-        }
-      }
     }
   }
 
@@ -270,7 +239,7 @@ class CipherProvider extends ChangeNotifier {
   /// Clear cached data and reset state for debugging
   void clearCache() {
     _ciphers.clear();
-    _currentCipher = null;
+    _currentCipher = Cipher.empty();
     _filteredCiphers.clear();
     _isLoading = false;
     _isSaving = false;
@@ -281,7 +250,7 @@ class CipherProvider extends ChangeNotifier {
 
   /// Clear current cipher to create a new cipher
   void clearCurrentCipher() {
-    _currentCipher = null;
+    _currentCipher = Cipher.empty();
     notifyListeners();
   }
 

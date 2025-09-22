@@ -194,30 +194,7 @@ class CipherProvider extends ChangeNotifier {
   }
 
   /// ===== UPDATE =====
-  Future<void> updateCipher(Cipher cipher) async {
-    if (_isSaving) return;
-
-    _isSaving = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      // Update basic cipher info and tags
-      await _cipherRepository.updateCipher(cipher);
-
-      // Reload all ciphers to get the updated data with relationships
-      await loadCiphers();
-    } catch (e) {
-      _error = e.toString();
-      if (kDebugMode) {
-        print('Error updating cipher: $e');
-      }
-    } finally {
-      _isSaving = false;
-      notifyListeners();
-    }
-  }
-
+  // Save current cipher changes to database
   Future<void> saveCipher() async {
     if (_isSaving) return;
     _isSaving = true;
@@ -293,6 +270,7 @@ class CipherProvider extends ChangeNotifier {
   /// Clear cached data and reset state for debugging
   void clearCache() {
     _ciphers.clear();
+    _currentCipher = null;
     _filteredCiphers.clear();
     _isLoading = false;
     _isSaving = false;

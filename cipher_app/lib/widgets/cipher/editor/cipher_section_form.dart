@@ -7,64 +7,7 @@ import 'package:cipher_app/models/domain/cipher/section.dart';
 import 'package:cipher_app/models/domain/cipher/version.dart';
 import 'package:cipher_app/providers/version_provider.dart';
 import 'package:cipher_app/widgets/cipher/editor/reorderable_structure_chips.dart';
-
-// Available colors for section selection
-const List<Color> _availableColors = [
-  Colors.blue,
-  Colors.red,
-  Colors.green,
-  Colors.orange,
-  Colors.purple,
-  Colors.amber,
-  Colors.teal,
-  Colors.brown,
-  Colors.indigo,
-  Colors.pink,
-  Colors.cyan,
-  Colors.lime,
-];
-
-// Predefined section types with Portuguese display names
-const Map<String, String> _predefinedSectionTypes = {
-  'I': 'Intro',
-  'V1': 'Verso 1',
-  'V2': 'Verso 2',
-  'V3': 'Verso 3',
-  'V4': 'Verso 4',
-  'C': 'Refrão',
-  'C1': 'Refrão 1',
-  'C2': 'Refrão 2',
-  'PC': 'Pré-Refrão',
-  'B': 'Ponte',
-  'B1': 'Ponte 1',
-  'B2': 'Ponte 2',
-  'S': 'Solo',
-  'O': 'Outro',
-  'F': 'Final',
-  'N': 'Anotações',
-  'T': 'Tag',
-};
-
-// Default colors for predefined sections
-const Map<String, Color> _defaultSectionColors = {
-  'I': Colors.purple,
-  'V1': Colors.blue,
-  'V2': Colors.blue,
-  'V3': Colors.blue,
-  'V4': Colors.blue,
-  'C': Colors.red,
-  'C1': Colors.red,
-  'C2': Colors.red,
-  'PC': Colors.orange,
-  'B': Colors.green,
-  'B1': Colors.green,
-  'B2': Colors.green,
-  'S': Colors.amber,
-  'O': Colors.brown,
-  'F': Colors.indigo,
-  'N': Colors.grey,
-  'T': Colors.teal,
-};
+import 'package:cipher_app/utils/section_constants.dart';
 
 class CipherSectionForm extends StatefulWidget {
   const CipherSectionForm({super.key});
@@ -167,8 +110,8 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
         _currentSections[sectionCode]!.contentText = contentText;
       } else {
         // Create new section - use predefined values if available, otherwise default
-        final displayName = _predefinedSectionTypes[sectionCode];
-        final color = _defaultSectionColors[sectionCode];
+        final displayName = predefinedSectionTypes[sectionCode];
+        final color = defaultSectionColors[sectionCode];
 
         _currentSections[sectionCode] = Section(
           versionId: 0,
@@ -213,8 +156,8 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
       } else {
         // This is a predefined section - create it if not exists
         if (!_currentSections.containsKey(sectionCode)) {
-          final displayName = _predefinedSectionTypes[sectionCode];
-          final color = _defaultSectionColors[sectionCode];
+          final displayName = predefinedSectionTypes[sectionCode];
+          final color = defaultSectionColors[sectionCode];
 
           _currentSections[sectionCode] = Section(
             versionId: 0,
@@ -261,7 +204,7 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
     showDialog(
       context: context,
       builder: (context) => _PresetSectionsDialog(
-        sectionTypes: _predefinedSectionTypes,
+        sectionTypes: predefinedSectionTypes,
         usedSections: _songStructure.toSet(),
         onAdd: (sectionKey) => _addSection(sectionKey),
       ),
@@ -412,7 +355,7 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
                     // Draggable Section Chips
                     ReorderableStructureChips(
                       songStructure: _songStructure,
-                      sectionTypes: _predefinedSectionTypes,
+                      sectionTypes: predefinedSectionTypes,
                       customSections: _currentSections,
                       onReorder: _reorderSection,
                       onRemoveSection: _removeSection,
@@ -536,7 +479,7 @@ class _PresetSectionsDialog extends StatelessWidget {
           children: sectionTypes.entries.map((entry) {
             return ActionChip(
               label: Text('${entry.key} - ${entry.value}'),
-              backgroundColor: (_defaultSectionColors[entry.key] ?? Colors.grey)
+              backgroundColor: (defaultSectionColors[entry.key] ?? Colors.grey)
                   .withValues(alpha: .8),
               labelStyle: const TextStyle(color: Colors.white),
               onPressed: () {
@@ -611,7 +554,7 @@ class _CustomSectionDialogState extends State<_CustomSectionDialog> {
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
-                children: _availableColors.map((color) {
+                children: availableColors.map((color) {
                   final isSelected = color == _selectedColor;
                   return GestureDetector(
                     onTap: () => setState(() => _selectedColor = color),

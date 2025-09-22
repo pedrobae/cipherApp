@@ -180,7 +180,7 @@ class _CipherViewerState extends State<CipherViewer> {
                   child: CipherVersionHeader(currentVersion: _currentVersion!),
                 ),
                 // Cipher content section
-                if (_currentVersion!.songStructure != '') ...[
+                if (_currentVersion!.songStructure != []) ...[
                   Expanded(
                     child: CipherContentSection(
                       cipher: currentCipher,

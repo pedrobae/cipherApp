@@ -240,6 +240,9 @@ class CipherProvider extends ChangeNotifier {
 
   // Update cache with non tag changes
   void cacheCipherUpdates(String field, String change) {
+    if (kDebugMode) {
+      print('Caching change for field $field: $change');
+    }
     if (field == 'title') {
       _currentCipher = currentCipher!.copyWith(title: change);
     } else if (field == 'author') {

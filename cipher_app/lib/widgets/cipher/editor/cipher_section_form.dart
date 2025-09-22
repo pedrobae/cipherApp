@@ -54,9 +54,7 @@ class _CipherSectionFormState extends State<CipherSectionForm> {
 
         // Remove controllers for sections that no longer exist
         final keysToRemove = _sectionControllers.keys
-            .where(
-              (key) => !version.sections!.containsKey(key),
-            ) // ✅ Fixed: NOT containsKey
+            .where((key) => !version.sections!.containsKey(key))
             .toList();
         for (final key in keysToRemove) {
           _sectionControllers[key]?.dispose();

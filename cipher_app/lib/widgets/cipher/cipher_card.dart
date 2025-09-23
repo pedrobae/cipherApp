@@ -29,7 +29,6 @@ class _CipherCardState extends State<CipherCard> {
   }
 
   Future<void> _handleExpansionChanged(bool expanded) async {
-    print('Expanded: $expanded');
     final versionProvider = Provider.of<VersionProvider>(
       context,
       listen: false,

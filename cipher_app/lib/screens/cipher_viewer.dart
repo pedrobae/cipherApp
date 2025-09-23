@@ -62,7 +62,7 @@ class _CipherViewerState extends State<CipherViewer>
       MaterialPageRoute(
         builder: (context) => EditCipher(
           cipherId: cipherProvider.currentCipher.id,
-          versionId: versionProvider.version.id,
+          versionId: versionProvider.currentVersion.id,
         ),
       ),
     );
@@ -81,7 +81,7 @@ class _CipherViewerState extends State<CipherViewer>
     showModalBottomSheet(
       context: context,
       builder: (context) => VersionSelectorBottomSheet(
-        currentVersion: versionProvider.version,
+        currentVersion: versionProvider.currentVersion,
         versions: cipherProvider.currentCipher.versions,
         onVersionSelected: _selectVersion,
         onNewVersion: _addNewVersion,
@@ -153,7 +153,7 @@ class _CipherViewerState extends State<CipherViewer>
         }
 
         final currentCipher = cipherProvider.currentCipher;
-        final currentVersion = versionProvider.version;
+        final currentVersion = versionProvider.currentVersion;
 
         // Safety check for data integrity
         if (currentCipher.id == null || currentVersion.id == null) {

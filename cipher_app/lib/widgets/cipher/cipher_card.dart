@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/models/domain/cipher/cipher.dart';
-import 'package:cipher_app/providers/expand_provider.dart';
+import 'package:cipher_app/providers/version_provider.dart';
 import 'package:cipher_app/screens/cipher_editor.dart';
 import 'package:cipher_app/widgets/cipher/tag_chip.dart';
 
@@ -29,18 +29,22 @@ class _CipherCardState extends State<CipherCard> {
   }
 
   Future<void> _handleExpansionChanged(bool expanded) async {
-    final expandProvider = Provider.of<ExpandProvider>(context, listen: false);
+    print('Expanded: $expanded');
+    final versionProvider = Provider.of<VersionProvider>(
+      context,
+      listen: false,
+    );
 
     if (expanded) {
       // Checks if this cipher is not already expanded before loading
-      if (!expandProvider.isCipherExpanded(widget.cipher.id!)) {
+      if (!(versionProvider.expandedCipherId == widget.cipher.id!)) {
         try {
-          await expandProvider.loadExpandedCipher(widget.cipher.id!);
+          await versionProvider.loadVersionsOfCipher(widget.cipher.id!);
         } catch (error) {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Erro ao expandir versões: $error'),
+                content: Text('Erro ao carregar versões: $error'),
                 backgroundColor: Theme.of(context).colorScheme.error,
               ),
             );
@@ -49,23 +53,22 @@ class _CipherCardState extends State<CipherCard> {
       }
     } else {
       // Checks if this cipher is the currently expanded one before collapsing
-      if (expandProvider.isCipherExpanded(widget.cipher.id!)) {
-        expandProvider.clearCache();
+      if (versionProvider.expandedCipherId == widget.cipher.id!) {
+        versionProvider.clearVersions();
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ExpandProvider>(
-      builder: (context, expandProvider, child) {
-        final expandedCipher = expandProvider.expandedCipher;
-        final isThisCipherExpanded = expandProvider.isCipherExpanded(
-          widget.cipher.id!,
-        );
+    return Consumer<VersionProvider>(
+      builder: (context, versionProvider, child) {
+        final versions = versionProvider.versions;
+        final isThisCipherExpanded =
+            versionProvider.expandedCipherId == widget.cipher.id!;
+
         final isLoadingThisCipher =
-            expandProvider.isLoading &&
-            expandProvider.isCipherExpanded(widget.cipher.id!);
+            versionProvider.isLoading && isThisCipherExpanded;
 
         // Collapses the tile if this cipher is no longer the expanded one
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -178,9 +181,8 @@ class _CipherCardState extends State<CipherCard> {
                       padding: EdgeInsets.all(16),
                       child: Center(child: CircularProgressIndicator()),
                     )
-                  else if (isThisCipherExpanded &&
-                      expandedCipher!.versions.isNotEmpty)
-                    ...expandedCipher.versions.map((version) {
+                  else if (isThisCipherExpanded && versions.isNotEmpty == true)
+                    ...versions.map((version) {
                       return GestureDetector(
                         onTap: () {
                           widget.selectVersion.call(

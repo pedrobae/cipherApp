@@ -34,7 +34,7 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
   Future<void> _loadCipher() async {
     context.read<VersionProvider>().loadVersionById(widget.cipherVersionId);
 
-    final version = context.read<VersionProvider>().version;
+    final version = context.read<VersionProvider>().currentVersion;
 
     if (mounted) {
       setState(() {

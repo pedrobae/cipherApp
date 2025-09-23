@@ -34,7 +34,7 @@ class _VersionFormState extends State<VersionForm> {
       context,
       listen: false,
     );
-    final version = versionProvider.version;
+    final version = versionProvider.currentVersion;
 
     if (version.sections != null) {
       if (!_hasInitialized || _lastSyncedVersion?.id != version.id) {
@@ -152,7 +152,7 @@ class _VersionFormState extends State<VersionForm> {
           _syncWithProviderData();
         });
 
-        final version = versionProvider.version;
+        final version = versionProvider.currentVersion;
 
         final uniqueSections = version.songStructure.toSet().toList();
 

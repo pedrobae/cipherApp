@@ -26,8 +26,10 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
     // Pre-load cipher data if not already loaded
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final cipherProvider = context.read<CipherProvider>();
-      if (cipherProvider.currentCipher.id == null) {
-        cipherProvider.loadCipherOfVersion(widget.cipherVersionId);
+
+      // Ensure all ciphers are loaded (loads all ciphers if not already loaded)
+      if (!cipherProvider.hasLoadedCiphers) {
+        cipherProvider.loadCiphers();
       }
     });
   }
@@ -77,15 +79,10 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
 
         return Consumer<CipherProvider>(
           builder: (context, cipherProvider, child) {
-            // Check if cipher is already loaded to avoid redundant calls
-            if (cipherProvider.currentCipher.id == null) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                cipherProvider.loadCipherOfVersion(widget.cipherVersionId);
-              });
-            }
+            final cipher = cipherProvider.getCachedCipher(version.cipherId);
 
-            // Show loading if cipher is not loaded yet
-            if (cipherProvider.currentCipher.id == null) {
+            // If cipher is not cached yet, show loading indicator
+            if (cipher == null) {
               return const Card(
                 child: Padding(
                   padding: EdgeInsets.all(16.0),
@@ -96,18 +93,14 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
 
             return InkWell(
               onTap: () {
-                // Add null safety checks before navigation
-                if (cipherProvider.currentCipher.id != null &&
-                    version.id != null) {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => CipherViewer(
-                        cipherId: cipherProvider.currentCipher.id!,
-                        versionId: version.id!,
-                      ),
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => CipherViewer(
+                      cipherId: cipher.id!,
+                      versionId: version.id!,
                     ),
-                  );
-                }
+                  ),
+                );
               },
               child: Card(
                 color: Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -126,7 +119,7 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
                               spacing: 10,
                               children: [
                                 Text(
-                                  cipherProvider.currentCipher.title,
+                                  cipher.title,
                                   style: Theme.of(context).textTheme.titleLarge,
                                 ),
                                 Text('Tom: ${version.transposedKey ?? 'N/A'}'),
@@ -135,8 +128,9 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
                             const SizedBox(height: 8),
                             // REORDERABLE SECTION CHIPS
                             SizedBox(
-                              height: 30,
+                              height: 40,
                               child: ReorderableListView.builder(
+                                shrinkWrap: true,
                                 proxyDecorator: (child, index, animation) =>
                                     Material(
                                       type: MaterialType.transparency,
@@ -170,11 +164,14 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
                                       'cipher_${widget.cipherVersionId}_section_${sectionCode}_occurrence_$occurrenceCount',
                                     ),
                                     index: index,
-                                    child: Container(
-                                      margin: EdgeInsets.only(right: 4),
+                                    child: SizedBox(
+                                      height: 25,
                                       child: Chip(
-                                        padding: EdgeInsets.all(0),
-                                        visualDensity: VisualDensity.compact,
+                                        padding: EdgeInsets.all(1),
+                                        visualDensity: VisualDensity(
+                                          horizontal:
+                                              VisualDensity.minimumDensity,
+                                        ),
                                         label: Text(
                                           sectionCode,
                                           style: TextStyle(

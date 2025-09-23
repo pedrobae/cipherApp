@@ -1,77 +1,86 @@
-import 'package:cipher_app/models/domain/cipher/version.dart';
-import 'package:cipher_app/providers/layout_settings_provider.dart';
-import 'package:cipher_app/widgets/settings/layout_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/domain/cipher/cipher.dart';
-import '../providers/cipher_provider.dart';
-import '../widgets/cipher/viewer/content_section.dart';
-import '../widgets/cipher/viewer/version_header.dart';
-import '../widgets/cipher/version_selector.dart';
-import 'cipher_editor.dart';
+import 'package:cipher_app/providers/cipher_provider.dart';
+import 'package:cipher_app/providers/layout_settings_provider.dart';
+import 'package:cipher_app/providers/version_provider.dart';
+import 'package:cipher_app/screens/cipher_editor.dart';
+import 'package:cipher_app/widgets/settings/layout_settings.dart';
+import 'package:cipher_app/widgets/cipher/viewer/content_section.dart';
+import 'package:cipher_app/widgets/cipher/viewer/version_header.dart';
+import 'package:cipher_app/widgets/cipher/version_selector.dart';
 
 class CipherViewer extends StatefulWidget {
-  final Cipher cipher;
-  final Version version;
+  final int cipherId;
+  final int versionId;
 
-  const CipherViewer({super.key, required this.cipher, required this.version});
+  const CipherViewer({
+    super.key,
+    required this.cipherId,
+    required this.versionId,
+  });
 
   @override
   State<CipherViewer> createState() => _CipherViewerState();
 }
 
-class _CipherViewerState extends State<CipherViewer> {
-  Version? _currentVersion;
+class _CipherViewerState extends State<CipherViewer>
+    with SingleTickerProviderStateMixin {
   bool _hasSetOriginalKey = false;
 
   @override
   void initState() {
     super.initState();
-    _selectVersion(widget.version);
-
-    if (!_hasSetOriginalKey) {
-      _hasSetOriginalKey = true;
-    }
-  }
-
-  void _selectVersion(Version version) {
-    setState(() {
-      _currentVersion = version;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadData();
     });
   }
 
+  Future<void> _loadData() async {
+    final cipherProvider = context.read<CipherProvider>();
+    final versionProvider = context.read<VersionProvider>();
+
+    await cipherProvider.loadCipher(widget.cipherId);
+    await versionProvider.loadVersionById(widget.versionId);
+  }
+
   void _addNewVersion() {
+    final cipherProvider = context.read<CipherProvider>();
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => EditCipher(cipherId: widget.cipher.id),
+        builder: (context) =>
+            EditCipher(cipherId: cipherProvider.currentCipher.id),
       ),
     );
   }
 
   void _editCurrentVersion() {
-    // Only allow editing if there's a current version
-    if (_currentVersion == null) return;
-
+    final cipherProvider = context.read<CipherProvider>();
+    final versionProvider = context.read<VersionProvider>();
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => EditCipher(
-          cipherId: widget.cipher.id,
-          versionId: _currentVersion?.id,
+          cipherId: cipherProvider.currentCipher.id,
+          versionId: versionProvider.version.id,
         ),
       ),
     );
   }
 
+  void _selectVersion(int versionId) {
+    final versionProvider = context.read<VersionProvider>();
+    versionProvider.loadVersionById(versionId);
+  }
+
   void _showVersionSelector() {
-    // Only show version selector if there are versions and a current version is selected
-    if (widget.cipher.versions.isEmpty || _currentVersion == null) return;
+    final cipherProvider = context.read<CipherProvider>();
+    final versionProvider = context.read<VersionProvider>();
 
     showModalBottomSheet(
       context: context,
       builder: (context) => VersionSelectorBottomSheet(
-        versions: widget.cipher.versions,
-        currentVersion: _currentVersion!,
+        currentVersion: versionProvider.version,
+        versions: cipherProvider.currentCipher.versions,
         onVersionSelected: _selectVersion,
         onNewVersion: _addNewVersion,
       ),
@@ -103,95 +112,125 @@ class _CipherViewerState extends State<CipherViewer> {
 
   @override
   Widget build(BuildContext context) {
-    final cipherProvider = context.watch<CipherProvider>();
-    final settings = context.watch<LayoutSettingsProvider>();
-    final hasVersions = widget.cipher.versions.isNotEmpty;
+    return Consumer3<CipherProvider, VersionProvider, LayoutSettingsProvider>(
+      builder: (context, cipherProvider, versionProvider, settings, child) {
+        // Handle loading states
+        if (cipherProvider.isLoading || versionProvider.isLoading) {
+          return Scaffold(
+            appBar: AppBar(title: const Text('Carregando...')),
+            body: const Center(child: CircularProgressIndicator()),
+          );
+        }
 
-    final currentCipher = cipherProvider.ciphers.firstWhere(
-      (c) => c.id == widget.cipher.id,
-      orElse: () => widget.cipher, // Fallback to original if not found
-    );
-    // Always refresh _currentVersion from provider by id
-    if (_currentVersion != null && hasVersions) {
-      final updatedVersion = currentCipher.versions.firstWhere(
-        (m) => m.id == _currentVersion!.id,
-        orElse: () => currentCipher.versions.first,
-      );
-      _currentVersion = updatedVersion;
-    } else if (hasVersions) {
-      _currentVersion = currentCipher.versions.first;
-    } else {
-      _currentVersion = null;
-    }
-
-    if (!_hasSetOriginalKey) {
-      settings.setOriginalKey(currentCipher.musicKey);
-    }
-    return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          children: [
-            Text(
-              currentCipher.title,
-              style: Theme.of(
-                context,
-              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            Text(
-              'por ${currentCipher.author}',
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(color: Colors.grey[600]),
-            ),
-          ],
-        ),
-        centerTitle: true,
-        actions: [
-          if (hasVersions) ...[
-            IconButton(
-              onPressed: _showLayoutSettings,
-              icon: const Icon(Icons.remove_red_eye),
-              tooltip: 'Layout Settings',
-            ),
-            IconButton(
-              icon: const Icon(Icons.library_music),
-              tooltip: 'Versões',
-              onPressed: _showVersionSelector,
-            ),
-            IconButton(
-              icon: const Icon(Icons.edit),
-              tooltip: 'Edit',
-              onPressed: _editCurrentVersion,
-            ),
-          ] else
-            IconButton(
-              icon: const Icon(Icons.add),
-              tooltip: 'Criar primeira versão',
-              onPressed: _addNewVersion,
-            ),
-        ],
-      ),
-      body: hasVersions
-          ? Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: EdgeInsetsGeometry.all(0),
-                  child: CipherVersionHeader(currentVersion: _currentVersion!),
-                ),
-                // Cipher content section
-                if (_currentVersion!.songStructure != []) ...[
-                  Expanded(
-                    child: CipherContentSection(
-                      cipher: currentCipher,
-                      currentVersion: _currentVersion!,
-                      columnCount: settings.columnCount,
-                    ),
+        // Handle error states
+        if (cipherProvider.error != null || versionProvider.error != null) {
+          return Scaffold(
+            appBar: AppBar(title: const Text('Erro')),
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.error_outline,
+                    size: 64,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Erro: ${cipherProvider.error ?? versionProvider.error}',
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: _loadData,
+                    child: const Text('Tentar Novamente'),
                   ),
                 ],
+              ),
+            ),
+          );
+        }
+
+        final currentCipher = cipherProvider.currentCipher;
+        final currentVersion = versionProvider.version;
+        final hasVersions = currentCipher.versions.isNotEmpty;
+
+        // Set original key for transposer
+        if (!_hasSetOriginalKey && currentCipher.musicKey.isNotEmpty) {
+          _hasSetOriginalKey = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            settings.setOriginalKey(currentCipher.musicKey);
+          });
+        }
+
+        return Scaffold(
+          appBar: AppBar(
+            title: Column(
+              children: [
+                Text(
+                  currentCipher.title,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'por ${currentCipher.author}',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleMedium?.copyWith(color: Colors.grey[600]),
+                ),
               ],
-            )
-          : _buildEmptyState(),
+            ),
+            centerTitle: true,
+            actions: [
+              if (hasVersions && currentVersion.id != null) ...[
+                IconButton(
+                  onPressed: _showLayoutSettings,
+                  icon: const Icon(Icons.remove_red_eye),
+                  tooltip: 'Layout Settings',
+                ),
+                IconButton(
+                  icon: const Icon(Icons.library_music),
+                  tooltip: 'Versões',
+                  onPressed: _showVersionSelector,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.edit),
+                  tooltip: 'Edit',
+                  onPressed: _editCurrentVersion,
+                ),
+              ] else
+                IconButton(
+                  icon: const Icon(Icons.add),
+                  tooltip: 'Criar primeira versão',
+                  onPressed: _addNewVersion,
+                ),
+            ],
+          ),
+          body: hasVersions && currentVersion.id != null
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(0),
+                      child: CipherVersionHeader(
+                        currentVersion: currentVersion,
+                      ),
+                    ),
+                    // Cipher content section
+                    if (currentVersion.songStructure.isNotEmpty) ...[
+                      Expanded(
+                        child: CipherContentSection(
+                          cipher: currentCipher,
+                          currentVersion: currentVersion,
+                          columnCount: settings.columnCount,
+                        ),
+                      ),
+                    ],
+                  ],
+                )
+              : _buildEmptyState(),
+        );
+      },
     );
   }
 

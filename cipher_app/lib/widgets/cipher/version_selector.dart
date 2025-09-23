@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class VersionSelectorBottomSheet extends StatelessWidget {
   final List<Version> versions;
   final Version currentVersion;
-  final Function(Version) onVersionSelected;
+  final Function(int) onVersionSelected;
   final VoidCallback onNewVersion;
 
   const VersionSelectorBottomSheet({
@@ -114,7 +114,7 @@ class VersionSelectorBottomSheet extends StatelessWidget {
                       : const Icon(Icons.radio_button_unchecked),
                   onTap: () {
                     Navigator.pop(context);
-                    onVersionSelected(version);
+                    onVersionSelected(version.id!);
                   },
                 );
               },

@@ -7,7 +7,7 @@ import 'package:cipher_app/widgets/cipher/editor/version_form.dart';
 
 class EditCipher extends StatefulWidget {
   final int? cipherId; // Null for new cipher, populated for edit
-  final int? versionId; // Null for new version, populate for edit
+  final int? versionId; // Null for new version, populated for edit
 
   const EditCipher({super.key, this.cipherId, this.versionId});
 

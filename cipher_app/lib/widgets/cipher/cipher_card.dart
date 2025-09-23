@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/models/domain/cipher/cipher.dart';
-import 'package:cipher_app/models/domain/cipher/version.dart';
 import 'package:cipher_app/providers/expand_provider.dart';
 import 'package:cipher_app/screens/cipher_editor.dart';
 import 'package:cipher_app/widgets/cipher/tag_chip.dart';
 
 class CipherCard extends StatefulWidget {
   final Cipher cipher;
-  final Function(Version, Cipher)? selectVersion;
+  final Function(int, int) selectVersion;
 
-  const CipherCard({super.key, required this.cipher, this.selectVersion});
+  const CipherCard({
+    super.key,
+    required this.cipher,
+    required this.selectVersion,
+  });
 
   @override
   State<CipherCard> createState() => _CipherCardState();
@@ -180,7 +183,10 @@ class _CipherCardState extends State<CipherCard> {
                     ...expandedCipher.versions.map((version) {
                       return GestureDetector(
                         onTap: () {
-                          widget.selectVersion?.call(version, widget.cipher);
+                          widget.selectVersion.call(
+                            version.id!,
+                            widget.cipher.id!,
+                          );
                         },
                         child: Container(
                           decoration: BoxDecoration(

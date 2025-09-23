@@ -1,8 +1,5 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cipher_app/models/domain/cipher/cipher.dart';
-import 'package:cipher_app/models/domain/cipher/version.dart';
 import 'package:cipher_app/widgets/search_app_bar.dart';
 import 'package:cipher_app/widgets/cipher/cipher_card.dart';
 import 'package:cipher_app/providers/cipher_provider.dart';
@@ -52,20 +49,12 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
     }
   }
 
-  void _selectVersion(Version version, Cipher cipher) {
-    if (kDebugMode) {
-      print(
-        '_selectVersion called with version: ${version.versionName}, cipher: ${cipher.title}',
-      );
-      print('Selection mode: ${widget.selectionMode}');
-      print('Playlist ID: ${widget.playlistId}');
-    }
-
+  void _selectVersion(int versionId, int cipherId) {
     if (widget.selectionMode) {
       try {
         context.read<PlaylistProvider>().addCipherMap(
           widget.playlistId!,
-          version.id!,
+          versionId,
         );
 
         context.read<CipherProvider>().clearSearch();
@@ -82,7 +71,8 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
     } else {
       Navigator.of(context, rootNavigator: true).push(
         MaterialPageRoute(
-          builder: (context) => CipherViewer(cipher: cipher, version: version),
+          builder: (context) =>
+              CipherViewer(cipherId: cipherId, versionId: versionId),
         ),
       );
     }
@@ -137,7 +127,6 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
     if (cipherProvider.isLoading) {
       return const Expanded(child: Center(child: CircularProgressIndicator()));
     }
-
     // Handle error state
     if (cipherProvider.error != null) {
       return Expanded(
@@ -162,7 +151,6 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
         ),
       );
     }
-
     // Handle empty state
     if (cipherProvider.ciphers.isEmpty) {
       return Expanded(
@@ -189,7 +177,6 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
         ),
       );
     }
-
     // Display filtered ciphers list for selection mode
     return _buildCiphersList(cipherProvider);
   }

@@ -1,5 +1,6 @@
 import 'package:cipher_app/models/domain/cipher/section.dart';
 import 'package:cipher_app/models/domain/cipher/version.dart';
+import 'package:cipher_app/models/domain/playlist/playlist_item.dart';
 import 'package:cipher_app/repositories/cipher_repository.dart';
 import 'package:flutter/foundation.dart';
 
@@ -129,6 +130,14 @@ class VersionProvider extends ChangeNotifier {
         'song_structure': songStructure.join(','),
       });
 
+      // Update cached version if it exists
+      final cachedVersionIndex = _versions.indexWhere((v) => v.id == versionId);
+      if (cachedVersionIndex != -1) {
+        _versions[cachedVersionIndex] = _versions[cachedVersionIndex].copyWith(
+          songStructure: songStructure,
+        );
+      }
+
       if (kDebugMode) {
         print('Updated the songStructure of version: $versionId');
       }
@@ -234,6 +243,58 @@ class VersionProvider extends ChangeNotifier {
     _expandedCipherId = -1;
     _versions = [];
     notifyListeners();
+  }
+
+  /// ===== PLAYLIST SUPPORT =====
+  // Load versions for playlist using PlaylistItems
+  Future<void> loadVersionsForPlaylist(List<PlaylistItem> playlistItems) async {
+    if (_isLoading) return;
+
+    // Extract cipher version IDs from playlist items
+    final versionIds = playlistItems
+        .where((item) => item.isCipherVersion)
+        .map((item) => item.contentId)
+        .toList();
+
+    if (versionIds.isEmpty) {
+      _versions = [];
+      notifyListeners();
+      return;
+    }
+
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      _versions = await _cipherRepository.getVersionsByIds(versionIds);
+      if (kDebugMode) {
+        print('Loaded ${_versions.length} versions for playlist');
+      }
+    } catch (e) {
+      _error = e.toString();
+      _versions = [];
+      if (kDebugMode) {
+        print('Error loading versions for playlist: $e');
+      }
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // Get cached version by ID (returns null if not in cache)
+  Version? getCachedVersion(int versionId) {
+    try {
+      return _versions.firstWhere((version) => version.id == versionId);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Check if a version is already cached
+  bool isVersionCached(int versionId) {
+    return _versions.any((version) => version.id == versionId);
   }
 
   /// ===== SECTION MANAGEMENT =====

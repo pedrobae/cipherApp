@@ -126,6 +126,21 @@ class CipherRepository {
     return getCipherById(result[0]['cipher_id'] as int);
   }
 
+  Future<List<Version>> getVersionsByIds(List<int> versionIds) async {
+    if (versionIds.isEmpty) return [];
+
+    final db = await _databaseHelper.database;
+    final placeholders = versionIds.map((_) => '?').join(',');
+    final results = await db.query(
+      'version',
+      where: 'id IN ($placeholders)',
+      whereArgs: versionIds,
+      orderBy: 'id',
+    );
+
+    return Future.wait(results.map((row) => _buildCipherVersion(row)));
+  }
+
   Future<int> insertVersionToCipher(Version map) async {
     final db = await _databaseHelper.database;
     return await db.insert('version', map.toJson());

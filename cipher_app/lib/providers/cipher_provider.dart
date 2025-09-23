@@ -274,6 +274,21 @@ class CipherProvider extends ChangeNotifier {
     _filterCiphers();
   }
 
+  /// ===== CIPHER CACHING =====
+  // Get cached cipher by ID (returns null if not in cache)
+  Cipher? getCachedCipher(int cipherId) {
+    try {
+      return _ciphers.firstWhere((cipher) => cipher.id == cipherId);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Check if a cipher is already cached
+  bool isCipherCached(int cipherId) {
+    return _ciphers.any((cipher) => cipher.id == cipherId);
+  }
+
   @override
   void dispose() {
     _loadTimer?.cancel();

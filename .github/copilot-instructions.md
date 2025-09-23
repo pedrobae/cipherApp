@@ -127,8 +127,34 @@ App uses multiple providers in `main.dart`:
 ### Critical Provider Patterns
 1. **Always check `_isLoading`** before async operations
 2. **Use `Timer` for debouncing** rapid user input (see `cipher_section_form.dart`)
-3. **Sync state in `didChangeDependencies`** for complex widgets
+3. **Sync state in `didChangeDependencies`** for complex widgets that need to react to dependency changes
 4. **Consumer2/Consumer3** for widgets needing multiple providers
+5. **Follow StatefulWidget pattern** for widgets requiring data pre-loading (see UI Component Patterns)
+6. **Use post-frame callbacks** to avoid setState during build cycles
+7. **Generate unique keys** for reorderable widgets to prevent global key collisions
+
+### Cache Management Patterns (CRITICAL)
+**Dual-Purpose Cache Awareness**: Both `_ciphers` and `_versions` serve multiple contexts:
+
+**CipherProvider `_ciphers` Cache:**
+- **Primary**: Cipher Library (loads ALL ciphers via `loadCiphers()`)
+- **Secondary**: Playlist contexts use existing cache via `getCachedCipher(id)`
+- **NEVER add playlist-specific loading** - use existing `loadCiphers()` if not `hasLoadedCiphers`
+
+**VersionProvider `_versions` Cache:**
+- **Cipher Expansion**: Multiple versions of one cipher (via `loadVersionsOfCipher()`)
+- **Playlist Context**: Specific versions by IDs (via `loadVersionsForPlaylist()`)
+- **Cache Conflicts**: Playlist loading overwrites cipher expansion - this is expected behavior
+
+**Cache Cleaning Rules:**
+```dart
+// For navigating between library and playlist contexts:
+versionProvider.clearVersions(); // Clears _versions safely
+// CipherProvider._ciphers should persist across contexts (never clear in playlist)
+
+// For cache consistency during updates:
+// Always update both caches when modifying version data (see saveUpdatedSongStructure)
+```
 
 ## 🎵 Cipher-Specific Patterns
 
@@ -179,6 +205,77 @@ Seeded database contains 4 hymns: "Amazing Grace", "How Great Thou Art", "Holy H
 - `lib/widgets/cipher/editor/` - Complex form components for cipher editing
 - `lib/widgets/cipher/viewer/` - Display components for cipher viewing
 - Widgets are highly reusable and provider-agnostic when possible
+
+### StatefulWidget Pattern for Provider Integration
+**CRITICAL**: When creating widgets that need data from providers, follow this established pattern:
+
+```dart
+class MyWidget extends StatefulWidget {
+  final int requiredId;
+  final VoidCallback? onCallback;
+
+  const MyWidget({
+    super.key,
+    required this.requiredId,
+    this.onCallback,
+  });
+
+  @override
+  State<MyWidget> createState() => _MyWidgetState();
+}
+
+class _MyWidgetState extends State<MyWidget> {
+  @override
+  void initState() {
+    super.initState();
+    // Pre-load data with post-frame callback to avoid setState during build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = context.read<MyProvider>();
+      if (!provider.isDataLoaded(widget.requiredId)) {
+        provider.loadData(widget.requiredId);
+      }
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Use for complex widgets that need to sync state when dependencies change
+    // Example: When widget parameters change and need to reload provider data
+    final provider = context.read<MyProvider>();
+    if (provider.needsRefresh(widget.requiredId)) {
+      provider.refreshData(widget.requiredId);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<MyProvider>(
+      builder: (context, provider, child) {
+        final data = provider.getCachedData(widget.requiredId);
+        
+        if (data == null) {
+          return const CircularProgressIndicator();
+        }
+
+        return MyActualWidget(
+          data: data,
+          onAction: () => widget.onCallback?.call(),
+        );
+      },
+    );
+  }
+}
+```
+
+**Key Pattern Rules:**
+1. **Always use StatefulWidget** for provider-dependent widgets that need pre-loading
+2. **Pre-load in `initState`** with `WidgetsBinding.instance.addPostFrameCallback`
+3. **Use `didChangeDependencies`** for complex widgets that need to react to dependency changes
+4. **Access widget properties** as `widget.propertyName` in StatefulWidget context
+5. **Use Consumer pattern** for reactive UI updates
+6. **Handle loading states** with proper null checks and loading indicators
+7. **Generate globally unique keys** for lists/reorderable widgets: `ValueKey('scope_${widget.id}_item_${itemId}_occurrence_$count')` for ReorderableListView (never use index), `ValueKey('scope_${widget.id}_item_$index')` for regular lists
 
 ### Color Utilities
 Custom color handling in `lib/utils/color.dart`:

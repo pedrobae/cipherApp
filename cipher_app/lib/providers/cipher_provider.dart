@@ -11,10 +11,7 @@ class CipherProvider extends ChangeNotifier {
   List<Cipher> _ciphers = [];
   List<Cipher> _filteredCiphers = [];
   Cipher _currentCipher = Cipher.empty();
-  Cipher? _expandedCipher;
-  int? _expandedCipherId;
   bool _isLoading = false;
-  bool _isLoadingExpandedCipher = false;
   bool _isSaving = false;
   String? _error;
   String _searchTerm = '';
@@ -25,12 +22,9 @@ class CipherProvider extends ChangeNotifier {
   Timer? _loadTimer;
 
   // Getters
-  List<Cipher> get ciphers => _filteredCiphers;
   Cipher get currentCipher => _currentCipher;
-  Cipher? get expandedCipher => _expandedCipher;
-  int? get expandedCipherId => _expandedCipherId;
+  List<Cipher> get ciphers => _filteredCiphers;
   bool get isLoading => _isLoading;
-  bool get isLoadingExpandedCipher => _isLoadingExpandedCipher;
   bool get isSaving => _isSaving;
   String? get error => _error;
   bool get useMemoryFiltering => _useMemoryFiltering;
@@ -108,47 +102,6 @@ class CipherProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
-  }
-
-  // Load expanded cipher for detailed view
-  Future<void> loadExpandedCipher(int cipherId) async {
-    if (_isLoadingExpandedCipher) return;
-
-    // If this cipher is already expanded, don't load again
-    if (_expandedCipherId == cipherId && _expandedCipher != null) return;
-
-    _isLoadingExpandedCipher = true;
-    _error = null;
-    _expandedCipherId = cipherId; // Set the expanded cipher ID
-    notifyListeners();
-
-    try {
-      _expandedCipher = (await _cipherRepository.getCipherById(cipherId))!;
-      if (kDebugMode) {
-        print('Loaded expanded cipher: ${_expandedCipher?.title}');
-      }
-    } catch (e) {
-      _error = e.toString();
-      _expandedCipherId = null; // Reset on error
-      if (kDebugMode) {
-        print('Error loading expanded cipher: $e');
-      }
-    } finally {
-      _isLoadingExpandedCipher = false;
-      notifyListeners();
-    }
-  }
-
-  // Collapse the currently expanded cipher
-  void collapseExpandedCipher() {
-    _expandedCipher = null;
-    _expandedCipherId = null;
-    notifyListeners();
-  }
-
-  // Check if a specific cipher is expanded
-  bool isCipherExpanded(int cipherId) {
-    return _expandedCipherId == cipherId;
   }
 
   // Search functionality
@@ -319,15 +272,6 @@ class CipherProvider extends ChangeNotifier {
       _ciphers.add(_currentCipher);
     }
     _filterCiphers();
-  }
-
-  /// Toggle expanded cipher for detailed view
-  void toggleExpandCipher(int cipherId) {
-    if (_expandedCipherId == cipherId) {
-      collapseExpandedCipher();
-    } else {
-      loadExpandedCipher(cipherId);
-    }
   }
 
   @override

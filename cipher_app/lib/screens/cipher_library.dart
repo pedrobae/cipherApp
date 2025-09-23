@@ -1,3 +1,4 @@
+import 'package:cipher_app/providers/expand_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/widgets/search_app_bar.dart';
@@ -75,6 +76,7 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
               CipherViewer(cipherId: cipherId, versionId: versionId),
         ),
       );
+      context.read<ExpandProvider>().clearExpandedCipher();
     }
   }
 

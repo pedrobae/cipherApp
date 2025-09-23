@@ -55,6 +55,11 @@ class ExpandProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  // Clear expanded cipher to trigger reload next time
+  void clearExpandedCipher() {
+    _expandedCipher = null;
+  }
+
   /// ===== UTILS =====
   // Check if a specific cipher is expanded
   bool isCipherExpanded(int cipherId) {

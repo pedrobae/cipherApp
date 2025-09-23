@@ -69,7 +69,7 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
         );
       }
     } else {
-      Navigator.of(context, rootNavigator: true).push(
+      Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) =>
               CipherViewer(cipherId: cipherId, versionId: versionId),
@@ -111,7 +111,7 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
           ? null
           : FloatingActionButton.extended(
               onPressed: () {
-                Navigator.of(context, rootNavigator: true).push(
+                Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => const EditCipher()),
                 );
               },

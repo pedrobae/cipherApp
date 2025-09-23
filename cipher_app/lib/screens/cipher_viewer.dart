@@ -36,6 +36,7 @@ class _CipherViewerState extends State<CipherViewer>
   }
 
   Future<void> _loadData() async {
+    if (!mounted) return;
     final cipherProvider = context.read<CipherProvider>();
     final versionProvider = context.read<VersionProvider>();
 
@@ -68,6 +69,7 @@ class _CipherViewerState extends State<CipherViewer>
   }
 
   void _selectVersion(int versionId) {
+    if (!mounted) return;
     final versionProvider = context.read<VersionProvider>();
     versionProvider.loadVersionById(versionId);
   }
@@ -152,6 +154,15 @@ class _CipherViewerState extends State<CipherViewer>
 
         final currentCipher = cipherProvider.currentCipher;
         final currentVersion = versionProvider.version;
+
+        // Safety check for data integrity
+        if (currentCipher.id == null || currentVersion.id == null) {
+          return Scaffold(
+            appBar: AppBar(title: const Text('Carregando...')),
+            body: const Center(child: CircularProgressIndicator()),
+          );
+        }
+
         final hasVersions = currentCipher.versions.isNotEmpty;
 
         // Set original key for transposer

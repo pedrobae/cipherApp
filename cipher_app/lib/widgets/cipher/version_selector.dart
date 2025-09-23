@@ -114,7 +114,12 @@ class VersionSelectorBottomSheet extends StatelessWidget {
                       : const Icon(Icons.radio_button_unchecked),
                   onTap: () {
                     Navigator.pop(context);
-                    onVersionSelected(version.id!);
+                    // Add a small delay to ensure the pop completes before callback
+                    Future.microtask(() {
+                      if (version.id != null) {
+                        onVersionSelected(version.id!);
+                      }
+                    });
                   },
                 );
               },

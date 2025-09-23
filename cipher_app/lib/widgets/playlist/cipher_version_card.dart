@@ -71,7 +71,7 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
     cipherProvider.loadCipherOfVersion(widget.cipherVersionId);
 
     return InkWell(
-      onTap: () => Navigator.of(context, rootNavigator: true).push(
+      onTap: () => Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => CipherViewer(
             cipherId: cipherProvider.currentCipher.id!,

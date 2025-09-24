@@ -45,14 +45,16 @@
 
 ## 🏗️ Architecture Overview
 
-This Flutter app manages musical ciphers (chord charts) with a strict layered architecture:
+This Flutter app manages musical ciphers (chord charts) with a strict layered architecture supporting both local-first and cloud synchronization:
 
 ### Core Architecture Pattern
 ```
-Database (SQLite) → Repository → Provider (ChangeNotifier) → UI (Screens/Widgets)
+Local SQLite ←→ Repository ←→ Provider (ChangeNotifier) ←→ UI (Screens/Widgets)
+     ↕                ↕
+  FirebaseSync ←→ CloudRepository
 ```
 
-**Critical**: No service layer exists between Repository and Provider for consistency.
+**Critical**: Hybrid offline-first architecture with cloud sync capabilities for sharing and collaboration.
 
 ### Domain Model Evolution (UPDATED)
 The app has evolved from legacy `cipher_map`/`map_content` to modern `version`/`section`:
@@ -122,6 +124,7 @@ class CipherProvider extends ChangeNotifier {
 App uses multiple providers in `main.dart`:
 - `CipherProvider` + `VersionProvider` work together for editing
 - `SettingsProvider` + `LayoutSettingsProvider` for configuration
+- **Future**: `AuthProvider` + `SyncProvider` for Firebase integration
 - Each provider has independent lifecycle
 
 ### Critical Provider Patterns
@@ -132,6 +135,7 @@ App uses multiple providers in `main.dart`:
 5. **Follow StatefulWidget pattern** for widgets requiring data pre-loading (see UI Component Patterns)
 6. **Use post-frame callbacks** to avoid setState during build cycles
 7. **Generate unique keys** for reorderable widgets to prevent global key collisions
+8. **Firebase operations** should extend existing repository methods, not replace them
 
 ### Cache Management Patterns (CRITICAL)
 **Dual-Purpose Cache Awareness**: Both `_ciphers` and `_versions` serve multiple contexts:
@@ -139,6 +143,7 @@ App uses multiple providers in `main.dart`:
 **CipherProvider `_ciphers` Cache:**
 - **Primary**: Cipher Library (loads ALL ciphers via `loadCiphers()`)
 - **Secondary**: Playlist contexts use existing cache via `getCachedCipher(id)`
+- **Cloud Integration**: `syncCiphers()` updates local cache after Firebase sync
 - **NEVER add playlist-specific loading** - use existing `loadCiphers()` if not `hasLoadedCiphers`
 
 **VersionProvider `_versions` Cache:**
@@ -179,6 +184,91 @@ Sections contain ChordPro-formatted text for chord charts:
 ```
 [Am]Amazing [F]grace, how [C]sweet the [G]sound
 That [Am]saved a [F]wretch like [C]me
+```
+
+## 🔥 Firebase Integration Architecture
+
+### On-Demand Download Strategy (Free Tier Optimized)
+**Core Principle**: Only download full cipher data when user **actually views** the cipher, not when browsing or searching.
+
+**Read Operation Optimization:**
+- **Library Browsing**: Metadata only (title, author, tags) - 1 cached read per session
+- **Cipher Viewing**: Full download on-demand - 1 read per unique cipher viewed
+- **Result**: ~96% reduction in read operations vs. full sync approach
+
+### Cloud Database Structure
+```
+firestore/
+├── users/{userId}/
+│   ├── profile: {name, email, preferences}  
+│   ├── sharedPlaylists: {playlistId: permissions}
+│   └── syncSessions: {sessionId: {timestamp, role}}
+├── publicCiphers/{cipherId}/
+│   ├── metadata: {title, author, musicKey, tags, downloadCount, lastUpdated}
+│   └── fullData: {
+│       versions: {versionId: {songStructure, sections: {...}}},
+│       cipherData: {language, createdAt, contributors}
+│     }
+├── playlists/{playlistId}/
+│   ├── metadata: {name, description, owner, public}
+│   ├── items: [{type, contentId, order}]
+│   ├── collaborators: {userId: permission}
+│   └── presentation: {currentIndex, timestamp, presenter}
+├── infoContent/{infoId}: {title, content, lastUpdated}
+└── syncSessions/{sessionId}/
+    ├── metadata: {playlistId, presenter, participants}
+    └── state: {currentIndex, timestamp, isPlaying}
+```
+
+### Firebase Integration Patterns
+
+**Critical Firebase Rules:**
+1. **Offline-First Design**: SQLite remains primary data source, Firebase is download source
+2. **On-Demand Downloads**: Only read full cipher data when viewing (not browsing)
+3. **Repository Pattern Extension**: Extend existing repositories with cloud methods
+4. **Permanent Local Storage**: Downloaded ciphers stored permanently in SQLite
+5. **Authentication Required**: All cloud operations require Firebase Auth
+6. **Real-time for Presentation Only**: Use Firestore listeners only for live presentation sync
+
+**Firebase Services Structure:**
+```dart
+lib/services/
+├── firebase_service.dart      // Core Firebase initialization
+├── auth_service.dart          // Authentication wrapper
+├── download_service.dart      // On-demand cipher downloads
+└── presentation_sync_service.dart // Real-time presentation sync
+```
+
+**Cloud Repository Extensions:**
+```dart
+// Extend existing repositories, don't replace them
+class CipherRepository {
+  Future<List<CipherMetadata>> getPublicCipherMetadata(); // Browse without downloading
+  Future<Cipher> downloadFirebaseCipher(String firebaseId); // Single read, full download
+  Future<void> shareCipher(Cipher cipher); // Upload to shared collection
+}
+```
+
+**Provider Integration:**
+- `AuthProvider`: Manages Firebase Auth state
+- `DownloadProvider`: Handles cipher download progress and caching
+- `CipherProvider`: Extended with `loadCipherFromFirebase()` method
+- Existing providers: Add cloud download methods without breaking local functionality
+
+**Portuguese UI Extensions:**
+- "Entrar" (Sign In), "Sair" (Sign Out)
+- "Cifras da Nuvem" (Cloud Ciphers), "Baixar Cifra" (Download Cipher)
+- "Baixando..." (Downloading...), "Cifra baixada!" (Cipher downloaded!)
+- "Apresentação ao Vivo" (Live Presentation)
+
+**Download Flow Integration:**
+```dart
+// In CipherViewer._loadData()
+if (isFirebaseCipher(widget.cipherId)) {
+  await cipherProvider.loadCipherFromFirebase(widget.firebaseCipherId);
+} else {
+  await cipherProvider.loadCipher(widget.cipherId); // Existing SQLite logic
+}
 ```
 
 ## 🧪 Testing Conventions
@@ -310,6 +400,11 @@ flutter build windows              # Windows desktop build
 - `sqflite: ^2.3.0` + `sqflite_common_ffi: ^2.3.0` - Cross-platform database
 - `flutter_colorpicker: ^1.0.3` - Section color selection
 - `shared_preferences: ^2.2.2` - Settings persistence
+- **Firebase Stack (Future):**
+  - `firebase_core: ^2.24.2` - Firebase initialization
+  - `cloud_firestore: ^4.13.6` - Cloud database
+  - `firebase_auth: ^4.15.3` - User authentication
+  - `firebase_storage: ^11.5.6` - File storage (future attachments)
 
 ## 🚨 Common Pitfalls
 
@@ -318,4 +413,6 @@ flutter build windows              # Windows desktop build
 3. **Use debouncing for form inputs** that trigger provider updates
 4. **Check provider loading states** before navigation or operations
 5. **Maintain Portuguese UI strings** - never hardcode English in user-facing text
+6. **Firebase offline-first**: Always sync to local SQLite first, then push to Firebase
+7. **Authentication flows**: Handle authentication state changes gracefully in providers
 

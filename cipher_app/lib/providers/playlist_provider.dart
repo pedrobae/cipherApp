@@ -79,7 +79,9 @@ class PlaylistProvider extends ChangeNotifier {
 
     try {
       int id = await _playlistRepository.createPlaylist(playlist);
-      await _loadPlaylist(id);
+
+      // Add the created playlist directly to cache
+      _playlists.add(playlist.copyWith(id: id));
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -115,19 +117,25 @@ class PlaylistProvider extends ChangeNotifier {
     int newIndex,
     Playlist playlist,
   ) async {
-    final originalItems = playlist.items.map((item) => PlaylistItem(
-      type: item.type,
-      contentId: item.contentId,
-      order: item.order,
-    )).toList();
+    final originalItems = playlist.items
+        .map(
+          (item) => PlaylistItem(
+            type: item.type,
+            contentId: item.contentId,
+            order: item.order,
+          ),
+        )
+        .toList();
 
     try {
       _updateItemOrdersOptimistically(playlist, oldIndex, newIndex);
       notifyListeners();
-      
-      List<PlaylistItem> changedList = _getChangedItems(originalItems, playlist.items);
+
+      List<PlaylistItem> changedList = _getChangedItems(
+        originalItems,
+        playlist.items,
+      );
       await _playlistRepository.savePlaylistOrder(playlist.id, changedList);
-      
     } catch (e) {
       _rollbackItemOrders(playlist, originalItems);
       notifyListeners();
@@ -136,7 +144,11 @@ class PlaylistProvider extends ChangeNotifier {
     }
   }
 
-  void _updateItemOrdersOptimistically(Playlist playlist, int oldIndex, int newIndex) {
+  void _updateItemOrdersOptimistically(
+    Playlist playlist,
+    int oldIndex,
+    int newIndex,
+  ) {
     final items = playlist.items;
 
     final movedItem = items.removeAt(oldIndex);
@@ -148,28 +160,38 @@ class PlaylistProvider extends ChangeNotifier {
   }
 
   // Helper method to get items that changed order
-  List<PlaylistItem> _getChangedItems(List<PlaylistItem> original, List<PlaylistItem> updated) {
+  List<PlaylistItem> _getChangedItems(
+    List<PlaylistItem> original,
+    List<PlaylistItem> updated,
+  ) {
     List<PlaylistItem> changed = [];
-    
+
     for (int i = 0; i < updated.length; i++) {
       final updatedItem = updated[i];
       final originalItem = original.firstWhere(
-        (item) => item.contentId == updatedItem.contentId && item.type == updatedItem.type,
+        (item) =>
+            item.contentId == updatedItem.contentId &&
+            item.type == updatedItem.type,
       );
-      
+
       if (originalItem.order != updatedItem.order) {
         changed.add(updatedItem);
       }
     }
-    
+
     return changed;
   }
 
-  void _rollbackItemOrders(Playlist playlist, List<PlaylistItem> originalItems) {
+  void _rollbackItemOrders(
+    Playlist playlist,
+    List<PlaylistItem> originalItems,
+  ) {
     for (int i = 0; i < playlist.items.length; i++) {
       final currentItem = playlist.items[i];
       final originalItem = originalItems.firstWhere(
-        (item) => item.contentId == currentItem.contentId && item.type == currentItem.type,
+        (item) =>
+            item.contentId == currentItem.contentId &&
+            item.type == currentItem.type,
       );
       currentItem.order = originalItem.order;
     }
@@ -207,7 +229,6 @@ class PlaylistProvider extends ChangeNotifier {
       cipherMapId,
     );
     await _loadPlaylist(playlistId);
-    notifyListeners();
   }
 
   // ===== UTILITY =====

@@ -150,9 +150,7 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
                                   final sectionCode = songStructure[index];
                                   final section =
                                       version.sections![sectionCode];
-
-                                  // Count occurrences of this section code up to current index
-                                  // to handle multiple instances of same section (e.g., multiple choruses)
+                                  // To ensure unique keys for identical section codes,
                                   final occurrenceCount = songStructure
                                       .take(index + 1)
                                       .where((code) => code == sectionCode)

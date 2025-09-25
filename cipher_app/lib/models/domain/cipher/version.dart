@@ -3,18 +3,18 @@ import 'package:cipher_app/models/domain/cipher/section.dart';
 class Version {
   final int? id;
   final int cipherId;
-  final String songStructure;
+  final String versionName;
   final String? transposedKey;
-  final String? versionName;
+  final List<String> songStructure; // Changed from String to List<String>
   final DateTime? createdAt;
   final Map<String, Section>? sections;
 
   const Version({
     this.id,
     required this.cipherId,
-    required this.songStructure,
+    this.versionName = 'Original',
     this.transposedKey,
-    this.versionName,
+    this.songStructure = const [],
     this.createdAt,
     this.sections,
   });
@@ -29,9 +29,9 @@ class Version {
     return Version(
       id: json['id'] as int?,
       cipherId: json['cipher_id'] as int,
-      songStructure: json['song_structure'] as String? ?? '',
+      songStructure: json['song_structure'] as List<String>,
       transposedKey: json['transposed_key'] as String?,
-      versionName: json['version_name'] as String?,
+      versionName: json['version_name'] as String,
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'])
           : null,
@@ -41,12 +41,22 @@ class Version {
 
   // Factory for database row (without content - populated separately)
   factory Version.fromRow(Map<String, dynamic> row) {
+    List<String> songStructure = [];
+    final structureString = row['song_structure'] as String?;
+    if (structureString != null && structureString.isNotEmpty) {
+      songStructure = structureString
+          .split(',')
+          .map((s) => s.trim())
+          .where((s) => s.isNotEmpty)
+          .toList();
+    }
+
     return Version(
       id: row['id'] as int?,
       cipherId: row['cipher_id'] as int,
-      songStructure: row['song_structure'] as String? ?? '',
+      songStructure: songStructure,
       transposedKey: row['transposed_key'] as String?,
-      versionName: row['version_name'] as String?,
+      versionName: row['version_name'] as String,
       createdAt: row['created_at'] != null
           ? DateTime.parse(row['created_at'])
           : null,
@@ -59,7 +69,7 @@ class Version {
     return {
       'id': id,
       'cipher_id': cipherId,
-      'song_structure': songStructure,
+      'song_structure': songStructure.join(','),
       'transposed_key': transposedKey,
       'version_name': versionName,
       'created_at': createdAt?.toIso8601String(),
@@ -70,15 +80,24 @@ class Version {
     return (sections ?? {}).values.toList();
   }
 
-  bool hasAllSections() {
-    final requiredSections = songStructure.split(',').toSet();
+  bool get hasAllSections {
+    final requiredSections = songStructure.toSet();
     return requiredSections.every((section) => sections!.containsKey(section));
   }
+
+  List<String> get uniqueSections => songStructure.toSet().toList();
+
+  bool get isEmpty => songStructure.isEmpty;
+
+  int get sectionCount => songStructure.length;
+
+  bool containsSection(String sectionCode) =>
+      songStructure.contains(sectionCode);
 
   Version copyWith({
     int? id,
     int? cipherId,
-    String? songStructure,
+    List<String>? songStructure,
     String? transposedKey,
     String? versionName,
     DateTime? createdAt,
@@ -94,4 +113,18 @@ class Version {
       sections: content ?? sections,
     );
   }
+
+  // Factory for creating empty version
+  factory Version.empty({int? cipherId}) {
+    return Version(
+      cipherId: cipherId ?? -1,
+      versionName: 'Versão 1',
+      songStructure: [],
+      transposedKey: '',
+      sections: {},
+    );
+  }
+
+  // Check if version is new (no ID)
+  bool get isNew => id == -1;
 }

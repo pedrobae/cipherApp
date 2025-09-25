@@ -1,7 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/models/domain/playlist/playlist_item.dart';
+import 'package:cipher_app/providers/cipher_provider.dart';
 import 'package:cipher_app/providers/playlist_provider.dart';
+import 'package:cipher_app/providers/version_provider.dart';
 import 'package:cipher_app/providers/layout_settings_provider.dart';
 import 'package:cipher_app/widgets/playlist/presentation/presentation_cipher_section.dart';
 import 'package:cipher_app/widgets/playlist/presentation/presentation_text_section.dart';
@@ -23,11 +26,60 @@ class _PlaylistPresentationScreenState
   late ScrollController _scrollController;
   final Map<int, Map<int, GlobalKey>> _itemKeys = {};
   bool _isScrolling = false;
+  bool _versionsLoaded = false;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
+    // Pre-load versions for the presentation
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadPlaylistVersions();
+    });
+  }
+
+  Future<void> _loadPlaylistVersions() async {
+    try {
+      final playlistProvider = context.read<PlaylistProvider>();
+      final playlist = playlistProvider.playlists.firstWhere(
+        (p) => p.id == widget.playlistId,
+        orElse: () => throw Exception('Playlist not found'),
+      );
+
+      if (playlist.items.isNotEmpty) {
+        final versionProvider = context.read<VersionProvider>();
+        final cipherProvider = context.read<CipherProvider>();
+
+        // Load versions for playlist
+        await versionProvider.loadVersionsForPlaylist(playlist.items);
+
+        // Ensure all ciphers are loaded (loads all ciphers if not already loaded)
+        if (!cipherProvider.hasLoadedCiphers) {
+          await cipherProvider.loadCiphers();
+        }
+
+        if (mounted) {
+          setState(() {
+            _versionsLoaded = true;
+          });
+        }
+      } else {
+        if (mounted) {
+          setState(() {
+            _versionsLoaded = true;
+          });
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error loading playlist versions: $e');
+      }
+      if (mounted) {
+        setState(() {
+          _versionsLoaded = true; // Still show the UI even if loading failed
+        });
+      }
+    }
   }
 
   @override
@@ -55,6 +107,14 @@ class _PlaylistPresentationScreenState
           (p) => p.id == widget.playlistId,
           orElse: () => throw Exception('Playlist not found'),
         );
+
+        // Show loading if versions haven't been loaded yet
+        if (!_versionsLoaded) {
+          return Scaffold(
+            appBar: AppBar(title: Text(playlist.name), centerTitle: true),
+            body: const Center(child: CircularProgressIndicator()),
+          );
+        }
 
         // Generate keys for each item for scroll targeting
         for (int i = 0; i < playlist.items.length; i++) {

@@ -25,7 +25,7 @@ class CipherVersionHeader extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             Text(
-              currentVersion.versionName ?? 'Versão sem nome',
+              currentVersion.versionName,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: Theme.of(context).colorScheme.onPrimaryContainer,
                 fontWeight: FontWeight.w500,

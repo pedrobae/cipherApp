@@ -24,7 +24,7 @@ void main() {
     });
 
     test('should load seeded ciphers', () async {
-      final ciphers = await repository.getAllCiphers();
+      final ciphers = await repository.getAllCiphersPruned();
 
       expect(
         ciphers.length,
@@ -35,7 +35,7 @@ void main() {
     });
 
     test('should get cipher by ID with maps and content', () async {
-      final ciphers = await repository.getAllCiphers();
+      final ciphers = await repository.getAllCiphersPruned();
       final amazingGrace = ciphers.firstWhere(
         (c) => c.title == 'Amazing Grace',
       );
@@ -49,18 +49,18 @@ void main() {
     });
 
     test('should soft delete cipher', () async {
-      final ciphers = await repository.getAllCiphers();
+      final ciphers = await repository.getAllCiphersPruned();
       final cipherId = ciphers.first.id!;
 
       await repository.deleteCipher(cipherId);
 
-      final remainingCiphers = await repository.getAllCiphers();
+      final remainingCiphers = await repository.getAllCiphersPruned();
       expect(remainingCiphers.length, 3); // One less cipher (4-1=3)
       expect(remainingCiphers.any((c) => c.id == cipherId), false);
     });
 
     test('should get cipher maps with section', () async {
-      final ciphers = await repository.getAllCiphers();
+      final ciphers = await repository.getAllCiphersPruned();
       final howGreat = ciphers.firstWhere(
         (c) => c.title == 'How Great Thou Art',
       );
@@ -73,7 +73,7 @@ void main() {
     });
 
     test('should get map sections', () async {
-      final ciphers = await repository.getAllCiphers();
+      final ciphers = await repository.getAllCiphersPruned();
       final cipher = ciphers.firstWhere((c) => c.title == 'Amazing Grace');
       final maps = await repository.getCipherVersions(cipher.id!);
 

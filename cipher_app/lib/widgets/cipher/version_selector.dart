@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class VersionSelectorBottomSheet extends StatelessWidget {
   final List<Version> versions;
   final Version currentVersion;
-  final Function(Version) onVersionSelected;
+  final Function(int) onVersionSelected;
   final VoidCallback onNewVersion;
 
   const VersionSelectorBottomSheet({
@@ -89,7 +89,7 @@ class VersionSelectorBottomSheet extends StatelessWidget {
                     ),
                   ),
                   title: Text(
-                    version.versionName ?? 'Versão ${index + 1}',
+                    version.versionName,
                     style: TextStyle(
                       fontWeight: isSelected
                           ? FontWeight.bold
@@ -114,7 +114,12 @@ class VersionSelectorBottomSheet extends StatelessWidget {
                       : const Icon(Icons.radio_button_unchecked),
                   onTap: () {
                     Navigator.pop(context);
-                    onVersionSelected(version);
+                    // Add a small delay to ensure the pop completes before callback
+                    Future.microtask(() {
+                      if (version.id != null) {
+                        onVersionSelected(version.id!);
+                      }
+                    });
                   },
                 );
               },

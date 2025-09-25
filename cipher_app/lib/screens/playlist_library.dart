@@ -98,7 +98,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
   }
 
   void _onPlaylistTap(BuildContext context, Playlist playlist) {
-    Navigator.of(context, rootNavigator: true).push(
+    Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => PlaylistViewer(playlistId: playlist.id),
       ),

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/models/domain/cipher/cipher.dart';
+import 'package:cipher_app/models/domain/cipher/version.dart';
 import 'package:cipher_app/providers/cipher_provider.dart';
+import 'package:cipher_app/providers/version_provider.dart';
 import 'package:cipher_app/providers/layout_settings_provider.dart';
 import 'package:cipher_app/widgets/cipher/viewer/section_card.dart';
 import 'package:cipher_app/utils/section.dart';
@@ -24,100 +26,114 @@ class PresentationCipherSection extends StatefulWidget {
 }
 
 class _PresentationCipherSectionState extends State<PresentationCipherSection> {
-  Cipher? _cipher;
-  bool _isLoading = true;
   final Map<int, GlobalKey> _sectionKeys = {};
   bool _keysNotified = false;
 
   @override
   void initState() {
     super.initState();
-    _loadCipher();
-  }
+    // Pre-load cipher data if not already loaded
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final cipherProvider = context.read<CipherProvider>();
 
-  Future<void> _loadCipher() async {
-    final cipherProvider = context.read<CipherProvider>();
-    final cipher = await cipherProvider.getCipherVersionById(widget.versionId);
-
-    if (mounted) {
-      setState(() {
-        _cipher = cipher;
-        _isLoading = false;
-      });
-    }
+      // Ensure all ciphers are loaded (loads all ciphers if not already loaded)
+      if (!cipherProvider.hasLoadedCiphers) {
+        cipherProvider.loadCiphers();
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Card(
-        child: Padding(
-          padding: EdgeInsets.all(32),
-          child: Center(child: CircularProgressIndicator()),
-        ),
-      );
-    }
+    return Consumer<VersionProvider>(
+      builder: (context, versionProvider, child) {
+        final version = versionProvider.getCachedVersion(widget.versionId);
 
-    if (_cipher == null) {
-      return Card(
-        color: Colors.red.shade50,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Icon(Icons.error, color: Colors.red.shade700, size: 32),
-              const SizedBox(height: 8),
-              Text(
-                'Erro ao carregar cifra',
-                style: TextStyle(
-                  color: Colors.red.shade700,
-                  fontWeight: FontWeight.bold,
-                ),
+        // If version is not cached yet, show loading indicator
+        if (version == null) {
+          return Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 8),
+                  Text('Carregando cifra...'),
+                  Text('ID: ${widget.versionId}'),
+                ],
               ),
-              Text(
-                'ID: ${widget.versionId}',
-                style: TextStyle(color: Colors.red.shade600, fontSize: 12),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    return Consumer<LayoutSettingsProvider>(
-      builder: (context, layoutProvider, child) {
-        final currentVersion = _cipher!.versions.first;
-
-        final filteredStructure = currentVersion.songStructure
-            .split(',')
-            .map((s) => s.trim())
-            .where(
-              (sectionCode) =>
-                  sectionCode.isNotEmpty &&
-                  (layoutProvider.showAnnotations ||
-                      !isAnnotation(sectionCode)) &&
-                  (layoutProvider.showTransitions ||
-                      !isTransition(sectionCode)),
-            )
-            .toList();
-
-        if (!_keysNotified && filteredStructure.isNotEmpty) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            widget.onSectionKeysCreated?.call(widget.versionId, _sectionKeys);
-            _keysNotified = true;
-          });
+            ),
+          );
         }
 
-        return Card(
-          surfaceTintColor: Theme.of(context).primaryColor,
-          elevation: 2,
-          margin: const EdgeInsets.symmetric(vertical: 4),
-          child: Padding(
-            padding: const EdgeInsets.all(8),
+        return Consumer<CipherProvider>(
+          builder: (context, cipherProvider, child) {
+            final cipher = cipherProvider.getCachedCipher(version.cipherId);
+
+            // If cipher is not cached yet, show loading indicator
+            if (cipher == null) {
+              return Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      const CircularProgressIndicator(),
+                      const SizedBox(height: 8),
+                      Text('Carregando dados da cifra...'),
+                      Text('Cipher ID: ${version.cipherId}'),
+                    ],
+                  ),
+                ),
+              );
+            }
+
+            return Consumer<LayoutSettingsProvider>(
+              builder: (context, layoutProvider, child) {
+                return _buildCipherContent(cipher, version, layoutProvider);
+              },
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildCipherContent(
+    Cipher cipher,
+    Version version,
+    LayoutSettingsProvider layoutProvider,
+  ) {
+    // Filter song structure based on display settings
+    final List<String> filteredStructure = version.songStructure
+        .map((s) => s.trim())
+        .where(
+          (sectionCode) =>
+              sectionCode.isNotEmpty &&
+              (layoutProvider.showAnnotations || !isAnnotation(sectionCode)) &&
+              (layoutProvider.showTransitions || !isTransition(sectionCode)),
+        )
+        .toList();
+
+    // Notify parent of section keys for navigation
+    if (!_keysNotified && filteredStructure.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        widget.onSectionKeysCreated?.call(widget.versionId, _sectionKeys);
+        _keysNotified = true;
+      });
+    }
+
+    return Card(
+      elevation: 0,
+      color: Colors.transparent,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildCipherHeader(cipher, version, layoutProvider),
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
             child: Column(
               children: [
-                _buildCipherHeader(layoutProvider),
-                Divider(thickness: 1.5),
                 MasonryGridView.builder(
                   padding: EdgeInsets.only(top: 0),
                   shrinkWrap: true,
@@ -130,30 +146,31 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
                     _sectionKeys.putIfAbsent(sectionIndex, () => GlobalKey());
 
                     final sectionCode = filteredStructure[sectionIndex];
-                    final section = currentVersion.sections?[sectionCode];
+                    final section = version.sections?[sectionCode];
                     if (section == null) return const SizedBox.shrink();
 
-                    return Padding(
-                      padding: const EdgeInsets.all(2.0),
-                      child: CipherSectionCard(
-                        key: _sectionKeys[sectionIndex],
-                        sectionType: section.contentType,
-                        sectionCode: sectionCode,
-                        sectionText: section.contentText,
-                        sectionColor: section.contentColor,
-                      ),
+                    return CipherSectionCard(
+                      key: _sectionKeys[sectionIndex],
+                      sectionCode: section.contentCode,
+                      sectionType: section.contentType,
+                      sectionText: section.contentText,
+                      sectionColor: section.contentColor,
                     );
                   },
                 ),
               ],
             ),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 
-  Widget _buildCipherHeader(LayoutSettingsProvider layoutProvider) {
+  Widget _buildCipherHeader(
+    Cipher cipher,
+    Version version,
+    LayoutSettingsProvider layoutProvider,
+  ) {
     return Column(
       spacing: 4,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -164,7 +181,7 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
           children: [
             Expanded(
               child: Text(
-                _cipher!.title,
+                cipher.title,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontFamily: layoutProvider.fontFamily,
                   fontWeight: FontWeight.bold,
@@ -172,12 +189,11 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
                 ),
               ),
             ),
-            if (_cipher!.author.isNotEmpty) ...[
+            if (cipher.author.isNotEmpty) ...[
               Text(
-                'por ${_cipher!.author}',
+                'por ${cipher.author}',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   fontFamily: layoutProvider.fontFamily,
-                  fontStyle: FontStyle.italic,
                   fontSize: layoutProvider.fontSize * .7,
                   color: Theme.of(context).textTheme.bodySmall?.color,
                 ),
@@ -188,7 +204,7 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
         Row(
           spacing: 6,
           children: [
-            if (_cipher!.versions.first.versionName?.isNotEmpty == true) ...[
+            if (version.versionName.isNotEmpty == true) ...[
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
@@ -199,7 +215,7 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
                   ),
                 ),
                 child: Text(
-                  _cipher!.versions.first.versionName!,
+                  version.versionName,
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w500,
@@ -209,7 +225,7 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
               ),
             ],
 
-            if (_cipher!.musicKey.isNotEmpty)
+            if (cipher.musicKey.isNotEmpty)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
@@ -223,7 +239,7 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
                     const Icon(Icons.music_note, size: 10),
                     const SizedBox(width: 2),
                     Text(
-                      _cipher!.musicKey,
+                      cipher.musicKey,
                       style: const TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w500,

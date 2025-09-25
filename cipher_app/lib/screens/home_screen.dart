@@ -168,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         width: 96,
                         height: 96,
                         decoration: BoxDecoration(
-                          color: colorScheme.primary.withOpacity(0.08),
+                          color: colorScheme.primary.withValues(alpha: .08),
                           borderRadius: BorderRadius.circular(24),
                         ),
                         child: Center(
@@ -200,8 +200,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         elevation: 2,
                         child: InkWell(
                           borderRadius: BorderRadius.circular(18),
-                          splashColor: colorScheme.primary.withOpacity(0.13),
-                          highlightColor: colorScheme.primary.withOpacity(0.08),
+                          splashColor: colorScheme.primary.withValues(
+                            alpha: .13,
+                          ),
+                          highlightColor: colorScheme.primary.withValues(
+                            alpha: .08,
+                          ),
                           onTap: () {
                             switch (item.route) {
                               case NavigationProvider.libraryRoute:

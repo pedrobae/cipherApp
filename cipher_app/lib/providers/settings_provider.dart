@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../services/settings_service.dart';
+import 'package:cipher_app/utils/app_theme.dart';
+import 'package:cipher_app/services/settings_service.dart';
 
 class SettingsProvider extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.system;
@@ -12,7 +13,7 @@ class SettingsProvider extends ChangeNotifier {
   String get locale => _locale;
   bool get notificationsEnabled => _notificationsEnabled;
   bool get reminderNotifications => _reminderNotifications;
-  
+
   // Theme getters
   ThemeData get lightTheme => _lightTheme;
   ThemeData get darkTheme => _darkTheme;
@@ -70,7 +71,8 @@ class SettingsProvider extends ChangeNotifier {
 
   /// Get theme data based on current theme mode
   ThemeData getThemeData(Brightness brightness) {
-    final isDark = brightness == Brightness.dark ||
+    final isDark =
+        brightness == Brightness.dark ||
         (_themeMode == ThemeMode.dark ||
             (_themeMode == ThemeMode.system &&
                 WidgetsBinding.instance.platformDispatcher.platformBrightness ==
@@ -83,91 +85,8 @@ class SettingsProvider extends ChangeNotifier {
     }
   }
 
-  /// Light theme configuration
-  static final ThemeData _lightTheme = ThemeData(
-    useMaterial3: true,
-    brightness: Brightness.light,
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: Colors.blue,
-      brightness: Brightness.light,
-    ),
-    fontFamily: 'OpenSans',
-    appBarTheme: const AppBarTheme(
-      centerTitle: true,
-      elevation: 0,
-    ),
-    cardTheme: const CardThemeData(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(12)),
-      ),
-    ),
-    inputDecorationTheme: InputDecorationTheme(
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-    ),
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-      ),
-    ),
-    filledButtonTheme: FilledButtonThemeData(
-      style: FilledButton.styleFrom(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-      ),
-    ),
-  );
-
-  /// Dark theme configuration
-  static final ThemeData _darkTheme = ThemeData(
-    useMaterial3: true,
-    brightness: Brightness.dark,
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: Colors.blue,
-      brightness: Brightness.dark,
-    ),
-    fontFamily: 'OpenSans',
-    appBarTheme: const AppBarTheme(
-      centerTitle: true,
-      elevation: 0,
-    ),
-    cardTheme: const CardThemeData(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(12)),
-      ),
-    ),
-    inputDecorationTheme: InputDecorationTheme(
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-    ),
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-      ),
-    ),
-    filledButtonTheme: FilledButtonThemeData(
-      style: FilledButton.styleFrom(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-      ),
-    ),
-  );
+  final ThemeData _darkTheme = AppTheme.darkTheme;
+  final ThemeData _lightTheme = AppTheme.lightTheme;
 
   /// Reset all settings to defaults
   Future<void> resetToDefaults() async {

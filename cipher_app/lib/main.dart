@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cipher_app/firebase_options.dart';
+import 'package:cipher_app/providers/auth_provider.dart';
 import 'package:cipher_app/providers/navigation_provider.dart';
 import 'package:cipher_app/providers/layout_settings_provider.dart';
 import 'package:cipher_app/providers/text_section_provider.dart';
@@ -42,6 +43,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => LayoutSettingsProvider()..loadSettings(),
         ),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => NavigationProvider()),
         ChangeNotifierProvider(create: (_) => CipherProvider()),
         ChangeNotifierProvider(create: (_) => VersionProvider()),

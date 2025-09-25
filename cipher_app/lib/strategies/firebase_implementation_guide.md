@@ -20,7 +20,7 @@ The **Conservative Approach** with sectioned library layout has been chosen for 
 ### 🔄 Next Implementation Phases
 
 #### Phase 1: Firebase Foundation (Waiting for Google Account)
-- [ ] Create Firebase project with Firestore database
+- [x] Create Firebase project with Firestore database
 - [ ] Set up Firebase Authentication
 - [ ] Design Firestore collection structure (`/publicCiphers/{id}`)
 - [ ] Create AuthService and FirebaseService classes

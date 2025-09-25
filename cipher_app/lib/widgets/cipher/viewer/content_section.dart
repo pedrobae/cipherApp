@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/layout_settings_provider.dart';
 import '../../../models/domain/cipher/cipher.dart';
-import '../../../utils/section.dart';
+import '../../../utils/section_helper.dart';
 import 'section_card.dart';
 
 class CipherContentSection extends StatelessWidget {

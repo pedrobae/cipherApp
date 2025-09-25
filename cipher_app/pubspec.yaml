@@ -62,4 +62,4 @@ flutter:
 
     - family: Caveat
       fonts:
-        - asset: assets/fonts/Caveat-VariableFont_wdth_wght.ttf
+        - asset: assets/fonts/Caveat-VariableFont_wght.ttf

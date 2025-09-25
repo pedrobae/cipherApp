@@ -41,10 +41,7 @@ class AppDrawer extends StatelessWidget {
                 title: const Text('Biblioteca'),
                 selected: navigationProvider.selectedIndex == 0,
                 onTap: () {
-                  navigationProvider.navigateTo(
-                    0,
-                    NavigationProvider.libraryRoute,
-                  );
+                  navigationProvider.navigateToLibrary();
                   Navigator.pop(context); // Close drawer
                 },
               ),
@@ -53,10 +50,7 @@ class AppDrawer extends StatelessWidget {
                 title: const Text('Playlists'),
                 selected: navigationProvider.selectedIndex == 1,
                 onTap: () {
-                  navigationProvider.navigateTo(
-                    1,
-                    NavigationProvider.playlistsRoute,
-                  );
+                  navigationProvider.navigateToPlaylists();
                   Navigator.pop(context); // Close drawer
                 },
               ),
@@ -65,10 +59,7 @@ class AppDrawer extends StatelessWidget {
                 title: const Text('Configurações'),
                 selected: navigationProvider.selectedIndex == 2,
                 onTap: () {
-                  navigationProvider.navigateTo(
-                    2,
-                    NavigationProvider.settingsRoute,
-                  );
+                  navigationProvider.navigateToSettings();
                   Navigator.pop(context); // Close drawer
                 },
               ),
@@ -77,10 +68,7 @@ class AppDrawer extends StatelessWidget {
                 title: const Text('Informações'),
                 selected: navigationProvider.selectedIndex == 3,
                 onTap: () {
-                  navigationProvider.navigateTo(
-                    3,
-                    NavigationProvider.infoRoute,
-                  );
+                  navigationProvider.navigateToInfo();
                   Navigator.pop(context); // Close drawer
                 },
               ),

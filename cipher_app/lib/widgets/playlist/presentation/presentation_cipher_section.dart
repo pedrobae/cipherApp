@@ -7,7 +7,7 @@ import 'package:cipher_app/providers/cipher_provider.dart';
 import 'package:cipher_app/providers/version_provider.dart';
 import 'package:cipher_app/providers/layout_settings_provider.dart';
 import 'package:cipher_app/widgets/cipher/viewer/section_card.dart';
-import 'package:cipher_app/utils/section.dart';
+import 'package:cipher_app/utils/section_helper.dart';
 
 class PresentationCipherSection extends StatefulWidget {
   final int versionId;

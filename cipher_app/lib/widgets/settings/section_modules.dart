@@ -6,7 +6,7 @@ class CipherFilters extends StatelessWidget {
   const CipherFilters({
     super.key,
     required this.settings,
-    required this.isPresenter
+    required this.isPresenter,
   });
 
   final LayoutSettingsProvider settings;
@@ -21,17 +21,17 @@ class CipherFilters extends StatelessWidget {
         spacing: 4,
         children: [
           FilterChip(
-              label: Text('Acordes'),
-              showCheckmark: false,
-              selected: settings.showChords,
-              onSelected: (_) => settings.toggleChords(),
-            ),
-            FilterChip(
-              label: Text('Letras'),
-              showCheckmark: false,
-              selected: settings.showLyrics,
-              onSelected: (_) => settings.toggleLyrics(),
-            ),
+            label: Text('Acordes'),
+            showCheckmark: false,
+            selected: settings.showChords,
+            onSelected: (_) => settings.toggleChords(),
+          ),
+          FilterChip(
+            label: Text('Letras'),
+            showCheckmark: false,
+            selected: settings.showLyrics,
+            onSelected: (_) => settings.toggleLyrics(),
+          ),
           if (!isPresenter) ...[
             FilterChip(
               label: Text('Notas'),
@@ -60,10 +60,7 @@ class CipherFilters extends StatelessWidget {
 }
 
 class ColumnCount extends StatelessWidget {
-  const ColumnCount({
-    super.key,
-    required this.settings,
-  });
+  const ColumnCount({super.key, required this.settings});
 
   final LayoutSettingsProvider settings;
 
@@ -96,10 +93,7 @@ class ColumnCount extends StatelessWidget {
 }
 
 class ChordColors extends StatelessWidget {
-  const ChordColors({
-    super.key,
-    required this.settings,
-  });
+  const ChordColors({super.key, required this.settings});
 
   final LayoutSettingsProvider settings;
 
@@ -163,10 +157,7 @@ class ChordColors extends StatelessWidget {
 }
 
 class FontSettings extends StatelessWidget {
-  const FontSettings({
-    super.key,
-    required this.settings,
-  });
+  const FontSettings({super.key, required this.settings});
 
   final LayoutSettingsProvider settings;
 
@@ -181,18 +172,10 @@ class FontSettings extends StatelessWidget {
               value: settings.fontFamily,
               isExpanded: true,
               items: const [
-                DropdownMenuItem(
-                  value: 'OpenSans',
-                  child: Text('OpenSans'),
-                ),
-                DropdownMenuItem(
-                  value: 'Asimovian',
-                  child: Text('Asimovian'),
-                ),
-                DropdownMenuItem(
-                  value: 'Atkinson',
-                  child: Text('Atkinson'),
-                ),
+                DropdownMenuItem(value: 'OpenSans', child: Text('OpenSans')),
+                DropdownMenuItem(value: 'Asimovian', child: Text('Asimovian')),
+                DropdownMenuItem(value: 'Atkinson', child: Text('Atkinson')),
+                DropdownMenuItem(value: 'Caveat', child: Text('Caveat')),
               ],
               onChanged: (v) {
                 if (v != null) settings.setFontFamily(v);

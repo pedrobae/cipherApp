@@ -20,6 +20,9 @@ dependencies:
   flutter_colorpicker: ^1.0.3
   shared_preferences: ^2.2.2
   flutter_speed_dial: ^7.0.0
+  firebase_core: ^4.1.1
+  cloud_firestore: ^6.0.2
+  firebase_auth: ^6.1.0
 
 dev_dependencies:
   flutter_test:
@@ -56,3 +59,7 @@ flutter:
         - asset: assets/fonts/AtkinsonHyperlegible-BoldItalic.ttf
           weight: 700
           style: italic
+
+    - family: Caveat
+      fonts:
+        - asset: assets/fonts/Caveat-VariableFont_wdth_wght.ttf

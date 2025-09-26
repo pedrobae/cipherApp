@@ -21,10 +21,10 @@ The **Conservative Approach** with sectioned library layout has been chosen for 
 
 #### Phase 1: Firebase Foundation (Waiting for Google Account)
 - [x] Create Firebase project with Firestore database
-- [ ] Set up Firebase Authentication
-- [ ] Design Firestore collection structure (`/publicCiphers/{id}`)
+- [x] Set up Firebase Authentication
+- [x] Design Firestore collection structure (`/publicCiphers/{id}`)
 - [ ] Create AuthService and FirebaseService classes
-- [ ] Add Firebase dependencies to `pubspec.yaml`
+- [x] Add Firebase dependencies to `pubspec.yaml`
 
 #### Phase 2: Cloud Cache Infrastructure 
 - [ ] Create `CloudCipherCache` class for popular cipher metadata

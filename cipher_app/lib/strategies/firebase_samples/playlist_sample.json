@@ -1,0 +1,24 @@
+{
+    "playlistId": "pl001",
+    "metadata": {
+        "name": "Culto Domingo",
+        "description": "Louvor do culto de domingo",
+        "owner": "abc123",
+        "public": false
+    },
+    "items": [
+        {
+            "type": "cipher",
+            "contentId": "cifra001",
+            "order": 1
+        },
+        {
+            "type": "cipher",
+            "contentId": "cifra002",
+            "order": 2
+        }
+    ],
+    "collaborators": {
+        "def456": "editor"
+    }
+}

@@ -1,17 +1,29 @@
 {
-    "statsId": "mostDownloadedCiphers",
+    "statsId": "popularCiphers",
     "updatedAt": "2025-09-26T12:00:00Z",
     "ciphers": [
         {
             "cipherId": "cifra001",
             "title": "Graça Maravilhosa",
             "author": "John Newton",
+            "musicKey": "C",
+            "language": "pt-BR",
+            "tags": [
+                "hino",
+                "tradicional"
+            ],
             "downloadCount": 120
         },
         {
             "cipherId": "cifra002",
             "title": "Sublime Amor",
             "author": "Autor Desconhecido",
+            "musicKey": "G",
+            "language": "pt-BR",
+            "tags": [
+                "hino",
+                "tradicional"
+            ],
             "downloadCount": 98
         }
     ]

@@ -19,11 +19,7 @@ class AuthProvider extends ChangeNotifier {
     });
   }
 
-  Future<void> signInWithEmail(
-    String email,
-    String password, {
-    bool? rememberMe = false,
-  }) async {
+  Future<void> signInWithEmail(String email, String password) async {
     if (isLoading) return;
     _isLoading = true;
     notifyListeners();

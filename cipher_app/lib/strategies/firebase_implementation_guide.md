@@ -23,11 +23,11 @@ The **Conservative Approach** with sectioned library layout has been chosen for 
 - [x] Create Firebase project with Firestore database
 - [x] Set up Firebase Authentication
 - [x] Design Firestore collection structure (`/publicCiphers/{id}`)
-- [ ] Create AuthService and FirebaseService classes
+- [x] Create AuthService and FirebaseService classes
 - [x] Add Firebase dependencies to `pubspec.yaml`
 
 #### Phase 2: Cloud Cache Infrastructure 
-- [ ] Create `CloudCipherCache` class for popular cipher metadata
+- [x] Create `CloudCipherCache` class for popular cipher metadata
 - [ ] Extend `CipherProvider` with `loadPopularCloudCiphers()` method
 - [ ] Implement 24-hour cache refresh strategy
 - [ ] Add cloud cipher metadata model classes

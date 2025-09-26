@@ -1,18 +1,26 @@
 {
     "versionId": "v1",
+    "versionName": "Versão Original",
+    "musicKey": "C",
     "songStructure": "I,V1,C,V2,C,B,C,F",
     "sections": {
         "I": {
             "contentType": "intro",
-            "contentText": "[C]Intro..."
+            "contentText": "[C]Intro...",
+            "contentCode": "I",
+            "contentColor": "#FFFFFFFF"
         },
         "V1": {
             "contentType": "verse",
-            "contentText": "[C]Amazing [G]grace..."
+            "contentText": "[C]Amazing [G]grace...",
+            "contentCode": "V1",
+            "contentColor": "#FFFFFFFF"
         },
         "C": {
             "contentType": "chorus",
-            "contentText": "[F]Refrão..."
+            "contentText": "[F]Refrão...",
+            "contentCode": "C",
+            "contentColor": "#FFFFFFFF"
         }
     },
     "createdAt": "2025-09-26T12:00:00Z"

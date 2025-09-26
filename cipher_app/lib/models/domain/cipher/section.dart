@@ -29,6 +29,18 @@ class Section {
     );
   }
 
+  factory Section.fromMap(Map<String, dynamic> map, int versionId) {
+    return Section(
+      versionId: versionId,
+      contentType: map['contentType'] as String? ?? '',
+      contentCode: map['contentCode'] as String? ?? '',
+      contentText: map['contentText'] as String? ?? '',
+      contentColor: c.colorFromHex(
+        map['contentColor'] as String? ?? '#FFFFFFFF',
+      ),
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,

@@ -15,7 +15,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
-  bool _rememberMe = false;
 
   late final AuthProvider _authProvider;
 
@@ -209,53 +208,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             validator: _validatePassword,
                           ),
-                          // Improved "Lembrar-me" checkbox area
-                          Padding(
-                            padding: const EdgeInsets.only(top: 8, bottom: 4),
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(8),
-                              onTap: () {
-                                setState(() {
-                                  _rememberMe = !_rememberMe;
-                                });
-                              },
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Checkbox(
-                                    value: _rememberMe,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _rememberMe = value ?? false;
-                                      });
-                                    },
-                                    visualDensity: VisualDensity.compact,
-                                  ),
-                                  const Text(
-                                    'Lembrar-me',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  const Spacer(),
-                                  Tooltip(
-                                    message: 'Em breve: Recuperar senha',
-                                    child: TextButton(
-                                      onPressed:
-                                          null, // TODO: Implementar recuperação de senha
-                                      style: TextButton.styleFrom(
-                                        foregroundColor: colorScheme.primary,
-                                        textStyle: const TextStyle(
-                                          fontSize: 13,
-                                        ),
-                                      ),
-                                      child: const Text('Esqueceu a senha?'),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
                           const SizedBox(height: 12),
                           if (authProvider.isLoading)
                             const Padding(
@@ -301,7 +253,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                         authProvider.signInWithEmail(
                                           _emailController.text,
                                           _passwordController.text,
-                                          rememberMe: _rememberMe,
                                         );
                                       }
                                     },

@@ -86,9 +86,7 @@ class Version {
   }
 
   List<String> get uniqueSections => songStructure.toSet().toList();
-
   bool get isEmpty => songStructure.isEmpty;
-
   int get sectionCount => songStructure.length;
 
   bool containsSection(String sectionCode) =>

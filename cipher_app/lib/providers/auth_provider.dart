@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cipher_app/services/auth_service.dart';
 
@@ -15,8 +15,29 @@ class AuthProvider extends ChangeNotifier {
   AuthProvider() {
     _authService.authStateChanges.listen((user) {
       _user = user;
+      print('==== USER; $user ====');
       notifyListeners();
     });
+  }
+
+  Future<void> signInWithEmail(
+    String email,
+    String password, {
+    bool? rememberMe = false,
+  }) async {
+    if (isLoading) return;
+    _isLoading = true;
+    notifyListeners();
+    try {
+      await _authService.signInWithEmailAndPassword(email, password);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Erro ao logar com email: $e');
+      }
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   Future<void> signInAnonymously() async {

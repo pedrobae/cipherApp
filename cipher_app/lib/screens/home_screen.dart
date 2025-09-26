@@ -1,5 +1,4 @@
 import 'package:cipher_app/utils/design_constants.dart';
-import 'package:cipher_app/widgets/playlist/login.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/providers/auth_provider.dart';
@@ -19,9 +18,9 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     // Pre-load authentication state with post-frame callback
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final authProvider = context.read<AuthProvider>();
-      if (authProvider.user == null && !authProvider.isLoading) {
-        authProvider.signInAnonymously();
+      final user = context.read<AuthProvider>().user;
+      if (user == null) {
+        Navigator.pushReplacementNamed(context, '/login');
       }
     });
   }
@@ -78,9 +77,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               );
             }
-
             if (authProvider.user == null) {
-              return Login();
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                Navigator.pushReplacementNamed(context, '/login');
+              });
             }
 
             // User is authenticated - show navigation options

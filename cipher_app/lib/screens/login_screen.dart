@@ -1,0 +1,378 @@
+import 'package:flutter/material.dart';
+import 'package:cipher_app/providers/auth_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _obscurePassword = true;
+  bool _rememberMe = false;
+
+  late final AuthProvider _authProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    // Listen for authentication changes after the first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _authProvider = context.read<AuthProvider>();
+      if (_authProvider.user != null) {
+        _navigateToHome();
+      }
+      _authProvider.addListener(_authListener);
+    });
+  }
+
+  void _authListener() {
+    if (_authProvider.user != null) {
+      _navigateToHome();
+    }
+  }
+
+  void _navigateToHome() {
+    // Remove listener to avoid memory leaks
+    _authProvider.removeListener(_authListener);
+    Navigator.of(context).pushReplacementNamed('/');
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _authProvider.removeListener(_authListener);
+    super.dispose();
+  }
+
+  void _toggleObscure() {
+    setState(() {
+      _obscurePassword = !_obscurePassword;
+    });
+  }
+
+  String? _validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Informe o e-mail';
+    }
+    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+      return 'E-mail inválido';
+    }
+    return null;
+  }
+
+  String? _validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Informe a senha';
+    }
+    if (value.length < 6) {
+      return 'A senha deve ter pelo menos 6 caracteres';
+    }
+    return null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Scaffold(
+      // Background Gradient
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              colorScheme.primaryContainer,
+              colorScheme.surfaceContainerLow,
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Consumer<AuthProvider>(
+          builder: (context, authProvider, child) => Center(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Use SVG logo asset instead of music note icon
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: SvgPicture.asset(
+                      'assets/logos/v1_simple_color_black.svg',
+                      width: 120,
+                      height: 120,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Bem-vindo ao App de Cifras',
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Container(
+                    constraints: const BoxConstraints(maxWidth: 340),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surface,
+                      borderRadius: BorderRadius.circular(18),
+                      boxShadow: [
+                        BoxShadow(
+                          color: colorScheme.surfaceContainerHighest,
+                          blurRadius: 8,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            controller: _emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            textInputAction: TextInputAction.next,
+                            autofocus: true,
+                            maxLines: 1,
+                            decoration: InputDecoration(
+                              label: const Text(
+                                'E-mail',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              prefixIcon: Icon(
+                                Icons.email,
+                                color: colorScheme.primary,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(30),
+                                borderSide: BorderSide(
+                                  color: colorScheme.primary,
+                                  width: 2,
+                                ),
+                              ),
+                            ),
+                            validator: _validateEmail,
+                          ),
+                          const SizedBox(height: 16),
+                          TextFormField(
+                            controller: _passwordController,
+                            obscureText: _obscurePassword,
+                            textInputAction: TextInputAction.done,
+                            maxLines: 1,
+                            decoration: InputDecoration(
+                              label: const Text(
+                                'Senha',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              prefixIcon: Icon(
+                                Icons.lock,
+                                color: colorScheme.primary,
+                              ),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                  color: colorScheme.primary,
+                                ),
+                                tooltip: _obscurePassword
+                                    ? 'Mostrar senha'
+                                    : 'Ocultar senha',
+                                onPressed: _toggleObscure,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(30),
+                                borderSide: BorderSide(
+                                  color: colorScheme.primary,
+                                  width: 2,
+                                ),
+                              ),
+                            ),
+                            validator: _validatePassword,
+                          ),
+                          // Improved "Lembrar-me" checkbox area
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8, bottom: 4),
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(8),
+                              onTap: () {
+                                setState(() {
+                                  _rememberMe = !_rememberMe;
+                                });
+                              },
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Checkbox(
+                                    value: _rememberMe,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _rememberMe = value ?? false;
+                                      });
+                                    },
+                                    visualDensity: VisualDensity.compact,
+                                  ),
+                                  const Text(
+                                    'Lembrar-me',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  Tooltip(
+                                    message: 'Em breve: Recuperar senha',
+                                    child: TextButton(
+                                      onPressed:
+                                          null, // TODO: Implementar recuperação de senha
+                                      style: TextButton.styleFrom(
+                                        foregroundColor: colorScheme.primary,
+                                        textStyle: const TextStyle(
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                      child: const Text('Esqueceu a senha?'),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          if (authProvider.isLoading)
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 8),
+                              child: CircularProgressIndicator(),
+                            ),
+                          if (authProvider.error != null)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: Text(
+                                authProvider.error!,
+                                style: TextStyle(
+                                  color: colorScheme.error,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              icon: const Icon(Icons.login),
+                              label: Text(
+                                'Entrar',
+                                style: theme.textTheme.labelLarge!.copyWith(
+                                  color: colorScheme.onPrimaryContainer,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: colorScheme.primaryContainer,
+                                foregroundColor: colorScheme.onPrimaryContainer,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                elevation: 2,
+                              ),
+                              onPressed: authProvider.isLoading
+                                  ? null
+                                  : () {
+                                      if (_formKey.currentState?.validate() ??
+                                          false) {
+                                        authProvider.signInWithEmail(
+                                          _emailController.text,
+                                          _passwordController.text,
+                                          rememberMe: _rememberMe,
+                                        );
+                                      }
+                                    },
+                            ),
+                          ),
+                          // Divider between login and anonymous login
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Divider(
+                                    color: colorScheme.outlineVariant,
+                                    thickness: 1,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                  ),
+                                  child: Text(
+                                    'ou',
+                                    style: TextStyle(
+                                      color: colorScheme.outline,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Divider(
+                                    color: colorScheme.outlineVariant,
+                                    thickness: 1,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              icon: const Icon(Icons.person_outline),
+                              label: Text(
+                                'Entrar Anonimamente',
+                                style: theme.textTheme.labelLarge!.copyWith(
+                                  color: colorScheme.onPrimary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: colorScheme.primary,
+                                foregroundColor: colorScheme.onPrimary,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                elevation: 2,
+                              ),
+                              onPressed: authProvider.isLoading
+                                  ? null
+                                  : () => authProvider.signInAnonymously(),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

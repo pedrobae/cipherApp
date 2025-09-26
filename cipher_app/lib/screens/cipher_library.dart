@@ -29,7 +29,6 @@ class CipherLibraryScreen extends StatefulWidget {
 
 class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
   final TextEditingController _searchController = TextEditingController();
-  bool _hasInitialized = false;
 
   @override
   void didChangeDependencies() {
@@ -39,14 +38,11 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
 
   void _loadDataIfNeeded() {
     final cipherProvider = Provider.of<CipherProvider>(context, listen: false);
-    if (!_hasInitialized && !cipherProvider.hasLoadedCiphers && mounted) {
-      _hasInitialized = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          cipherProvider.loadCiphers();
-        }
-      });
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        cipherProvider.loadCiphers();
+      }
+    });
   }
 
   void _selectVersion(int versionId, int cipherId) {
@@ -102,7 +98,14 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
                 hint: 'Procure Cifras...',
                 title: widget.selectionMode ? 'Adicionar à Playlist' : null,
               ),
-              _buildContent(cipherProvider),
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    await cipherProvider.loadCiphers(forceReload: true);
+                  },
+                  child: _buildContent(cipherProvider, isInRefresh: true),
+                ),
+              ),
             ],
           );
         },
@@ -122,58 +125,57 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
     );
   }
 
-  Widget _buildContent(CipherProvider cipherProvider) {
+  Widget _buildContent(
+    CipherProvider cipherProvider, {
+    bool isInRefresh = false,
+  }) {
     // Handle loading state
-    if (cipherProvider.isLoading) {
-      return const Expanded(child: Center(child: CircularProgressIndicator()));
+    if (cipherProvider.isLoading && !isInRefresh) {
+      return const Center(child: CircularProgressIndicator());
     }
     // Handle error state
     if (cipherProvider.error != null) {
-      return Expanded(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.error_outline,
-                size: 64,
-                color: Theme.of(context).colorScheme.error,
-              ),
-              const SizedBox(height: 16),
-              Text('Erro: ${cipherProvider.error}'),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => cipherProvider.loadCiphers(),
-                child: const Text('Tentar Novamente'),
-              ),
-            ],
-          ),
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline,
+              size: 64,
+              color: Theme.of(context).colorScheme.error,
+            ),
+            const SizedBox(height: 16),
+            Text('Erro: ${cipherProvider.error}'),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => cipherProvider.loadCiphers(forceReload: true),
+              child: const Text('Tentar Novamente'),
+            ),
+          ],
         ),
       );
     }
     // Handle empty state
     if (cipherProvider.ciphers.isEmpty) {
-      return Expanded(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                widget.selectionMode
-                    ? Icons.playlist_add_outlined
-                    : Icons.music_note_outlined,
-                size: 64,
-                color: Colors.grey,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                widget.selectionMode
-                    ? 'Nenhuma cifra disponível para adicionar'
-                    : 'Nenhuma cifra encontrada',
-                style: const TextStyle(fontSize: 16, color: Colors.grey),
-              ),
-            ],
-          ),
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              widget.selectionMode
+                  ? Icons.playlist_add_outlined
+                  : Icons.music_note_outlined,
+              size: 64,
+              color: Colors.grey,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              widget.selectionMode
+                  ? 'Nenhuma cifra disponível para adicionar'
+                  : 'Nenhuma cifra encontrada',
+              style: const TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+          ],
         ),
       );
     }
@@ -182,28 +184,26 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
   }
 
   Widget _buildCiphersList(CipherProvider cipherProvider) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListView.builder(
-          cacheExtent: 200,
-          physics: const BouncingScrollPhysics(),
-          itemCount: cipherProvider.ciphers.length,
-          itemBuilder: (context, index) {
-            // Add bounds checking
-            if (index >= cipherProvider.ciphers.length) {
-              return const SizedBox.shrink();
-            }
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ListView.builder(
+        cacheExtent: 200,
+        physics: const BouncingScrollPhysics(),
+        itemCount: cipherProvider.ciphers.length,
+        itemBuilder: (context, index) {
+          // Add bounds checking
+          if (index >= cipherProvider.ciphers.length) {
+            return const SizedBox.shrink();
+          }
 
-            final cipher = cipherProvider.ciphers[index];
+          final cipher = cipherProvider.ciphers[index];
 
-            // In selection mode, we can't filter by versions until they're loaded
-            // The filtering will happen in the CipherCard when versions are expanded
-            // For now, show all ciphers and let user expand to see available versions
+          // In selection mode, we can't filter by versions until they're loaded
+          // The filtering will happen in the CipherCard when versions are expanded
+          // For now, show all ciphers and let user expand to see available versions
 
-            return CipherCard(cipher: cipher, selectVersion: _selectVersion);
-          },
-        ),
+          return CipherCard(cipher: cipher, selectVersion: _selectVersion);
+        },
       ),
     );
   }

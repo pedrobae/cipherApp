@@ -5,7 +5,7 @@ import 'package:sqflite/sqflite.dart';
 import '../helpers/database.dart';
 import '../models/domain/cipher/cipher.dart';
 
-class CipherRepository {
+class LocalCipherRepository {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
 
   // === CORE CIPHER OPERATIONS ===

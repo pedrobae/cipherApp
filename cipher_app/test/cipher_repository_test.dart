@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cipher_app/repositories/cipher_repository.dart';
+import 'package:cipher_app/repositories/local_cipher_repository.dart';
 import 'package:cipher_app/helpers/database.dart';
 import 'package:cipher_app/helpers/database_factory.dart';
 
@@ -9,14 +9,14 @@ void main() {
   });
 
   group('CipherRepository Tests', () {
-    late CipherRepository repository;
+    late LocalCipherRepository repository;
     late DatabaseHelper dbHelper;
 
     setUp(() async {
       dbHelper = DatabaseHelper();
       await dbHelper
           .resetDatabase(); // This will recreate and seed the database
-      repository = CipherRepository();
+      repository = LocalCipherRepository();
     });
 
     tearDown(() async {

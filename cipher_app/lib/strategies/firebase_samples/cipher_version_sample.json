@@ -1,7 +1,7 @@
 {
     "versionId": "v1",
     "versionName": "Versão Original",
-    "musicKey": "C",
+    "transposedKey": "C",
     "songStructure": "I,V1,C,V2,C,B,C,F",
     "sections": {
         "I": {

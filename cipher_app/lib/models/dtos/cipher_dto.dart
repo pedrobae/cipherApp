@@ -26,10 +26,10 @@ class CipherDto {
 
   factory CipherDto.fromMap(Map<String, dynamic> map) {
     return CipherDto(
-      firebaseId: map['firebase_id'] as String?,
+      firebaseId: map['id'] as String?,
       title: map['title'] as String? ?? '',
       author: map['author'] as String? ?? '',
-      musicKey: map['music_key'] as String? ?? '',
+      musicKey: map['musicKey'] as String? ?? '',
       tempo: map['tempo'] as String? ?? '',
       language: map['language'] as String? ?? '',
       tags: (map['tags'] is String)
@@ -47,15 +47,15 @@ class CipherDto {
 
   Map<String, dynamic> toMap() {
     return {
-      'firebase_id': firebaseId,
+      'id': firebaseId,
       'title': title,
       'author': author,
-      'music_key': musicKey,
+      'musicKey': musicKey,
       'tempo': tempo,
       'language': language,
       'tags': tags.join(','),
-      'updated_at': updatedAt?.toIso8601String(),
-      'download_count': downloadCount,
+      'updatedAt': updatedAt?.toIso8601String(),
+      'downloadCount': downloadCount,
     };
   }
 

@@ -1,17 +1,21 @@
 import 'dart:async';
+import 'package:cipher_app/repositories/cloud_cipher_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cipher_app/models/domain/cipher/cipher.dart';
-import 'package:cipher_app/repositories/cipher_repository.dart';
+import 'package:cipher_app/repositories/local_cipher_repository.dart';
 
 class CipherProvider extends ChangeNotifier {
-  final CipherRepository _cipherRepository = CipherRepository();
+  final LocalCipherRepository _cipherRepository = LocalCipherRepository();
+  final CloudCipherRepository _cloudCipherRepository = CloudCipherRepository();
 
   CipherProvider();
 
-  List<Cipher> _ciphers = [];
+  List<Cipher> _localCiphers = [];
+  List<Cipher> _cloudCiphers = [];
   List<Cipher> _filteredCiphers = [];
   Cipher _currentCipher = Cipher.empty();
   bool _isLoading = false;
+  bool _isLoadingCloud = false;
   bool _isSaving = false;
   String? _error;
   String _searchTerm = '';
@@ -23,7 +27,8 @@ class CipherProvider extends ChangeNotifier {
 
   // Getters
   Cipher get currentCipher => _currentCipher;
-  List<Cipher> get ciphers => _filteredCiphers;
+  List<Cipher> get filteredCiphers => _filteredCiphers;
+  List<Cipher> get ciphers => _localCiphers + _cloudCiphers;
   bool get isLoading => _isLoading;
   bool get isSaving => _isSaving;
   String? get error => _error;
@@ -31,8 +36,21 @@ class CipherProvider extends ChangeNotifier {
   bool get hasLoadedCiphers => _hasLoadedCiphers;
 
   /// ===== READ =====
-  // Load all ciphers from local SQLite database into cache
-  Future<void> loadCiphers() async {
+  // Load all ciphers (local and cloud)
+  Future<void> loadCiphers({bool forceReload = false}) async {
+    if (_hasLoadedCiphers && !forceReload) return;
+
+    // Debounce rapid calls
+    _loadTimer?.cancel();
+    _loadTimer = Timer(const Duration(milliseconds: 300), () async {
+      await _loadLocalCiphers();
+      await loadCloudCiphers();
+    });
+    _hasLoadedCiphers = true;
+  }
+
+  // Load ciphers from local SQLite
+  Future<void> _loadLocalCiphers() async {
     if (_isLoading) return;
 
     _isLoading = true;
@@ -41,12 +59,11 @@ class CipherProvider extends ChangeNotifier {
 
     try {
       _useMemoryFiltering = true;
-      _ciphers = await _cipherRepository.getAllCiphersPruned();
+      _localCiphers = await _cipherRepository.getAllCiphersPruned();
       _filterCiphers();
-      _hasLoadedCiphers = true;
 
       if (kDebugMode) {
-        print('Loaded ${_ciphers.length} ciphers from SQLite');
+        print('Loaded ${_localCiphers.length} ciphers from SQLite');
       }
     } catch (e) {
       _error = e.toString();
@@ -55,6 +72,32 @@ class CipherProvider extends ChangeNotifier {
       }
     } finally {
       _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // Load popular ciphers from cloud Firestore
+  Future<void> loadCloudCiphers() async {
+    if (_isLoadingCloud) return;
+
+    _isLoadingCloud = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      _cloudCiphers = await _cloudCipherRepository.getPopularCiphers();
+      _filterCiphers();
+
+      if (kDebugMode) {
+        print('Loaded ${_cloudCiphers.length} popular ciphers from Firestore');
+      }
+    } catch (e) {
+      _error = e.toString();
+      if (kDebugMode) {
+        print('Error loading cloud ciphers: $e');
+      }
+    } finally {
+      _isLoadingCloud = false;
       notifyListeners();
     }
   }
@@ -117,9 +160,9 @@ class CipherProvider extends ChangeNotifier {
 
   void _filterCiphers() {
     if (_searchTerm.isEmpty) {
-      _filteredCiphers = List.from(_ciphers);
+      _filteredCiphers = List.from(ciphers);
     } else {
-      _filteredCiphers = _ciphers
+      _filteredCiphers = ciphers
           .where(
             (cipher) =>
                 cipher.title.toLowerCase().contains(_searchTerm) ||
@@ -134,7 +177,7 @@ class CipherProvider extends ChangeNotifier {
   }
 
   void clearSearch() {
-    _filteredCiphers = List.from(_ciphers);
+    _filteredCiphers = List.from(ciphers);
   }
 
   /// ===== CREATE =====
@@ -225,7 +268,7 @@ class CipherProvider extends ChangeNotifier {
     try {
       await _cipherRepository.deleteCipher(cipherID);
       // Reload all ciphers to reflect the deletion
-      await loadCiphers();
+      _localCiphers.removeWhere((c) => c.id == cipherID);
     } catch (e) {
       _error = e.toString();
       if (kDebugMode) {
@@ -240,7 +283,8 @@ class CipherProvider extends ChangeNotifier {
   /// ===== UTILS =====
   /// Clear cached data and reset state for debugging
   void clearCache() {
-    _ciphers.clear();
+    _localCiphers.clear();
+    _cloudCiphers.clear();
     _currentCipher = Cipher.empty();
     _filteredCiphers.clear();
     _isLoading = false;
@@ -265,11 +309,11 @@ class CipherProvider extends ChangeNotifier {
       return;
     }
 
-    int index = _ciphers.indexWhere((c) => c.id == _currentCipher.id);
+    int index = _localCiphers.indexWhere((c) => c.id == _currentCipher.id);
     if (index != -1) {
-      _ciphers[index] = _currentCipher;
+      _localCiphers[index] = _currentCipher;
     } else {
-      _ciphers.add(_currentCipher);
+      _localCiphers.add(_currentCipher);
     }
     _filterCiphers();
   }
@@ -278,7 +322,7 @@ class CipherProvider extends ChangeNotifier {
   // Get cached cipher by ID (returns null if not in cache)
   Cipher? getCachedCipher(int cipherId) {
     try {
-      return _ciphers.firstWhere((cipher) => cipher.id == cipherId);
+      return _localCiphers.firstWhere((cipher) => cipher.id == cipherId);
     } catch (e) {
       return null;
     }
@@ -286,7 +330,7 @@ class CipherProvider extends ChangeNotifier {
 
   // Check if a cipher is already cached
   bool isCipherCached(int cipherId) {
-    return _ciphers.any((cipher) => cipher.id == cipherId);
+    return ciphers.any((cipher) => cipher.id == cipherId);
   }
 
   @override

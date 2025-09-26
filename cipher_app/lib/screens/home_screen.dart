@@ -1,8 +1,10 @@
 import 'package:cipher_app/utils/design_constants.dart';
+import 'package:cipher_app/widgets/playlist/login.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/providers/auth_provider.dart';
 import 'package:cipher_app/providers/navigation_provider.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -78,40 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
             }
 
             if (authProvider.user == null) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.music_note,
-                      size: 72,
-                      color: colorScheme.primary,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Bem-vindo ao App de Cifras',
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    ElevatedButton.icon(
-                      icon: const Icon(Icons.login),
-                      label: const Text('Entrar Anonimamente'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: colorScheme.primary,
-                        foregroundColor: colorScheme.onPrimary,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        elevation: 2,
-                      ),
-                      onPressed: () => authProvider.signInAnonymously(),
-                    ),
-                  ],
-                ),
-              );
+              return Login();
             }
 
             // User is authenticated - show navigation options
@@ -164,23 +133,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Padding(
                     padding: const EdgeInsets.only(top: 32, bottom: 16),
                     child: Center(
-                      child: Container(
-                        width: 96,
-                        height: 96,
-                        decoration: BoxDecoration(
-                          color: colorScheme.primary.withValues(alpha: .08),
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                        child: Center(
-                          child: Text(
-                            'LOGO',
-                            style: theme.textTheme.titleLarge?.copyWith(
-                              color: colorScheme.primary,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 2,
-                            ),
-                          ),
-                        ),
+                      child: SvgPicture.asset(
+                        'assets/logos/v1_simple_color_black.svg',
+                        width: 200,
                       ),
                     ),
                   ),

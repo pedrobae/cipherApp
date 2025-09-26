@@ -62,6 +62,7 @@ class _CipherCardState extends State<CipherCard> {
   Widget build(BuildContext context) {
     return Consumer<VersionProvider>(
       builder: (context, versionProvider, child) {
+        final theme = Theme.of(context);
         final versions = versionProvider.versions;
         final isThisCipherExpanded =
             versionProvider.expandedCipherId == widget.cipher.id!;
@@ -77,7 +78,7 @@ class _CipherCardState extends State<CipherCard> {
         });
 
         return Card(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          color: theme.colorScheme.surfaceContainerHighest,
           elevation: 4,
           child: ExpansionTile(
             controller: _expansionController,
@@ -104,7 +105,7 @@ class _CipherCardState extends State<CipherCard> {
                         children: [
                           Text(
                             widget.cipher.title,
-                            style: Theme.of(context).textTheme.titleLarge,
+                            style: theme.textTheme.titleLarge,
                           ),
                           Text(widget.cipher.author),
                         ],
@@ -146,30 +147,30 @@ class _CipherCardState extends State<CipherCard> {
                     child: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
+                        color: theme.colorScheme.primaryContainer,
                         boxShadow: [
                           BoxShadow(
                             offset: Offset(0, 1),
-                            color: Theme.of(context).shadowColor,
+                            color: theme.shadowColor,
                             blurRadius: 1,
                           ),
                         ],
-                        color: Theme.of(context).colorScheme.primaryContainer,
                       ),
                       padding: EdgeInsets.symmetric(horizontal: 8),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         spacing: 16,
                         children: [
-                          const Icon(Icons.library_music),
+                          Icon(
+                            Icons.library_music,
+                            color: theme.colorScheme.onPrimaryContainer,
+                          ),
                           Text(
                             'Criar uma Nova Versão',
-                            style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onPrimaryContainer,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              color: theme.colorScheme.onPrimaryContainer,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ],
                       ),
@@ -195,13 +196,11 @@ class _CipherCardState extends State<CipherCard> {
                             boxShadow: [
                               BoxShadow(
                                 offset: Offset(0, 1),
-                                color: Theme.of(context).primaryColor,
+                                color: theme.primaryColor,
                                 blurRadius: 1,
                               ),
                             ],
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.surfaceContainer,
+                            color: theme.colorScheme.surfaceContainer,
                           ),
                           padding: EdgeInsets.symmetric(horizontal: 8),
                           child: Row(
@@ -211,23 +210,17 @@ class _CipherCardState extends State<CipherCard> {
                               Expanded(
                                 child: Text(
                                   version.versionName,
-                                  style: Theme.of(context).textTheme.titleMedium
-                                      ?.copyWith(
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.onSurface,
-                                        fontWeight: FontWeight.w500,
-                                      ),
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    color: theme.colorScheme.onPrimaryContainer,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
                               ),
                               Text(
                                 'Tom: ${version.transposedKey}',
-                                style: Theme.of(context).textTheme.titleSmall
-                                    ?.copyWith(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.secondary,
-                                    ),
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  color: theme.colorScheme.onPrimaryContainer,
+                                ),
                               ),
                             ],
                           ),
@@ -239,8 +232,8 @@ class _CipherCardState extends State<CipherCard> {
                       padding: EdgeInsets.all(16),
                       child: Text(
                         'Nenhuma versão encontrada',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
                         ),
                         textAlign: TextAlign.center,
                       ),

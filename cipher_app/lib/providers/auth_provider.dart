@@ -15,7 +15,6 @@ class AuthProvider extends ChangeNotifier {
   AuthProvider() {
     _authService.authStateChanges.listen((user) {
       _user = user;
-      print('==== USER; $user ====');
       notifyListeners();
     });
   }

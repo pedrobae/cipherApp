@@ -1,7 +1,6 @@
+import 'package:cipher_app/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:cipher_app/firebase_options.dart';
 import 'package:cipher_app/providers/auth_provider.dart';
 import 'package:cipher_app/providers/navigation_provider.dart';
 import 'package:cipher_app/providers/layout_settings_provider.dart';
@@ -23,7 +22,7 @@ void main() async {
 
   await DatabaseFactoryHelper.initialize();
 
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await FirebaseService.initialize();
 
   await SettingsService.initialize();
 

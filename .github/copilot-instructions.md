@@ -1,4 +1,5 @@
 # GitHub Copilot Instructions for Cipher App
+**IMPORTANT: UNLESS ASKED TO ACT DEFAULT TO A MENTOR ROLE, ASKING AND ANSWERING QUESTIONS AND GIVING ADVICE.**
 
 ## ✅ Language Configuration - PORTUGUESE UI
 

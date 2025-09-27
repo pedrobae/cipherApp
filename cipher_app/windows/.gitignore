@@ -15,3 +15,9 @@ x86/
 *.[Cc]ache
 # but keep track of directories ending in .cache
 !*.[Cc]ache/
+
+cipher_app/macos/Flutter/GeneratedPluginRegistrant.swift
+cipher_app/windows/flutter/generated_plugin_registrant.cc
+cipher_app/windows/flutter/generated_plugins.cmake
+cipher_app/windows/flutter/ephemeral/
+cipher_app/windows/runner/Debug/

@@ -103,7 +103,7 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
                   onRefresh: () async {
                     await cipherProvider.loadCiphers(forceReload: true);
                   },
-                  child: _buildContent(cipherProvider, isInRefresh: true),
+                  child: _buildContent(cipherProvider),
                 ),
               ),
             ],
@@ -125,12 +125,9 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
     );
   }
 
-  Widget _buildContent(
-    CipherProvider cipherProvider, {
-    bool isInRefresh = false,
-  }) {
+  Widget _buildContent(CipherProvider cipherProvider) {
     // Handle loading state
-    if (cipherProvider.isLoading && !isInRefresh) {
+    if (cipherProvider.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
     // Handle error state
@@ -156,7 +153,7 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
       );
     }
     // Handle empty state
-    if (cipherProvider.ciphers.isEmpty) {
+    if ((cipherProvider.localCiphers + cipherProvider.cloudCiphers).isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -189,20 +186,19 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
       child: ListView.builder(
         cacheExtent: 200,
         physics: const BouncingScrollPhysics(),
-        itemCount: cipherProvider.ciphers.length,
+        itemCount: cipherProvider.localCiphers.length,
         itemBuilder: (context, index) {
           // Add bounds checking
-          if (index >= cipherProvider.ciphers.length) {
+          if (index >= cipherProvider.localCiphers.length) {
             return const SizedBox.shrink();
           }
 
-          final cipher = cipherProvider.ciphers[index];
+          final cipher = cipherProvider.localCiphers[index];
+          return CipherCard(cipher: cipher, selectVersion: _selectVersion);
 
           // In selection mode, we can't filter by versions until they're loaded
           // The filtering will happen in the CipherCard when versions are expanded
           // For now, show all ciphers and let user expand to see available versions
-
-          return CipherCard(cipher: cipher, selectVersion: _selectVersion);
         },
       ),
     );

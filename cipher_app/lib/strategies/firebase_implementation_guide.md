@@ -30,7 +30,7 @@ The **Conservative Approach** with sectioned library layout has been chosen for 
 - [x] Create `CloudCipherCache` class for popular cipher metadata
 - [x] Extend `CipherProvider` with `loadPopularCloudCiphers()` method
 - [ ] Implement 24-hour cache refresh strategy
-- [ ] Add cloud cipher metadata model classes
+- [x] Add cloud cipher metadata model classes
 - [ ] Create Firebase query methods (popular, recent, search)
 
 #### Phase 3: Sectioned UI Implementation

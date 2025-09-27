@@ -28,7 +28,8 @@ class CipherProvider extends ChangeNotifier {
   // Getters
   Cipher get currentCipher => _currentCipher;
   List<Cipher> get filteredCiphers => _filteredCiphers;
-  List<Cipher> get ciphers => _localCiphers + _cloudCiphers;
+  List<Cipher> get localCiphers => _localCiphers;
+  List<Cipher> get cloudCiphers => _cloudCiphers;
   bool get isLoading => _isLoading;
   bool get isSaving => _isSaving;
   String? get error => _error;
@@ -160,9 +161,9 @@ class CipherProvider extends ChangeNotifier {
 
   void _filterCiphers() {
     if (_searchTerm.isEmpty) {
-      _filteredCiphers = List.from(ciphers);
+      _filteredCiphers = cloudCiphers + localCiphers;
     } else {
-      _filteredCiphers = ciphers
+      _filteredCiphers = (cloudCiphers + localCiphers)
           .where(
             (cipher) =>
                 cipher.title.toLowerCase().contains(_searchTerm) ||
@@ -177,7 +178,7 @@ class CipherProvider extends ChangeNotifier {
   }
 
   void clearSearch() {
-    _filteredCiphers = List.from(ciphers);
+    _filteredCiphers = List.from(cloudCiphers + localCiphers);
   }
 
   /// ===== CREATE =====
@@ -330,7 +331,7 @@ class CipherProvider extends ChangeNotifier {
 
   // Check if a cipher is already cached
   bool isCipherCached(int cipherId) {
-    return ciphers.any((cipher) => cipher.id == cipherId);
+    return (localCiphers).any((cipher) => cipher.id == cipherId);
   }
 
   @override

@@ -50,7 +50,7 @@ class CipherProvider extends ChangeNotifier {
 
   // Load ciphers from local SQLite
   Future<void> loadLocalCiphers({bool forceReload = false}) async {
-    if (!_hasLoadedCiphers && !forceReload) return;
+    if (_hasLoadedCiphers && !forceReload) return;
     if (_isLoading) return;
 
     _isLoading = true;

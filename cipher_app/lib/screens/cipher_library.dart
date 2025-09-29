@@ -4,7 +4,6 @@ import 'package:cipher_app/widgets/cipher/local_cipher_list.dart';
 import 'package:cipher_app/widgets/search_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:cipher_app/screens/cipher_viewer.dart';
-import 'package:cipher_app/screens/cipher_editor.dart';
 import 'package:provider/provider.dart';
 
 class CipherLibraryScreen extends StatefulWidget {
@@ -105,27 +104,12 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen>
                     }
                   },
                 ),
-                Container(
-                  alignment: Alignment.center,
-                  child: const Text('Playlists'),
-                ),
+                CloudCipherList(),
               ],
             ),
           ),
         ],
       ),
-      floatingActionButton: widget.selectionMode
-          ? null
-          : FloatingActionButton.extended(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const EditCipher()),
-                );
-              },
-              icon: const Icon(Icons.add),
-              label: const Text('Adicionar Cifra'),
-              heroTag: 'library_fab',
-            ),
     );
   }
 }

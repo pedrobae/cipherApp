@@ -1,4 +1,5 @@
 import 'package:cipher_app/providers/cipher_provider.dart';
+import 'package:cipher_app/screens/cipher_editor.dart';
 import 'package:cipher_app/widgets/cipher/cipher_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -39,14 +40,7 @@ class _LocalCipherListState extends State<LocalCipherList> {
   Widget build(BuildContext context) {
     final cipherProvider = Provider.of<CipherProvider>(context);
 
-    return Expanded(
-      child: RefreshIndicator(
-        onRefresh: () async {
-          await cipherProvider.loadLocalCiphers(forceReload: true);
-        },
-        child: _buildContent(cipherProvider),
-      ),
-    );
+    return _buildContent(cipherProvider);
   }
 
   Widget _buildContent(CipherProvider cipherProvider) {
@@ -77,37 +71,61 @@ class _LocalCipherListState extends State<LocalCipherList> {
         ),
       );
     }
+
+    return Stack(
+      children: [
+        // Handle empty state
+        if (cipherProvider.localCiphers.isEmpty) ...[
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  widget.selectionMode
+                      ? Icons.playlist_add_outlined
+                      : Icons.music_note_outlined,
+                  size: 64,
+                  color: Colors.grey,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  widget.selectionMode
+                      ? 'Nenhuma cifra disponível para adicionar'
+                      : 'Nenhuma cifra encontrada',
+                  style: const TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+              ],
+            ),
+          ),
+        ] else ...[
+          // Display cipher list
+          _buildCiphersList(cipherProvider),
+        ],
+        if (!widget.selectionMode)
+          Positioned(
+            bottom: MediaQuery.of(context).viewInsets.bottom + 8,
+            right: MediaQuery.of(context).viewInsets.right + 8,
+            child: FloatingActionButton.extended(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const EditCipher()),
+                );
+              },
+              icon: const Icon(Icons.add),
+              label: const Text('Adicionar Cifra'),
+              heroTag: 'library_fab',
+            ),
+          ),
+      ],
+    );
     // Handle empty state
-    if (cipherProvider.localCiphers.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              widget.selectionMode
-                  ? Icons.playlist_add_outlined
-                  : Icons.music_note_outlined,
-              size: 64,
-              color: Colors.grey,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              widget.selectionMode
-                  ? 'Nenhuma cifra disponível para adicionar'
-                  : 'Nenhuma cifra encontrada',
-              style: const TextStyle(fontSize: 16, color: Colors.grey),
-            ),
-          ],
-        ),
-      );
-    }
-    // Display filtered ciphers list for selection mode
-    return _buildCiphersList(cipherProvider);
   }
 
   Widget _buildCiphersList(CipherProvider cipherProvider) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
+    return RefreshIndicator(
+      onRefresh: () async {
+        await cipherProvider.loadLocalCiphers(forceReload: true);
+      },
       child: ListView.builder(
         cacheExtent: 200,
         physics: const BouncingScrollPhysics(),

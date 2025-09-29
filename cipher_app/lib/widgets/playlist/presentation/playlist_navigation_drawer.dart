@@ -1,3 +1,4 @@
+import 'package:cipher_app/providers/version_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/models/domain/playlist/playlist.dart';
@@ -95,80 +96,95 @@ class PlaylistNavigationDrawer extends StatelessWidget {
     PlaylistItem item,
     int index,
   ) {
-    return Consumer2<CipherProvider, TextSectionProvider>(
-      builder: (context, cipherProvider, textSectionProvider, child) {
-        return FutureBuilder<String>(
-          future: _getItemTitle(item, cipherProvider, textSectionProvider),
-          builder: (context, snapshot) {
-            final title = snapshot.data ?? 'ERROR GETTING CIPHER TITLE';
+    return Consumer3<CipherProvider, VersionProvider, TextSectionProvider>(
+      builder:
+          (
+            context,
+            cipherProvider,
+            versionProvider,
+            textSectionProvider,
+            child,
+          ) {
+            return FutureBuilder<String>(
+              future: _getItemTitle(
+                item,
+                cipherProvider,
+                versionProvider,
+                textSectionProvider,
+              ),
+              builder: (context, snapshot) {
+                final title = snapshot.data ?? 'ERROR GETTING CIPHER TITLE';
 
-            return ListTile(
-              leading: Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: _getColorForType(item.type).withValues(alpha: .1),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: _getColorForType(item.type).withValues(alpha: .3),
-                    width: 1,
-                  ),
-                ),
-                child: Icon(
-                  _getIconForType(item.type),
-                  size: 16,
-                  color: _getColorForType(item.type),
-                ),
-              ),
-              title: Text(
-                title,
-                style: const TextStyle(fontWeight: FontWeight.w500),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              trailing: Container(
-                width: 24,
-                height: 24,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Text(
-                    '${index + 1}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
+                return ListTile(
+                  leading: Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: _getColorForType(item.type).withValues(alpha: .1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: _getColorForType(
+                          item.type,
+                        ).withValues(alpha: .3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Icon(
+                      _getIconForType(item.type),
+                      size: 16,
+                      color: _getColorForType(item.type),
                     ),
                   ),
-                ),
-              ),
-              onTap: () {
-                Navigator.pop(context); // Close drawer
-                onItemSelected(index);
+                  title: Text(
+                    title,
+                    style: const TextStyle(fontWeight: FontWeight.w500),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  trailing: Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: Text(
+                        '${index + 1}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context); // Close drawer
+                    onItemSelected(index);
+                  },
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 4,
+                  ),
+                );
               },
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 4,
-              ),
             );
           },
-        );
-      },
     );
   }
 
   Future<String> _getItemTitle(
     PlaylistItem item,
     CipherProvider cipherProvider,
+    VersionProvider versionProvider,
     TextSectionProvider textSectionProvider,
   ) async {
     switch (item.type) {
       case 'cipher_version':
-        cipherProvider.loadCipherOfVersion(item.contentId);
-        final cipher = cipherProvider.currentCipher;
-        return cipher.title;
+        final version = versionProvider.getCachedVersion(item.contentId);
+        final cipher = cipherProvider.getCachedCipher(version!.cipherId);
+        return cipher!.title;
 
       case 'text_section':
         await textSectionProvider.loadTextSection(item.contentId);

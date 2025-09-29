@@ -21,6 +21,7 @@ class CipherProvider extends ChangeNotifier {
   String _searchTerm = '';
   bool _useMemoryFiltering = true;
   bool _hasLoadedCiphers = false;
+  DateTime? _lastCloudLoad;
 
   // Add debouncing for rapid calls
   Timer? _loadTimer;
@@ -79,6 +80,11 @@ class CipherProvider extends ChangeNotifier {
 
   // Load popular ciphers from cloud Firestore
   Future<void> loadCloudCiphers() async {
+    final now = DateTime.now();
+    if (_lastCloudLoad != null &&
+        now.difference(_lastCloudLoad!).inHours < 24) {
+      return;
+    }
     if (_isLoadingCloud) return;
 
     _isLoadingCloud = true;
@@ -87,6 +93,7 @@ class CipherProvider extends ChangeNotifier {
 
     try {
       _cloudCiphers = await _cloudCipherRepository.getPopularCiphers();
+      _lastCloudLoad = now;
       _filterCiphers();
 
       if (kDebugMode) {

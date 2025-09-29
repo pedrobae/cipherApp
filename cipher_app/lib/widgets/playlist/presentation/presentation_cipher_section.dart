@@ -37,9 +37,7 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
       final cipherProvider = context.read<CipherProvider>();
 
       // Ensure all ciphers are loaded (loads all ciphers if not already loaded)
-      if (!cipherProvider.hasLoadedCiphers) {
-        cipherProvider.loadCiphers();
-      }
+      cipherProvider.loadCiphers();
     });
   }
 

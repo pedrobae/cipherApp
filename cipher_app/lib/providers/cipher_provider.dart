@@ -12,7 +12,8 @@ class CipherProvider extends ChangeNotifier {
 
   List<Cipher> _localCiphers = [];
   List<Cipher> _cloudCiphers = [];
-  List<Cipher> _filteredCiphers = [];
+  List<Cipher> _filteredLocalCiphers = [];
+  List<Cipher> _filteredCloudCiphers = [];
   Cipher _currentCipher = Cipher.empty();
   bool _isLoading = false;
   bool _isLoadingCloud = false;
@@ -28,10 +29,12 @@ class CipherProvider extends ChangeNotifier {
 
   // Getters
   Cipher get currentCipher => _currentCipher;
-  List<Cipher> get filteredCiphers => _filteredCiphers;
+  List<Cipher> get filteredLocalCiphers => _filteredLocalCiphers;
+  List<Cipher> get filteredCloudCiphers => _filteredCloudCiphers;
   List<Cipher> get localCiphers => _localCiphers;
   List<Cipher> get cloudCiphers => _cloudCiphers;
   bool get isLoading => _isLoading;
+  bool get isLoadingCloud => _isLoadingCloud;
   bool get isSaving => _isSaving;
   String? get error => _error;
   bool get useMemoryFiltering => _useMemoryFiltering;
@@ -60,7 +63,7 @@ class CipherProvider extends ChangeNotifier {
     try {
       _useMemoryFiltering = true;
       _localCiphers = await _cipherRepository.getAllCiphersPruned();
-      _filterCiphers();
+      _filterCloudCiphers();
 
       _hasLoadedCiphers = true;
 
@@ -95,10 +98,10 @@ class CipherProvider extends ChangeNotifier {
     try {
       _cloudCiphers = await _cloudCipherRepository.getPopularCiphers();
       _lastCloudLoad = now;
-      _filterCiphers();
+      _filterCloudCiphers();
 
       if (kDebugMode) {
-        print('Loaded ${_cloudCiphers.length} popular ciphers from Firestore');
+        print('LOADED ${_cloudCiphers.length} POPULAR CIPHERS FROM FIRESTORE');
       }
     } catch (e) {
       _error = e.toString();
@@ -168,10 +171,33 @@ class CipherProvider extends ChangeNotifier {
   }
 
   void _filterCiphers() {
+    _filterCloudCiphers();
+    _filterLocalCiphers();
+  }
+
+  void _filterCloudCiphers() {
     if (_searchTerm.isEmpty) {
-      _filteredCiphers = cloudCiphers + localCiphers;
+      _filteredCloudCiphers = cloudCiphers;
     } else {
-      _filteredCiphers = (cloudCiphers + localCiphers)
+      _filteredCloudCiphers = cloudCiphers
+          .where(
+            (cipher) =>
+                cipher.title.toLowerCase().contains(_searchTerm) ||
+                cipher.author.toLowerCase().contains(_searchTerm) ||
+                cipher.tags.any(
+                  (tag) => tag.toLowerCase().contains(_searchTerm),
+                ),
+          )
+          .toList();
+    }
+    notifyListeners();
+  }
+
+  void _filterLocalCiphers() {
+    if (_searchTerm.isEmpty) {
+      _filteredLocalCiphers = localCiphers;
+    } else {
+      _filteredLocalCiphers = localCiphers
           .where(
             (cipher) =>
                 cipher.title.toLowerCase().contains(_searchTerm) ||
@@ -186,7 +212,8 @@ class CipherProvider extends ChangeNotifier {
   }
 
   void clearSearch() {
-    _filteredCiphers = List.from(cloudCiphers + localCiphers);
+    _filteredCloudCiphers = List.from(cloudCiphers);
+    _filteredLocalCiphers = List.from(localCiphers);
   }
 
   /// ===== CREATE =====
@@ -295,7 +322,8 @@ class CipherProvider extends ChangeNotifier {
     _localCiphers.clear();
     _cloudCiphers.clear();
     _currentCipher = Cipher.empty();
-    _filteredCiphers.clear();
+    _filteredCloudCiphers.clear();
+    _filteredLocalCiphers.clear();
     _isLoading = false;
     _isSaving = false;
     _error = null;

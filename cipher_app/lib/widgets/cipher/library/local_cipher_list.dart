@@ -38,13 +38,11 @@ class _LocalCipherListState extends State<LocalCipherList> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     final cipherProvider = Provider.of<CipherProvider>(context);
 
-    return _buildContent(cipherProvider);
-  }
-
-  Widget _buildContent(CipherProvider cipherProvider) {
-    // Handle loading state
     if (cipherProvider.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -75,7 +73,7 @@ class _LocalCipherListState extends State<LocalCipherList> {
     return Stack(
       children: [
         // Handle empty state
-        if (cipherProvider.localCiphers.isEmpty) ...[
+        if (cipherProvider.filteredLocalCiphers.isEmpty) ...[
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -85,14 +83,17 @@ class _LocalCipherListState extends State<LocalCipherList> {
                       ? Icons.playlist_add_outlined
                       : Icons.music_note_outlined,
                   size: 64,
-                  color: Colors.grey,
+                  color: colorScheme.primary,
                 ),
                 const SizedBox(height: 16),
                 Text(
                   widget.selectionMode
                       ? 'Nenhuma cifra disponível para adicionar'
                       : 'Nenhuma cifra encontrada',
-                  style: const TextStyle(fontSize: 16, color: Colors.grey),
+                  style: theme.textTheme.bodyLarge!.copyWith(
+                    color: colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -129,14 +130,14 @@ class _LocalCipherListState extends State<LocalCipherList> {
       child: ListView.builder(
         cacheExtent: 200,
         physics: const BouncingScrollPhysics(),
-        itemCount: cipherProvider.localCiphers.length,
+        itemCount: cipherProvider.filteredLocalCiphers.length,
         itemBuilder: (context, index) {
           // Add bounds checking
-          if (index >= cipherProvider.localCiphers.length) {
+          if (index >= cipherProvider.filteredLocalCiphers.length) {
             return const SizedBox.shrink();
           }
 
-          final cipher = cipherProvider.localCiphers[index];
+          final cipher = cipherProvider.filteredLocalCiphers[index];
           return CipherCard(cipher: cipher, onTap: widget.onTap);
 
           // In selection mode, we can't filter by versions until they're loaded

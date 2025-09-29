@@ -5,8 +5,8 @@ import 'package:cipher_app/providers/layout_settings_provider.dart';
 import 'package:cipher_app/providers/version_provider.dart';
 import 'package:cipher_app/screens/cipher_editor.dart';
 import 'package:cipher_app/widgets/settings/layout_settings.dart';
-import 'package:cipher_app/widgets/cipher/viewer/content_section.dart';
-import 'package:cipher_app/widgets/cipher/viewer/version_header.dart';
+import 'package:cipher_app/widgets/cipher/library/content_section.dart';
+import 'package:cipher_app/widgets/cipher/library/version_header.dart';
 import 'package:cipher_app/widgets/cipher/version_selector.dart';
 
 class CipherViewer extends StatefulWidget {

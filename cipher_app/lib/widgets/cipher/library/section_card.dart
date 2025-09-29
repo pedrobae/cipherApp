@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cipher_app/widgets/cipher/viewer/chordpro_view.dart';
+import 'package:cipher_app/widgets/cipher/library/chordpro_view.dart';
 import 'package:cipher_app/providers/layout_settings_provider.dart';
 
 class CipherSectionCard extends StatelessWidget {

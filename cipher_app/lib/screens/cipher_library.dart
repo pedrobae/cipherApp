@@ -1,10 +1,11 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:cipher_app/providers/cipher_provider.dart';
 import 'package:cipher_app/providers/playlist_provider.dart';
-import 'package:cipher_app/widgets/cipher/local_cipher_list.dart';
+import 'package:cipher_app/widgets/cipher/library/local_cipher_list.dart';
+import 'package:cipher_app/widgets/cipher/library/cloud_cipher_list.dart';
 import 'package:cipher_app/widgets/search_app_bar.dart';
-import 'package:flutter/material.dart';
 import 'package:cipher_app/screens/cipher_viewer.dart';
-import 'package:provider/provider.dart';
 
 class CipherLibraryScreen extends StatefulWidget {
   final bool selectionMode;

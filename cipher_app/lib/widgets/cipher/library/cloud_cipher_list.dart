@@ -1,26 +1,24 @@
 import 'package:cipher_app/providers/cipher_provider.dart';
 import 'package:cipher_app/screens/cipher_editor.dart';
-import 'package:cipher_app/widgets/cipher/cipher_card.dart';
+import 'package:cipher_app/widgets/cipher/library/expandible_cipher_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class LocalCipherList extends StatefulWidget {
+class CloudCipherList extends StatefulWidget {
   final bool selectionMode;
   final int? playlistId;
-  final Function(int versionId, int cipherId) onTap;
 
-  const LocalCipherList({
+  const CloudCipherList({
     super.key,
     this.selectionMode = false,
     this.playlistId,
-    required this.onTap,
   });
 
   @override
-  State<LocalCipherList> createState() => _LocalCipherListState();
+  State<CloudCipherList> createState() => _CloudCipherListState();
 }
 
-class _LocalCipherListState extends State<LocalCipherList> {
+class _CloudCipherListState extends State<CloudCipherList> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();

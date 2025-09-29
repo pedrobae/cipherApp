@@ -1,9 +1,9 @@
-import 'package:cipher_app/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/navigation_provider.dart';
-import '../widgets/app_drawer.dart';
-import 'cipher_library.dart';
+import 'package:cipher_app/providers/navigation_provider.dart';
+import 'package:cipher_app/providers/cipher_provider.dart';
+import 'package:cipher_app/routes/app_routes.dart';
+import 'package:cipher_app/widgets/app_drawer.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -74,7 +74,7 @@ class MainScreenState extends State<MainScreen> {
         if (navigationProvider.previousRoute == '/library' &&
             navigationProvider.currentRoute != '/library') {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            CipherLibraryScreen.clearSearchFromOutside(context);
+            CipherProvider().clearSearch();
           });
         }
 

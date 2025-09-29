@@ -5,13 +5,11 @@ import 'package:cipher_app/models/domain/cipher/cipher.dart';
 class CloudCipherCard extends StatelessWidget {
   final Cipher cipher;
   final VoidCallback onDownload;
-  final bool isSelectMode;
 
   const CloudCipherCard({
     super.key,
     required this.cipher,
     required this.onDownload,
-    this.isSelectMode = false,
   });
 
   @override
@@ -20,6 +18,7 @@ class CloudCipherCard extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     return ListTile(
+      tileColor: colorScheme.surfaceContainer,
       shape: Border(),
       contentPadding: EdgeInsets.symmetric(horizontal: 8),
       title: Column(

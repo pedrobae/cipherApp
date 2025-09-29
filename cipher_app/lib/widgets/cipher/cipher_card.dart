@@ -7,13 +7,9 @@ import 'package:cipher_app/widgets/cipher/tag_chip.dart';
 
 class CipherCard extends StatefulWidget {
   final Cipher cipher;
-  final Function(int, int) selectVersion;
+  final Function(int, int) onTap;
 
-  const CipherCard({
-    super.key,
-    required this.cipher,
-    required this.selectVersion,
-  });
+  const CipherCard({super.key, required this.cipher, required this.onTap});
 
   @override
   State<CipherCard> createState() => _CipherCardState();
@@ -185,10 +181,7 @@ class _CipherCardState extends State<CipherCard> {
                     ...versions.map((version) {
                       return GestureDetector(
                         onTap: () {
-                          widget.selectVersion.call(
-                            version.id!,
-                            widget.cipher.id!,
-                          );
+                          widget.onTap.call(version.id!, widget.cipher.id!);
                         },
                         child: Container(
                           decoration: BoxDecoration(

@@ -40,19 +40,17 @@ class CipherProvider extends ChangeNotifier {
   /// ===== READ =====
   // Load all ciphers (local and cloud)
   Future<void> loadCiphers({bool forceReload = false}) async {
-    if (_hasLoadedCiphers && !forceReload) return;
-
     // Debounce rapid calls
     _loadTimer?.cancel();
     _loadTimer = Timer(const Duration(milliseconds: 300), () async {
-      await _loadLocalCiphers();
+      await loadLocalCiphers();
       await loadCloudCiphers();
     });
-    _hasLoadedCiphers = true;
   }
 
   // Load ciphers from local SQLite
-  Future<void> _loadLocalCiphers() async {
+  Future<void> loadLocalCiphers({bool forceReload = false}) async {
+    if (!_hasLoadedCiphers && !forceReload) return;
     if (_isLoading) return;
 
     _isLoading = true;
@@ -63,6 +61,8 @@ class CipherProvider extends ChangeNotifier {
       _useMemoryFiltering = true;
       _localCiphers = await _cipherRepository.getAllCiphersPruned();
       _filterCiphers();
+
+      _hasLoadedCiphers = true;
 
       if (kDebugMode) {
         print('Loaded ${_localCiphers.length} ciphers from SQLite');
@@ -79,10 +79,11 @@ class CipherProvider extends ChangeNotifier {
   }
 
   // Load popular ciphers from cloud Firestore
-  Future<void> loadCloudCiphers() async {
+  Future<void> loadCloudCiphers({bool forceReload = false}) async {
     final now = DateTime.now();
     if (_lastCloudLoad != null &&
-        now.difference(_lastCloudLoad!).inHours < 24) {
+        now.difference(_lastCloudLoad!).inHours < 24 &&
+        !forceReload) {
       return;
     }
     if (_isLoadingCloud) return;

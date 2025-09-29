@@ -1,12 +1,13 @@
 import 'package:cipher_app/providers/cipher_provider.dart';
 import 'package:cipher_app/providers/playlist_provider.dart';
 import 'package:cipher_app/widgets/cipher/local_cipher_list.dart';
+import 'package:cipher_app/widgets/search_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:cipher_app/screens/cipher_viewer.dart';
 import 'package:cipher_app/screens/cipher_editor.dart';
 import 'package:provider/provider.dart';
 
-class CipherLibraryScreen extends StatelessWidget {
+class CipherLibraryScreen extends StatefulWidget {
   final bool selectionMode;
   final int? playlistId;
   final List<int>? excludeVersionIds;
@@ -19,54 +20,101 @@ class CipherLibraryScreen extends StatelessWidget {
   });
 
   @override
+  State<CipherLibraryScreen> createState() => _CipherLibraryScreenState();
+}
+
+class _CipherLibraryScreenState extends State<CipherLibraryScreen>
+    with TickerProviderStateMixin {
+  late TabController _tabController;
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final cipherProvider = Provider.of<CipherProvider>(context);
+
     return Scaffold(
-      appBar: selectionMode
+      appBar: widget.selectionMode
           ? AppBar(title: const Text('Adicionar à Playlist'))
           : null,
-      bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.cloud),
-            label: 'Nuvem',
+      bottomNavigationBar: TabBar(
+        controller: _tabController,
+        tabs: [
+          const Tab(text: 'Local', icon: Icon(Icons.my_library_music)),
+          const Tab(text: 'Cloud', icon: Icon(Icons.cloud)),
+        ],
+      ),
+      body: Column(
+        children: [
+          SearchAppBar(
+            searchController: _searchController,
+            onSearchChanged: (value) {
+              cipherProvider.searchCiphers(value);
+            },
+            hint: 'Procure Cifras...',
+            title: widget.selectionMode ? 'Adicionar à Playlist' : null,
           ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.my_library_music),
-            label: 'Local',
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                LocalCipherList(
+                  onTap: (int versionId, int cipherId) {
+                    if (widget.selectionMode) {
+                      try {
+                        context.read<PlaylistProvider>().addCipherMap(
+                          widget.playlistId!,
+                          versionId,
+                        );
+
+                        context.read<CipherProvider>().clearSearch();
+
+                        Navigator.pop(context);
+                      } catch (error) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Erro ao adicionar à playlist: $error',
+                            ),
+                            backgroundColor: Theme.of(
+                              context,
+                            ).colorScheme.error,
+                          ),
+                        );
+                      }
+                    } else {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => CipherViewer(
+                            cipherId: cipherId,
+                            versionId: versionId,
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                ),
+                Container(
+                  alignment: Alignment.center,
+                  child: const Text('Playlists'),
+                ),
+              ],
+            ),
           ),
         ],
       ),
-      body: LocalCipherList(
-        selectVersion: (int versionId, int cipherId) {
-          if (selectionMode) {
-            try {
-              context.read<PlaylistProvider>().addCipherMap(
-                playlistId!,
-                versionId,
-              );
-
-              context.read<CipherProvider>().clearSearch();
-
-              Navigator.pop(context);
-            } catch (error) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Erro ao adicionar à playlist: $error'),
-                  backgroundColor: Theme.of(context).colorScheme.error,
-                ),
-              );
-            }
-          } else {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) =>
-                    CipherViewer(cipherId: cipherId, versionId: versionId),
-              ),
-            );
-          }
-        },
-      ),
-      floatingActionButton: selectionMode
+      floatingActionButton: widget.selectionMode
           ? null
           : FloatingActionButton.extended(
               onPressed: () {

@@ -1,19 +1,18 @@
 import 'package:cipher_app/providers/cipher_provider.dart';
 import 'package:cipher_app/widgets/cipher/cipher_card.dart';
-import 'package:cipher_app/widgets/search_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class LocalCipherList extends StatefulWidget {
   final bool selectionMode;
   final int? playlistId;
-  final Function(int versionId, int cipherId) selectVersion;
+  final Function(int versionId, int cipherId) onTap;
 
   const LocalCipherList({
     super.key,
     this.selectionMode = false,
     this.playlistId,
-    required this.selectVersion,
+    required this.onTap,
   });
 
   @override
@@ -21,8 +20,6 @@ class LocalCipherList extends StatefulWidget {
 }
 
 class _LocalCipherListState extends State<LocalCipherList> {
-  final TextEditingController _searchController = TextEditingController();
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -33,7 +30,7 @@ class _LocalCipherListState extends State<LocalCipherList> {
     final cipherProvider = Provider.of<CipherProvider>(context, listen: false);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        cipherProvider.loadCiphers();
+        cipherProvider.loadLocalCiphers();
       }
     });
   }
@@ -42,25 +39,13 @@ class _LocalCipherListState extends State<LocalCipherList> {
   Widget build(BuildContext context) {
     final cipherProvider = Provider.of<CipherProvider>(context);
 
-    return Column(
-      children: [
-        SearchAppBar(
-          searchController: _searchController,
-          onSearchChanged: (value) {
-            cipherProvider.searchCiphers(value);
-          },
-          hint: 'Procure Cifras...',
-          title: widget.selectionMode ? 'Adicionar à Playlist' : null,
-        ),
-        Expanded(
-          child: RefreshIndicator(
-            onRefresh: () async {
-              await cipherProvider.loadCiphers(forceReload: true);
-            },
-            child: _buildContent(cipherProvider),
-          ),
-        ),
-      ],
+    return Expanded(
+      child: RefreshIndicator(
+        onRefresh: () async {
+          await cipherProvider.loadLocalCiphers(forceReload: true);
+        },
+        child: _buildContent(cipherProvider),
+      ),
     );
   }
 
@@ -84,7 +69,8 @@ class _LocalCipherListState extends State<LocalCipherList> {
             Text('Erro: ${cipherProvider.error}'),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () => cipherProvider.loadCiphers(forceReload: true),
+              onPressed: () =>
+                  cipherProvider.loadLocalCiphers(forceReload: true),
               child: const Text('Tentar Novamente'),
             ),
           ],
@@ -92,7 +78,7 @@ class _LocalCipherListState extends State<LocalCipherList> {
       );
     }
     // Handle empty state
-    if ((cipherProvider.localCiphers + cipherProvider.cloudCiphers).isEmpty) {
+    if (cipherProvider.localCiphers.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -133,10 +119,7 @@ class _LocalCipherListState extends State<LocalCipherList> {
           }
 
           final cipher = cipherProvider.localCiphers[index];
-          return CipherCard(
-            cipher: cipher,
-            selectVersion: widget.selectVersion,
-          );
+          return CipherCard(cipher: cipher, onTap: widget.onTap);
 
           // In selection mode, we can't filter by versions until they're loaded
           // The filtering will happen in the CipherCard when versions are expanded

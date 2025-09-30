@@ -1,7 +1,8 @@
 import 'dart:async';
-import 'package:cipher_app/repositories/cloud_cipher_repository.dart';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cipher_app/models/domain/cipher/cipher.dart';
+import 'package:cipher_app/repositories/cloud_cipher_repository.dart';
 import 'package:cipher_app/repositories/local_cipher_repository.dart';
 
 class CipherProvider extends ChangeNotifier {
@@ -99,9 +100,12 @@ class CipherProvider extends ChangeNotifier {
       _cloudCiphers = await _cloudCipherRepository.getPopularCiphers();
       _lastCloudLoad = now;
       _filterCloudCiphers();
+      await saveLastCloudLoad();
 
       if (kDebugMode) {
-        print('LOADED ${_cloudCiphers.length} POPULAR CIPHERS FROM FIRESTORE');
+        print(
+          'LOADED ${_cloudCiphers.length} POPULAR CIPHERS FROM FIRESTORE - $_lastCloudLoad',
+        );
       }
     } catch (e) {
       _error = e.toString();
@@ -177,7 +181,7 @@ class CipherProvider extends ChangeNotifier {
 
   void _filterCloudCiphers() {
     if (_searchTerm.isEmpty) {
-      _filteredCloudCiphers = cloudCiphers;
+      _filteredCloudCiphers = List.from(cloudCiphers);
     } else {
       _filteredCloudCiphers = cloudCiphers
           .where(
@@ -195,7 +199,7 @@ class CipherProvider extends ChangeNotifier {
 
   void _filterLocalCiphers() {
     if (_searchTerm.isEmpty) {
-      _filteredLocalCiphers = localCiphers;
+      _filteredLocalCiphers = List.from(localCiphers);
     } else {
       _filteredLocalCiphers = localCiphers
           .where(
@@ -206,12 +210,14 @@ class CipherProvider extends ChangeNotifier {
                   (tag) => tag.toLowerCase().contains(_searchTerm),
                 ),
           )
-          .toList();
+          .toList()
+          .cast<Cipher>();
     }
     notifyListeners();
   }
 
   void clearSearch() {
+    _searchTerm = '';
     _filteredCloudCiphers = List.from(cloudCiphers);
     _filteredLocalCiphers = List.from(localCiphers);
   }
@@ -353,6 +359,20 @@ class CipherProvider extends ChangeNotifier {
       _localCiphers.add(_currentCipher);
     }
     _filterCiphers();
+  }
+
+  Future<void> loadLastCloudLoad() async {
+    final prefs = await SharedPreferences.getInstance();
+    final lastLoad = prefs.getInt('lastCloudLoad');
+    if (lastLoad != null) {
+      _lastCloudLoad = DateTime.fromMillisecondsSinceEpoch(lastLoad);
+    }
+  }
+
+  Future<void> saveLastCloudLoad() async {
+    if (_lastCloudLoad == null) return;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('lastCloudLoad', _lastCloudLoad!.millisecondsSinceEpoch);
   }
 
   /// ===== CIPHER CACHING =====

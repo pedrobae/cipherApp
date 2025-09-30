@@ -27,6 +27,7 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen>
     with TickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
+  late CipherProvider _cipherProvider;
 
   @override
   void initState() {
@@ -35,8 +36,15 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _cipherProvider = Provider.of<CipherProvider>(context, listen: false);
+  }
+
+  @override
   void dispose() {
     _tabController.dispose();
+    _cipherProvider.clearSearch();
     super.dispose();
   }
 
@@ -77,7 +85,6 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen>
                           widget.playlistId!,
                           versionId,
                         );
-                        context.read<CipherProvider>().clearSearch();
 
                         Navigator.pop(context);
                       } catch (error) {

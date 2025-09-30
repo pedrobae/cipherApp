@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cipher_app/helpers/cloud_cipher_cache.dart';
 import 'package:cipher_app/models/domain/cipher/cipher.dart';
 import 'package:cipher_app/repositories/cloud_cipher_repository.dart';
 import 'package:cipher_app/repositories/local_cipher_repository.dart';
@@ -9,7 +9,18 @@ class CipherProvider extends ChangeNotifier {
   final LocalCipherRepository _cipherRepository = LocalCipherRepository();
   final CloudCipherRepository _cloudCipherRepository = CloudCipherRepository();
 
-  CipherProvider();
+  final CloudCipherCache _cloudCache = CloudCipherCache();
+
+  CipherProvider() {
+    _initializeCloudCache();
+    clearSearch();
+  }
+
+  Future<void> _initializeCloudCache() async {
+    _lastCloudLoad = await _cloudCache.loadLastCloudLoad();
+    _cloudCiphers = await _cloudCache.loadCloudCiphers();
+    _filterCloudCiphers();
+  }
 
   List<Cipher> _localCiphers = [];
   List<Cipher> _cloudCiphers = [];
@@ -87,6 +98,7 @@ class CipherProvider extends ChangeNotifier {
     final now = DateTime.now();
     if (_lastCloudLoad != null &&
         now.difference(_lastCloudLoad!).inHours < 24 &&
+        _cloudCiphers.isNotEmpty &&
         !forceReload) {
       return;
     }
@@ -99,8 +111,9 @@ class CipherProvider extends ChangeNotifier {
     try {
       _cloudCiphers = await _cloudCipherRepository.getPopularCiphers();
       _lastCloudLoad = now;
+      await _cloudCache.saveCloudCiphers(_cloudCiphers);
+      await _cloudCache.saveLastCloudLoad(now);
       _filterCloudCiphers();
-      await saveLastCloudLoad();
 
       if (kDebugMode) {
         print(
@@ -359,20 +372,6 @@ class CipherProvider extends ChangeNotifier {
       _localCiphers.add(_currentCipher);
     }
     _filterCiphers();
-  }
-
-  Future<void> loadLastCloudLoad() async {
-    final prefs = await SharedPreferences.getInstance();
-    final lastLoad = prefs.getInt('lastCloudLoad');
-    if (lastLoad != null) {
-      _lastCloudLoad = DateTime.fromMillisecondsSinceEpoch(lastLoad);
-    }
-  }
-
-  Future<void> saveLastCloudLoad() async {
-    if (_lastCloudLoad == null) return;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('lastCloudLoad', _lastCloudLoad!.millisecondsSinceEpoch);
   }
 
   /// ===== CIPHER CACHING =====

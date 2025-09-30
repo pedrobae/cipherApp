@@ -8,7 +8,7 @@ class CloudCipherCache {
 
   Future<void> saveCloudCiphers(List<Cipher> ciphers) async {
     final prefs = await SharedPreferences.getInstance();
-    final jsonList = ciphers.map((c) => c.toJson()).toList();
+    final jsonList = ciphers.map((c) => c.toCache()).toList();
     await prefs.setString(_cacheKey, json.encode(jsonList));
   }
 

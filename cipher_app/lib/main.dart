@@ -60,7 +60,7 @@ class MyApp extends StatelessWidget {
             theme: settingsProvider.lightTheme,
             darkTheme: settingsProvider.darkTheme,
             themeMode: settingsProvider.themeMode,
-            initialRoute: AppRoutes.home,
+            initialRoute: AppRoutes.login,
             routes: AppRoutes.routes,
           );
         },

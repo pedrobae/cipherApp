@@ -77,6 +77,23 @@ class Cipher {
     };
   }
 
+  // To JSON for caching
+  Map<String, dynamic> toCache() {
+    return {
+      'id': id,
+      'title': title,
+      'author': author,
+      'tempo': tempo,
+      'music_key': musicKey,
+      'language': language,
+      'created_at': createdAt?.toIso8601String(),
+      'updated_at': updatedAt?.toIso8601String(),
+      'isLocal': false,
+      'tags': tags,
+      'versions': versions,
+    };
+  }
+
   Cipher copyWith({
     int? id,
     String? title,

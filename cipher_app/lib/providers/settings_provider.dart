@@ -85,8 +85,8 @@ class SettingsProvider extends ChangeNotifier {
     }
   }
 
-  final ThemeData _darkTheme = AppTheme.darkTheme;
-  final ThemeData _lightTheme = AppTheme.lightTheme;
+  final ThemeData _darkTheme = AppTheme.getTheme('gold', true);
+  final ThemeData _lightTheme = AppTheme.getTheme('green', false);
 
   /// Reset all settings to defaults
   Future<void> resetToDefaults() async {

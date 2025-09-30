@@ -106,6 +106,18 @@ class _CloudCipherListState extends State<CloudCipherList> {
                     backgroundColor: WidgetStateProperty.resolveWith((states) {
                       return colorScheme.surfaceContainerHighest;
                     }),
+                    elevation: WidgetStateProperty.resolveWith((states) {
+                      if (states.contains(WidgetState.pressed)) {
+                        return 0.0;
+                      }
+                      return 4.0;
+                    }),
+                    shadowColor: WidgetStateProperty.resolveWith((states) {
+                      if (states.contains(WidgetState.pressed)) {
+                        return Colors.transparent;
+                      }
+                      return colorScheme.shadow;
+                    }),
                   ),
                   onPressed: () {},
                   child: Text(

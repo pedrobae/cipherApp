@@ -77,7 +77,6 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen>
                           widget.playlistId!,
                           versionId,
                         );
-
                         context.read<CipherProvider>().clearSearch();
 
                         Navigator.pop(context);

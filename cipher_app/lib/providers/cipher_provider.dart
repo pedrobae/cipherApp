@@ -63,7 +63,7 @@ class CipherProvider extends ChangeNotifier {
     try {
       _useMemoryFiltering = true;
       _localCiphers = await _cipherRepository.getAllCiphersPruned();
-      _filterCloudCiphers();
+      _filterLocalCiphers();
 
       _hasLoadedCiphers = true;
 

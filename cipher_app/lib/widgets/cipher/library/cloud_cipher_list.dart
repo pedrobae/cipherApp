@@ -39,6 +39,7 @@ class _CloudCipherListState extends State<CloudCipherList> {
         await cipherProvider.loadCloudCiphers(forceReload: true);
       },
       child: ListView.builder(
+        padding: const EdgeInsets.all(4),
         cacheExtent: 200,
         physics: const BouncingScrollPhysics(),
         itemCount: cipherProvider.filteredCloudCiphers.length,

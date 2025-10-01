@@ -40,7 +40,10 @@ class _LoginScreenState extends State<LoginScreen> {
   void _navigateToHome() {
     // Remove listener to avoid memory leaks
     _authProvider.removeListener(_authListener);
-    Navigator.of(context).pushReplacementNamed('/');
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      '/',
+      (Route<dynamic> route) => false, // Remove all previous routes
+    );
   }
 
   @override

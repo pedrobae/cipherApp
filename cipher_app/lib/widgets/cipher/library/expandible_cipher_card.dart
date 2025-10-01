@@ -59,6 +59,7 @@ class _CipherCardState extends State<CipherCard> {
     return Consumer<VersionProvider>(
       builder: (context, versionProvider, child) {
         final theme = Theme.of(context);
+        final colorScheme = theme.colorScheme;
         final versions = versionProvider.versions;
         final isThisCipherExpanded =
             versionProvider.expandedCipherId == widget.cipher.id!;
@@ -73,9 +74,19 @@ class _CipherCardState extends State<CipherCard> {
           }
         });
 
-        return Card(
-          color: theme.colorScheme.surfaceContainerHighest,
-          elevation: 4,
+        return Container(
+          margin: EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            color: colorScheme.surfaceContainerHighest,
+            boxShadow: [
+              BoxShadow(
+                offset: Offset(0, 1),
+                color: theme.shadowColor,
+                blurRadius: 1,
+              ),
+            ],
+          ),
           child: ExpansionTile(
             controller: _expansionController,
             shape: Border(),
@@ -130,8 +141,7 @@ class _CipherCardState extends State<CipherCard> {
               Column(
                 spacing: 4,
                 children: [
-                  Divider(height: 4, thickness: 1.5),
-                  SizedBox(height: 2),
+                  Divider(height: 3, color: colorScheme.outline),
                   GestureDetector(
                     onTap: () => Navigator.push(
                       context,
@@ -143,7 +153,7 @@ class _CipherCardState extends State<CipherCard> {
                     child: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
-                        color: theme.colorScheme.primaryContainer,
+                        color: colorScheme.primaryContainer,
                         boxShadow: [
                           BoxShadow(
                             offset: Offset(0, 1),
@@ -159,12 +169,12 @@ class _CipherCardState extends State<CipherCard> {
                         children: [
                           Icon(
                             Icons.library_music,
-                            color: theme.colorScheme.onPrimaryContainer,
+                            color: colorScheme.onPrimaryContainer,
                           ),
                           Text(
                             'Criar uma Nova Versão',
                             style: theme.textTheme.titleMedium?.copyWith(
-                              color: theme.colorScheme.onPrimaryContainer,
+                              color: colorScheme.onPrimaryContainer,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -189,11 +199,11 @@ class _CipherCardState extends State<CipherCard> {
                             boxShadow: [
                               BoxShadow(
                                 offset: Offset(0, 1),
-                                color: theme.primaryColor,
+                                color: colorScheme.secondary,
                                 blurRadius: 1,
                               ),
                             ],
-                            color: theme.colorScheme.surfaceContainer,
+                            color: colorScheme.surfaceContainer,
                           ),
                           padding: EdgeInsets.symmetric(horizontal: 8),
                           child: Row(
@@ -204,7 +214,7 @@ class _CipherCardState extends State<CipherCard> {
                                 child: Text(
                                   version.versionName,
                                   style: theme.textTheme.titleMedium?.copyWith(
-                                    color: theme.colorScheme.onPrimaryContainer,
+                                    color: colorScheme.onPrimaryContainer,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -212,7 +222,7 @@ class _CipherCardState extends State<CipherCard> {
                               Text(
                                 'Tom: ${version.transposedKey}',
                                 style: theme.textTheme.titleSmall?.copyWith(
-                                  color: theme.colorScheme.onPrimaryContainer,
+                                  color: colorScheme.onPrimaryContainer,
                                 ),
                               ),
                             ],
@@ -226,7 +236,7 @@ class _CipherCardState extends State<CipherCard> {
                       child: Text(
                         'Nenhuma versão encontrada',
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
+                          color: colorScheme.onSurfaceVariant,
                         ),
                         textAlign: TextAlign.center,
                       ),

@@ -128,6 +128,7 @@ class _LocalCipherListState extends State<LocalCipherList> {
         await cipherProvider.loadLocalCiphers(forceReload: true);
       },
       child: ListView.builder(
+        padding: const EdgeInsets.all(4),
         cacheExtent: 200,
         physics: const BouncingScrollPhysics(),
         itemCount: cipherProvider.filteredLocalCiphers.length,

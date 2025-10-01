@@ -24,10 +24,19 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
     final colorScheme = theme.colorScheme;
 
     return Container(
-      color: colorScheme.surface,
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: colorScheme.shadow,
+            blurRadius: 2,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
       child: TextField(
         controller: searchController,
         decoration: InputDecoration(
+          fillColor: colorScheme.surfaceContainerHighest,
           hintText: hint,
           hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
           border: InputBorder.none,

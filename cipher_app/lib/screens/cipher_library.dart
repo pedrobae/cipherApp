@@ -51,17 +51,31 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen>
   @override
   Widget build(BuildContext context) {
     final cipherProvider = Provider.of<CipherProvider>(context);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return Scaffold(
       appBar: widget.selectionMode
           ? AppBar(title: const Text('Adicionar à Playlist'))
           : null,
-      bottomNavigationBar: TabBar(
-        controller: _tabController,
-        tabs: [
-          const Tab(text: 'Local', icon: Icon(Icons.my_library_music)),
-          const Tab(text: 'Cloud', icon: Icon(Icons.cloud)),
-        ],
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: colorScheme.surfaceContainerHighest,
+          boxShadow: [
+            BoxShadow(
+              color: colorScheme.shadow.withValues(alpha: .3),
+              blurRadius: 2,
+              offset: const Offset(0, -1),
+            ),
+          ],
+        ),
+        child: TabBar(
+          controller: _tabController,
+          tabs: [
+            const Tab(text: 'Local', icon: Icon(Icons.my_library_music)),
+            const Tab(text: 'Cloud', icon: Icon(Icons.cloud)),
+          ],
+        ),
       ),
       body: Column(
         children: [
@@ -85,7 +99,6 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen>
                           widget.playlistId!,
                           versionId,
                         );
-
                         Navigator.pop(context);
                       } catch (error) {
                         ScaffoldMessenger.of(context).showSnackBar(

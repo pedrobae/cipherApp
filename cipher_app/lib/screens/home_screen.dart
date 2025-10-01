@@ -20,7 +20,11 @@ class _HomeScreenState extends State<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final user = context.read<AuthProvider>().user;
       if (user == null) {
-        Navigator.pushReplacementNamed(context, '/login');
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/login',
+          (Route<dynamic> route) => false, // Clear all routes
+        );
       }
     });
   }
@@ -97,6 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   backgroundColor: colorScheme.primaryContainer,
                   elevation: 2,
                   centerTitle: true,
+                  automaticallyImplyLeading: false,
                   title: Text(
                     appName,
                     style: theme.textTheme.titleLarge?.copyWith(

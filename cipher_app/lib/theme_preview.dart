@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'utils/app_theme.dart'; // Adjust import if needed
 
@@ -23,6 +25,13 @@ class _ThemePreviewAppState extends State<ThemePreviewApp> {
   }
 
   @override
+  void reassemble() {
+    super.reassemble();
+    // Force rebuild on hot reload to pick up palette changes
+    setState(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<ThemeMode>(
       valueListenable: _themeMode,
@@ -32,6 +41,7 @@ class _ThemePreviewAppState extends State<ThemePreviewApp> {
           theme: AppTheme.getTheme(_selectedTheme, false),
           darkTheme: AppTheme.getTheme(_selectedTheme, true),
           themeMode: mode,
+          debugShowCheckedModeBanner: false,
           home: ThemePreviewScreen(
             themeMode: mode,
             selectedTheme: _selectedTheme,
@@ -202,6 +212,9 @@ class ThemePreviewScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
+          // Shadow and elevation demos
+          _shadowDemo(cs, theme),
+          const SizedBox(height: 16),
           // Surface containers
           _surfaceDemo(cs, theme),
           const SizedBox(height: 16),
@@ -240,6 +253,45 @@ class ThemePreviewScreen extends StatelessWidget {
               OutlinedButton(onPressed: () {}, child: const Text('Outlined')),
             ],
           ),
+          const SizedBox(height: 16),
+          // FloatingActionButton and IconButton demo
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              FloatingActionButton(
+                onPressed: () {},
+                child: const Icon(Icons.add),
+              ),
+              FloatingActionButton.extended(
+                onPressed: () {},
+                icon: const Icon(Icons.message),
+                label: const Text('Extended FAB'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          // Icon buttons and toggles
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.favorite_border),
+              ),
+              IconButton.filled(onPressed: () {}, icon: const Icon(Icons.star)),
+              IconButton.filledTonal(
+                onPressed: () {},
+                icon: const Icon(Icons.bookmark),
+              ),
+              IconButton.outlined(
+                onPressed: () {},
+                icon: const Icon(Icons.share),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          // Checkboxes and radio buttons
+          _interactiveDemo(),
           const SizedBox(height: 16),
           // TextField demo
           TextField(
@@ -394,6 +446,145 @@ class ThemePreviewScreen extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _shadowDemo(ColorScheme cs, ThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Shadows & Elevation',
+          style: theme.textTheme.titleMedium?.copyWith(color: cs.onSurface),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            // Elevation 1
+            Material(
+              elevation: 1,
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                width: 80,
+                height: 60,
+                padding: const EdgeInsets.all(8),
+                child: Center(
+                  child: Text(
+                    'Elev 1',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: cs.onSurface,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            // Elevation 3
+            Material(
+              elevation: 3,
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                width: 80,
+                height: 60,
+                padding: const EdgeInsets.all(8),
+                child: Center(
+                  child: Text(
+                    'Elev 3',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: cs.onSurface,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            // Elevation 6
+            Material(
+              elevation: 6,
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                width: 80,
+                height: 60,
+                padding: const EdgeInsets.all(8),
+                child: Center(
+                  child: Text(
+                    'Elev 6',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: cs.onSurface,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            // Elevation 12
+            Material(
+              elevation: 12,
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                width: 80,
+                height: 60,
+                padding: const EdgeInsets.all(8),
+                child: Center(
+                  child: Text(
+                    'Elev 12',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: cs.onSurface,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _interactiveDemo() {
+    return Builder(
+      builder: (context) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Interactive Elements',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            // Checkboxes
+            Row(
+              children: [
+                Checkbox(value: true, onChanged: (val) {}),
+                const Text('Checked'),
+                const SizedBox(width: 20),
+                Checkbox(value: false, onChanged: (val) {}),
+                const Text('Unchecked'),
+              ],
+            ),
+            // Radio buttons
+            Row(
+              children: [
+                Radio<int>(value: 1, groupValue: 1, onChanged: (val) {}),
+                const Text('Selected'),
+                const SizedBox(width: 20),
+                Radio<int>(value: 2, groupValue: 1, onChanged: (val) {}),
+                const Text('Unselected'),
+              ],
+            ),
+            // Slider
+            Slider(value: 0.6, onChanged: (val) {}),
+            // Switch (additional to the one in AppBar)
+            Row(
+              children: [
+                Switch(value: true, onChanged: (val) {}),
+                const Text('Enabled'),
+                const SizedBox(width: 20),
+                Switch(value: false, onChanged: (val) {}),
+                const Text('Disabled'),
+              ],
+            ),
+          ],
+        );
+      },
     );
   }
 }

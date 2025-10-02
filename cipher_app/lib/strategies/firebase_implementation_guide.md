@@ -34,9 +34,9 @@ The **Conservative Approach** with sectioned library layout has been chosen for 
 - [ ] Create Firebase query methods (popular, recent, search)
 
 #### Phase 3: Sectioned UI Implementation
-- [ ] Extend `CipherLibraryScreen` with sectioned layout
-- [ ] Create section headers: "Suas Cifras", "Populares na Comunidade", "Buscar na Nuvem"
-- [ ] Implement `CloudCipherCard` widget variant
+- [x] Extend `CipherLibraryScreen` with sectioned layout
+- [x] Create section headers: "Suas Cifras", "Populares na Comunidade", "Buscar na Nuvem"
+- [x] Implement `CloudCipherCard` widget variant
 - [ ] Add cloud search bar with on-demand querying
 - [ ] Implement "Explorar Mais" functionality
 

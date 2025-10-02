@@ -71,4 +71,28 @@ class CipherDto {
       isLocal: false,
     );
   }
+
+  CipherDto copyWith({
+    String? firebaseId,
+    String? title,
+    String? author,
+    String? musicKey,
+    String? tempo,
+    String? language,
+    List<String>? tags,
+    DateTime? updatedAt,
+    int? downloadCount,
+  }) {
+    return CipherDto(
+      firebaseId: firebaseId ?? this.firebaseId,
+      title: title ?? this.title,
+      author: author ?? this.author,
+      musicKey: musicKey ?? this.musicKey,
+      tempo: tempo ?? this.tempo,
+      language: language ?? this.language,
+      tags: tags ?? this.tags,
+      updatedAt: updatedAt ?? this.updatedAt,
+      downloadCount: downloadCount ?? this.downloadCount,
+    );
+  }
 }

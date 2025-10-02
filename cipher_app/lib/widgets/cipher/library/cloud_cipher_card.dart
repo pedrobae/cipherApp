@@ -1,9 +1,9 @@
+import 'package:cipher_app/models/dtos/cipher_dto.dart';
 import 'package:flutter/material.dart';
 import 'package:cipher_app/widgets/cipher/tag_chip.dart';
-import 'package:cipher_app/models/domain/cipher/cipher.dart';
 
 class CloudCipherCard extends StatelessWidget {
-  final Cipher cipher;
+  final CipherDto cipher;
   final VoidCallback onDownload;
 
   const CloudCipherCard({

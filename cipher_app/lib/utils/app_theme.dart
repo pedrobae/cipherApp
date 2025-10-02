@@ -2,8 +2,249 @@ import 'package:flutter/material.dart';
 import 'package:cipher_app/utils/palette.dart';
 
 class AppTheme {
+  // Pre-calculated static final color schemes for optimization
+  static final ColorScheme _greenLightColorScheme = ColorScheme(
+    brightness: Brightness.light,
+    primary: BrandPalette.greenLight,
+    onPrimary: BrandPalette.greenOnLight,
+    primaryContainer: BrandPalette.greenContainerLight,
+    onPrimaryContainer: BrandPalette.greenOnContainerLight,
+    secondary: BrandPalette.greenAccent1Light,
+    onSecondary: BrandPalette.greenOnAccent1Light,
+    secondaryContainer: BrandPalette.greenAccent1ContainerLight,
+    onSecondaryContainer: BrandPalette.greenOnAccent1ContainerLight,
+    tertiary: BrandPalette.greenAccent2Light,
+    onTertiary: BrandPalette.greenOnAccent2Light,
+    tertiaryContainer: BrandPalette.greenAccent2ContainerLight,
+    onTertiaryContainer: BrandPalette.greenOnAccent2ContainerLight,
+    error: NeutralPalette.error,
+    onError: NeutralPalette.onError,
+    surface: NeutralPalette.surfaceLight,
+    surfaceContainerHighest: NeutralPalette.surface5Light,
+    surfaceContainerHigh: NeutralPalette.surface4Light,
+    surfaceContainer: NeutralPalette.surface3Light,
+    surfaceContainerLow: NeutralPalette.surface2Light,
+    surfaceContainerLowest: NeutralPalette.surface1Light,
+    onSurface: NeutralPalette.surface5Dark,
+    outline: NeutralPalette.outlineLight,
+    shadow: NeutralPalette.shadowLight,
+    scrim: NeutralPalette.scrimLight,
+    inverseSurface: NeutralPalette.surface5Dark,
+    onInverseSurface: NeutralPalette.surface1Light,
+  );
+
+  static final ColorScheme _greenDarkColorScheme = ColorScheme(
+    brightness: Brightness.dark,
+    primary: BrandPalette.greenDark,
+    onPrimary: BrandPalette.greenOnDark,
+    primaryContainer: BrandPalette.greenContainerDark,
+    onPrimaryContainer: BrandPalette.greenOnContainerDark,
+    secondary: BrandPalette.greenAccent1Dark,
+    onSecondary: BrandPalette.greenOnAccent1Dark,
+    secondaryContainer: BrandPalette.greenAccent1ContainerDark,
+    onSecondaryContainer: BrandPalette.greenOnAccent1ContainerDark,
+    tertiary: BrandPalette.greenAccent2Dark,
+    onTertiary: BrandPalette.greenOnAccent2Dark,
+    tertiaryContainer: BrandPalette.greenAccent2ContainerDark,
+    onTertiaryContainer: BrandPalette.greenOnAccent2ContainerDark,
+    error: NeutralPalette.error,
+    onError: NeutralPalette.onError,
+    surface: NeutralPalette.surfaceDark,
+    surfaceContainerHighest: NeutralPalette.surface5Dark,
+    surfaceContainerHigh: NeutralPalette.surface4Dark,
+    surfaceContainer: NeutralPalette.surface3Dark,
+    surfaceContainerLow: NeutralPalette.surface2Dark,
+    surfaceContainerLowest: NeutralPalette.surface1Dark,
+    onSurface: NeutralPalette.surface5Light,
+    outline: NeutralPalette.outlineDark,
+    shadow: NeutralPalette.shadowDark,
+    scrim: NeutralPalette.scrimDark,
+    inverseSurface: NeutralPalette.surface5Light,
+    onInverseSurface: NeutralPalette.surface1Dark,
+  );
+
+  static final ColorScheme _orangeLightColorScheme = ColorScheme(
+    brightness: Brightness.light,
+    primary: BrandPalette.orangeLight,
+    onPrimary: BrandPalette.orangeOnLight,
+    primaryContainer: BrandPalette.orangeContainerLight,
+    onPrimaryContainer: BrandPalette.orangeOnContainerLight,
+    secondary: BrandPalette.orangeAccent1Light,
+    onSecondary: BrandPalette.orangeOnAccent1Light,
+    secondaryContainer: BrandPalette.orangeAccent1ContainerLight,
+    onSecondaryContainer: BrandPalette.orangeOnAccent1ContainerLight,
+    tertiary: BrandPalette.orangeAccent2Light,
+    onTertiary: BrandPalette.orangeOnAccent2Light,
+    tertiaryContainer: BrandPalette.orangeAccent2ContainerLight,
+    onTertiaryContainer: BrandPalette.orangeOnAccent2ContainerLight,
+    error: NeutralPalette.error,
+    onError: NeutralPalette.onError,
+    surface: NeutralPalette.surfaceLight,
+    surfaceContainerHighest: NeutralPalette.surface5Light,
+    surfaceContainerHigh: NeutralPalette.surface4Light,
+    surfaceContainer: NeutralPalette.surface3Light,
+    surfaceContainerLow: NeutralPalette.surface2Light,
+    surfaceContainerLowest: NeutralPalette.surface1Light,
+    onSurface: NeutralPalette.surface5Dark,
+    outline: NeutralPalette.outlineLight,
+    shadow: NeutralPalette.shadowLight,
+    scrim: NeutralPalette.scrimLight,
+    inverseSurface: NeutralPalette.surface5Dark,
+    onInverseSurface: NeutralPalette.surface1Light,
+  );
+
+  static final ColorScheme _orangeDarkColorScheme = ColorScheme(
+    brightness: Brightness.dark,
+    primary: BrandPalette.orangeDark,
+    onPrimary: BrandPalette.orangeOnDark,
+    primaryContainer: BrandPalette.orangeContainerDark,
+    onPrimaryContainer: BrandPalette.orangeOnContainerDark,
+    secondary: BrandPalette.orangeAccent1Dark,
+    onSecondary: BrandPalette.orangeOnAccent1Dark,
+    secondaryContainer: BrandPalette.orangeAccent1ContainerDark,
+    onSecondaryContainer: BrandPalette.orangeOnAccent1ContainerDark,
+    tertiary: BrandPalette.orangeAccent2Dark,
+    onTertiary: BrandPalette.orangeOnAccent2Dark,
+    tertiaryContainer: BrandPalette.orangeAccent2ContainerDark,
+    onTertiaryContainer: BrandPalette.orangeOnAccent2ContainerDark,
+    error: NeutralPalette.error,
+    onError: NeutralPalette.onError,
+    surface: NeutralPalette.surfaceDark,
+    surfaceContainerHighest: NeutralPalette.surface5Dark,
+    surfaceContainerHigh: NeutralPalette.surface4Dark,
+    surfaceContainer: NeutralPalette.surface3Dark,
+    surfaceContainerLow: NeutralPalette.surface2Dark,
+    surfaceContainerLowest: NeutralPalette.surface1Dark,
+    onSurface: NeutralPalette.surface5Light,
+    outline: NeutralPalette.outlineDark,
+    shadow: NeutralPalette.shadowDark,
+    scrim: NeutralPalette.scrimDark,
+    inverseSurface: NeutralPalette.surface5Light,
+    onInverseSurface: NeutralPalette.surface1Dark,
+  );
+
+  static final ColorScheme _goldLightColorScheme = ColorScheme(
+    brightness: Brightness.light,
+    primary: BrandPalette.goldLight,
+    onPrimary: BrandPalette.goldOnLight,
+    primaryContainer: BrandPalette.goldContainerLight,
+    onPrimaryContainer: BrandPalette.goldOnContainerLight,
+    secondary: BrandPalette.goldAccent1Light,
+    onSecondary: BrandPalette.goldOnAccent1Light,
+    secondaryContainer: BrandPalette.goldAccent1ContainerLight,
+    onSecondaryContainer: BrandPalette.goldOnAccent1ContainerLight,
+    tertiary: BrandPalette.goldAccent2Light,
+    onTertiary: BrandPalette.goldOnAccent2Light,
+    tertiaryContainer: BrandPalette.goldAccent2ContainerLight,
+    onTertiaryContainer: BrandPalette.goldOnAccent2ContainerLight,
+    error: NeutralPalette.error,
+    onError: NeutralPalette.onError,
+    surface: NeutralPalette.surfaceLight,
+    surfaceContainerHighest: NeutralPalette.surface5Light,
+    surfaceContainerHigh: NeutralPalette.surface4Light,
+    surfaceContainer: NeutralPalette.surface3Light,
+    surfaceContainerLow: NeutralPalette.surface2Light,
+    surfaceContainerLowest: NeutralPalette.surface1Light,
+    onSurface: NeutralPalette.surface5Dark,
+    outline: NeutralPalette.outlineLight,
+    shadow: NeutralPalette.shadowLight,
+    scrim: NeutralPalette.scrimLight,
+    inverseSurface: NeutralPalette.surface5Dark,
+    onInverseSurface: NeutralPalette.surface1Light,
+  );
+
+  static final ColorScheme _goldDarkColorScheme = ColorScheme(
+    brightness: Brightness.dark,
+    primary: BrandPalette.goldDark,
+    onPrimary: BrandPalette.goldOnDark,
+    primaryContainer: BrandPalette.goldContainerDark,
+    onPrimaryContainer: BrandPalette.goldOnContainerDark,
+    secondary: BrandPalette.goldAccent1Dark,
+    onSecondary: BrandPalette.goldOnAccent1Dark,
+    secondaryContainer: BrandPalette.goldAccent1ContainerDark,
+    onSecondaryContainer: BrandPalette.goldOnAccent1ContainerDark,
+    tertiary: BrandPalette.goldAccent2Dark,
+    onTertiary: BrandPalette.goldOnAccent2Dark,
+    tertiaryContainer: BrandPalette.goldAccent2ContainerDark,
+    onTertiaryContainer: BrandPalette.goldOnAccent2ContainerDark,
+    error: NeutralPalette.error,
+    onError: NeutralPalette.onError,
+    surface: NeutralPalette.surfaceDark,
+    surfaceContainerHighest: NeutralPalette.surface5Dark,
+    surfaceContainerHigh: NeutralPalette.surface4Dark,
+    surfaceContainer: NeutralPalette.surface3Dark,
+    surfaceContainerLow: NeutralPalette.surface2Dark,
+    surfaceContainerLowest: NeutralPalette.surface1Dark,
+    onSurface: NeutralPalette.surface5Light,
+    outline: NeutralPalette.outlineDark,
+    shadow: NeutralPalette.shadowDark,
+    scrim: NeutralPalette.scrimDark,
+    inverseSurface: NeutralPalette.surface5Light,
+    onInverseSurface: NeutralPalette.surface1Dark,
+  );
+
+  static final ColorScheme _burgundyLightColorScheme = ColorScheme(
+    brightness: Brightness.light,
+    primary: BrandPalette.burgundyLight,
+    onPrimary: BrandPalette.burgundyOnLight,
+    primaryContainer: BrandPalette.burgundyContainerLight,
+    onPrimaryContainer: BrandPalette.burgundyOnContainerLight,
+    secondary: BrandPalette.burgundyAccent1Light,
+    onSecondary: BrandPalette.burgundyOnAccent1Light,
+    secondaryContainer: BrandPalette.burgundyAccent1ContainerLight,
+    onSecondaryContainer: BrandPalette.burgundyOnAccent1ContainerLight,
+    tertiary: BrandPalette.burgundyAccent2Light,
+    onTertiary: BrandPalette.burgundyOnAccent2Light,
+    tertiaryContainer: BrandPalette.burgundyAccent2ContainerLight,
+    onTertiaryContainer: BrandPalette.burgundyOnAccent2ContainerLight,
+    error: NeutralPalette.error,
+    onError: NeutralPalette.onError,
+    surface: NeutralPalette.surfaceLight,
+    surfaceContainerHighest: NeutralPalette.surface5Light,
+    surfaceContainerHigh: NeutralPalette.surface4Light,
+    surfaceContainer: NeutralPalette.surface3Light,
+    surfaceContainerLow: NeutralPalette.surface2Light,
+    surfaceContainerLowest: NeutralPalette.surface1Light,
+    onSurface: NeutralPalette.surface5Dark,
+    outline: NeutralPalette.outlineLight,
+    shadow: NeutralPalette.shadowLight,
+    scrim: NeutralPalette.scrimLight,
+    inverseSurface: NeutralPalette.surface5Dark,
+    onInverseSurface: NeutralPalette.surface1Light,
+  );
+
+  static final ColorScheme _burgundyDarkColorScheme = ColorScheme(
+    brightness: Brightness.dark,
+    primary: BrandPalette.burgundyDark,
+    onPrimary: BrandPalette.burgundyOnDark,
+    primaryContainer: BrandPalette.burgundyContainerDark,
+    onPrimaryContainer: BrandPalette.burgundyOnContainerDark,
+    secondary: BrandPalette.burgundyAccent1Dark,
+    onSecondary: BrandPalette.burgundyOnAccent1Dark,
+    secondaryContainer: BrandPalette.burgundyAccent1ContainerDark,
+    onSecondaryContainer: BrandPalette.burgundyOnAccent1ContainerDark,
+    tertiary: BrandPalette.burgundyAccent2Dark,
+    onTertiary: BrandPalette.burgundyOnAccent2Dark,
+    tertiaryContainer: BrandPalette.burgundyAccent2ContainerDark,
+    onTertiaryContainer: BrandPalette.burgundyOnAccent2ContainerDark,
+    error: NeutralPalette.error,
+    onError: NeutralPalette.onError,
+    surface: NeutralPalette.surfaceDark,
+    surfaceContainerHighest: NeutralPalette.surface5Dark,
+    surfaceContainerHigh: NeutralPalette.surface4Dark,
+    surfaceContainer: NeutralPalette.surface3Dark,
+    surfaceContainerLow: NeutralPalette.surface2Dark,
+    surfaceContainerLowest: NeutralPalette.surface1Dark,
+    onSurface: NeutralPalette.surface5Light,
+    outline: NeutralPalette.outlineDark,
+    shadow: NeutralPalette.shadowDark,
+    scrim: NeutralPalette.scrimDark,
+    inverseSurface: NeutralPalette.surface5Light,
+    onInverseSurface: NeutralPalette.surface1Dark,
+  );
+
   static ThemeData getTheme(String color, bool isDark) {
-    // Generate themes dynamically to support hot reload
+    // Get pre-calculated color schemes for optimization
     final colorScheme = _getColorScheme(color, isDark);
     return _buildTheme(colorScheme, isDark);
   }
@@ -11,25 +252,15 @@ class AppTheme {
   static ColorScheme _getColorScheme(String color, bool isDark) {
     switch (color) {
       case 'green':
-        return isDark
-            ? _createGreenDarkColorScheme()
-            : _createGreenLightColorScheme();
+        return isDark ? _greenDarkColorScheme : _greenLightColorScheme;
       case 'orange':
-        return isDark
-            ? _createOrangeDarkColorScheme()
-            : _createOrangeLightColorScheme();
+        return isDark ? _orangeDarkColorScheme : _orangeLightColorScheme;
       case 'gold':
-        return isDark
-            ? _createGoldDarkColorScheme()
-            : _createGoldLightColorScheme();
+        return isDark ? _goldDarkColorScheme : _goldLightColorScheme;
       case 'burgundy':
-        return isDark
-            ? _createBurgundyDarkColorScheme()
-            : _createBurgundyLightColorScheme();
+        return isDark ? _burgundyDarkColorScheme : _burgundyLightColorScheme;
       default:
-        return isDark
-            ? _createGreenDarkColorScheme()
-            : _createGreenLightColorScheme();
+        return isDark ? _greenDarkColorScheme : _greenLightColorScheme;
     }
   }
 
@@ -206,263 +437,6 @@ class AppTheme {
         foregroundColor: colorScheme.onPrimaryContainer,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
-    );
-  }
-
-  // Dynamic ColorScheme creators
-  static ColorScheme _createGreenLightColorScheme() {
-    return ColorScheme(
-      brightness: Brightness.light,
-      primary: BrandPalette.greenLight,
-      onPrimary: BrandPalette.greenOnLight,
-      primaryContainer: BrandPalette.greenContainerLight,
-      onPrimaryContainer: BrandPalette.greenOnContainerLight,
-      secondary: BrandPalette.greenAccent1Light,
-      onSecondary: BrandPalette.greenOnAccent1Light,
-      secondaryContainer: BrandPalette.greenAccent1ContainerLight,
-      onSecondaryContainer: BrandPalette.greenOnAccent1ContainerLight,
-      tertiary: BrandPalette.greenAccent2Light,
-      onTertiary: BrandPalette.greenOnAccent2Light,
-      tertiaryContainer: BrandPalette.greenAccent2ContainerLight,
-      onTertiaryContainer: BrandPalette.greenOnAccent2ContainerLight,
-      error: NeutralPalette.error,
-      onError: NeutralPalette.onError,
-      surface: NeutralPalette.surfaceLight,
-      surfaceContainerHighest: NeutralPalette.surface5Light,
-      surfaceContainerHigh: NeutralPalette.surface4Light,
-      surfaceContainer: NeutralPalette.surface3Light,
-      surfaceContainerLow: NeutralPalette.surface2Light,
-      surfaceContainerLowest: NeutralPalette.surface1Light,
-      onSurface: NeutralPalette.surface5Dark,
-      outline: NeutralPalette.outlineLight,
-      shadow: NeutralPalette.shadowLight,
-      scrim: NeutralPalette.scrimLight,
-      inverseSurface: NeutralPalette.surface5Dark,
-      onInverseSurface: NeutralPalette.surface1Light,
-    );
-  }
-
-  static ColorScheme _createGreenDarkColorScheme() {
-    return ColorScheme(
-      brightness: Brightness.dark,
-      primary: BrandPalette.greenDark,
-      onPrimary: BrandPalette.greenOnDark,
-      primaryContainer: BrandPalette.greenContainerDark,
-      onPrimaryContainer: BrandPalette.greenOnContainerDark,
-      secondary: BrandPalette.greenAccent1Dark,
-      onSecondary: BrandPalette.greenOnAccent1Dark,
-      secondaryContainer: BrandPalette.greenAccent1ContainerDark,
-      onSecondaryContainer: BrandPalette.greenOnAccent1ContainerDark,
-      tertiary: BrandPalette.greenAccent2Dark,
-      onTertiary: BrandPalette.greenOnAccent2Dark,
-      tertiaryContainer: BrandPalette.greenAccent2ContainerDark,
-      onTertiaryContainer: BrandPalette.greenOnAccent2ContainerDark,
-      error: NeutralPalette.error,
-      onError: NeutralPalette.onError,
-      surface: NeutralPalette.surfaceDark,
-      surfaceContainerHighest: NeutralPalette.surface1Dark,
-      surfaceContainerHigh: NeutralPalette.surface2Dark,
-      surfaceContainer: NeutralPalette.surface3Dark,
-      surfaceContainerLow: NeutralPalette.surface4Dark,
-      surfaceContainerLowest: NeutralPalette.surface5Dark,
-      onSurface: NeutralPalette.surface5Light,
-      outline: NeutralPalette.outlineDark,
-      shadow: NeutralPalette.shadowDark,
-      scrim: NeutralPalette.scrimDark,
-      inverseSurface: NeutralPalette.surface5Light,
-      onInverseSurface: NeutralPalette.surface1Dark,
-    );
-  }
-
-  static ColorScheme _createOrangeLightColorScheme() {
-    return ColorScheme(
-      brightness: Brightness.light,
-      primary: BrandPalette.orangeLight,
-      onPrimary: BrandPalette.orangeOnLight,
-      primaryContainer: BrandPalette.orangeContainerLight,
-      onPrimaryContainer: BrandPalette.orangeOnContainerLight,
-      secondary: BrandPalette.orangeAccent1Light,
-      onSecondary: BrandPalette.orangeOnAccent1Light,
-      secondaryContainer: BrandPalette.orangeAccent1ContainerLight,
-      onSecondaryContainer: BrandPalette.orangeOnAccent1ContainerLight,
-      tertiary: BrandPalette.orangeAccent2Light,
-      onTertiary: BrandPalette.orangeOnAccent2Light,
-      tertiaryContainer: BrandPalette.orangeAccent2ContainerLight,
-      onTertiaryContainer: BrandPalette.orangeOnAccent2ContainerLight,
-      error: NeutralPalette.error,
-      onError: NeutralPalette.onError,
-      surface: NeutralPalette.surfaceLight,
-      surfaceContainerHighest: NeutralPalette.surface5Light,
-      surfaceContainerHigh: NeutralPalette.surface4Light,
-      surfaceContainer: NeutralPalette.surface3Light,
-      surfaceContainerLow: NeutralPalette.surface2Light,
-      surfaceContainerLowest: NeutralPalette.surface1Light,
-      onSurface: NeutralPalette.surface5Dark,
-      outline: NeutralPalette.outlineLight,
-      shadow: NeutralPalette.shadowLight,
-      scrim: NeutralPalette.scrimLight,
-      inverseSurface: NeutralPalette.surface5Dark,
-      onInverseSurface: NeutralPalette.surface1Light,
-    );
-  }
-
-  static ColorScheme _createOrangeDarkColorScheme() {
-    return ColorScheme(
-      brightness: Brightness.dark,
-      primary: BrandPalette.orangeDark,
-      onPrimary: BrandPalette.orangeOnDark,
-      primaryContainer: BrandPalette.orangeContainerDark,
-      onPrimaryContainer: BrandPalette.orangeOnContainerDark,
-      secondary: BrandPalette.orangeAccent1Dark,
-      onSecondary: BrandPalette.orangeOnAccent1Dark,
-      secondaryContainer: BrandPalette.orangeAccent1ContainerDark,
-      onSecondaryContainer: BrandPalette.orangeOnAccent1ContainerDark,
-      tertiary: BrandPalette.orangeAccent2Dark,
-      onTertiary: BrandPalette.orangeOnAccent2Dark,
-      tertiaryContainer: BrandPalette.orangeAccent2ContainerDark,
-      onTertiaryContainer: BrandPalette.orangeOnAccent2ContainerDark,
-      error: NeutralPalette.error,
-      onError: NeutralPalette.onError,
-      surface: NeutralPalette.surfaceDark,
-      surfaceContainerHighest: NeutralPalette.surface1Dark,
-      surfaceContainerHigh: NeutralPalette.surface2Dark,
-      surfaceContainer: NeutralPalette.surface3Dark,
-      surfaceContainerLow: NeutralPalette.surface4Dark,
-      surfaceContainerLowest: NeutralPalette.surface5Dark,
-      onSurface: NeutralPalette.surface5Light,
-      outline: NeutralPalette.outlineDark,
-      shadow: NeutralPalette.shadowDark,
-      scrim: NeutralPalette.scrimDark,
-      inverseSurface: NeutralPalette.surface5Light,
-      onInverseSurface: NeutralPalette.surface1Dark,
-    );
-  }
-
-  static ColorScheme _createGoldLightColorScheme() {
-    return ColorScheme(
-      brightness: Brightness.light,
-      primary: BrandPalette.goldLight,
-      onPrimary: BrandPalette.goldOnLight,
-      primaryContainer: BrandPalette.goldContainerLight,
-      onPrimaryContainer: BrandPalette.goldOnContainerLight,
-      secondary: BrandPalette.goldAccent1Light,
-      onSecondary: BrandPalette.goldOnAccent1Light,
-      secondaryContainer: BrandPalette.goldAccent1ContainerLight,
-      onSecondaryContainer: BrandPalette.goldOnAccent1ContainerLight,
-      tertiary: BrandPalette.goldAccent2Light,
-      onTertiary: BrandPalette.goldOnAccent2Light,
-      tertiaryContainer: BrandPalette.goldAccent2ContainerLight,
-      onTertiaryContainer: BrandPalette.goldOnAccent2ContainerLight,
-      error: NeutralPalette.error,
-      onError: NeutralPalette.onError,
-      surface: NeutralPalette.surfaceLight,
-      surfaceContainerHighest: NeutralPalette.surface5Light,
-      surfaceContainerHigh: NeutralPalette.surface4Light,
-      surfaceContainer: NeutralPalette.surface3Light,
-      surfaceContainerLow: NeutralPalette.surface2Light,
-      surfaceContainerLowest: NeutralPalette.surface1Light,
-      onSurface: NeutralPalette.surface5Dark,
-      outline: NeutralPalette.outlineLight,
-      shadow: NeutralPalette.shadowLight,
-      scrim: NeutralPalette.scrimLight,
-      inverseSurface: NeutralPalette.surface5Dark,
-      onInverseSurface: NeutralPalette.surface1Light,
-    );
-  }
-
-  static ColorScheme _createGoldDarkColorScheme() {
-    return ColorScheme(
-      brightness: Brightness.dark,
-      primary: BrandPalette.goldDark,
-      onPrimary: BrandPalette.goldOnDark,
-      primaryContainer: BrandPalette.goldContainerDark,
-      onPrimaryContainer: BrandPalette.goldOnContainerDark,
-      secondary: BrandPalette.goldAccent1Dark,
-      onSecondary: BrandPalette.goldOnAccent1Dark,
-      secondaryContainer: BrandPalette.goldAccent1ContainerDark,
-      onSecondaryContainer: BrandPalette.goldOnAccent1ContainerDark,
-      tertiary: BrandPalette.goldAccent2Dark,
-      onTertiary: BrandPalette.goldOnAccent2Dark,
-      tertiaryContainer: BrandPalette.goldAccent2ContainerDark,
-      onTertiaryContainer: BrandPalette.goldOnAccent2ContainerDark,
-      error: NeutralPalette.error,
-      onError: NeutralPalette.onError,
-      surface: NeutralPalette.surfaceDark,
-      surfaceContainerHighest: NeutralPalette.surface1Dark,
-      surfaceContainerHigh: NeutralPalette.surface2Dark,
-      surfaceContainer: NeutralPalette.surface3Dark,
-      surfaceContainerLow: NeutralPalette.surface4Dark,
-      surfaceContainerLowest: NeutralPalette.surface5Dark,
-      onSurface: NeutralPalette.surface5Light,
-      outline: NeutralPalette.outlineDark,
-      shadow: NeutralPalette.shadowDark,
-      scrim: NeutralPalette.scrimDark,
-      inverseSurface: NeutralPalette.surface5Light,
-      onInverseSurface: NeutralPalette.surface1Dark,
-    );
-  }
-
-  static ColorScheme _createBurgundyLightColorScheme() {
-    return ColorScheme(
-      brightness: Brightness.light,
-      primary: BrandPalette.burgundyLight,
-      onPrimary: BrandPalette.burgundyOnLight,
-      primaryContainer: BrandPalette.burgundyContainerLight,
-      onPrimaryContainer: BrandPalette.burgundyOnContainerLight,
-      secondary: BrandPalette.burgundyAccent1Light,
-      onSecondary: BrandPalette.burgundyOnAccent1Light,
-      secondaryContainer: BrandPalette.burgundyAccent1ContainerLight,
-      onSecondaryContainer: BrandPalette.burgundyOnAccent1ContainerLight,
-      tertiary: BrandPalette.burgundyAccent2Light,
-      onTertiary: BrandPalette.burgundyOnAccent2Light,
-      tertiaryContainer: BrandPalette.burgundyAccent2ContainerLight,
-      onTertiaryContainer: BrandPalette.burgundyOnAccent2ContainerLight,
-      error: NeutralPalette.error,
-      onError: NeutralPalette.onError,
-      surface: NeutralPalette.surfaceLight,
-      surfaceContainerHighest: NeutralPalette.surface5Light,
-      surfaceContainerHigh: NeutralPalette.surface4Light,
-      surfaceContainer: NeutralPalette.surface3Light,
-      surfaceContainerLow: NeutralPalette.surface2Light,
-      surfaceContainerLowest: NeutralPalette.surface1Light,
-      onSurface: NeutralPalette.surface5Dark,
-      outline: NeutralPalette.outlineLight,
-      shadow: NeutralPalette.shadowLight,
-      scrim: NeutralPalette.scrimLight,
-      inverseSurface: NeutralPalette.surface5Dark,
-      onInverseSurface: NeutralPalette.surface1Light,
-    );
-  }
-
-  static ColorScheme _createBurgundyDarkColorScheme() {
-    return ColorScheme(
-      brightness: Brightness.dark,
-      primary: BrandPalette.burgundyDark,
-      onPrimary: BrandPalette.burgundyOnDark,
-      primaryContainer: BrandPalette.burgundyContainerDark,
-      onPrimaryContainer: BrandPalette.burgundyOnContainerDark,
-      secondary: BrandPalette.burgundyAccent1Dark,
-      onSecondary: BrandPalette.burgundyOnAccent1Dark,
-      secondaryContainer: BrandPalette.burgundyAccent1ContainerDark,
-      onSecondaryContainer: BrandPalette.burgundyOnAccent1ContainerDark,
-      tertiary: BrandPalette.burgundyAccent2Dark,
-      onTertiary: BrandPalette.burgundyOnAccent2Dark,
-      tertiaryContainer: BrandPalette.burgundyAccent2ContainerDark,
-      onTertiaryContainer: BrandPalette.burgundyOnAccent2ContainerDark,
-      error: NeutralPalette.error,
-      onError: NeutralPalette.onError,
-      surface: NeutralPalette.surfaceDark,
-      surfaceContainerHighest: NeutralPalette.surface1Dark,
-      surfaceContainerHigh: NeutralPalette.surface2Dark,
-      surfaceContainer: NeutralPalette.surface3Dark,
-      surfaceContainerLow: NeutralPalette.surface4Dark,
-      surfaceContainerLowest: NeutralPalette.surface5Dark,
-      onSurface: NeutralPalette.surface5Light,
-      outline: NeutralPalette.outlineDark,
-      shadow: NeutralPalette.shadowDark,
-      scrim: NeutralPalette.scrimDark,
-      inverseSurface: NeutralPalette.surface5Light,
-      onInverseSurface: NeutralPalette.surface1Dark,
     );
   }
 }

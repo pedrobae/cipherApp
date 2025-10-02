@@ -11,6 +11,9 @@ class FirestoreService {
     required Map<String, dynamic> data,
   }) async {
     try {
+      data['lastUpdated'] = FieldValue.serverTimestamp();
+      data['searchText'] =
+          '${data['title'] as String? ?? ''} ${data['author'] as String? ?? ''} ${(data['tags'] as List<dynamic>?)?.map((tag) => tag.toString()).join(' ') ?? ''}';
       final docRef = await _firestore.collection(collectionPath).add(data);
       return docRef.id;
     } catch (e) {

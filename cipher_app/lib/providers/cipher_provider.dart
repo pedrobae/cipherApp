@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cipher_app/models/dtos/cipher_dto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cipher_app/helpers/cloud_cipher_cache.dart';
 import 'package:cipher_app/models/domain/cipher/cipher.dart';
@@ -23,9 +24,9 @@ class CipherProvider extends ChangeNotifier {
   }
 
   List<Cipher> _localCiphers = [];
-  List<Cipher> _cloudCiphers = [];
+  List<CipherDto> _cloudCiphers = [];
   List<Cipher> _filteredLocalCiphers = [];
-  List<Cipher> _filteredCloudCiphers = [];
+  List<CipherDto> _filteredCloudCiphers = [];
   Cipher _currentCipher = Cipher.empty();
   bool _isLoading = false;
   bool _isLoadingCloud = false;
@@ -42,9 +43,9 @@ class CipherProvider extends ChangeNotifier {
   // Getters
   Cipher get currentCipher => _currentCipher;
   List<Cipher> get filteredLocalCiphers => _filteredLocalCiphers;
-  List<Cipher> get filteredCloudCiphers => _filteredCloudCiphers;
+  List<CipherDto> get filteredCloudCiphers => _filteredCloudCiphers;
   List<Cipher> get localCiphers => _localCiphers;
-  List<Cipher> get cloudCiphers => _cloudCiphers;
+  List<CipherDto> get cloudCiphers => _cloudCiphers;
   bool get isLoading => _isLoading;
   bool get isLoadingCloud => _isLoadingCloud;
   bool get isSaving => _isSaving;

@@ -157,5 +157,17 @@ class FirestoreService {
     required String parentDocumentId,
     required String subCollectionPath,
     required String documentId,
-  }) async {}
+  }) async {
+    try {
+      await _firestore
+          .collection(parentCollectionPath)
+          .doc(parentDocumentId)
+          .collection(subCollectionPath)
+          .doc(documentId)
+          .delete();
+    } catch (e) {
+      FirebaseService.logError('Failed to delete sub-collection document', e);
+      rethrow;
+    }
+  }
 }

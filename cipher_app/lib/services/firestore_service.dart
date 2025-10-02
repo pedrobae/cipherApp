@@ -118,6 +118,27 @@ class FirestoreService {
     }
   }
 
+  /// Update a document in a specified sub-collection.
+  Future<void> updateSubCollectionDocument({
+    required String parentCollectionPath,
+    required String parentDocumentId,
+    required String subCollectionPath,
+    required String documentId,
+    required Map<String, dynamic> data,
+  }) async {
+    try {
+      await _firestore
+          .collection(parentCollectionPath)
+          .doc(parentDocumentId)
+          .collection(subCollectionPath)
+          .doc(documentId)
+          .set(data, SetOptions(merge: true));
+    } catch (e) {
+      FirebaseService.logError('Failed to update sub-collection document', e);
+      rethrow;
+    }
+  }
+
   /// Delete a document from a specified collection.
   Future<void> deleteDocument({
     required String collectionPath,
@@ -130,4 +151,11 @@ class FirestoreService {
       rethrow;
     }
   }
+
+  Future<void> deleteSubCollectionDocument({
+    required String parentCollectionPath,
+    required String parentDocumentId,
+    required String subCollectionPath,
+    required String documentId,
+  }) async {}
 }

@@ -26,11 +26,24 @@ class CloudCipherRepository {
         data: version.toMap(),
       );
     }
-
     return firebaseId;
   }
 
-  /// ===== READ =====
+  /// Creates a new version for an existing public cipher (admin only)
+  Future<String> createVersionForCipher(
+    String cipherId,
+    Version version,
+  ) async {
+    final versionId = await _firestoreService.createSubCollectionDocument(
+      parentCollectionPath: 'publicCiphers',
+      parentDocumentId: cipherId,
+      subCollectionPath: 'versions',
+      data: version.toMap(),
+    );
+    return versionId;
+  }
+
+  // ===== READ =====
   /// Fetch popular ciphers from Firestore
   Future<List<CipherDto>> getPopularCiphers() async {
     final snapshot = await _firestoreService.fetchDocumentById(
@@ -157,5 +170,52 @@ class CloudCipherRepository {
       }
       return null;
     }
+  }
+
+  // ===== UPDATE =====
+  /// Update an existing public cipher (admin only)
+  Future<void> updatePublicCipher(
+    String cipherId,
+    Map<String, dynamic> data,
+  ) async {
+    await _firestoreService.updateDocument(
+      collectionPath: 'publicCiphers',
+      documentId: cipherId,
+      data: data,
+    );
+  }
+
+  /// Update an existing version of a public cipher (admin only)
+  Future<void> updateVersionOfCipher(
+    String cipherId,
+    String versionId,
+    Map<String, dynamic> data,
+  ) async {
+    await _firestoreService.updateSubCollectionDocument(
+      parentCollectionPath: 'publicCiphers',
+      parentDocumentId: cipherId,
+      subCollectionPath: 'versions',
+      documentId: versionId,
+      data: data,
+    );
+  }
+
+  // ===== DELETE =====
+  /// Deletion of public ciphers and versions is not implemented for safety.
+  Future<void> deletePublicCipher(String cipherId) async {
+    await _firestoreService.deleteDocument(
+      collectionPath: 'publicCiphers',
+      documentId: cipherId,
+    );
+  }
+
+  /// Delete a version of a public cipher (admin only)
+  Future<void> deleteVersionOfCipher(String cipherId, String versionId) async {
+    await _firestoreService.deleteSubCollectionDocument(
+      parentCollectionPath: 'publicCiphers',
+      parentDocumentId: cipherId,
+      subCollectionPath: 'versions',
+      documentId: versionId,
+    );
   }
 }

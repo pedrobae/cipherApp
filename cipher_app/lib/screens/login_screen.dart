@@ -24,15 +24,12 @@ class _LoginScreenState extends State<LoginScreen> {
     // Listen for authentication changes after the first frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _authProvider = context.read<AuthProvider>();
-      if (_authProvider.user != null) {
-        _navigateToHome();
-      }
       _authProvider.addListener(_authListener);
     });
   }
 
   void _authListener() {
-    if (_authProvider.user != null) {
+    if (_authProvider.isAuthenticated) {
       _navigateToHome();
     }
   }

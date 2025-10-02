@@ -18,8 +18,8 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     // Pre-load authentication state with post-frame callback
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final user = context.read<AuthProvider>().user;
-      if (user == null) {
+      final isAuthenticated = context.read<AuthProvider>().isAuthenticated;
+      if (!isAuthenticated) {
         Navigator.pushNamedAndRemoveUntil(
           context,
           '/login',
@@ -81,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               );
             }
-            if (authProvider.user == null) {
+            if (!authProvider.isAuthenticated) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 Navigator.pushReplacementNamed(context, '/login');
               });
@@ -112,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   actions: [
                     Consumer<AuthProvider>(
                       builder: (context, authProvider, child) {
-                        if (authProvider.user != null) {
+                        if (authProvider.isAuthenticated) {
                           return IconButton(
                             icon: const Icon(Icons.logout),
                             tooltip: 'Sair',

@@ -1,17 +1,36 @@
 import 'package:cipher_app/models/domain/cipher/cipher.dart';
 import 'package:cipher_app/models/domain/cipher/version.dart';
 import 'package:cipher_app/services/firestore_service.dart';
+import 'package:cipher_app/services/auth_service.dart';
 import 'package:cipher_app/models/dtos/cipher_dto.dart';
 import 'package:cipher_app/models/dtos/version_dto.dart';
 import 'package:flutter/foundation.dart';
 
 class CloudCipherRepository {
   final FirestoreService _firestoreService = FirestoreService();
+  final AuthService _authService = AuthService();
+
+  // ===== PERMISSION HELPERS =====
+  Future<void> _requireAdmin() async {
+    if (!(await _authService.isAdmin)) {
+      throw Exception(
+        'Acesso negado: operação requer privilégios de administrador',
+      );
+    }
+  }
+
+  Future<void> _requireAuth() async {
+    if (!_authService.isAuthenticated) {
+      throw Exception('Acesso negado: usuário deve estar autenticado');
+    }
+  }
 
   // For now the user has no access to full CRUD operations in the cloud. (Read-only)
   // ===== CREATE =====
   /// Creates a new public cipher (admin only - not exposed to users)
   Future<String> createPublicCipher(Cipher cipher) async {
+    await _requireAdmin();
+
     final firebaseId = await _firestoreService.createDocument(
       collectionPath: 'publicCiphers',
       data: cipher.toMap(),
@@ -34,6 +53,8 @@ class CloudCipherRepository {
     String cipherId,
     Version version,
   ) async {
+    await _requireAdmin();
+
     final versionId = await _firestoreService.createSubCollectionDocument(
       parentCollectionPath: 'publicCiphers',
       parentDocumentId: cipherId,
@@ -44,8 +65,10 @@ class CloudCipherRepository {
   }
 
   // ===== READ =====
-  /// Fetch popular ciphers from Firestore
+  /// Fetch popular ciphers from Firestore (requires authentication)
   Future<List<CipherDto>> getPopularCiphers() async {
+    await _requireAuth();
+
     final snapshot = await _firestoreService.fetchDocumentById(
       collectionPath: 'stats/',
       documentId: 'popularCiphers',
@@ -59,8 +82,10 @@ class CloudCipherRepository {
     return ciphers;
   }
 
-  /// Fetch versions of a specific cipher
+  /// Fetch versions of a specific cipher (requires authentication)
   Future<List<VersionDto>> getVersionsOfCipher(String cipherId) async {
+    await _requireAuth();
+
     final snapshot = await _firestoreService.fetchSubCollectionDocuments(
       parentCollectionPath: 'publicCiphers',
       parentDocumentId: cipherId,
@@ -75,8 +100,10 @@ class CloudCipherRepository {
         .toList();
   }
 
-  /// Cost-effective single query search (SEARCH TEXT field)
+  /// Cost-effective single query search (requires authentication)
   Future<List<CipherDto>?> searchCiphers(String query) async {
+    await _requireAuth();
+
     try {
       final lowerQuery = query.toLowerCase().trim();
 
@@ -178,6 +205,8 @@ class CloudCipherRepository {
     String cipherId,
     Map<String, dynamic> data,
   ) async {
+    await _requireAdmin();
+
     await _firestoreService.updateDocument(
       collectionPath: 'publicCiphers',
       documentId: cipherId,
@@ -191,6 +220,8 @@ class CloudCipherRepository {
     String versionId,
     Map<String, dynamic> data,
   ) async {
+    await _requireAdmin();
+
     await _firestoreService.updateSubCollectionDocument(
       parentCollectionPath: 'publicCiphers',
       parentDocumentId: cipherId,
@@ -201,8 +232,10 @@ class CloudCipherRepository {
   }
 
   // ===== DELETE =====
-  /// Deletion of public ciphers and versions is not implemented for safety.
+  /// Delete a public cipher (admin only)
   Future<void> deletePublicCipher(String cipherId) async {
+    await _requireAdmin();
+
     await _firestoreService.deleteDocument(
       collectionPath: 'publicCiphers',
       documentId: cipherId,
@@ -211,6 +244,8 @@ class CloudCipherRepository {
 
   /// Delete a version of a public cipher (admin only)
   Future<void> deleteVersionOfCipher(String cipherId, String versionId) async {
+    await _requireAdmin();
+
     await _firestoreService.deleteSubCollectionDocument(
       parentCollectionPath: 'publicCiphers',
       parentDocumentId: cipherId,

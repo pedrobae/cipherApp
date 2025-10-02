@@ -11,13 +11,32 @@ class FirestoreService {
     required Map<String, dynamic> data,
   }) async {
     try {
-      data['lastUpdated'] = FieldValue.serverTimestamp();
-      data['searchText'] =
-          '${data['title'] as String? ?? ''} ${data['author'] as String? ?? ''} ${(data['tags'] as List<dynamic>?)?.map((tag) => tag.toString()).join(' ') ?? ''}';
+      data['createdAt'] = FieldValue.serverTimestamp();
       final docRef = await _firestore.collection(collectionPath).add(data);
       return docRef.id;
     } catch (e) {
       FirebaseService.logError('Failed to create document', e);
+      rethrow;
+    }
+  }
+
+  /// Create a new document in a specified subcollection, with auto-generated ID.
+  Future<String> createSubCollectionDocument({
+    required String parentCollectionPath,
+    required String parentDocumentId,
+    required String subCollectionPath,
+    required Map<String, dynamic> data,
+  }) async {
+    try {
+      data['createdAt'] = FieldValue.serverTimestamp();
+      final docRef = await _firestore
+          .collection(parentCollectionPath)
+          .doc(parentDocumentId)
+          .collection(subCollectionPath)
+          .add(data);
+      return docRef.id;
+    } catch (e) {
+      FirebaseService.logError('Failed to create sub-collection document', e);
       rethrow;
     }
   }

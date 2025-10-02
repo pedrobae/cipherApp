@@ -51,4 +51,13 @@ class Section {
       'color': c.colorToHex(contentColor),
     };
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'contentType': contentType,
+      'contentCode': contentCode,
+      'contentText': contentText,
+      'contentColor': c.colorToHex(contentColor),
+    };
+  }
 }

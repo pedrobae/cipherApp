@@ -1,3 +1,5 @@
+import 'package:cipher_app/models/domain/cipher/cipher.dart';
+import 'package:cipher_app/models/domain/cipher/version.dart';
 import 'package:cipher_app/services/firestore_service.dart';
 import 'package:cipher_app/models/dtos/cipher_dto.dart';
 import 'package:cipher_app/models/dtos/version_dto.dart';
@@ -7,6 +9,26 @@ class CloudCipherRepository {
   final FirestoreService _firestoreService = FirestoreService();
 
   // For now the user has no access to full CRUD operations in the cloud. (Read-only)
+  // ===== CREATE =====
+  /// Creates a new public cipher (admin only - not exposed to users)
+  Future<String> createPublicCipher(Cipher cipher) async {
+    final firebaseId = await _firestoreService.createDocument(
+      collectionPath: 'publicCiphers',
+      data: cipher.toMap(),
+    );
+
+    // Create initial versions in sub-collection
+    for (Version version in cipher.versions) {
+      await _firestoreService.createSubCollectionDocument(
+        parentCollectionPath: 'publicCiphers',
+        parentDocumentId: firebaseId,
+        subCollectionPath: 'versions',
+        data: version.toMap(),
+      );
+    }
+
+    return firebaseId;
+  }
 
   /// ===== READ =====
   /// Fetch popular ciphers from Firestore

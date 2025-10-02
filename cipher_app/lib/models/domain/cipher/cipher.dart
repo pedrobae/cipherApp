@@ -121,4 +121,15 @@ class Cipher {
       versions: versions ?? this.versions,
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'title': title,
+      'author': author,
+      'tempo': tempo,
+      'musicKey': musicKey,
+      'language': language,
+      'tags': tags,
+    };
+  }
 }

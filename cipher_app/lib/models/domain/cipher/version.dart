@@ -76,6 +76,16 @@ class Version {
     };
   }
 
+  Map<String, dynamic> toMap() {
+    return {
+      'songStructure': songStructure,
+      'transposedKey': transposedKey,
+      'versionName': versionName,
+      'content':
+          sections?.values.map((s) => MapEntry(s.contentCode, s.toMap())) ?? {},
+    };
+  }
+
   List<Section> getContentAsStruct() {
     return (sections ?? {}).values.toList();
   }

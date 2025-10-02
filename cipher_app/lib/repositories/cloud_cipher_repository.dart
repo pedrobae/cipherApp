@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 class CloudCipherRepository {
   final FirestoreService _firestoreService = FirestoreService();
 
-  // For now the user has no access to writing ciphers to the cloud. (Read-only)
+  // For now the user has no access to full CRUD operations in the cloud. (Read-only)
 
   /// ===== READ =====
   /// Fetch popular ciphers from Firestore
@@ -24,6 +24,7 @@ class CloudCipherRepository {
     return ciphers;
   }
 
+  /// Fetch versions of a specific cipher
   Future<List<VersionDto>> getVersionsOfCipher(String cipherId) async {
     final snapshot = await _firestoreService.fetchSubCollectionDocuments(
       parentCollectionPath: 'publicCiphers',

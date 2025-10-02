@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:cipher_app/models/dtos/cipher_dto.dart';
 import 'package:flutter/foundation.dart';
+import 'package:cipher_app/models/dtos/cipher_dto.dart';
 import 'package:cipher_app/helpers/cloud_cipher_cache.dart';
 import 'package:cipher_app/models/domain/cipher/cipher.dart';
 import 'package:cipher_app/repositories/cloud_cipher_repository.dart';
@@ -130,7 +130,7 @@ class CipherProvider extends ChangeNotifier {
     }
   }
 
-  // Load single cipher into cache
+  /// Load single cipher by ID into cache (_current_cipher)
   Future<void> loadCipher(int cipherId) async {
     if (_isLoading) return;
 
@@ -288,6 +288,43 @@ class CipherProvider extends ChangeNotifier {
     } finally {
       _isSaving = false;
       updateCurrentCipherInList();
+      notifyListeners();
+    }
+  }
+
+  /// Downloads cipher from cloud and inserts into local database
+  Future<void> downloadAndInsertCipher(String cipherFirebaseId) async {
+    if (_isSaving) {
+      _error = 'Já está salvando uma cifra, aguarde...';
+      if (kDebugMode) {
+        print('Already saving a cipher, aborting download.');
+      }
+      return;
+    }
+
+    _isSaving = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final cipher = await _cloudCipherRepository.downloadCompleteCipher(
+        cipherFirebaseId,
+      );
+      if (cipher == null) {
+        throw Exception('Cipher not found in cloud');
+      }
+
+      final cipherId = await _cipherRepository.insertWholeCipher(cipher);
+
+      // Load the new ID into the current cipher cache
+      loadCipher(cipherId);
+    } catch (e) {
+      _error = e.toString();
+      if (kDebugMode) {
+        print('Error downloading and inserting cipher: $e');
+      }
+    } finally {
+      _isSaving = false;
       notifyListeners();
     }
   }

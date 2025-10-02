@@ -65,7 +65,7 @@ void main() {
         (c) => c.title == 'How Great Thou Art',
       );
 
-      final maps = await repository.getCipherVersions(howGreat.id!);
+      final maps = await repository.getVersions(howGreat.id!);
 
       expect(maps.length, 1);
       expect(maps.first.songStructure, 'V1,C,V2,C,V3,C,V4,C');
@@ -75,7 +75,7 @@ void main() {
     test('should get map sections', () async {
       final ciphers = await repository.getAllCiphersPruned();
       final cipher = ciphers.firstWhere((c) => c.title == 'Amazing Grace');
-      final maps = await repository.getCipherVersions(cipher.id!);
+      final maps = await repository.getVersions(cipher.id!);
 
       final sections = await repository.getAllSections(maps.first.id!);
 

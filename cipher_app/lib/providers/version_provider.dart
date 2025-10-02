@@ -67,9 +67,7 @@ class VersionProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _currentVersion = (await _cipherRepository.getCipherVersionWithId(
-        versionId,
-      ))!;
+      _currentVersion = (await _cipherRepository.getVersionWithId(versionId))!;
       if (kDebugMode) {
         print(
           '===== Loaded the version: ${_currentVersion.versionName} into cache =====',
@@ -97,7 +95,7 @@ class VersionProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _versions = await _cipherRepository.getCipherVersions(cipherId);
+      _versions = await _cipherRepository.getVersions(cipherId);
       if (kDebugMode) {
         print('Loaded ${_versions.length} versions of cipher $cipherId');
       }
@@ -126,7 +124,7 @@ class VersionProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _cipherRepository.updateFieldOfCipherVersion(versionId, {
+      _cipherRepository.updateFieldOfVersion(versionId, {
         'song_structure': songStructure.join(','),
       });
 
@@ -183,7 +181,7 @@ class VersionProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _cipherRepository.deleteCipherVersion(versionId);
+      await _cipherRepository.deleteVersion(versionId);
       clearCache();
     } catch (e) {
       _error = e.toString();
@@ -206,7 +204,7 @@ class VersionProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _cipherRepository.updateCipherVersion(currentVersion);
+      await _cipherRepository.updateVersion(currentVersion);
       // Insert content for this map
       await _saveSections();
 

@@ -1,5 +1,6 @@
 import 'package:cipher_app/models/domain/cipher/section.dart';
 import 'package:cipher_app/models/domain/cipher/version.dart';
+import 'package:cipher_app/utils/color.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../helpers/database.dart';
@@ -9,7 +10,6 @@ class LocalCipherRepository {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
 
   // === CORE CIPHER OPERATIONS ===
-
   Future<List<Cipher>> getAllCiphersPruned() async {
     final db = await _databaseHelper.database;
     final results = await db.query(
@@ -43,7 +43,37 @@ class LocalCipherRepository {
       // Insert tags if any
       if (cipher.tags.isNotEmpty) {
         for (final tagTitle in cipher.tags) {
-          await _addTagToCipherInTransaction(txn, cipherId, tagTitle);
+          await _addTagInTransaction(txn, cipherId, tagTitle);
+        }
+      }
+      return cipherId;
+    });
+  }
+
+  Future<int> insertWholeCipher(Cipher cipher) async {
+    final db = await _databaseHelper.database;
+
+    return await db.transaction((txn) async {
+      // Insert the cipher
+      final cipherId = await txn.insert('cipher', cipher.toJson());
+
+      // Insert tags if any
+      if (cipher.tags.isNotEmpty) {
+        for (final tagTitle in cipher.tags) {
+          await _addTagInTransaction(txn, cipherId, tagTitle);
+        }
+      }
+
+      // Insert versions and their sections
+      for (final version in cipher.versions) {
+        final versionId = await _insertVersionInTransaction(
+          txn,
+          cipherId,
+          version,
+        );
+
+        for (final section in version.sections!.values) {
+          await _insertSectionInTransaction(txn, versionId, section);
         }
       }
 
@@ -73,7 +103,7 @@ class LocalCipherRepository {
       // Insert new tags
       if (cipher.tags.isNotEmpty) {
         for (final tagTitle in cipher.tags) {
-          await _addTagToCipherInTransaction(txn, cipher.id!, tagTitle);
+          await _addTagInTransaction(txn, cipher.id!, tagTitle);
         }
       }
     });
@@ -89,9 +119,8 @@ class LocalCipherRepository {
     );
   }
 
-  // === CIPHER VERSION OPERATIONS ===
-
-  Future<List<Version>> getCipherVersions(int cipherId) async {
+  // === VERSION OPERATIONS ===
+  Future<List<Version>> getVersions(int cipherId) async {
     final db = await _databaseHelper.database;
     final results = await db.query(
       'version',
@@ -103,7 +132,7 @@ class LocalCipherRepository {
     return Future.wait(results.map((row) => _buildCipherVersion(row)));
   }
 
-  Future<Version?> getCipherVersionWithId(int versionId) async {
+  Future<Version?> getVersionWithId(int versionId) async {
     final db = await _databaseHelper.database;
     final result = await db.query(
       'version',
@@ -146,7 +175,7 @@ class LocalCipherRepository {
     return await db.insert('version', map.toJson());
   }
 
-  Future<void> updateCipherVersion(Version version) async {
+  Future<void> updateVersion(Version version) async {
     final db = await _databaseHelper.database;
     await db.update(
       'version',
@@ -156,7 +185,7 @@ class LocalCipherRepository {
     );
   }
 
-  Future<void> updateFieldOfCipherVersion(
+  Future<void> updateFieldOfVersion(
     int versionId,
     Map<String, dynamic> field,
   ) async {
@@ -164,13 +193,12 @@ class LocalCipherRepository {
     await db.update('version', field, where: 'id = ?', whereArgs: [versionId]);
   }
 
-  Future<void> deleteCipherVersion(int id) async {
+  Future<void> deleteVersion(int id) async {
     final db = await _databaseHelper.database;
     await db.delete('version', where: 'id = ?', whereArgs: [id]);
   }
 
   // === SECTION OPERATIONS ===
-
   Future<Map<String, Section>> getAllSections(int mapId) async {
     final db = await _databaseHelper.database;
     final results = await db.query(
@@ -243,7 +271,6 @@ class LocalCipherRepository {
   }
 
   // === TAG OPERATIONS ===
-
   Future<List<String>> getCipherTags(int cipherId) async {
     final db = await _databaseHelper.database;
     final results = await db.rawQuery(
@@ -312,7 +339,7 @@ class LocalCipherRepository {
   // === PRIVATE HELPERS ===
 
   Future<Cipher> _buildCipher(Map<String, dynamic> row) async {
-    final version = await getCipherVersions(row['id']);
+    final version = await getVersions(row['id']);
     final tags = await getCipherTags(row['id']);
 
     return Cipher.fromJson(row).copyWith(versions: version, tags: tags);
@@ -330,7 +357,7 @@ class LocalCipherRepository {
   }
 
   // Helper method to add tags within a transaction
-  Future<void> _addTagToCipherInTransaction(
+  Future<void> _addTagInTransaction(
     Transaction txn,
     int cipherId,
     String tagTitle,
@@ -358,5 +385,33 @@ class LocalCipherRepository {
       'cipher_id': cipherId,
       'created_at': DateTime.now().toIso8601String(),
     }, conflictAlgorithm: ConflictAlgorithm.ignore);
+  }
+
+  /// Insert version of cipher within a transaction
+  Future<int> _insertVersionInTransaction(
+    Transaction txn,
+    int cipherId,
+    Version version,
+  ) async {
+    final versionId = await txn.insert(
+      'version',
+      version.toJson()..['cipher_id'] = cipherId,
+    );
+    return versionId;
+  }
+
+  /// Insert section of version of cipher within a transaction
+  Future<void> _insertSectionInTransaction(
+    Transaction txn,
+    int versionId,
+    Section section,
+  ) async {
+    await txn.insert('section', {
+      'version_id': versionId,
+      'content_type': section.contentType,
+      'content_code': section.contentCode,
+      'content_text': section.contentText,
+      'content_color': colorToHex(section.contentColor),
+    });
   }
 }

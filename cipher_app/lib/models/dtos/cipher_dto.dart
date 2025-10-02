@@ -8,6 +8,7 @@ class CipherDto {
   final String musicKey;
   final String tempo;
   final String language;
+  final String searchTerm;
   final List<String> tags;
   final DateTime? updatedAt;
   final int? downloadCount;
@@ -19,6 +20,7 @@ class CipherDto {
     required this.musicKey,
     required this.tempo,
     required this.language,
+    required this.searchTerm,
     this.tags = const [],
     this.updatedAt,
     this.downloadCount,
@@ -32,6 +34,7 @@ class CipherDto {
       musicKey: map['musicKey'] as String? ?? '',
       tempo: map['tempo'] as String? ?? '',
       language: map['language'] as String? ?? '',
+      searchTerm: map['searchTerm'] as String? ?? '',
       tags: (map['tags'] is String)
           ? (map['tags'] as String)
                 .split(',')
@@ -53,6 +56,7 @@ class CipherDto {
       'musicKey': musicKey,
       'tempo': tempo,
       'language': language,
+      'searchTerm': '$title $author ${tags.join(' ')}'.toLowerCase(),
       'tags': tags.join(','),
       'updatedAt': updatedAt?.toIso8601String(),
       'downloadCount': downloadCount,
@@ -79,6 +83,7 @@ class CipherDto {
     String? musicKey,
     String? tempo,
     String? language,
+    String? searchTerm,
     List<String>? tags,
     DateTime? updatedAt,
     int? downloadCount,
@@ -93,6 +98,7 @@ class CipherDto {
       tags: tags ?? this.tags,
       updatedAt: updatedAt ?? this.updatedAt,
       downloadCount: downloadCount ?? this.downloadCount,
+      searchTerm: searchTerm ?? this.searchTerm,
     );
   }
 }

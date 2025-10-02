@@ -82,7 +82,7 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen>
           SearchAppBar(
             searchController: _searchController,
             onSearchChanged: (value) {
-              cipherProvider.searchCiphers(value);
+              cipherProvider.searchLocalCiphers(value);
             },
             hint: 'Procure Cifras...',
             title: widget.selectionMode ? 'Adicionar à Playlist' : null,

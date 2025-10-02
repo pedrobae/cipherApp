@@ -21,6 +21,7 @@ class CipherProvider extends ChangeNotifier {
     _lastCloudLoad = await _cloudCache.loadLastCloudLoad();
     _cloudCiphers = await _cloudCache.loadCloudCiphers();
     _filterCloudCiphers();
+    notifyListeners();
   }
 
   List<Cipher> _localCiphers = [];
@@ -33,7 +34,6 @@ class CipherProvider extends ChangeNotifier {
   bool _isSaving = false;
   String? _error;
   String _searchTerm = '';
-  bool _useMemoryFiltering = true;
   bool _hasLoadedCiphers = false;
   DateTime? _lastCloudLoad;
 
@@ -50,7 +50,6 @@ class CipherProvider extends ChangeNotifier {
   bool get isLoadingCloud => _isLoadingCloud;
   bool get isSaving => _isSaving;
   String? get error => _error;
-  bool get useMemoryFiltering => _useMemoryFiltering;
   bool get hasLoadedCiphers => _hasLoadedCiphers;
 
   /// ===== READ =====
@@ -74,7 +73,6 @@ class CipherProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _useMemoryFiltering = true;
       _localCiphers = await _cipherRepository.getAllCiphersPruned();
       _filterLocalCiphers();
 
@@ -178,19 +176,53 @@ class CipherProvider extends ChangeNotifier {
   }
 
   // Search functionality
-  Future<void> searchCiphers(String term) async {
+  Future<void> searchLocalCiphers(String term) async {
     _searchTerm = term.toLowerCase();
-    if (_useMemoryFiltering) {
-      // Instant memory filtering
-      _filterCiphers();
-    } else {
-      // SQLite query with debouncing maybe implement later
+    _filterLocalCiphers();
+  }
+
+  Future<void> searchCloudCiphers(String term) async {
+    if (term.isEmpty) {
+      _filteredCloudCiphers = List.from(cloudCiphers);
+      notifyListeners();
+      return;
+    }
+
+    if (_isLoadingCloud) return;
+
+    _isLoadingCloud = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final queriedCiphers =
+          (await _cloudCipherRepository.searchCiphers(term)) ?? [];
+
+      for (var cipher in queriedCiphers) {
+        if (!_cloudCiphers.any((c) => c.firebaseId == cipher.firebaseId)) {
+          _cloudCiphers.add(cipher);
+        }
+      }
+      _filterCloudCiphers();
+
+      if (kDebugMode) {
+        print('QUERIED CLOUD CIPHERS FOR "$term" - ${queriedCiphers.length}');
+      }
+    } catch (e) {
+      _error = e.toString();
+      if (kDebugMode) {
+        print('Error searching cloud ciphers: $e');
+      }
+    } finally {
+      _isLoadingCloud = false;
+      notifyListeners();
     }
   }
 
   void _filterCiphers() {
     _filterCloudCiphers();
     _filterLocalCiphers();
+    notifyListeners();
   }
 
   void _filterCloudCiphers() {
@@ -200,7 +232,7 @@ class CipherProvider extends ChangeNotifier {
       _filteredCloudCiphers = cloudCiphers
           .where(
             (cipher) =>
-                cipher.title.toLowerCase().contains(_searchTerm) ||
+                cipher.searchTerm.toLowerCase().contains(_searchTerm) ||
                 cipher.author.toLowerCase().contains(_searchTerm) ||
                 cipher.tags.any(
                   (tag) => tag.toLowerCase().contains(_searchTerm),
@@ -208,7 +240,6 @@ class CipherProvider extends ChangeNotifier {
           )
           .toList();
     }
-    notifyListeners();
   }
 
   void _filterLocalCiphers() {
@@ -227,7 +258,6 @@ class CipherProvider extends ChangeNotifier {
           .toList()
           .cast<Cipher>();
     }
-    notifyListeners();
   }
 
   void clearSearch() {

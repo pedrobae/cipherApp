@@ -122,7 +122,7 @@ class _CloudCipherListState extends State<CloudCipherList> {
                   ),
                   onPressed: () {},
                   child: Text(
-                    'Procurar cifra na nuvem',
+                    'Procurar cifras na nuvem',
                     style: theme.textTheme.bodyLarge!.copyWith(
                       color: colorScheme.primary,
                       fontWeight: FontWeight.bold,

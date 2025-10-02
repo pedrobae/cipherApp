@@ -4,6 +4,7 @@ import 'package:cipher_app/services/firestore_service.dart';
 import 'package:cipher_app/services/auth_service.dart';
 import 'package:cipher_app/models/dtos/cipher_dto.dart';
 import 'package:cipher_app/models/dtos/version_dto.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 
 class CloudCipherRepository {
@@ -200,24 +201,33 @@ class CloudCipherRepository {
   }
 
   /// Download complete cipher (metadata + versions) by ID (requires authentication)
-  Future<Cipher?> downloadCompleteCipher(String cipherId) async {
+  Future<Cipher?> downloadCompleteCipher(String firebaseId) async {
     await _requireAuth();
 
     final cipherSnapshot = await _firestoreService.fetchDocumentById(
       collectionPath: 'publicCiphers',
-      documentId: cipherId,
+      documentId: firebaseId,
     );
 
     final versionSnapshots = await _firestoreService
         .fetchSubCollectionDocuments(
           parentCollectionPath: 'publicCiphers',
-          parentDocumentId: cipherId,
+          parentDocumentId: firebaseId,
           subCollectionPath: 'versions',
         );
 
     if (cipherSnapshot == null) {
       throw Exception('Cipher not found');
     }
+
+    await FirebaseAnalytics.instance.logEvent(
+      name: 'cipher_downloaded',
+      parameters: {
+        'cipher_id': firebaseId,
+        'user_id': _authService.currentUser!.uid,
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
+      },
+    );
 
     if (kDebugMode) {
       print('Downloaded cipher with ${versionSnapshots.length} versions');

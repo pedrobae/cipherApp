@@ -7,6 +7,7 @@ class AuthService {
   Stream<User?> get authStateChanges => _auth.authStateChanges();
   bool get isAuthenticated => _auth.currentUser != null;
   Future<bool> get isAdmin async => await _isAdmin();
+  User? get currentUser => _auth.currentUser;
 
   /// Check if current user has admin privileges
   Future<bool> _isAdmin() async {

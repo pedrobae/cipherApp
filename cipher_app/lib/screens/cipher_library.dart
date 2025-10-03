@@ -129,6 +129,18 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen>
                 CloudCipherList(
                   searchCloudCiphers: () {
                     cipherProvider.searchCloudCiphers(_searchController.text);
+                    if (cipherProvider.filteredCloudCiphers.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          duration: Duration(milliseconds: 1600),
+                          content: Text(
+                            'Nenhuma cifra encontrada na nuvem para "${_searchController.text}".',
+                            style: TextStyle(color: colorScheme.onError),
+                          ),
+                          backgroundColor: colorScheme.error,
+                        ),
+                      );
+                    }
                   },
                 ),
               ],

@@ -8,31 +8,39 @@ class AppDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Consumer<NavigationProvider>(
       builder: (context, navigationProvider, child) {
         return Drawer(
-          shape: LinearBorder(),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadiusGeometry.horizontal(
+              right: Radius.circular(50),
+            ),
+          ),
           width: math.min(
             math.max(MediaQuery.of(context).size.width * (2 / 3), 224),
             320,
           ),
+          backgroundColor: colorScheme.surfaceContainerHighest,
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
               DrawerHeader(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [
-                      Theme.of(context).colorScheme.primary,
-                      Theme.of(context).colorScheme.primaryContainer,
-                    ],
+                    colors: [colorScheme.primary, colorScheme.tertiary],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
                 ),
                 child: Text(
                   'App de Cifras',
                   style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimary,
+                    color: colorScheme.onPrimary,
                     fontSize: 24,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),

@@ -179,10 +179,17 @@ class CipherProvider extends ChangeNotifier {
   Future<void> searchLocalCiphers(String term) async {
     _searchTerm = term.toLowerCase();
     _filterLocalCiphers();
+    notifyListeners();
+  }
+
+  Future<void> searchCachedCloudCiphers(String term) async {
+    _searchTerm = term.toLowerCase();
+    _filterCloudCiphers();
+    notifyListeners();
   }
 
   Future<void> searchCloudCiphers(String term) async {
-    if (term.isEmpty) {
+    if (term == '') {
       _filteredCloudCiphers = List.from(cloudCiphers);
       notifyListeners();
       return;
@@ -222,7 +229,6 @@ class CipherProvider extends ChangeNotifier {
   void _filterCiphers() {
     _filterCloudCiphers();
     _filterLocalCiphers();
-    notifyListeners();
   }
 
   void _filterCloudCiphers() {

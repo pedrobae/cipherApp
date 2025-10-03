@@ -6,11 +6,13 @@ import 'package:provider/provider.dart';
 class CloudCipherList extends StatefulWidget {
   final bool selectionMode;
   final int? playlistId;
+  final VoidCallback? searchCloudCiphers;
 
   const CloudCipherList({
     super.key,
     this.selectionMode = false,
     this.playlistId,
+    this.searchCloudCiphers,
   });
 
   @override
@@ -120,7 +122,7 @@ class _CloudCipherListState extends State<CloudCipherList> {
                       return colorScheme.shadow;
                     }),
                   ),
-                  onPressed: () {},
+                  onPressed: widget.searchCloudCiphers,
                   child: Text(
                     'Procurar cifras na nuvem',
                     style: theme.textTheme.bodyLarge!.copyWith(

@@ -82,7 +82,9 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen>
           SearchAppBar(
             searchController: _searchController,
             onSearchChanged: (value) {
-              cipherProvider.searchLocalCiphers(value);
+              _tabController.index == 0
+                  ? cipherProvider.searchLocalCiphers(value)
+                  : cipherProvider.searchCachedCloudCiphers(value);
             },
             hint: 'Procure Cifras...',
             title: widget.selectionMode ? 'Adicionar à Playlist' : null,
@@ -124,7 +126,11 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen>
                     }
                   },
                 ),
-                CloudCipherList(),
+                CloudCipherList(
+                  searchCloudCiphers: () {
+                    cipherProvider.searchCloudCiphers(_searchController.text);
+                  },
+                ),
               ],
             ),
           ),

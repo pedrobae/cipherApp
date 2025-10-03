@@ -1,6 +1,7 @@
 import 'package:cipher_app/models/domain/cipher/section.dart';
 import 'package:cipher_app/models/domain/cipher/version.dart';
 import 'package:cipher_app/utils/color.dart';
+import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../helpers/database.dart';
@@ -30,6 +31,10 @@ class LocalCipherRepository {
     );
 
     if (results.isEmpty) return null;
+
+    if (kDebugMode) {
+      print('Cipher read: ${results.first}');
+    }
     return _buildCipher(results.first);
   }
 

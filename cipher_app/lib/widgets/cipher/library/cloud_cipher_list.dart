@@ -52,7 +52,12 @@ class _CloudCipherListState extends State<CloudCipherList> {
           }
 
           final cipher = cipherProvider.filteredCloudCiphers[index];
-          return CloudCipherCard(cipher: cipher, onDownload: () {});
+          return CloudCipherCard(
+            cipher: cipher,
+            onDownload: () {
+              cipherProvider.downloadAndInsertCipher(cipher.firebaseId!);
+            },
+          );
 
           // In selection mode, we can't filter by versions until they're loaded
           // The filtering will happen in the CipherCard when versions are expanded

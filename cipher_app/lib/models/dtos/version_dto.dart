@@ -28,9 +28,11 @@ class VersionDto {
       createdAt: map['created_at'] != null
           ? DateTime.tryParse(map['created_at'].toString())
           : null,
-      sections: (map['sections'] as Map<String, Map<String, String>>).map(
-        (sectionCode, section) =>
-            MapEntry(sectionCode, Section.fromJson(section)),
+      sections: (map['sections'] as Map<String, dynamic>).map(
+        (sectionCode, section) => MapEntry(
+          sectionCode,
+          Section.fromMap(section, -1),
+        ), // versionId will be set later
       ),
     );
   }
@@ -55,7 +57,7 @@ class VersionDto {
 
   Version toDomain(int cipherId) {
     return Version(
-      id: null,
+      id: 0,
       versionName: versionName,
       transposedKey: transposedKey,
       songStructure: songStructure.split(',').map((s) => s.trim()).toList(),

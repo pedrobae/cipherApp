@@ -320,10 +320,10 @@ class CipherProvider extends ChangeNotifier {
         throw Exception('Cipher not found in cloud');
       }
 
-      final cipherId = await _cipherRepository.insertWholeCipher(cipher);
+      final cipherLocalId = await _cipherRepository.insertWholeCipher(cipher);
 
       // Load the new ID into the current cipher cache
-      loadCipher(cipherId);
+      loadCipher(cipherLocalId);
     } catch (e) {
       _error = e.toString();
       if (kDebugMode) {

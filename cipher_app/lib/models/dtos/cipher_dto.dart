@@ -1,4 +1,5 @@
 import 'package:cipher_app/models/domain/cipher/cipher.dart';
+import 'package:cipher_app/models/domain/cipher/version.dart';
 
 /// DTO para metadados de cifra (usado para navegação, busca e listagem).
 class CipherDto {
@@ -28,7 +29,7 @@ class CipherDto {
 
   factory CipherDto.fromMap(Map<String, dynamic> map) {
     return CipherDto(
-      firebaseId: map['id'] as String?,
+      firebaseId: map['cipherId'] as String?,
       title: map['title'] as String? ?? '',
       author: map['author'] as String? ?? '',
       musicKey: map['musicKey'] as String? ?? '',
@@ -63,7 +64,7 @@ class CipherDto {
     };
   }
 
-  Cipher toDomain() {
+  Cipher toDomain(List<Version> versions) {
     return Cipher(
       id: null,
       title: title,
@@ -73,6 +74,7 @@ class CipherDto {
       tempo: tempo,
       tags: tags,
       isLocal: false,
+      versions: versions,
     );
   }
 

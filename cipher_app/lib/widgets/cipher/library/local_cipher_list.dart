@@ -41,85 +41,88 @@ class _LocalCipherListState extends State<LocalCipherList> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    final cipherProvider = Provider.of<CipherProvider>(context);
-
-    if (cipherProvider.isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-    // Handle error state
-    if (cipherProvider.error != null) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.error_outline,
-              size: 64,
-              color: Theme.of(context).colorScheme.error,
-            ),
-            const SizedBox(height: 16),
-            Text('Erro: ${cipherProvider.error}'),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () =>
-                  cipherProvider.loadLocalCiphers(forceReload: true),
-              child: const Text('Tentar Novamente'),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return Stack(
-      children: [
-        // Handle empty state
-        if (cipherProvider.filteredLocalCiphers.isEmpty) ...[
-          Center(
+    return Consumer<CipherProvider>(
+      builder: (context, cipherProvider, child) {
+        if (cipherProvider.isLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        // Handle error state
+        if (cipherProvider.error != null) {
+          return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
-                  widget.selectionMode
-                      ? Icons.playlist_add_outlined
-                      : Icons.music_note_outlined,
+                  Icons.error_outline,
                   size: 64,
-                  color: colorScheme.primary,
+                  color: Theme.of(context).colorScheme.error,
                 ),
                 const SizedBox(height: 16),
-                Text(
-                  widget.selectionMode
-                      ? 'Nenhuma cifra disponível para adicionar'
-                      : 'Nenhuma cifra encontrada',
-                  style: theme.textTheme.bodyLarge!.copyWith(
-                    color: colorScheme.primary,
-                    fontWeight: FontWeight.bold,
-                  ),
+                Text('Erro: ${cipherProvider.error}'),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () =>
+                      cipherProvider.loadLocalCiphers(forceReload: true),
+                  child: const Text('Tentar Novamente'),
                 ),
               ],
             ),
-          ),
-        ] else ...[
-          // Display cipher list
-          _buildCiphersList(cipherProvider),
-        ],
-        if (!widget.selectionMode)
-          Positioned(
-            bottom: MediaQuery.of(context).viewInsets.bottom + 8,
-            right: MediaQuery.of(context).viewInsets.right + 8,
-            child: FloatingActionButton.extended(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const EditCipher()),
-                );
-              },
-              icon: const Icon(Icons.add),
-              label: const Text('Adicionar Cifra'),
-              heroTag: 'library_fab',
-            ),
-          ),
-      ],
+          );
+        }
+
+        return Stack(
+          children: [
+            // Handle empty state
+            if (cipherProvider.filteredLocalCiphers.isEmpty) ...[
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      widget.selectionMode
+                          ? Icons.playlist_add_outlined
+                          : Icons.music_note_outlined,
+                      size: 64,
+                      color: colorScheme.primary,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      widget.selectionMode
+                          ? 'Nenhuma cifra disponível para adicionar'
+                          : 'Nenhuma cifra encontrada',
+                      style: theme.textTheme.bodyLarge!.copyWith(
+                        color: colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ] else ...[
+              // Display cipher list
+              _buildCiphersList(cipherProvider),
+            ],
+            if (!widget.selectionMode)
+              Positioned(
+                bottom: MediaQuery.of(context).viewInsets.bottom + 8,
+                right: MediaQuery.of(context).viewInsets.right + 8,
+                child: FloatingActionButton.extended(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const EditCipher(),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.add),
+                  label: const Text('Adicionar Cifra'),
+                  heroTag: 'library_fab',
+                ),
+              ),
+          ],
+        );
+      },
     );
-    // Handle empty state
   }
 
   Widget _buildCiphersList(CipherProvider cipherProvider) {
@@ -133,17 +136,12 @@ class _LocalCipherListState extends State<LocalCipherList> {
         physics: const BouncingScrollPhysics(),
         itemCount: cipherProvider.filteredLocalCiphers.length,
         itemBuilder: (context, index) {
-          // Add bounds checking
           if (index >= cipherProvider.filteredLocalCiphers.length) {
             return const SizedBox.shrink();
           }
 
           final cipher = cipherProvider.filteredLocalCiphers[index];
           return CipherCard(cipher: cipher, onTap: widget.onTap);
-
-          // In selection mode, we can't filter by versions until they're loaded
-          // The filtering will happen in the CipherCard when versions are expanded
-          // For now, show all ciphers and let user expand to see available versions
         },
       ),
     );

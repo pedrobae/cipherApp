@@ -298,16 +298,16 @@ class CloudCipherRepository {
       print('Downloaded cipher with ${versionSnapshots.length} versions');
     }
 
-    final cipher = CipherDto.fromMap(
-      cipherSnapshot.data() as Map<String, dynamic>,
-    ).toDomain();
-
+    final List<Version> versions = [];
     for (var versionDoc in versionSnapshots) {
       final version = VersionDto.fromMap(
         versionDoc.data() as Map<String, dynamic>,
       ).toDomain(-1);
-      cipher.versions.add(version);
+      versions.add(version);
     }
+    final cipher = CipherDto.fromMap(
+      cipherSnapshot.data() as Map<String, dynamic>,
+    ).toDomain(versions);
 
     return cipher;
   }

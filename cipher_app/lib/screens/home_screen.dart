@@ -180,6 +180,23 @@ class _HomeScreenState extends State<HomeScreen> {
                               case NavigationProvider.infoRoute:
                                 navigationProvider.navigateToInfo();
                                 break;
+                              case NavigationProvider.admin:
+                                if (authProvider.isAdmin) {
+                                  navigationProvider.navigateTo(
+                                    4,
+                                    NavigationProvider.admin,
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'Acesso negado. Você não é um administrador.',
+                                      ),
+                                    ),
+                                  );
+                                  return;
+                                }
+                                break;
                             }
                             Navigator.pushNamed(context, '/main');
                           },

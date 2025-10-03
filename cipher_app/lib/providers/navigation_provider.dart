@@ -1,3 +1,4 @@
+import 'package:cipher_app/providers/auth_provider.dart';
 import 'package:cipher_app/utils/design_constants.dart';
 import 'package:flutter/material.dart';
 
@@ -7,6 +8,7 @@ class NavigationProvider extends ChangeNotifier {
   static const String settingsRoute = '/settings';
   static const String infoRoute = '/info';
   static const String homeRoute = '/home';
+  static const String admin = '/admin';
 
   int _selectedIndex = 0;
   String _currentRoute = homeRoute;
@@ -42,6 +44,10 @@ class NavigationProvider extends ChangeNotifier {
 
   void navigateToInfo() {
     _navigateToRoute(3, infoRoute);
+  }
+
+  void navigateToAdmin() {
+    _navigateToRoute(4, admin);
   }
 
   void _navigateToRoute(int index, String route) {
@@ -97,6 +103,8 @@ class NavigationProvider extends ChangeNotifier {
         return 2;
       case infoRoute:
         return 3;
+      case admin:
+        return 4;
       default:
         return -1;
     }
@@ -114,6 +122,8 @@ class NavigationProvider extends ChangeNotifier {
         return 'Informações';
       case homeRoute:
         return appName;
+      case admin:
+        return 'Administração';
       default:
         return 'App de Cifras';
     }
@@ -156,6 +166,15 @@ class NavigationProvider extends ChangeNotifier {
     );
   }
 
+  NavigationItem getAdminItem({Color? iconColor, double iconSize = 64}) {
+    return NavigationItem(
+      route: admin,
+      title: 'Administração',
+      icon: Icon(Icons.admin_panel_settings, color: iconColor, size: iconSize),
+      index: 4,
+    );
+  }
+
   // Compose navigation lists as needed
   List<NavigationItem> getNavigationItems({
     Color? iconColor,
@@ -166,6 +185,9 @@ class NavigationProvider extends ChangeNotifier {
       getPlaylistItem(iconColor: iconColor, iconSize: iconSize),
       getSettingsItem(iconColor: iconColor, iconSize: iconSize),
       getInfoItem(iconColor: iconColor, iconSize: iconSize),
+      if (AuthProvider().isAdmin) ...[
+        getAdminItem(iconColor: iconColor, iconSize: iconSize),
+      ],
     ];
   }
 }

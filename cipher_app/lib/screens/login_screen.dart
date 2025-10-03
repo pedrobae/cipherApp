@@ -258,7 +258,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     },
                             ),
                           ),
-                          // Divider between login and anonymous login
+                          // Divider between login and other options
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 10),
                             child: Row(
@@ -290,6 +290,32 @@ class _LoginScreenState extends State<LoginScreen> {
                               ],
                             ),
                           ),
+                          // Google Sign-In Button
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              icon: const Icon(Icons.g_mobiledata, size: 24),
+                              label: Text(
+                                'Entrar com Google',
+                                style: theme.textTheme.labelLarge!.copyWith(
+                                  color: colorScheme.onSecondaryContainer,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: colorScheme.secondaryContainer,
+                                foregroundColor: colorScheme.onSecondaryContainer,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                elevation: 2,
+                              ),
+                              onPressed: authProvider.isLoading
+                                  ? null
+                                  : () => authProvider.signInWithGoogle(),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton.icon(

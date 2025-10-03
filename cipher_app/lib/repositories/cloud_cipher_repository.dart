@@ -32,21 +32,39 @@ class CloudCipherRepository {
   Future<String> createPublicCipher(Cipher cipher) async {
     await _requireAdmin();
 
-    final firebaseId = await _firestoreService.createDocument(
+    final cipherId = await _firestoreService.createDocument(
       collectionPath: 'publicCiphers',
       data: cipher.toMap(),
     );
 
+    FirebaseAnalytics.instance.logEvent(
+      name: 'cipher_created',
+      parameters: {
+        'cipher_id': cipherId,
+        'user_id': _authService.currentUser!.uid,
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
+      },
+    );
+
     // Create initial versions in sub-collection
     for (Version version in cipher.versions) {
-      await _firestoreService.createSubCollectionDocument(
+      final versionId = await _firestoreService.createSubCollectionDocument(
         parentCollectionPath: 'publicCiphers',
-        parentDocumentId: firebaseId,
+        parentDocumentId: cipherId,
         subCollectionPath: 'versions',
         data: version.toMap(),
       );
+
+      FirebaseAnalytics.instance.logEvent(
+        name: 'cipher_version_created',
+        parameters: {
+          'cipher_id': cipherId,
+          'version_id': versionId,
+          'timestamp': DateTime.now().millisecondsSinceEpoch,
+        },
+      );
     }
-    return firebaseId;
+    return cipherId;
   }
 
   /// Creates a new version for an existing public cipher (admin only)
@@ -62,6 +80,15 @@ class CloudCipherRepository {
       subCollectionPath: 'versions',
       data: version.toMap(),
     );
+
+    FirebaseAnalytics.instance.logEvent(
+      name: 'cipher_version_created',
+      parameters: {
+        'cipher_id': cipherId,
+        'version_id': versionId,
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
+      },
+    );
     return versionId;
   }
 
@@ -73,6 +100,14 @@ class CloudCipherRepository {
     final snapshot = await _firestoreService.fetchDocumentById(
       collectionPath: 'stats/',
       documentId: 'popularCiphers',
+    );
+
+    FirebaseAnalytics.instance.logEvent(
+      name: 'fetched_popular_ciphers',
+      parameters: {
+        'user_id': _authService.currentUser!.uid,
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
+      },
     );
 
     List<CipherDto> ciphers =
@@ -91,6 +126,16 @@ class CloudCipherRepository {
       parentCollectionPath: 'publicCiphers',
       parentDocumentId: cipherId,
       subCollectionPath: 'versions',
+    );
+
+    FirebaseAnalytics.instance.logEvent(
+      name: 'fetched_cipher_versions',
+      parameters: {
+        'cipher_id': cipherId,
+        'version_count': snapshot.length,
+        'user_id': _authService.currentUser!.uid,
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
+      },
     );
 
     return snapshot
@@ -116,6 +161,16 @@ class CloudCipherRepository {
           'searchText': lowerQuery,
         }, // Single field with all searchable content
         limit: 25,
+      );
+
+      FirebaseAnalytics.instance.logEvent(
+        name: 'searched_ciphers',
+        parameters: {
+          'query': query,
+          'result_count': results.length,
+          'user_id': _authService.currentUser!.uid,
+          'timestamp': DateTime.now().millisecondsSinceEpoch,
+        },
       );
 
       return results
@@ -191,6 +246,16 @@ class CloudCipherRepository {
         );
       }
 
+      FirebaseAnalytics.instance.logEvent(
+        name: 'searched_ciphers_cascading',
+        parameters: {
+          'query': query,
+          'result_count': results.length,
+          'user_id': _authService.currentUser!.uid,
+          'timestamp': DateTime.now().millisecondsSinceEpoch,
+        },
+      );
+
       return results.take(25).toList();
     } catch (e) {
       if (kDebugMode) {
@@ -260,6 +325,15 @@ class CloudCipherRepository {
       documentId: cipherId,
       data: data,
     );
+
+    FirebaseAnalytics.instance.logEvent(
+      name: 'cipher_updated',
+      parameters: {
+        'cipher_id': cipherId,
+        'user_id': _authService.currentUser!.uid,
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
+      },
+    );
   }
 
   /// Update an existing version of a public cipher (admin only)
@@ -277,6 +351,16 @@ class CloudCipherRepository {
       documentId: versionId,
       data: data,
     );
+
+    FirebaseAnalytics.instance.logEvent(
+      name: 'cipher_version_updated',
+      parameters: {
+        'cipher_id': cipherId,
+        'version_id': versionId,
+        'user_id': _authService.currentUser!.uid,
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
+      },
+    );
   }
 
   // ===== DELETE =====
@@ -287,6 +371,15 @@ class CloudCipherRepository {
     await _firestoreService.deleteDocument(
       collectionPath: 'publicCiphers',
       documentId: cipherId,
+    );
+
+    FirebaseAnalytics.instance.logEvent(
+      name: 'cipher_deleted',
+      parameters: {
+        'cipher_id': cipherId,
+        'user_id': _authService.currentUser!.uid,
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
+      },
     );
   }
 
@@ -299,6 +392,16 @@ class CloudCipherRepository {
       parentDocumentId: cipherId,
       subCollectionPath: 'versions',
       documentId: versionId,
+    );
+
+    FirebaseAnalytics.instance.logEvent(
+      name: 'cipher_version_deleted',
+      parameters: {
+        'cipher_id': cipherId,
+        'version_id': versionId,
+        'user_id': _authService.currentUser!.uid,
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
+      },
     );
   }
 }

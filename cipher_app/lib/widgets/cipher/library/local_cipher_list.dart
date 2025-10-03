@@ -22,16 +22,11 @@ class LocalCipherList extends StatefulWidget {
 
 class _LocalCipherListState extends State<LocalCipherList> {
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _loadDataIfNeeded();
-  }
-
-  void _loadDataIfNeeded() {
-    final cipherProvider = Provider.of<CipherProvider>(context, listen: false);
+  void initState() {
+    super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        cipherProvider.loadLocalCiphers();
+        context.read<CipherProvider>().loadLocalCiphers();
       }
     });
   }

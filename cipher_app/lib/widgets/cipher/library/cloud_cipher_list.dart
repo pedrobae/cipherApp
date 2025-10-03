@@ -55,7 +55,7 @@ class _CloudCipherListState extends State<CloudCipherList> {
           return CloudCipherCard(
             cipher: cipher,
             onDownload: () {
-              cipherProvider.downloadAndInsertCipher(cipher.firebaseId!);
+              cipherProvider.downloadAndInsertCipher(cipher);
             },
           );
 

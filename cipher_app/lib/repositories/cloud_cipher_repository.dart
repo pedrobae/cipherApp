@@ -265,53 +265,6 @@ class CloudCipherRepository {
     }
   }
 
-  /// Download complete cipher (metadata + versions) by ID (requires authentication)
-  Future<Cipher?> downloadCompleteCipher(String firebaseId) async {
-    await _requireAuth();
-
-    final cipherSnapshot = await _firestoreService.fetchDocumentById(
-      collectionPath: 'publicCiphers',
-      documentId: firebaseId,
-    );
-
-    final versionSnapshots = await _firestoreService
-        .fetchSubCollectionDocuments(
-          parentCollectionPath: 'publicCiphers',
-          parentDocumentId: firebaseId,
-          subCollectionPath: 'versions',
-        );
-
-    if (cipherSnapshot == null) {
-      throw Exception('Cipher not found');
-    }
-
-    await FirebaseAnalytics.instance.logEvent(
-      name: 'cipher_downloaded',
-      parameters: {
-        'cipher_id': firebaseId,
-        'user_id': _authService.currentUser!.uid,
-        'timestamp': DateTime.now().millisecondsSinceEpoch,
-      },
-    );
-
-    if (kDebugMode) {
-      print('Downloaded cipher with ${versionSnapshots.length} versions');
-    }
-
-    final List<Version> versions = [];
-    for (var versionDoc in versionSnapshots) {
-      final version = VersionDto.fromMap(
-        versionDoc.data() as Map<String, dynamic>,
-      ).toDomain(-1);
-      versions.add(version);
-    }
-    final cipher = CipherDto.fromMap(
-      cipherSnapshot.data() as Map<String, dynamic>,
-    ).toDomain(versions);
-
-    return cipher;
-  }
-
   // ===== UPDATE =====
   /// Update an existing public cipher (admin only)
   Future<void> updatePublicCipher(

@@ -29,6 +29,9 @@ class CipherContentSection extends StatelessWidget {
     );
     final sectionCardList = filteredStructure.map((sectionCode) {
       String trimmedCode = sectionCode.trim();
+      if (!currentVersion.sections!.containsKey(trimmedCode)) {
+        return const SizedBox.shrink();
+      }
       return CipherSectionCard(
         sectionType: currentVersion.sections![trimmedCode]!.contentType,
         sectionCode: trimmedCode,

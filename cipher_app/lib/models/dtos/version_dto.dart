@@ -1,5 +1,6 @@
 import 'package:cipher_app/models/domain/cipher/section.dart';
 import 'package:cipher_app/models/domain/cipher/version.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// DTO para metadados de version (camada de separação entre a nuvem e o armazenamento local).
 class VersionDto {
@@ -8,7 +9,7 @@ class VersionDto {
   final String? transposedKey;
   final String songStructure;
   final DateTime? createdAt;
-  final Map<String, Section>? sections;
+  final Map<String, Map<String, dynamic>>? sections;
 
   VersionDto({
     this.firebaseId,
@@ -22,17 +23,12 @@ class VersionDto {
   factory VersionDto.fromMap(Map<String, dynamic> map) {
     return VersionDto(
       firebaseId: map['firebase_id'] as String?,
-      versionName: map['version_name'] as String? ?? '',
-      transposedKey: map['transposed_key'] as String? ?? '',
-      songStructure: map['song_structure'] as String? ?? '',
-      createdAt: map['created_at'] != null
-          ? DateTime.tryParse(map['created_at'].toString())
-          : null,
+      versionName: map['versionName'] as String? ?? '',
+      transposedKey: map['transposedKey'] as String? ?? '',
+      songStructure: map['songStructure'] as String? ?? '',
+      createdAt: (map['createdAt'] as Timestamp).toDate(),
       sections: (map['sections'] as Map<String, dynamic>).map(
-        (sectionCode, section) => MapEntry(
-          sectionCode,
-          Section.fromMap(section, -1),
-        ), // versionId will be set later
+        (sectionCode, section) => MapEntry(sectionCode, section),
       ),
     );
   }
@@ -46,24 +42,27 @@ class VersionDto {
       'created_at': createdAt?.toIso8601String(),
       'sections': sections?.map(
         (sectionCode, section) => MapEntry(sectionCode, {
-          'contentType': section.contentType,
-          'contentText': section.contentText,
-          'contentCode': section.contentCode,
-          'contentColor': section.contentColor,
+          'contentType': section['contentType'],
+          'contentText': section['contentText'],
+          'contentCode': section['contentCode'],
+          'contentColor': section['contentColor'],
         }),
       ),
     };
   }
 
-  Version toDomain(int cipherId) {
+  Version toDomain() {
     return Version(
-      id: 0,
+      id: 0, // Local ID will be set when saved to local DB
       versionName: versionName,
       transposedKey: transposedKey,
       songStructure: songStructure.split(',').map((s) => s.trim()).toList(),
       createdAt: createdAt,
-      sections: sections,
-      cipherId: cipherId,
+      sections: sections?.map(
+        (sectionsCode, section) =>
+            MapEntry(sectionsCode, Section.fromMap(section)),
+      ),
+      cipherId: 0,
     );
   }
 }

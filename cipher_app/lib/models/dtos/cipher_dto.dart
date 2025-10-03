@@ -51,7 +51,7 @@ class CipherDto {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': firebaseId,
+      'cipherId': firebaseId,
       'title': title,
       'author': author,
       'musicKey': musicKey,

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cipher_app/models/domain/cipher/version.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cipher_app/models/dtos/cipher_dto.dart';
 import 'package:cipher_app/helpers/cloud_cipher_cache.dart';
@@ -299,7 +300,7 @@ class CipherProvider extends ChangeNotifier {
   }
 
   /// Downloads cipher from cloud and inserts into local database
-  Future<void> downloadAndInsertCipher(String cipherFirebaseId) async {
+  Future<void> downloadAndInsertCipher(CipherDto cipherDTO) async {
     if (_isSaving) {
       _error = 'Já está salvando uma cifra, aguarde...';
       if (kDebugMode) {
@@ -313,12 +314,19 @@ class CipherProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final cipher = await _cloudCipherRepository.downloadCompleteCipher(
-        cipherFirebaseId,
+      final versionDTOs = await _cloudCipherRepository.getVersionsOfCipher(
+        cipherDTO.firebaseId!,
       );
-      if (cipher == null) {
-        throw Exception('Cipher not found in cloud');
+      if (versionDTOs.isEmpty) {
+        throw Exception('Cipher versions not found in cloud');
       }
+
+      List<Version> versions = [];
+      for (var versionDTO in versionDTOs) {
+        versions.add(versionDTO.toDomain());
+      }
+
+      final cipher = cipherDTO.toDomain(versions);
 
       final cipherLocalId = await _cipherRepository.insertWholeCipher(cipher);
 

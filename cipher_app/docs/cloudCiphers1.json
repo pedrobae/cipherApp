@@ -1,0 +1,355 @@
+{
+    "ciphers": [
+        {
+            "title": "Águas Purificadoras",
+            "author": "Diante do Trono",
+            "tempo": "",
+            "music_key": "D",
+            "language": "pt-BR",
+            "tags": [
+                "adoração",
+                "contemporâneo"
+            ],
+            "downloadCount": 0,
+            "searchText": "águas purificadoras diante do trono adoração contemporâneo",
+            "versions": [
+                {
+                    "version_name": "Original",
+                    "transposed_key": "D",
+                    "song_structure": [
+                        "I",
+                        "V1",
+                        "V2",
+                        "C",
+                        "I",
+                        "B"
+                    ],
+                    "sections": {
+                        "I": {
+                            "content_type": "intro",
+                            "content_code": "I",
+                            "content_text": "[D] [Em/D] [D] [Em/D]",
+                            "content_color": "#9C27B0"
+                        },
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[D]Existe um rio, Senhor[Em/D]\n[D]Que flui do Teu grande amo[Em/D]r\n[G]Águas que correm do [D/F#]trono\n[G]Águas que curam, que [A4]lim[A]pam [G/A] [A/C#]",
+                            "content_color": "#2196F3"
+                        },
+                        "V2": {
+                            "content_type": "verse",
+                            "content_code": "V2",
+                            "content_text": "[D]Por onde o rio pass[Em/D]ar\nT[Bm7]udo vai transfor[A4]mar[A]\nPois [G]leva a vida do [D/F#]próprio Deus\nE este [G]rio es[Em7]tá\n[A4]Neste lu[A]gar [G/B] [A/C#]",
+                            "content_color": "#2196F3"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[D]Quero beber do Teu [G]rio, Se[D]nhor[D/F#]\nSa[G]cia minha [D/F#]sede, lava o [Em7]meu inte[A]rior\nEu [Bm7]quero fluir em Tuas [G]águas [A]\nEu [Bm7]quero be[F#m7]ber da Tua [G]fonte\nFonte de águas [A4]vivas [A]\nTu és a [G/A]fonte, Se[D]nhor",
+                            "content_color": "#F44336"
+                        },
+                        "B": {
+                            "content_type": "bridge",
+                            "content_code": "B",
+                            "content_text": "Tu és a fonte, Senho[D]r [D4]\nTu és o rio, Senho[D]r [D4]\nTu és a fonte, Senho[Bm]r [A]\nTu és o rio, Senho[G]r [A]",
+                            "content_color": "#4CAF50"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Aquele que Está Feliz",
+            "author": "Marcos Vinicius / Comunidade de Nilópolis",
+            "tempo": "",
+            "music_key": "A",
+            "language": "pt-BR",
+            "tags": [
+                "alegria",
+                "celebração",
+                "comunidade",
+                "contemporâneo"
+            ],
+            "downloadCount": 0,
+            "searchText": "aquele que está feliz marcos vinicius comunidade de nilópolis alegria celebração comunidade contemporâneo",
+            "versions": [
+                {
+                    "version_name": "Original",
+                    "transposed_key": "A",
+                    "song_structure": [
+                        "I",
+                        "V1",
+                        "C",
+                        "V1",
+                        "C"
+                    ],
+                    "sections": {
+                        "I": {
+                            "content_type": "intro",
+                            "content_code": "I",
+                            "content_text": "[A] [Bm] [C#m] [Bm]",
+                            "content_color": "#9C27B0"
+                        },
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[A]Aquele que está [Bm]feliz, [C#m]      [Bm]diga a[A]mém!\n[A]Aquele que está [Bm]feliz,[C#m]      [Bm]grite ale[A]luia!\n[A]Aquele que está [Bm]feliz,[C#m]      [Bm]bata [A]palma assim\n[A]Aquele que está [Bm]feliz,[C#m]       [Bm]dance comigo a[A]ssim [D] [E/G#] [F#m]",
+                            "content_color": "#2196F3"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[F#m]Com Jesus no coração a gente é fe[C#m]liz\n[D]Com Jesus na condução tudo é muito [Bm]bom           [E]\n[A]Jesus é ale[F#m]gria, eufo[D]ria, compa[Bm]nhia todo dia\n[E]Jesus é o motivo da nossa ale[A]gria",
+                            "content_color": "#F44336"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Coração Igual ao Teu",
+            "author": "Ana Paula Valadão / Diante do Trono",
+            "tempo": "",
+            "music_key": "G",
+            "language": "pt-BR",
+            "tags": [
+                "adoração",
+                "transformação",
+                "diante do trono",
+                "entrega"
+            ],
+            "downloadCount": 0,
+            "searchText": "coração igual ao teu ana paula valadão diante do trono adoração transformação entrega",
+            "versions": [
+                {
+                    "version_name": "Original",
+                    "transposed_key": "G",
+                    "song_structure": [
+                        "I",
+                        "V1",
+                        "C",
+                        "V2",
+                        "C"
+                    ],
+                    "sections": {
+                        "I": {
+                            "content_type": "intro",
+                            "content_code": "I",
+                            "content_text": "[G2]",
+                            "content_color": "#9C27B0"
+                        },
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[G]Se tu olhares Senhor [D/F#]pra dentro de mim\n[Em7]Nada encontrarás de [A4]bom[A]\n[G]Mas um desejo eu [A/G]tenho, de ser [D]transfor[A/C#]mado[Bm7]\n[Em7]Preciso tanto do [D/F#]teu perdão\n[G]Dá-me um novo cora[A4]ção[A]",
+                            "content_color": "#2196F3"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[D]Dá-me um co[D/F#]ração igual ao [G]teu, meu [A]mestre\n[D]Dá-me um co[C/E]ração i[D/F#]gual ao [G]teu\n[A/G]Coração dis[F#m7]posto a obede[Bm7]cer\n[F#m7]Cumprir todo o [Bm7]teu querer\n[Em7]Dá-me um cora[G/A]ção igual ao [D]teu",
+                            "content_color": "#F44336"
+                        },
+                        "V2": {
+                            "content_type": "verse",
+                            "content_code": "V2",
+                            "content_text": "[F#m]Ensina-me amar o meu ir[Bm7]mão\n[A]A olhar com teus olhos perdoar com teu per[D]dão\n[G]Enche-me com teu Es[A/G]pírito, en[F#m7]direita os meus cami[Bm7]nhos, ó [A]De[G]us\n[A]Dá-me um novo cora[D]ção.",
+                            "content_color": "#2196F3"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Corpo e Família",
+            "author": "Daniel Souza",
+            "tempo": "",
+            "music_key": "A",
+            "language": "pt-BR",
+            "tags": [
+                "comunhão",
+                "igreja",
+                "família",
+                "unidade"
+            ],
+            "downloadCount": 0,
+            "searchText": "corpo e família daniel souza comunhão igreja família unidade",
+            "versions": [
+                {
+                    "version_name": "Original",
+                    "transposed_key": "A",
+                    "song_structure": [
+                        "I",
+                        "V1",
+                        "C",
+                        "V2",
+                        "C",
+                        "F"
+                    ],
+                    "sections": {
+                        "I": {
+                            "content_type": "intro",
+                            "content_code": "I",
+                            "content_text": "[A] [E] (2x) [D/E]",
+                            "content_color": "#9C27B0"
+                        },
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[A]Recebi um novo co[Asus]ração do [A]Pai [E/G#]\n[F#m7]Coração rege[C#m7]nerado, cora[D7+]ção transfor[A/C#]mado\n[Bm7]Coração que é inspi[D/A]rado por Je[Esus]sus[E]",
+                            "content_color": "#2196F3"
+                        },
+                        "V2": {
+                            "content_type": "verse",
+                            "content_code": "V2",
+                            "content_text": "[A]Como fruto deste [Asus]novo cora[A]ção [E/G#]\n[F#m7]Eu declaro a [C#m7]paz de Cristo\n[D7+]Te abençôo meu ir[A/C#]mão\n[Bm7]Preciosa é a [D/A]nossa comu[Esus]nhão[E7]",
+                            "content_color": "#2196F3"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[A]Somos corpo, e assim bem ajus[E/G#]tado\n[C#7]Totalmente li[F#m7]gado, u[D]nidos\n[Bm7]Vivendo em a[Esus]mor[E]\n[A]Uma família, sem qualquer falsi[E/G#]dade\n[C#7]Vivendo a ver[F#m7]dade\n[D]Expressando a [Bm7]Glória do Se[Esus]nhor[E]\n[A]Uma família, vivendo o compro[E/G#]misso\n[C#7]Grande amor de Cris[F#m7]to\n[D]Eu preci[Bm7]so de ti, que[E]rido ir[A]mão",
+                            "content_color": "#F44336"
+                        },
+                        "F": {
+                            "content_type": "final",
+                            "content_code": "F",
+                            "content_text": "[F#m7]Precioso és para [Bm7]mim queri[E]do ir[A]mão\n[F#m7]Eu preciso de [D]ti, queri[E]do ir[A]mão\n[F#m7]Precioso és para [Bm7]mim queri[E]do ir[A]mão",
+                            "content_color": "#FF9800"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Deus Inabalável",
+            "author": "Isaque Tseng",
+            "tempo": "",
+            "music_key": "C#m",
+            "language": "pt-BR",
+            "tags": [
+                "confiança",
+                "paz",
+                "new heart",
+                "força"
+            ],
+            "downloadCount": 0,
+            "searchText": "deus inabalável isaque tseng confiança paz new heart força",
+            "versions": [
+                {
+                    "version_name": "Original",
+                    "transposed_key": "C#m",
+                    "song_structure": [
+                        "I",
+                        "V1",
+                        "C",
+                        "V2",
+                        "C",
+                        "B",
+                        "F"
+                    ],
+                    "sections": {
+                        "I": {
+                            "content_type": "intro",
+                            "content_code": "I",
+                            "content_text": "[C#m] [Bsus] [A2] [Bsus] (2x)",
+                            "content_color": "#9C27B0"
+                        },
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[C#m]Mesmo quando tudo em volta [Bsus4]muda\n[A2]A minha fé não se aba[Bsus4]lará\n[C#m]Mesmo que a vide não dê [G#m]frutos\n[A2]Me alegrarei no meu Se[Bsus4]nhor",
+                            "content_color": "#2196F3"
+                        },
+                        "V2": {
+                            "content_type": "verse",
+                            "content_code": "V2",
+                            "content_text": "Os meus medos, minha insegurança\nColoco nas mãos do meu Senhor\nÉs minha força, És inabalável\nContigo ao meu lado o mal não temerei",
+                            "content_color": "#2196F3"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[E]Porque o meu Deus,\n[B/D#]É um Deus que dá [C#m]paz\n[Bsus]Que excede o entendi[A2]mento\n[E/G#]E cu[F#m]ra, a minha afli[B/D#]ção\n[E]Porque o meu Deus,\n[B/D#]É um Deus de a[C#m]mor\n[G#m]Que mandou seu Filho ao [A2]mundo\n[E/G#]Para [F#m]dar, a minha salva[Bsus4]ção.",
+                            "content_color": "#F44336"
+                        },
+                        "B": {
+                            "content_type": "bridge",
+                            "content_code": "B",
+                            "content_text": "[A]Ó meu Deus, me segure em [B]Tuas [C#m]mãos\n[G#m]Me ajude a con[A]fiar, no seu infi[B]nito a[C#m]mor\n[G#m]Quando tudo muda, eu [A]posso con[B]fiar …(no meu Deus)",
+                            "content_color": "#4CAF50"
+                        },
+                        "F": {
+                            "content_type": "final",
+                            "content_code": "F",
+                            "content_text": "O meu Deus é um Deus de paz\nQue excede o entender\nO meu Deus é um Deus de amor\nQue me deu a salvação",
+                            "content_color": "#FF9800"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Efésios 1",
+            "author": "Projeto Sola",
+            "tempo": "",
+            "music_key": "C",
+            "language": "pt-BR",
+            "tags": [
+                "bíblico",
+                "graça",
+                "eleição"
+            ],
+            "downloadCount": 0,
+            "searchText": "efésios 1 projeto sola bíblico projeto sola graça eleição",
+            "versions": [
+                {
+                    "version_name": "Original",
+                    "transposed_key": "C",
+                    "song_structure": [
+                        "I",
+                        "V1",
+                        "C",
+                        "I",
+                        "V2",
+                        "C",
+                        "B"
+                    ],
+                    "sections": {
+                        "I": {
+                            "content_type": "intro",
+                            "content_code": "I",
+                            "content_text": "[C] [Em] [D] [G] [G/B] [C]\n[C] [Em] [D] [G] [G/B] [C] [G]",
+                            "content_color": "#9C27B0"
+                        },
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[Em]Antes do tempo exis[D]tir\n[C]Escolheu-nos pra Si\n[Em]Nos encontrou e por [D]graça\n[C]Ele nos adotou\n[G/B]Para Sua gló[C]ria\n[D4]E pro Seu lou[Em]vor\n[G/B]Para Sua gló[C]ria\n[D4]E pro Seu lou[G]vor",
+                            "content_color": "#2196F3"
+                        },
+                        "V2": {
+                            "content_type": "verse",
+                            "content_code": "V2",
+                            "content_text": "[Em]Cristo e Seu sangue\n[D]A nós redenção conce[C]deu\n[Em]Com o fim de nos tor[D]nar\n[C]Coerdeiros de Deus",
+                            "content_color": "#2196F3"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[C]Ao Se[Em]nhor, [D]Deus Pai\n[G]O louvor que trans[G/B]borda de [C]nós\n[C]O Seu [Em]povo es[D]tá\n[G]Reunido em sin[G/B]cero fer[C]vor\n[G/B]Para Sua gló[C]ria\n[D4]E pro Seu louvor",
+                            "content_color": "#F44336"
+                        },
+                        "B": {
+                            "content_type": "bridge",
+                            "content_code": "B",
+                            "content_text": "[C]E nós espe[D4]ramos por [G]Ti[G/B]\n[C]Confi[D4]antes\n[Em]Que lá no fim, nos resga[G/B]tarás\n[C]A promessa [D4]feita a[G]qui (feita a[G/B]qui)\n[C]Traz cer[D4]teza, [Em]todo viver pra Tua gló[G/B]ria será",
+                            "content_color": "#4CAF50"
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

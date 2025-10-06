@@ -1,0 +1,358 @@
+{
+    "ciphers": [
+        {
+            "title": "Entrega",
+            "author": "Vineyard",
+            "tempo": "",
+            "music_key": "D",
+            "language": "pt-BR",
+            "tags": [
+                "entrega",
+                "rendição",
+                "adoração"
+            ],
+            "downloadCount": 0,
+            "searchText": "entrega vineyard rendição adoração",
+            "versions": [
+                {
+                    "version_name": "Original",
+                    "transposed_key": "D",
+                    "song_structure": [
+                        "V1",
+                        "C",
+                        "V2",
+                        "C"
+                    ],
+                    "sections": {
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[D]Te dou meu cora[A]ção\nE tudo que há em [G]mim\nEntrego meu vi[Bm7]ver\n[A/C#]Por amor a ti, meu [D]rei!\nMeus sonhos rendo a [A]ti\nE meus direitos [G]dou\nO orgulho vou tro[Bm7]car\n[A/C#]Pela vida do Se[D]nhor[A/C#]",
+                            "content_color": "#2196F3"
+                        },
+                        "V2": {
+                            "content_type": "verse",
+                            "content_code": "V2",
+                            "content_text": "[D]Eu canto esta can[A]ção\nDe entrega a ti, Je[G]sus\nE o que o mundo [Bm7]dá\n[A/C#]Eu deixo aos pés da [D]cruz\nPor conhecer a [A]ti\nA teu nome dar lou[G]vor\nSentir tua ale[Bm7]gria\n[A/C#]Partilhando tua [D]dor[A/C#]",
+                            "content_color": "#2196F3"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[Bm7]E [A/C#]eu en[D]trego [G]tudo a [D]ti\n[Bm7]Tudo [A]a [G]ti",
+                            "content_color": "#F44336"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Eu Cantarei (We Will Sing)",
+            "author": "Jon Lo",
+            "tempo": "",
+            "music_key": "A",
+            "language": "pt-BR",
+            "tags": [
+                "louvor",
+                "new heart",
+                "soberania",
+                "adoração"
+            ],
+            "downloadCount": 0,
+            "searchText": "eu cantarei we will sing jon lo louvor new heart soberania adoração",
+            "versions": [
+                {
+                    "version_name": "Original",
+                    "transposed_key": "A",
+                    "song_structure": [
+                        "I",
+                        "V1",
+                        "C",
+                        "I",
+                        "V2",
+                        "C",
+                        "I",
+                        "V3",
+                        "C",
+                        "C",
+                        "TAG"
+                    ],
+                    "sections": {
+                        "I": {
+                            "content_type": "intro",
+                            "content_code": "I",
+                            "content_text": "[A] [D] [A] [F#m] [D]",
+                            "content_color": "#9C27B0"
+                        },
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "Sobe[A]rano\nSobre a [E]terra\nTuas [D]obras\nProclamam Teu [A/C#]grande va[E]lor\nPode[A]roso\nPleno em pod[E]er\nEm tua [D]lei, Senhor [E]\nTenho praz[A]er",
+                            "content_color": "#2196F3"
+                        },
+                        "V2": {
+                            "content_type": "verse",
+                            "content_code": "V2",
+                            "content_text": "Amo[A]roso\nDeus paci[E]ente\nEm tua pres[D]ença\nEu quero me [A/C#]ajoe[E]lhar\nEspírito [A]Santo,\nVenha gui[E]ar me\nPra vi[D]ver na luz, [E]\nNa graça e po[A]der",
+                            "content_color": "#2196F3"
+                        },
+                        "V3": {
+                            "content_type": "verse",
+                            "content_code": "V3",
+                            "content_text": "Deus co[A]nosco\nTu estás [E]perto\nEm Tua pre[D]sença\nNão há mais [A/C#]medo e tre[E]mor\nTua bon[A]dade\nProcla[E]marei\nTua [D]grandeza [E]\nEu canta[A]rei",
+                            "content_color": "#2196F3"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "Canta[D]remos para sempre\nAo nosso [A/C#]Deus e [E]Rei\nPois sa[D]bemos que por nós\nAs grandes [A]coi[F#m]sas [E]fez\nPara [D]sempre\nCânticos [A]soa[E]rão\nDeus é [D]Rei,\nPara [E]sempre canta[A]rei",
+                            "content_color": "#F44336"
+                        },
+                        "TAG": {
+                            "content_type": "tag",
+                            "content_code": "TAG",
+                            "content_text": "Deus é [D]Rei,\nPara [E]sempre canta[A]rei",
+                            "content_color": "#673AB7"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Eu Te Bendirei",
+            "author": "Matt Redman / Rachel Novaes / Ronaldo Bezerra",
+            "tempo": "",
+            "music_key": "G",
+            "language": "pt-BR",
+            "tags": [
+                "adoração",
+                "louvor",
+                "fidelidade",
+                "bênção"
+            ],
+            "downloadCount": 0,
+            "searchText": "eu te bendirei matt redman rachel novaes ronaldo bezerra adoração louvor fidelidade bênção",
+            "versions": [
+                {
+                    "version_name": "Original",
+                    "transposed_key": "G",
+                    "song_structure": [
+                        "I",
+                        "V1",
+                        "C",
+                        "V2",
+                        "C",
+                        "B",
+                        "C"
+                    ],
+                    "sections": {
+                        "I": {
+                            "content_type": "intro",
+                            "content_code": "I",
+                            "content_text": "[G] [G7M] [C9] (2x)",
+                            "content_color": "#9C27B0"
+                        },
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[G9]Eu te bendirei quando tuas [D9]bênçãos eu pro[Em7]var[C9]\n[G9]Quando teu rio me sa[D9]ciar eu te bendi[C9]rei\n[G9]Eu te bendirei quando no de[D9]serto esti[Em7]ver[C9]\n[G9]Quando a solidão me en[D9]volver eu te bendi[C9]rei",
+                            "content_color": "#2196F3"
+                        },
+                        "V2": {
+                            "content_type": "verse",
+                            "content_code": "V2",
+                            "content_text": "[G9]Eu te bendirei quando a luz do [D9]sol brilhar em [Em7]mim[C9]\n[G9]Quando tudo certo esti[D9]ver eu te bendi[C9]rei\n[G9]Eu te bendirei num caminho de afli[D9]ção[Em7][C9]\n[G9]Se a dor tomar meu cora[D9]ção eu te bendi[C9]rei",
+                            "content_color": "#2196F3"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[G9]Pelas bênçãos rece[D9]bidas te dou lou[Em7]vor[C9]\n[G9]Quando as trevas me cer[D9]carem cantar eu [Em7]vou[C9]\n[G9]Eu te bendirei, oh Se[D9]nhor eu te bendi[Em7]rei[C9]\n[G9]Eu te bendirei, oh Se[D9]nhor Teu Glorioso [Em7]nome ben[D]di[C9]rei",
+                            "content_color": "#F44336"
+                        },
+                        "B": {
+                            "content_type": "bridge",
+                            "content_code": "B",
+                            "content_text": "[G9]Oh soberano [D9]Deus em Ti confi[Em7]arei[C9] (2x)\n[G9]Tu és o meu Se[D9]nhor, Teu [E7]nome ben[D]di[C9]rei",
+                            "content_color": "#4CAF50"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Eu Te Louvarei",
+            "author": "Ronaldo Bezerra",
+            "tempo": "",
+            "music_key": "D",
+            "language": "pt-BR",
+            "tags": [
+                "louvor",
+                "adoração",
+                "salvação",
+                "alegria"
+            ],
+            "downloadCount": 0,
+            "searchText": "eu te louvarei ronaldo bezerra louvor adoração salvação alegria",
+            "versions": [
+                {
+                    "version_name": "Original",
+                    "transposed_key": "D",
+                    "song_structure": [
+                        "V1",
+                        "C",
+                        "V2",
+                        "C"
+                    ],
+                    "sections": {
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[D]És Tu, única ra[A]zão da minha ado[Bm]ração, oh Je[G]sus\n[D]És Tu, única espe[A]rança que anelo [Bm]ter, oh Je[G]sus\n[Em7]Confiei em Ti e fui aju[A]dado [Em]Tua Salvação tem me ale[A7]grado\n[D]Hoje há gozo em meu cora[A]ção, com meu canto Te lou[Bm7]varei[G][A]",
+                            "content_color": "#2196F3"
+                        },
+                        "V2": {
+                            "content_type": "verse",
+                            "content_code": "V2",
+                            "content_text": "[D]Em todo tempo Te lou[G]varei, em todo [A]tempo Te ado[D]rarei.\n[D]Em todo tempo Te lou[G]varei, em todo [A]tempo Te ado[D]rarei.",
+                            "content_color": "#2196F3"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[E]Eu Te lou[B]varei, Te glori[C#m]ficarei[A][B]\n[E]Eu Te lou[B]varei, meu bom Je[A]sus [A9] [A] [B] (2x)",
+                            "content_color": "#F44336"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Eu Vou Construir",
+            "author": "Brett Younker, Karl Martin, Kirby Kaple, Matt Redman, Pat Barrett",
+            "tempo": "",
+            "music_key": "E",
+            "language": "pt-BR",
+            "tags": [
+                "adoração",
+                "construção",
+                "fundamento",
+                "entrega"
+            ],
+            "downloadCount": 0,
+            "searchText": "eu vou construir brett younker karl martin kirby kaple matt redman pat barrett adoração construção fundamento entrega",
+            "versions": [
+                {
+                    "version_name": "Original",
+                    "transposed_key": "E",
+                    "song_structure": [
+                        "I",
+                        "V1",
+                        "V2",
+                        "C",
+                        "IL",
+                        "B"
+                    ],
+                    "sections": {
+                        "I": {
+                            "content_type": "intro",
+                            "content_code": "I",
+                            "content_text": "[E] [A] (2x)",
+                            "content_color": "#9C27B0"
+                        },
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[E]Digno desta canção só Tu és Se[A/E]nhor\n[E/G#]Digno do meu louvor só Tu és Se[A]nhor\n[E]Digno da minha vida Tu és Se[A/E]nhor\n[E/G#]Oh eu sou [A]Teu",
+                            "content_color": "#2196F3"
+                        },
+                        "V2": {
+                            "content_type": "verse",
+                            "content_code": "V2",
+                            "content_text": "[E]Nome que é sobre todos é o Teu Je[A/E]sus\n[E/G#]Fonte da salvação só Tu és Je[A]sus\n[E]Digno da minha vida Tu és Je[A/E]sus\n[E/G#]Oh eu sou Teu [A/E]oh eu sou Teu",
+                            "content_color": "#2196F3"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[A9]Santo\n[F#m7]És incomparável\n[E]És inigualável\n[C#m]Abre os meus olhos, Senhor\n[A9]Mostra quem Tu és\n[F#m7]E enche o meu co[E]ração\n[C#m]do amor que faz mudar o mundo",
+                            "content_color": "#F44336"
+                        },
+                        "IL": {
+                            "content_type": "interlude",
+                            "content_code": "IL",
+                            "content_text": "[A9] [B] [C#m] [E/G#]",
+                            "content_color": "#9C27B0"
+                        },
+                        "B": {
+                            "content_type": "bridge",
+                            "content_code": "B",
+                            "content_text": "[A9]Eu vou construir minha [B9]vida em [C#m7]Ti\n[E/G#]Tu és meu fundamento\n[A9]Eu vou confiar so[B9]mente em [C#m7]Ti\n[E/G#]Não vou ser abalado",
+                            "content_color": "#4CAF50"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Firme Fundamento",
+            "author": "Maverick City",
+            "tempo": "",
+            "music_key": "C",
+            "language": "pt-BR",
+            "tags": [
+                "fundamento",
+                "confiança",
+                "rocha"
+            ],
+            "downloadCount": 0,
+            "searchText": "firme fundamento maverick city confiança rocha",
+            "versions": [
+                {
+                    "version_name": "Original",
+                    "transposed_key": "C",
+                    "song_structure": [
+                        "I",
+                        "V1",
+                        "C",
+                        "V2",
+                        "C",
+                        "B"
+                    ],
+                    "sections": {
+                        "I": {
+                            "content_type": "intro",
+                            "content_code": "I",
+                            "content_text": "[C] [Dm7] [C/E] [F2]",
+                            "content_color": "#9C27B0"
+                        },
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[C]Meu firme fundamento\n[Am7]És a Rocha onde es[G]tou\n[Csus]Quando tudo é aba[C]lado\n[Am7]Feliz ainda [G]sou\n[F]Pus minha fé em Je[C/E]sus\n[Am7]Pois nunca me dei[G]xou\n[F]Foi fiel por mi[C/E]lênios\n[Am7]Meu Deus nunca fa[G]lhou",
+                            "content_color": "#2196F3"
+                        },
+                        "V2": {
+                            "content_type": "verse",
+                            "content_code": "V2",
+                            "content_text": "[C]Minha alegria no caos\n[Am7]Paz que não posso expli[G]car\n[F]Força que me sus[C/E]ten[Dm7]ta[C]\n[Am7]E não deixa eu afun[G]dar\n[F]Pus minha fé em Je[C/E]sus\n[Am7]Pois nunca me dei[G]xou\n[F]Foi fiel por mi[C/E]lênios\n[Am7]Meu Deus nunca fa[G]lhou",
+                            "content_color": "#2196F3"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[C]Não vai [Csus]não vai\n[Am7]E não vai [G]falhar[F]\n[Am7]E não vai fa[G]lhar[C][Em][F]\n[C]Não vai [Csus]não vai",
+                            "content_color": "#F44336"
+                        },
+                        "B": {
+                            "content_type": "bridge",
+                            "content_code": "B",
+                            "content_text": "[Fmaj7]Choveu, so[G/F]prou\n[C/E]Na Rocha eu cons[Am]truí[G]\n[Fmaj7]Segu[G]ro em Ti\n[C/E]A casa firme es[Am]tá[G]\n[Fmaj7]A casa firme es[G/F]tá\n[C/E]pois me apeguei a [Am]Ti[G]\n[Fmaj7]A casa firme es[G]tá\n[C/E]pois construí em [Am]Ti[G]",
+                            "content_color": "#4CAF50"
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -93,7 +93,14 @@ class _HomeScreenState extends State<HomeScreen> {
               iconColor: iconColor,
               iconSize: 80,
             );
-
+            if (authProvider.isAdmin) {
+              items.add(
+                navigationProvider.getAdminItem(
+                  iconColor: iconColor,
+                  iconSize: 80,
+                ),
+              );
+            }
             return CustomScrollView(
               slivers: [
                 SliverAppBar(

@@ -1,3 +1,4 @@
+import 'package:cipher_app/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/providers/navigation_provider.dart';
@@ -26,8 +27,8 @@ class MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<NavigationProvider>(
-      builder: (context, navigationProvider, child) {
+    return Consumer2<NavigationProvider, AuthProvider>(
+      builder: (context, navigationProvider, authProvider, child) {
         if (navigationProvider.isLoading) {
           return const Scaffold(
             body: Center(
@@ -71,7 +72,9 @@ class MainScreenState extends State<MainScreen> {
         return Scaffold(
           appBar: AppBar(title: Text(navigationProvider.routeTitle)),
           drawer: const AppDrawer(),
-          body: AppRoutes.contentRoutes[navigationProvider.currentRoute],
+          body: AppRoutes.contentRoutes(
+            authProvider.isAdmin,
+          )[navigationProvider.currentRoute],
         );
       },
     );

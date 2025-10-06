@@ -1,0 +1,391 @@
+{
+    "ciphers": [
+        {
+            "title": "Geração que Dança",
+            "author": "David Quinlan",
+            "tempo": "",
+            "music_key": "C",
+            "language": "pt-BR",
+            "tags": [
+                "dança",
+                "geração",
+                "ministério adoração",
+                "celebração"
+            ],
+            "downloadCount": 0,
+            "searchText": "geração que dança david quinlan ministério adoração celebração",
+            "versions": [
+                {
+                    "version_name": "Original",
+                    "transposed_key": "C",
+                    "song_structure": [
+                        "V1",
+                        "V2",
+                        "PC",
+                        "C"
+                    ],
+                    "sections": {
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[C]A Tua graça nos faz dançar\n[Am]Com toda a força celebrar\n[F]Dançaremos gratos por teu a[C]mor",
+                            "content_color": "#2196F3"
+                        },
+                        "V2": {
+                            "content_type": "verse",
+                            "content_code": "V2",
+                            "content_text": "[C]A Tua glória nos faz cantar\n[Am]Por toda terra te exaltar\n[F]Cantaremos glórias a Ti, Se[C]nhor",
+                            "content_color": "#2196F3"
+                        },
+                        "PC": {
+                            "content_type": "pre-chorus",
+                            "content_code": "PC",
+                            "content_text": "[Dm]Quero transbordar\n[C/E]Por nos perdoar\n[F]Por te conhecer\n[G]Não podemos nos calar",
+                            "content_color": "#E91E63"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[C]E seremos a geração que dança\n[Dm]Por causa da tua misericórdia, ó [F]Deus\nTua misericórdia, ó [C]Deus\n[C]E seremos a geração que canta\n[Dm]E que celebra a Tua glória, ó [F]Deus\nA Tua glória, ó [C]Deus",
+                            "content_color": "#F44336"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Grandioso És",
+            "author": "Júlio César Filho / Purples",
+            "tempo": "",
+            "music_key": "Em",
+            "language": "pt-BR",
+            "tags": [
+                "grandeza",
+                "humildade",
+                "dependência",
+                "purples"
+            ],
+            "downloadCount": 0,
+            "searchText": "grandioso és júlio césar filho purples grandeza humildade dependência",
+            "versions": [
+                {
+                    "version_name": "Original",
+                    "transposed_key": "Em",
+                    "song_structure": [
+                        "I",
+                        "V1",
+                        "PC",
+                        "C",
+                        "I",
+                        "V2",
+                        "PC",
+                        "B"
+                    ],
+                    "sections": {
+                        "I": {
+                            "content_type": "intro",
+                            "content_code": "I",
+                            "content_text": "[Em] [C] [G] [D] (2x)",
+                            "content_color": "#9C27B0"
+                        },
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[Em]Pequeno sou, tão frá[C]gil,\n[G]Indefeso e carente de um cui[D]dar\n[Em]Um pecador tentado a vi[C]ver\n[G]Por mim mesmo e trope[D]çar",
+                            "content_color": "#2196F3"
+                        },
+                        "V2": {
+                            "content_type": "verse",
+                            "content_code": "V2",
+                            "content_text": "Oh, toma-me, com tudo o que sou\ntraz-me pra mais perto, Pai\nPois vale mais um dia junto a Ti do que mil em qualquer lugar",
+                            "content_color": "#2196F3"
+                        },
+                        "PC": {
+                            "content_type": "pre-chorus",
+                            "content_code": "PC",
+                            "content_text": "[Em]Perto de Ti eu reco[C]nheço\n[G]O quanto eu Te necessi[D]to, Deus\n[Em]Tua presença faz [C]do\n[G]Meu temor mais força em [D]Ti",
+                            "content_color": "#E91E63"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[C]Pois grandioso [Em]és, Deus\n[G]Bem maior que o que possa me aba[D]lar\n[C]Tu és a Torre For[Em]te, Rei meu\n[G]Perto assim eternamente quero es[D]tar\n[C]Que seja bem mais de Ti, e menos de [Em]mim\n[G]Que cresças e eu diminua\n[D]Sempre mais de Ti e menos de [C]mim\n[Em]Grandioso [A9]De[G/B]us[C]",
+                            "content_color": "#F44336"
+                        },
+                        "B": {
+                            "content_type": "bridge",
+                            "content_code": "B",
+                            "content_text": "[Em]Bem mais de Ti, menos de [C]mim\n[G]Bem mais de Ti, e menos de [D]mim\n[Em]Que Ele cresça e eu dimi[C]nua, [G]Que Ele cresça e eu dimi[D]nua",
+                            "content_color": "#4CAF50"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Louvai o Nome (Anástasis)",
+            "author": "Hillsong Português",
+            "tempo": "",
+            "music_key": "G",
+            "language": "pt-BR",
+            "tags": [
+                "ressurreição",
+                "calvário",
+                "hillsong",
+                "anástasis"
+            ],
+            "downloadCount": 0,
+            "searchText": "louvai o nome anástasis hillsong ressurreição calvário",
+            "versions": [
+                {
+                    "version_name": "Original",
+                    "transposed_key": "G",
+                    "song_structure": [
+                        "I",
+                        "V1",
+                        "V2",
+                        "C",
+                        "V3",
+                        "C",
+                        "V4",
+                        "F"
+                    ],
+                    "sections": {
+                        "I": {
+                            "content_type": "intro",
+                            "content_code": "I",
+                            "content_text": "[G] [Bm] [C] [G] [Bm] [C]",
+                            "content_color": "#9C27B0"
+                        },
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[G]Para o calvário olharei\n[D]Onde por mim, morreu Je[Em]sus\n[C]Vejo seu corpo em tanta [G]dor\n[D]Naquela cruz, meu salva[G]dor[G/B][C]",
+                            "content_color": "#2196F3"
+                        },
+                        "V2": {
+                            "content_type": "verse",
+                            "content_code": "V2",
+                            "content_text": "[G]Seu corpo sepultado foi\n[D]Na tumba que José com[Em]prou\n[C]Sozinho ali, O Rei fi[G]cou\n[D]Jesus Messias, o Se[G]nhor[G/B][C]",
+                            "content_color": "#2196F3"
+                        },
+                        "V3": {
+                            "content_type": "verse",
+                            "content_code": "V3",
+                            "content_text": "[G]E no terceiro dia então\n[D]O Filho enfim ressusci[Em]tou\n[C]Onde está oh morte, teu agui[G]lhão?\n[D]A Cristo O Rei, a ado[G]ra[Gsus]ção",
+                            "content_color": "#2196F3"
+                        },
+                        "V4": {
+                            "content_type": "verse",
+                            "content_code": "V4",
+                            "content_text": "[G]Num manto branco voltará\n[D]E a noite enfim termi[Em]nará\n[C]E em meio aos Santos subi[G]rei\n[D]Sua face eu contemp[G]larei",
+                            "content_color": "#2196F3"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[G]Louvai o nome do nosso [C]De[G]us\n[Em]Louvai Seu nome sem ces[Dsus]sar[D]\n[G/B]Pra sempre eu Te exal[C]ta[Em]rei\n[C]Senhor, Se[D]nhor meu [G]Deus[G/B][C]",
+                            "content_color": "#F44336"
+                        },
+                        "F": {
+                            "content_type": "final",
+                            "content_code": "F",
+                            "content_text": "[C]Senhor, Se[D]nhor meu [Em]Deus\n[C]Senhor, Se[D]nhor meu [C]Deus",
+                            "content_color": "#FF9800"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Maravilhosa Graça (This is Amazing Grace)",
+            "author": "Phil Wickham, Jeremy Riddle, Josh Farro",
+            "tempo": "",
+            "music_key": "G",
+            "language": "pt-BR",
+            "tags": [
+                "graça",
+                "redenção",
+                "sacrifício"
+            ],
+            "downloadCount": 0,
+            "searchText": "maravilhosa graça this is amazing grace phil wickham jeremy riddle josh farro redenção sacrifício",
+            "versions": [
+                {
+                    "version_name": "Original",
+                    "transposed_key": "G",
+                    "song_structure": [
+                        "I",
+                        "V1",
+                        "C",
+                        "V2",
+                        "C",
+                        "B"
+                    ],
+                    "sections": {
+                        "I": {
+                            "content_type": "intro",
+                            "content_code": "I",
+                            "content_text": "[G] [C] [G] [C]",
+                            "content_color": "#9C27B0"
+                        },
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[G]Quem derrotou a escuridão\n[C]e me amou até o fim\n[Em]O rei da gló[D]ria\n[C]o rei dos reis, Jesus\n[G]Com sua voz, sacode a terra\n[C]Em sua presença não há palavras\n[Em]O rei da gló[D]ria\n[C]o rei dos reis, Jesus",
+                            "content_color": "#2196F3"
+                        },
+                        "V2": {
+                            "content_type": "verse",
+                            "content_code": "V2",
+                            "content_text": "[G]Quem traz a paz, para o meu caos\n[C]E faz do órfão um filho seu\n[Em]É o rei da gló[D]ria\n[C]o rei dos reis, Jesus\n[G]Quem é o rei sobre as nações\n[C]Sua justiça é como o sol\n[Em]É o rei da gló[D]ria\n[C]o rei dos reis, Jesus",
+                            "content_color": "#2196F3"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[G]Maravilhosa graça\n[C]Seu infinito amor\n[Em]Tomou o meu lugar\n[D]a minha cruz levou\n[G]Sua vida entregou\n[C]para me resgatar ô ô ô\n[Em]Pra sempre eu canto\n[D]o que fizeste a [G]mim",
+                            "content_color": "#F44336"
+                        },
+                        "B": {
+                            "content_type": "bridge",
+                            "content_code": "B",
+                            "content_text": "[G]Digno é o cordeiro de Deus\n[C]Digno é cordeiro que a morte venceu\n[G]Digno é o cordeiro de Deus\n[C]Digno é cordeiro que a morte venceu\n[G]Digno é o cordeiro de Deus\n[C]Digno é cordeiro que a morte venceu\n[Em]Digno é o cordeiro de [G]Deus\n[C]Digno! Digno! Digno!",
+                            "content_color": "#4CAF50"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Nosso Deus é Poderoso (God is Able)",
+            "author": "Ben Fielding, Reuben Morgan",
+            "tempo": "",
+            "music_key": "G",
+            "language": "pt-BR",
+            "tags": [
+                "poder",
+                "hillsong",
+                "ressurreição",
+                "vitória"
+            ],
+            "downloadCount": 0,
+            "searchText": "nosso deus é poderoso god is able ben fielding reuben morgan poder hillsong ressurreição vitória",
+            "versions": [
+                {
+                    "version_name": "Original",
+                    "transposed_key": "G",
+                    "song_structure": [
+                        "I",
+                        "V1",
+                        "C",
+                        "I",
+                        "V2",
+                        "C",
+                        "IL",
+                        "B",
+                        "C"
+                    ],
+                    "sections": {
+                        "I": {
+                            "content_type": "intro",
+                            "content_code": "I",
+                            "content_text": "[G] [D] [Em] [C] (2x)",
+                            "content_color": "#9C27B0"
+                        },
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[G]Poderoso\n[D]Nunca falhará\n[Em]Maravilhoso [C]Deus\n[G]Mais que busca-mos\n[D]Mais que pedi-mos\n[Em]Grandes coisas [C]faz[D]",
+                            "content_color": "#2196F3"
+                        },
+                        "V2": {
+                            "content_type": "verse",
+                            "content_code": "V2",
+                            "content_text": "[G]Deus conosco\n[D]Sempre perto está\n[Em]Dando a solu[C]ção\n[G]Mais que sabe-mos\n[D]Mais que espera-mos\n[Em]Grandes coisas [C]faz[D]",
+                            "content_color": "#2196F3"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[G]Ressurgiu e a morte ven[D]ceu\n[Em]Nosso Deus é pode[C]roso\n[G/B]Em Seu nome vamos ven[D]cer\n[Em]Nosso [D]Deus é pode[C]roso",
+                            "content_color": "#F44336"
+                        },
+                        "IL": {
+                            "content_type": "interlude",
+                            "content_code": "IL",
+                            "content_text": "[G] [D] [Em] [D] [C]",
+                            "content_color": "#9C27B0"
+                        },
+                        "B": {
+                            "content_type": "bridge",
+                            "content_code": "B",
+                            "content_text": "[G/B]Deus conosco, nos condu[D]zirá\n[Em]Jamais nos dei[D]xará,\n[C]jamais nos deixará\n[G/B]Deus por nós, quer nos abra[D]çar\n[Em]Ele nunca falha[D]rá\n[C]Ele nunca falhará",
+                            "content_color": "#4CAF50"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "title": "O Amor de Deus (Logo Eu)",
+            "author": "Rachel Novaes",
+            "tempo": "",
+            "music_key": "A",
+            "language": "pt-BR",
+            "tags": [
+                "graça",
+                "amor",
+                "humildade"
+            ],
+            "downloadCount": 0,
+            "searchText": "o amor de deus logo eu rachel novaes graça humildade",
+            "versions": [
+                {
+                    "version_name": "Original",
+                    "transposed_key": "A",
+                    "song_structure": [
+                        "I",
+                        "V1",
+                        "V2",
+                        "C",
+                        "B",
+                        "C"
+                    ],
+                    "sections": {
+                        "I": {
+                            "content_type": "intro",
+                            "content_code": "I",
+                            "content_text": "[D] [E] [A/C#] [D] [D] [E] [A]",
+                            "content_color": "#9C27B0"
+                        },
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[A]Graça sobre Graça recebi\n[F#m]E na plenitude renasci\n[E]Quando atraído me encon[D9]trei\n[A]No amor de Deus",
+                            "content_color": "#2196F3"
+                        },
+                        "V2": {
+                            "content_type": "verse",
+                            "content_code": "V2",
+                            "content_text": "[A]Viva e poderosa salvação\n[F#m]Luz que me alcançou na escuridão\n[E]Por todo meu pecado Ele pa[D9]gou\n[A]No amor de Deus",
+                            "content_color": "#2196F3"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[D9]Logo eu, um pobre peca[E/G#]dor\n[C#m]Logo eu tão fraco e tão deve[D]dor\n[Bm7]Logo eu, de graça rece[E4]bi\n[A9]O amor de Deus\n[D9]Logo eu, finito e car[E/G#]nal\n[C#m]Logo eu, diante de um Deus imor[D9]tal\n[Bm7]Logo eu, de graça rece[E4]bi\nO amor de [D]De[E]us[A/C#][D]",
+                            "content_color": "#F44336"
+                        },
+                        "B": {
+                            "content_type": "bridge",
+                            "content_code": "B",
+                            "content_text": "[A9]O Amor de Deus não busca benefício\n[F#m7]O amor de Deus não mede sacrifícios\n[E]Dos braços desse amor recebo o per[Bm]dão\n[F#m]Comprado por Je[E]sus\n[A9]O amor de Deus é justo e paciente\n[F#m]Como as manhãs, é firme e constante\n[E]Que se entregou na cruz e a morte derro[Bm]tou.\nAmor de Je[D]sus[E][A/C#][D][E][A]",
+                            "content_color": "#4CAF50"
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

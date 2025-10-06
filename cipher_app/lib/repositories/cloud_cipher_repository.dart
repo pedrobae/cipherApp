@@ -92,6 +92,43 @@ class CloudCipherRepository {
     return versionId;
   }
 
+  Future<String> createPublicCipherFromJson(Map<String, dynamic> json) async {
+    final versions = json.remove('versions');
+    final cipherId = await _firestoreService.createDocument(
+      collectionPath: 'publicCiphers',
+      data: json,
+    );
+
+    FirebaseAnalytics.instance.logEvent(
+      name: 'cipher_created',
+      parameters: {
+        'cipher_id': cipherId,
+        'user_id': _authService.currentUser!.uid,
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
+      },
+    );
+
+    // Create initial versions in sub-collection
+    for (var version in versions) {
+      final versionId = await _firestoreService.createSubCollectionDocument(
+        parentCollectionPath: 'publicCiphers',
+        parentDocumentId: cipherId,
+        subCollectionPath: 'versions',
+        data: version as Map<String, dynamic>,
+      );
+
+      FirebaseAnalytics.instance.logEvent(
+        name: 'cipher_version_created',
+        parameters: {
+          'cipher_id': cipherId,
+          'version_id': versionId,
+          'timestamp': DateTime.now().millisecondsSinceEpoch,
+        },
+      );
+    }
+    return cipherId;
+  }
+
   // ===== READ =====
   /// Fetch popular ciphers from Firestore (requires authentication)
   Future<List<CipherDto>> getPopularCiphers() async {

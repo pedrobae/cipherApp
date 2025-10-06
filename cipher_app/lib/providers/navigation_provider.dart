@@ -1,4 +1,3 @@
-import 'package:cipher_app/providers/auth_provider.dart';
 import 'package:cipher_app/utils/design_constants.dart';
 import 'package:flutter/material.dart';
 
@@ -185,9 +184,6 @@ class NavigationProvider extends ChangeNotifier {
       getPlaylistItem(iconColor: iconColor, iconSize: iconSize),
       getSettingsItem(iconColor: iconColor, iconSize: iconSize),
       getInfoItem(iconColor: iconColor, iconSize: iconSize),
-      if (AuthProvider().isAdmin) ...[
-        getAdminItem(iconColor: iconColor, iconSize: iconSize),
-      ],
     ];
   }
 }

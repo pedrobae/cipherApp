@@ -1,4 +1,3 @@
-import 'package:cipher_app/providers/auth_provider.dart';
 import 'package:cipher_app/providers/navigation_provider.dart';
 import 'package:cipher_app/screens/login_screen.dart';
 import 'package:cipher_app/screens/main_screen.dart';
@@ -23,14 +22,13 @@ class AppRoutes {
     adminBulkImport: (context) => const AdminBulkImportScreen(),
   };
 
-  static Map<String, Widget> get contentRoutes {
+  static Map<String, Widget> contentRoutes(bool isAdmin) {
     return {
       NavigationProvider.libraryRoute: const CipherLibraryScreen(),
       NavigationProvider.playlistsRoute: const PlaylistLibraryScreen(),
       NavigationProvider.settingsRoute: const SettingsScreen(),
       NavigationProvider.infoRoute: const InfoScreen(),
-      if (AuthProvider().isAdmin)
-        NavigationProvider.admin: const AdminBulkImportScreen(),
+      if (isAdmin) NavigationProvider.admin: const AdminBulkImportScreen(),
     };
   }
 }

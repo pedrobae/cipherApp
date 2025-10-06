@@ -1,12 +1,6 @@
-import 'package:cipher_app/models/domain/cipher/cipher.dart';
-import 'package:cipher_app/models/domain/cipher/version.dart';
-import 'package:cipher_app/models/domain/cipher/section.dart';
-import 'package:cipher_app/repositories/local_cipher_repository.dart';
 import 'package:cipher_app/repositories/cloud_cipher_repository.dart';
 import 'package:cipher_app/services/auth_service.dart';
-import 'package:cipher_app/utils/color.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 
 /// Progress callback for bulk operations
 typedef ProgressCallback = void Function(int current, int total, String status);
@@ -14,7 +8,6 @@ typedef ProgressCallback = void Function(int current, int total, String status);
 /// Service for admin-only bulk operations
 /// Handles bulk import of ciphers to both SQLite and Firestore
 class AdminBulkService {
-  final LocalCipherRepository _localRepository = LocalCipherRepository();
   final CloudCipherRepository _cloudRepository = CloudCipherRepository();
   final AuthService _authService = AuthService();
 
@@ -46,24 +39,15 @@ class AdminBulkService {
           'Processando: ${cipherData['title']}',
         );
 
-        // Convert JSON to Cipher object
-        final cipher = await _parseCipherFromJson(cipherData);
-
-        // Always import to local SQLite first (offline-first principle)
-        final localId = await _localRepository.insertWholeCipher(cipher);
-        result.localSuccessCount++;
-
         // Upload to cloud if requested and admin authenticated
         if (uploadToCloud) {
           try {
-            await _cloudRepository.createPublicCipher(
-              cipher.copyWith(id: localId),
-            );
+            await _cloudRepository.createPublicCipherFromJson(cipherData);
             result.cloudSuccessCount++;
           } catch (e) {
-            result.cloudFailures.add('${cipher.title}: $e');
+            result.cloudFailures.add('${cipherData['title']}: $e');
             if (kDebugMode) {
-              print('Failed to upload ${cipher.title} to cloud: $e');
+              print('Failed to upload ${cipherData['title']} to cloud: $e');
             }
           }
         }
@@ -84,80 +68,6 @@ class AdminBulkService {
       'Importação concluída!',
     );
     return result;
-  }
-
-  /// Convert JSON data to Cipher domain object
-  Future<Cipher> _parseCipherFromJson(Map<String, dynamic> data) async {
-    final now = DateTime.now();
-
-    // Parse basic cipher info
-    final cipher = Cipher(
-      title: data['title'] as String? ?? '',
-      author: data['author'] as String? ?? '',
-      tempo: data['tempo'] as String? ?? 'Moderado',
-      musicKey: data['music_key'] as String? ?? 'C',
-      language: data['language'] as String? ?? 'pt-BR',
-      tags: List<String>.from(data['tags'] ?? []),
-      isLocal: true,
-      createdAt: now,
-      updatedAt: now,
-      versions: await _parseVersionsFromJson(data['versions'] ?? []),
-    );
-
-    return cipher;
-  }
-
-  /// Parse versions from JSON array
-  Future<List<Version>> _parseVersionsFromJson(
-    List<dynamic> versionsJson,
-  ) async {
-    final List<Version> versions = [];
-
-    for (final versionData in versionsJson) {
-      final versionMap = versionData as Map<String, dynamic>;
-
-      // Parse song structure
-      final songStructureRaw = versionMap['song_structure'];
-      List<String> songStructure = [];
-      if (songStructureRaw is String) {
-        songStructure = songStructureRaw
-            .split(',')
-            .map((s) => s.trim())
-            .toList();
-      } else if (songStructureRaw is List) {
-        songStructure = List<String>.from(songStructureRaw);
-      }
-
-      // Parse sections
-      final sectionsData =
-          versionMap['sections'] as Map<String, dynamic>? ?? {};
-      final Map<String, Section> sections = {};
-
-      for (final entry in sectionsData.entries) {
-        final sectionData = entry.value as Map<String, dynamic>;
-        final colorHex = sectionData['content_color'] as String?;
-        sections[entry.key] = Section(
-          versionId: 0, // Will be set during database insertion
-          contentType: sectionData['content_type'] as String? ?? 'verse',
-          contentCode: sectionData['content_code'] as String? ?? entry.key,
-          contentText: sectionData['content_text'] as String? ?? '',
-          contentColor: colorHex != null ? colorFromHex(colorHex) : Colors.blue,
-        );
-      }
-
-      versions.add(
-        Version(
-          cipherId: 0, // Will be set during database insertion
-          versionName: versionMap['version_name'] as String? ?? 'Original',
-          transposedKey: versionMap['transposed_key'] as String?,
-          songStructure: songStructure,
-          createdAt: DateTime.now(),
-          sections: sections,
-        ),
-      );
-    }
-
-    return versions;
   }
 
   /// Validate JSON structure before import

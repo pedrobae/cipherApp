@@ -244,7 +244,7 @@ exports.grantFirstAdmin = functions.https.onRequest(async (req, res) => {
   const {email, secret} = req.body;
 
   // Use a secret key for security
-  if (secret !== "YOUR_SECRET_KEY_HERE") {
+  if (secret !== "cipher-admin-secret-2025") {
     return res.status(403).json({error: "Invalid secret"});
   }
 

@@ -18,10 +18,12 @@
     {
       "title": "Nome da Cifra",
       "author": "Nome do Autor", 
-      "tempo": "Moderado",
+      "tempo": "",
       "music_key": "C",
       "language": "pt-BR",
       "tags": ["hino", "adoração", "clássico"],
+      "downloadCount": 0,
+      "searchText": "nome da cifra nome do autor hino adoração clássico",
       "versions": [
         {
           "version_name": "Original",
@@ -125,10 +127,12 @@ A temer e me consolou
       "cipherId": "cifra###", // Id to be created by firebase
       "title": "Graça Maravilhosa",
       "author": "John Newton",
-      "tempo": "Moderado", 
+      "tempo": "", 
       "music_key": "G",
       "language": "pt-BR",
       "tags": ["hino", "clássico", "adoração"],
+      "downloadCount": 0,
+      "searchText": "graça maravilhosa john newton hino clássico adoração",
       "versions": [
         {
           "version_name": "Original",
@@ -218,6 +222,8 @@ A temer e me consolou
 ### **Campos Obrigatórios:**
 - `title` - Título da cifra
 - `author` - Autor/compositor
+- `downloadCount` - Contador de downloads (sempre inicia em 0)
+- `searchText` - String de busca com título, autor e tags em minúsculas
 
 ### **Validações de Estrutura:**
 - JSON bem formado
@@ -274,5 +280,3 @@ Hino Sem Autor: Campo 'author' é obrigatório
 - **Listas** de músicas para buscar
 
 Está pronto para começar! 🚀
-
-curl -X POST https://us-central-cipherapp-8c2ee.cloudfunctions.net/grantFirstAdmin -H "Content-Type: application/json" -d '{"email": "pedrobettiolabe@gmail.com", "secret": "YOUR_SECRET_KEY_HERE"}'

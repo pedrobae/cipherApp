@@ -26,6 +26,7 @@ class _AdminBulkImportScreenState extends State<AdminBulkImportScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Importação em Lote (Admin)'),
@@ -34,22 +35,18 @@ class _AdminBulkImportScreenState extends State<AdminBulkImportScreen> {
       ),
       body: Consumer<AdminProvider>(
         builder: (context, adminProvider, child) {
-          return Padding(
+          return SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: 16.0,
               children: [
-                _buildHeader(),
-                const SizedBox(height: 16),
+                _buildHeader(colorScheme),
                 _buildUploadOptions(),
-                const SizedBox(height: 16),
                 _buildJsonInput(adminProvider),
-                const SizedBox(height: 16),
                 _buildActionButtons(adminProvider),
-                const SizedBox(height: 16),
-                _buildProgressSection(adminProvider),
-                const SizedBox(height: 16),
-                Expanded(child: _buildResultsSection(adminProvider)),
+                _buildProgressSection(adminProvider, colorScheme),
+                _buildResultsSection(adminProvider),
               ],
             ),
           );
@@ -58,7 +55,7 @@ class _AdminBulkImportScreenState extends State<AdminBulkImportScreen> {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(ColorScheme colorScheme) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -76,10 +73,10 @@ class _AdminBulkImportScreenState extends State<AdminBulkImportScreen> {
               ],
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Esta funcionalidade permite importar múltiplas cifras em lote. '
               'Cole um JSON no formato correto ou use o botão "Ver Exemplo" para referência.',
-              style: TextStyle(color: Colors.grey),
+              style: TextStyle(color: colorScheme.onSurface),
             ),
           ],
         ),
@@ -326,7 +323,10 @@ class _AdminBulkImportScreenState extends State<AdminBulkImportScreen> {
     );
   }
 
-  Widget _buildProgressSection(AdminProvider adminProvider) {
+  Widget _buildProgressSection(
+    AdminProvider adminProvider,
+    ColorScheme colorScheme,
+  ) {
     if (!adminProvider.isImporting && adminProvider.currentProgress == 0) {
       return const SizedBox.shrink();
     }
@@ -350,7 +350,7 @@ class _AdminBulkImportScreenState extends State<AdminBulkImportScreen> {
             const SizedBox(height: 8),
             Text(
               '${adminProvider.currentProgress} de ${adminProvider.totalProgress} - ${adminProvider.currentStatus}',
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
+              style: TextStyle(fontSize: 12, color: colorScheme.onSurface),
             ),
           ],
         ),
@@ -422,12 +422,7 @@ class _AdminBulkImportScreenState extends State<AdminBulkImportScreen> {
               ],
             ),
             const SizedBox(height: 8),
-            Expanded(
-              child: SingleChildScrollView(
-                controller: _scrollController,
-                child: Text(result.getSummary()),
-              ),
-            ),
+            Text(result.getSummary()),
           ],
         ),
       ),
@@ -458,12 +453,7 @@ class _AdminBulkImportScreenState extends State<AdminBulkImportScreen> {
               ],
             ),
             const SizedBox(height: 8),
-            Expanded(
-              child: SingleChildScrollView(
-                controller: _scrollController,
-                child: Text(result.getSummary()),
-              ),
-            ),
+            Text(result.getSummary()),
           ],
         ),
       ),

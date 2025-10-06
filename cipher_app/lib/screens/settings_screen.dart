@@ -1,3 +1,4 @@
+import 'package:cipher_app/providers/version_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
@@ -275,10 +276,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context.read<CipherProvider>().clearCache();
       context.read<PlaylistProvider>().clearCache();
       context.read<InfoProvider>().clearCache();
+      context.read<VersionProvider>().clearCache();
 
       // Force reload all providers from database
       await Future.wait([
-        context.read<CipherProvider>().loadCiphers(),
+        context.read<CipherProvider>().loadCiphers(forceReload: true),
         context.read<PlaylistProvider>().loadPlaylists(),
         context.read<InfoProvider>().loadInfo(),
       ]);

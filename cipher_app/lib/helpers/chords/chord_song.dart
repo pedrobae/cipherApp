@@ -9,7 +9,7 @@ class Song {
   void calculateOffsets(double lineWidth, TextStyle textStyle) {
     chordsMap.forEach((lineNumber, chords) {
       for (var chord in chords) {
-        chord.saveOffsetForChord(textStyle, lineWidth);
+        chord.saveOffsetForChord(textStyle, lineWidth, 0.0);
       }
     });
   }
@@ -19,21 +19,24 @@ class Chord {
   final String name; // e.g., "C", "Am"
   double xOffset;
   double yOffset;
+  double carryOver;
   final String lyricsBefore;
-  final String wordAfter;
+  final String nextWord;
   static double offset = -0.45;
 
   Chord(
     this.name,
     this.lyricsBefore,
-    this.wordAfter, [
+    this.nextWord, [
     this.xOffset = 0.0,
     this.yOffset = 0.0,
+    this.carryOver = 0.0,
   ]);
 
-  (double, double) calculateOffsetForChord(
+  (double, double, double) calculateOffsetForChord(
     TextStyle textStyle,
     double lineWidth,
+    double previousCarryOver,
   ) {
     /// GOES THROUGH EACH CHARACTER CHECKING THE LAST WORD FOR LINE BREAKS
     /// SAVES THE SAME LINE LYRICS BEFORE
@@ -69,14 +72,23 @@ class Chord {
       maxLines: 1,
     )..layout(maxWidth: double.infinity, minWidth: 0);
 
-    final TextPainter nextWordPainter = TextPainter(
-      text: TextSpan(text: wordAfter, style: textStyle),
+    /// TEXT PAINTER FOR THE NEXT WORD
+    final nextWordPainter = TextPainter(
+      text: TextSpan(text: nextWord, style: textStyle),
       textDirection: TextDirection.ltr,
       maxLines: 1,
     )..layout(maxWidth: double.infinity, minWidth: 0);
     final double lineHeight = nextWordPainter.height;
 
-    double xOffset = sameLineTextPainter.width % lineWidth;
+    /// TEXT PAINTER FOR THE CHORD
+    final chordPainter = TextPainter(
+      text: TextSpan(text: name, style: textStyle),
+      textDirection: TextDirection.ltr,
+      maxLines: 1,
+    )..layout(maxWidth: double.infinity, minWidth: 0);
+
+    double xOffset =
+        (sameLineTextPainter.width + previousCarryOver) % lineWidth;
 
     /// CHECK IF NEXT WORD LINE BREAKS
     if (nextWordPainter.width > lineWidth - sameLineTextPainter.width) {
@@ -84,17 +96,34 @@ class Chord {
       lineNumber++;
     }
 
+    /// CHECK IF CHORD LINE BREAKS
+    if (chordPainter.width > lineWidth - xOffset) {
+      xOffset = 0;
+      lineNumber++;
+    }
+
+    /// CHECK IF CHORD IS LARGER THAN THE NEXT WORD TO PUSH THE NEXT CHORD RIGHT
+    if (nextWordPainter.width < chordPainter.width || nextWord.isEmpty) {
+      carryOver = chordPainter.width - nextWordPainter.width;
+    }
+
     double yOffset = lineHeight * (lineNumber + offset);
 
-    return (xOffset, yOffset);
+    return (xOffset, yOffset, carryOver);
   }
 
-  void saveOffsetForChord(TextStyle textStyle, double lineWidth) {
-    final (newXOffset, newYOffset) = calculateOffsetForChord(
+  void saveOffsetForChord(
+    TextStyle textStyle,
+    double lineWidth,
+    double previousCarryOver,
+  ) {
+    final (newXOffset, newYOffset, newCarryOver) = calculateOffsetForChord(
       textStyle,
       lineWidth,
+      previousCarryOver,
     );
     xOffset = newXOffset;
     yOffset = newYOffset;
+    carryOver = newCarryOver;
   }
 }

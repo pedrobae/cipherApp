@@ -1,0 +1,357 @@
+{
+    "ciphers": [
+        {
+            "title": "Teu Amor Não Falha (Your Love Never Fails)",
+            "author": "Jesus Culture",
+            "tempo": "",
+            "music_key": "Am",
+            "language": "pt-BR",
+            "tags": [
+                "fidelidade",
+                "constância",
+                "amor"
+            ],
+            "downloadCount": 0,
+            "searchText": "teu amor não falha your love never fails jesus culture fidelidade constância amor",
+            "versions": [
+                {
+                    "version_name": "Original",
+                    "transposed_key": "Am",
+                    "song_structure": [
+                        "I",
+                        "V1",
+                        "C",
+                        "V2",
+                        "C",
+                        "B"
+                    ],
+                    "sections": {
+                        "I": {
+                            "content_type": "intro",
+                            "content_code": "I",
+                            "content_text": "[Am] [F/C] [C] [G/B]\n[Am] [F/C] [C] [G/B]",
+                            "content_color": "#9C27B0"
+                        },
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[Am]Nada vai me sepa[F]rar\n[C]Mesmo se eu me aba[G]lar\n[Am]Teu amor não fa[F]lha[C][G]\n[Am]Mesmo sem mere[F]cer\n[C]Tua graça se derrama sobre [G]mim\n[Am]Teu amor não fa[F]lha,[C][G]",
+                            "content_color": "#2196F3"
+                        },
+                        "V2": {
+                            "content_type": "verse",
+                            "content_code": "V2",
+                            "content_text": "[Am]Se o vento é forte e profundo o [F]mar\n[C]Tua presença vem me ampa[G]rar\n[Am]Pois Teu amor não fa[F]lha[C][G]\n[Am]Difícil é o cami[F]nhar\n[C]Nunca pensei que eu fosse alcan[G]çar\n[Am]Mas teu amor não fa[F]lha",
+                            "content_color": "#2196F3"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[F]Tu és o mesmo pra sem[C]pre[G]\n[Dm]Teu amor não mu[F]da\n[C]Se o choro dura uma noite\n[G]A alegria vem pela ma[Dm]nhã\n[F]Se o mar se enfure[C]cer[G]\n[Dm]Eu não tenho o que temer\n[F]Porque eu sei que me a[C]mas[G]\n[F]Teu amor não falha [Am](Não não [G]não)",
+                            "content_color": "#F44336"
+                        },
+                        "B": {
+                            "content_type": "bridge",
+                            "content_code": "B",
+                            "content_text": "[F]Tu fazes que tudo\n[Am]Coopere para o meu [G]bem\n[F]Tu fazes que tudo\n[Am]Coopere para o meu [G]bem",
+                            "content_color": "#4CAF50"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Todas as Gerações (Let Every Generation)",
+            "author": "Jon Li",
+            "tempo": "",
+            "music_key": "E",
+            "language": "pt-BR",
+            "tags": [
+                "gerações",
+                "unidade",
+                "new heart",
+                "adoração"
+            ],
+            "downloadCount": 0,
+            "searchText": "todas as gerações let every generation jon li new heart gerações unidade new heart adoração",
+            "versions": [
+                {
+                    "version_name": "Original",
+                    "transposed_key": "E",
+                    "song_structure": [
+                        "I",
+                        "V1",
+                        "C",
+                        "V2",
+                        "C",
+                        "C",
+                        "IL",
+                        "B"
+                    ],
+                    "sections": {
+                        "I": {
+                            "content_type": "intro",
+                            "content_code": "I",
+                            "content_text": "[E] [B/D#] [Bm/D] [A/C#] [A/B]",
+                            "content_color": "#9C27B0"
+                        },
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[E]Toda tribo, [B/D#]língua e na[Bm/D]ção\nToda a terra e [A/C#]todo o [A/B]ser [B]\n[E]Se unirão em [B/D#]plena adora[Asus/D]ção\n[E]Tendo a doce [B/D#]liberda[Bm/D]de\nVida plena em [A/C#]comu[A/B]nhão [B]\n[E]Redenção em [B/D#]nossos cora[Asus/D]ções",
+                            "content_color": "#2196F3"
+                        },
+                        "V2": {
+                            "content_type": "verse",
+                            "content_code": "V2",
+                            "content_text": "[E]Em louvor nós [B/D#]declaramos\n[Bm/D]A unidade em que [A/C#]vem de [A/B]De[B]us\n[E]Derrubando os [B/D#]muros, somos [Asus/D]um\n[E]Por amor e [B/D#]por justi[Bm/D]ça\nNós clamamos ao [A/C#]nosso [A/B]Salvador [B]\n[E]Pra tua Glória, er[B/D#]guemos nossas [Asus/D]mãos",
+                            "content_color": "#2196F3"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[E]Tod[F#m7/E]as as [A2/E]gera[B/E]ções\n[E]Vamos [F#m7/E]juntos pa[A2/E]ra ado[B/E]rar\n[E]Em [F#m7/E]alta [A2/E]voz can[B/E]temos\n[E]A J[F#m7/E]esus vamos [A2/E]exal[B/E]tar",
+                            "content_color": "#F44336"
+                        },
+                        "IL": {
+                            "content_type": "interlude",
+                            "content_code": "IL",
+                            "content_text": "[F#m7] [E/G#] [A2] [B] [E/G#] [A2] [E/G#] [Bsus]",
+                            "content_color": "#9C27B0"
+                        },
+                        "B": {
+                            "content_type": "bridge",
+                            "content_code": "B",
+                            "content_text": "[F#m7]Todos os [E/G#]povos canta[A2]rão\nToda a [B]terra [E/G#]louva[A2]rá\nTodos os [E/G#]seres prostra[F#m7]rão\nDiante de [E/G#]Rei que volta[A2]rá\n[A2] [E/G#] [F#m7] [B]\n[F#m7]Todos os [E/G#]povos canta[A2]rão\nToda a [B]terra [E/G#]louva[A2]rá\nTodos os [E/G#]seres prostra[F#m7]rão\nDiante de [A2]Rei que volta[B]rá",
+                            "content_color": "#4CAF50"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Tu és Santo",
+            "author": "Ronaldo Bezerra",
+            "tempo": "",
+            "music_key": "E",
+            "language": "pt-BR",
+            "tags": [
+                "santidade",
+                "louvor",
+                "dança"
+            ],
+            "downloadCount": 0,
+            "searchText": "tu és santo ronaldo bezerra santidade louvor dança",
+            "versions": [
+                {
+                    "version_name": "Original",
+                    "transposed_key": "E",
+                    "song_structure": [
+                        "I",
+                        "V1",
+                        "C",
+                        "F"
+                    ],
+                    "sections": {
+                        "I": {
+                            "content_type": "intro",
+                            "content_code": "I",
+                            "content_text": "[E] [A9] [B]",
+                            "content_color": "#9C27B0"
+                        },
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[E]Tu és santo, pode[A9]roso Tu és digno de [F#m]todo lou[A/B]vor\n[E]Seguirei teus cami[A9]nhos Te ama[F#m]rei [B/D#]pra [E]sem[B/D#]pre[E]",
+                            "content_color": "#2196F3"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[A9]E eu can[B]to, e louvo ao [C#m7]Rei que é [G#m7]digno\n[A9]E eu dan[B]ço, me pros[C#m7]tro Dian[G#m7]te de ti\n[A9]E eu can[B]to, e louvo ao [C#m7]Rei que é [G#m7]digno\n[A9]E eu dan[B]ço, me pros[C#m7]tro Dian[F#9]te de ti",
+                            "content_color": "#F44336"
+                        },
+                        "F": {
+                            "content_type": "final",
+                            "content_code": "F",
+                            "content_text": "[A9]Tu és meu Deus de paz quero [B]viver minha vida em [E]Ti [C#m7] [F#]\n[A9]Tu és meu Deus de paz quero [B]viver minha vida em [E]Ti",
+                            "content_color": "#FF9800"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Tua Igreja Canta",
+            "author": "Israel Salazar",
+            "tempo": "",
+            "music_key": "A",
+            "language": "pt-BR",
+            "tags": [
+                "igreja",
+                "reino",
+                "proclamação"
+            ],
+            "downloadCount": 0,
+            "searchText": "tua igreja canta israel salazar igreja reino proclamação",
+            "versions": [
+                {
+                    "version_name": "Original",
+                    "transposed_key": "A",
+                    "song_structure": [
+                        "I",
+                        "V1",
+                        "V2",
+                        "C",
+                        "R",
+                        "S"
+                    ],
+                    "sections": {
+                        "I": {
+                            "content_type": "intro",
+                            "content_code": "I",
+                            "content_text": "[A] [F#m] [D] [A] [F#m] [D]",
+                            "content_color": "#9C27B0"
+                        },
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[A]À estrela da manhã\n[A4]Ao rei dos reis Se[F#m]nhor,[E]\n[A]a Ele o louvor",
+                            "content_color": "#2196F3"
+                        },
+                        "V2": {
+                            "content_type": "verse",
+                            "content_code": "V2",
+                            "content_text": "[A]Àquele que morreu\n[A4]Mas sobre a morte triun[F#m]fou,[E]\n[A]a Ele o louvor\n[D]Jesus tu és o [A]Rei\n[D]Reina em nossos cora[F#m]ções\n[D]Teu é o reino e o po[F#m]der\n[E]Pra sempre amém",
+                            "content_color": "#2196F3"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[A]Tua igreja canta a [D]Ti\n[F#m]Ergue a voz para declarar\n[D]Um só povo a proclamar\n[A]Cantando bem alto, bem alto",
+                            "content_color": "#F44336"
+                        },
+                        "R": {
+                            "content_type": "refrain",
+                            "content_code": "R",
+                            "content_text": "[A]Rei! Tu és o [F#m]Re[D]ei\n[A]Rei! Tu és o [F#m]Re[D]ei",
+                            "content_color": "#FF5722"
+                        },
+                        "S": {
+                            "content_type": "solo",
+                            "content_code": "S",
+                            "content_text": "[D] [A] [D] [F#m] [D] [F#m] [E]",
+                            "content_color": "#673AB7"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Vasos Quebrados (Broken Vessels)",
+            "author": "Joel Houston, Jonas Myrin",
+            "tempo": "",
+            "music_key": "C#m",
+            "language": "pt-BR",
+            "tags": [
+                "graça",
+                "restauração",
+                "hillsong",
+                "quebrantamento"
+            ],
+            "downloadCount": 0,
+            "searchText": "vasos quebrados broken vessels joel houston jonas myrin graça restauração hillsong quebrantamento",
+            "versions": [
+                {
+                    "version_name": "Original",
+                    "transposed_key": "C#m",
+                    "song_structure": [
+                        "V1",
+                        "C",
+                        "V2"
+                    ],
+                    "sections": {
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[C#m]Em pedaços, minh'alma es[E]tava\n[C#m]Mas por sua graça refeito [E]sou\n[C#m]Sem nada em troca fui resga[E]tado\n[B]Me liber[C#m]tou, me liber[B]tou",
+                            "content_color": "#2196F3"
+                        },
+                        "V2": {
+                            "content_type": "verse",
+                            "content_code": "V2",
+                            "content_text": "Mesmo com falhas e com fraquezas\nO teu tesouro em mim está\nMinha vida entrego serei Teu vaso\nPra o mundo ver o Teu poder",
+                            "content_color": "#2196F3"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[A]Sublime graça, doce o [B]som\n[C#m]Que salva o peca[A]dor\n[A]Fui cego e agora posso [B]ver\n[C#m]Perdido e me encon[A]trou\n[E]Agora eu posso [B]ver\n[C#m]Eu posso ver seus olhos de a[A]mor\n[E]Pra que eu possa vi[B]ver\n[C#m]Sua vida Ele entre[A]gou",
+                            "content_color": "#F44336"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Vim Para Adorar-Te (Here I Am to Worship)",
+            "author": "Tim Hughes",
+            "tempo": "",
+            "music_key": "E",
+            "language": "pt-BR",
+            "tags": [
+                "adoração",
+                "humildade",
+                "sacrifício"
+            ],
+            "downloadCount": 0,
+            "searchText": "vim para adorar-te here i am to worship adoração humildade sacrifício tim hughes",
+            "versions": [
+                {
+                    "version_name": "Original",
+                    "transposed_key": "E",
+                    "song_structure": [
+                        "I",
+                        "V1",
+                        "C",
+                        "V2",
+                        "C",
+                        "B"
+                    ],
+                    "sections": {
+                        "I": {
+                            "content_type": "intro",
+                            "content_code": "I",
+                            "content_text": "[E] [B] [A]",
+                            "content_color": "#9C27B0"
+                        },
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[E]Luz do mundo vieste à [Bsus]Ter[F#m]ra[A]\n[E]Pra que eu pudesse Te [Bsus]ver[A]\n[E]Tua beleza me leva a ado[Bsus]rar-[F#m]Te[A]\n[E]Quero contigo vi[Bsus]ver[A]",
+                            "content_color": "#2196F3"
+                        },
+                        "V2": {
+                            "content_type": "verse",
+                            "content_code": "V2",
+                            "content_text": "Eterno rei exaltado nas alturas, Glorioso nos céus\nHumilde vieste à Terra que criaste\nPor amor pobre se fez",
+                            "content_color": "#2196F3"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[E]Vim para adorar-Te, vim para pros[B/D#]trar-me\n[E/G#]Vim para dizer que és meu [A]Deus\n[E]És totalmente amável, totalmente [B/D#]digno\n[E/G#]Tão maravilhoso para [A]mim",
+                            "content_color": "#F44336"
+                        },
+                        "B": {
+                            "content_type": "bridge",
+                            "content_code": "B",
+                            "content_text": "[B]Eu nunca saberei o pre[E/G#]ço[A]\n[B]Dos meus pecados lá na [E/G#]cruz[A]",
+                            "content_color": "#4CAF50"
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cipher_app/models/domain/cipher/version.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cipher_app/models/dtos/cipher_dto.dart';
 import 'package:cipher_app/helpers/cloud_cipher_cache.dart';
@@ -55,41 +56,40 @@ class CipherProvider extends ChangeNotifier {
   /// ===== READ =====
   // Load all ciphers (local and cloud)
   Future<void> loadCiphers({bool forceReload = false}) async {
-    // Debounce rapid calls
-    _loadTimer?.cancel();
-    _loadTimer = Timer(const Duration(milliseconds: 300), () async {
-      await loadLocalCiphers();
-      await loadCloudCiphers();
-    });
+    await loadLocalCiphers(forceReload: forceReload);
+    await loadCloudCiphers(forceReload: forceReload);
   }
 
   // Load ciphers from local SQLite
   Future<void> loadLocalCiphers({bool forceReload = false}) async {
     if (_hasLoadedCiphers && !forceReload) return;
     if (_isLoading) return;
-
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      _localCiphers = await _cipherRepository.getAllCiphersPruned();
-      _filterLocalCiphers();
-
-      _hasLoadedCiphers = true;
-
-      if (kDebugMode) {
-        print('Loaded ${_localCiphers.length} ciphers from SQLite');
-      }
-    } catch (e) {
-      _error = e.toString();
-      if (kDebugMode) {
-        print('Error loading ciphers: $e');
-      }
-    } finally {
-      _isLoading = false;
+    // Debounce rapid calls
+    _loadTimer?.cancel();
+    _loadTimer = Timer(const Duration(milliseconds: 300), () async {
+      _isLoading = true;
+      _error = null;
       notifyListeners();
-    }
+
+      try {
+        _localCiphers = await _cipherRepository.getAllCiphersPruned();
+        _filterLocalCiphers();
+
+        _hasLoadedCiphers = true;
+
+        if (kDebugMode) {
+          print('Loaded ${_localCiphers.length} ciphers from SQLite');
+        }
+      } catch (e) {
+        _error = e.toString();
+        if (kDebugMode) {
+          print('Error loading ciphers: $e');
+        }
+      } finally {
+        _isLoading = false;
+        notifyListeners();
+      }
+    });
   }
 
   // Load popular ciphers from cloud Firestore
@@ -179,10 +179,17 @@ class CipherProvider extends ChangeNotifier {
   Future<void> searchLocalCiphers(String term) async {
     _searchTerm = term.toLowerCase();
     _filterLocalCiphers();
+    notifyListeners();
+  }
+
+  Future<void> searchCachedCloudCiphers(String term) async {
+    _searchTerm = term.toLowerCase();
+    _filterCloudCiphers();
+    notifyListeners();
   }
 
   Future<void> searchCloudCiphers(String term) async {
-    if (term.isEmpty) {
+    if (term == '') {
       _filteredCloudCiphers = List.from(cloudCiphers);
       notifyListeners();
       return;
@@ -196,7 +203,7 @@ class CipherProvider extends ChangeNotifier {
 
     try {
       final queriedCiphers =
-          (await _cloudCipherRepository.searchCiphers(term)) ?? [];
+          (await _cloudCipherRepository.searchCiphersCascading(term)) ?? [];
 
       for (var cipher in queriedCiphers) {
         if (!_cloudCiphers.any((c) => c.firebaseId == cipher.firebaseId)) {
@@ -222,7 +229,6 @@ class CipherProvider extends ChangeNotifier {
   void _filterCiphers() {
     _filterCloudCiphers();
     _filterLocalCiphers();
-    notifyListeners();
   }
 
   void _filterCloudCiphers() {
@@ -232,7 +238,7 @@ class CipherProvider extends ChangeNotifier {
       _filteredCloudCiphers = cloudCiphers
           .where(
             (cipher) =>
-                cipher.searchTerm.toLowerCase().contains(_searchTerm) ||
+                cipher.title.toLowerCase().contains(_searchTerm) ||
                 cipher.author.toLowerCase().contains(_searchTerm) ||
                 cipher.tags.any(
                   (tag) => tag.toLowerCase().contains(_searchTerm),
@@ -278,8 +284,9 @@ class CipherProvider extends ChangeNotifier {
       // Insert basic cipher info and tags
       final cipherId = await _cipherRepository.insertCipher(currentCipher);
 
-      // Load the new ID into the current cipher cache
+      // Load the new ID into the cache
       _currentCipher = _currentCipher.copyWith(id: cipherId);
+      updateCurrentCipherInList();
     } catch (e) {
       _error = e.toString();
       if (kDebugMode) {
@@ -287,13 +294,14 @@ class CipherProvider extends ChangeNotifier {
       }
     } finally {
       _isSaving = false;
-      updateCurrentCipherInList();
+      // Reload from database to ensure UI reflects all changes
+      await loadLocalCiphers(forceReload: true);
       notifyListeners();
     }
   }
 
   /// Downloads cipher from cloud and inserts into local database
-  Future<void> downloadAndInsertCipher(String cipherFirebaseId) async {
+  Future<void> downloadAndInsertCipher(CipherDto cipherDTO) async {
     if (_isSaving) {
       _error = 'Já está salvando uma cifra, aguarde...';
       if (kDebugMode) {
@@ -307,17 +315,25 @@ class CipherProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final cipher = await _cloudCipherRepository.downloadCompleteCipher(
-        cipherFirebaseId,
+      final versionDTOs = await _cloudCipherRepository.getVersionsOfCipher(
+        cipherDTO.firebaseId!,
       );
-      if (cipher == null) {
-        throw Exception('Cipher not found in cloud');
+      if (versionDTOs.isEmpty) {
+        throw Exception('Cipher versions not found in cloud');
       }
 
-      final cipherId = await _cipherRepository.insertWholeCipher(cipher);
+      List<Version> versions = [];
+      for (var versionDTO in versionDTOs) {
+        versions.add(versionDTO.toDomain());
+      }
 
-      // Load the new ID into the current cipher cache
-      loadCipher(cipherId);
+      final cipher = cipherDTO.toDomain(versions);
+
+      final cipherLocalId = await _cipherRepository.insertWholeCipher(cipher);
+
+      // Load the new ID into the cache
+      await loadCipher(cipherLocalId);
+      updateCurrentCipherInList();
     } catch (e) {
       _error = e.toString();
       if (kDebugMode) {
@@ -347,6 +363,7 @@ class CipherProvider extends ChangeNotifier {
       }
     } finally {
       _isSaving = false;
+      // Reload manually to ensure UI reflects all changes
       updateCurrentCipherInList();
       notifyListeners();
     }
@@ -399,6 +416,8 @@ class CipherProvider extends ChangeNotifier {
       }
     } finally {
       _isSaving = false;
+      // Reload manually to ensure UI reflects all changes
+      _localCiphers.removeWhere((c) => c.id == cipherID);
       notifyListeners();
     }
   }

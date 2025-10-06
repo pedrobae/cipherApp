@@ -12,6 +12,7 @@ import 'package:cipher_app/providers/collaborator_provider.dart';
 import 'package:cipher_app/providers/info_provider.dart';
 import 'package:cipher_app/providers/playlist_provider.dart';
 import 'package:cipher_app/providers/settings_provider.dart';
+import 'package:cipher_app/providers/admin_provider.dart';
 import 'package:cipher_app/services/settings_service.dart';
 import 'package:cipher_app/routes/app_routes.dart';
 import 'package:cipher_app/helpers/database_factory.dart';
@@ -51,6 +52,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => TextSectionProvider()),
         ChangeNotifierProvider(create: (_) => CollaboratorProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => AdminProvider()),
       ],
       child: Consumer<SettingsProvider>(
         builder: (context, settingsProvider, child) {

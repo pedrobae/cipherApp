@@ -30,6 +30,7 @@ class LocalCipherRepository {
     );
 
     if (results.isEmpty) return null;
+
     return _buildCipher(results.first);
   }
 

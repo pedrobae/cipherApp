@@ -93,7 +93,14 @@ class _HomeScreenState extends State<HomeScreen> {
               iconColor: iconColor,
               iconSize: 80,
             );
-
+            if (authProvider.isAdmin) {
+              items.add(
+                navigationProvider.getAdminItem(
+                  iconColor: iconColor,
+                  iconSize: 80,
+                ),
+              );
+            }
             return CustomScrollView(
               slivers: [
                 SliverAppBar(
@@ -179,6 +186,23 @@ class _HomeScreenState extends State<HomeScreen> {
                                 break;
                               case NavigationProvider.infoRoute:
                                 navigationProvider.navigateToInfo();
+                                break;
+                              case NavigationProvider.admin:
+                                if (authProvider.isAdmin) {
+                                  navigationProvider.navigateTo(
+                                    4,
+                                    NavigationProvider.admin,
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'Acesso negado. Você não é um administrador.',
+                                      ),
+                                    ),
+                                  );
+                                  return;
+                                }
                                 break;
                             }
                             Navigator.pushNamed(context, '/main');

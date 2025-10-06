@@ -29,9 +29,9 @@ class Section {
     );
   }
 
-  factory Section.fromMap(Map<String, dynamic> map, int versionId) {
+  factory Section.fromMap(Map<String, dynamic> map) {
     return Section(
-      versionId: versionId,
+      versionId: 0, // Will be set later
       contentType: map['contentType'] as String? ?? '',
       contentCode: map['contentCode'] as String? ?? '',
       contentText: map['contentText'] as String? ?? '',

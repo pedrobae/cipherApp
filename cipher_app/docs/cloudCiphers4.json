@@ -1,0 +1,371 @@
+{
+    "ciphers": [
+        {
+            "title": "Rendido Estou",
+            "author": "Hillsong / Aline Barros & Fernandinho",
+            "tempo": "",
+            "music_key": "D",
+            "language": "pt-BR",
+            "tags": [
+                "rendição",
+                "entrega",
+                "hillsong",
+                "adoração"
+            ],
+            "downloadCount": 0,
+            "searchText": "rendido estou hillsong aline barros fernandinho rendição entrega adoração",
+            "versions": [
+                {
+                    "version_name": "Original",
+                    "transposed_key": "D",
+                    "song_structure": [
+                        "V1",
+                        "C",
+                        "V2",
+                        "V3",
+                        "C",
+                        "B"
+                    ],
+                    "sections": {
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[D]Toma-me rendido estou\n[Bm]Aos pés da cruz me encontrei\n[A]O que tenho [G]te entrego oh [D]Deus",
+                            "content_color": "#2196F3"
+                        },
+                        "V2": {
+                            "content_type": "verse",
+                            "content_code": "V2",
+                            "content_text": "Vem limpar as minhas mãos\nPurificar meu coração\nQue eu ande em tudo que Tu tens pra mim",
+                            "content_color": "#2196F3"
+                        },
+                        "V3": {
+                            "content_type": "verse",
+                            "content_code": "V3",
+                            "content_text": "[D]Meus momentos e os dias meus\n[Bm]Meu respirar e meu viver\n[A]Que sejam todos [G]pra Ti oh [D]Deus",
+                            "content_color": "#2196F3"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[G]Ô ô ô eis-me aqui rendi[D]do estou[A9][Bm]\n[G]Ô ô ô eu sou Teu e Tu és [Bm]meu, (Je[A4]sus)[D]\n[G]Ô ô ô, [D]Ô ô ô ô, [A]Ô ô ô, [Em7]Ô ô ô ô\n[G]Ô ô ô, [Bm]Ô ô ô ô, [A4]Ô ô ô",
+                            "content_color": "#F44336"
+                        },
+                        "B": {
+                            "content_type": "bridge",
+                            "content_code": "B",
+                            "content_text": "[D]Minha vida dou a Ti Se[A]nhor\n[Bm]Rendido a Ti estou\n[G]E [D/F#]pra [G]sempre canta[A]rei\n[G]Faz em mim Teu que[A9]rer",
+                            "content_color": "#4CAF50"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Quem Sou Eu?",
+            "author": "Mark Hall / PG",
+            "tempo": "",
+            "music_key": "G",
+            "language": "pt-BR",
+            "tags": [
+                "humildade",
+                "identidade",
+                "casting crowns",
+                "reflexão"
+            ],
+            "downloadCount": 0,
+            "searchText": "quem sou eu mark hall pg humildade identidade casting crowns reflexão",
+            "versions": [
+                {
+                    "version_name": "Original",
+                    "transposed_key": "G",
+                    "song_structure": [
+                        "I",
+                        "V1",
+                        "C",
+                        "I",
+                        "V2",
+                        "C"
+                    ],
+                    "sections": {
+                        "I": {
+                            "content_type": "intro",
+                            "content_code": "I",
+                            "content_text": "[G] [C] [Em] [D]",
+                            "content_color": "#9C27B0"
+                        },
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[G]Quem sou eu? Pra que o [D/F#]Deus de toda [Em7]terra\n[Em/D]Se preocupe com meu [C]nome se preocupe com mi[D/C]nha [C]dor\n[G]Quem sou eu? Pra que a [D/F#]Estrela da ma[Em7]nhã\n[Em/D]Ilumine o ca[C7M]minho deste [D/C]duro cora[C]ção[D]",
+                            "content_color": "#2196F3"
+                        },
+                        "V2": {
+                            "content_type": "verse",
+                            "content_code": "V2",
+                            "content_text": "[G]Quem sou eu? Pra ser [D/F#]visto com a[Em7]mor\n[Em/D]Mesmo em meio ao pe[C]cado Tu me fazes levan[D/C]tar[C]\n[G]Quem sou eu? Pra que a [D/F#]voz que acalma o [Em7]mar\n[Em/D]E acaba com a tor[C]menta que se faz den[D/C]tro de [C]mim",
+                            "content_color": "#2196F3"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[C]Não apenas por quem [D]sou, mas porque Tu és [Em7]fiel[D/F#]\n[C/E]Nem por tudo o que eu [D/F#]faça, mas por tudo o que Tu [C]és[D]\n[G]Eu sou como um vento passa[D/F#]geiro que aparece e vai em[Em7]bora[G/D]\n[C]Como onda no ocea[D/C]no, assim como o va[C]por[C/E][D/F#][G]\n[G]E ainda escutas quando eu [D/F#]chamo, me sustentas quando eu [Em7]clamo[D]\n[C]Me dizendo quem eu [D/C]sou... eu sou [C]Teu[G]",
+                            "content_color": "#F44336"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Salmo 19",
+            "author": "Isaque Tseng",
+            "tempo": "",
+            "music_key": "C",
+            "language": "pt-BR",
+            "tags": [
+                "bíblico",
+                "new heart",
+                "salmos",
+                "santidade"
+            ],
+            "downloadCount": 0,
+            "searchText": "salmo 19 isaque tseng new heart bíblico salmos santidade",
+            "versions": [
+                {
+                    "version_name": "Original",
+                    "transposed_key": "C",
+                    "song_structure": [
+                        "I",
+                        "V1",
+                        "V2",
+                        "C",
+                        "IL",
+                        "V1",
+                        "V2",
+                        "C",
+                        "C",
+                        "TAG"
+                    ],
+                    "sections": {
+                        "I": {
+                            "content_type": "intro",
+                            "content_code": "I",
+                            "content_text": "[C] [Fmaj7] [Am] [Gsus] [G] (2x)",
+                            "content_color": "#9C27B0"
+                        },
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[C]Santo, Santo, [Fmaj7]Santo\n[Am]Digno de honra e lou[Gsus4]vor [C/E]\n[F]És Sobe[G/F]rano e tre[C/E]mendo [Am]\n[Dm]Igual a Ti não [Gsus4]há [G]",
+                            "content_color": "#2196F3"
+                        },
+                        "V2": {
+                            "content_type": "verse",
+                            "content_code": "V2",
+                            "content_text": "[C]Tua lei é per[Fmaj7]feita\n[Am]E revigora a minh'[Gsus4]alma [C/E]\n[F]Os Teus pre[G/F]ceitos são [C/E]justos [Am]\nE a[Dm]legram o [D/F#]meu cora[Gsus4]ção [C/E]",
+                            "content_color": "#2196F3"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "Quero ou[F]vir a [G]Tua [C]voz\n[C/E]E enxer[F]gar a [G]Tua [C]luz\n[C/E]Que o meu fa[F]lar, meu pen[G]sar e [G/F]meu [Em]dese[Am]jar\n[Dm]Sejam agra[G]dáveis a [C]Ti",
+                            "content_color": "#F44336"
+                        },
+                        "IL": {
+                            "content_type": "interlude",
+                            "content_code": "IL",
+                            "content_text": "[F] [G] [C] [C/E] [F] [G] [C]\n[C/E] [F] [G] [G/F] [Em] [Am]\n[Dm] [G] [C] [Fmaj]",
+                            "content_color": "#9C27B0"
+                        },
+                        "TAG": {
+                            "content_type": "tag",
+                            "content_code": "TAG",
+                            "content_text": "[C/E]Que o meu fa[F]lar, meu pen[G]sar e [G/F]meu [Em]dese[Am]jar\n[Dm]Sejam agra[G]dáveis a [C]Ti",
+                            "content_color": "#673AB7"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Santo pra Sempre",
+            "author": "Gabriel Guedes",
+            "tempo": "",
+            "music_key": "G",
+            "language": "pt-BR",
+            "tags": [
+                "santidade",
+                "eternidade",
+                "gerações"
+            ],
+            "downloadCount": 0,
+            "searchText": "santo pra sempre gabriel guedes santidade eternidade gerações",
+            "versions": [
+                {
+                    "version_name": "Original",
+                    "transposed_key": "G",
+                    "song_structure": [
+                        "I",
+                        "V1",
+                        "PC",
+                        "C",
+                        "V2"
+                    ],
+                    "sections": {
+                        "I": {
+                            "content_type": "intro",
+                            "content_code": "I",
+                            "content_text": "[C9] [Em7] [D]\n[Bm7] [Em7] [D]",
+                            "content_color": "#9C27B0"
+                        },
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[G]As muitas gerações ren[G4]didas em lou[G]vor\n[Em7]Cantando ao cordeiro uma can[D]ção[C9]\n[G]Os que em Ti se foram\n[G4]E os que hão de [G]crer\n[Em7]Cantando ao cordeiro uma can[D]ção[C9]",
+                            "content_color": "#2196F3"
+                        },
+                        "V2": {
+                            "content_type": "verse",
+                            "content_code": "V2",
+                            "content_text": "[G]Quem foi perdoado e redi[C9]mido [G]foi\n[Em7]Cante ao cordeiro uma can[D]ção[C9]\n[G]Aquele que é livre e leva o [C9]Seu no[G]me\n[Em7]Cante ao cordeiro uma can[D]ção[C9]\n[Em7]Cantaremos para [D]sempre, a[C9]mém",
+                            "content_color": "#2196F3"
+                        },
+                        "PC": {
+                            "content_type": "pre-chorus",
+                            "content_code": "PC",
+                            "content_text": "[C9]Teu nome é o mais [Em7]alto\n[D]Teu nome é o maior\n[Em7]Teu nome é sobre [C9]todos\n[C9]Os tronos e domí[Em7]nios\n[D]Governos e poderes\n[Em7]Teu nome é sobre [Am7]todos",
+                            "content_color": "#E91E63"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[C9]E os anjos cla[Em7]mam: San[D]to\n[Bm7]Toda cria[Em7]ção: Santo\n[Am7]Exaltado [D]És, Santo\n[G]Santo pra sempre",
+                            "content_color": "#F44336"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Senhor Te Quero (In The Secret)",
+            "author": "Andy Park",
+            "tempo": "",
+            "music_key": "G",
+            "language": "pt-BR",
+            "tags": [
+                "intimidade",
+                "vineyard",
+                "busca",
+                "adoração"
+            ],
+            "downloadCount": 0,
+            "searchText": "senhor te quero in the secret andy park intimidade vineyard busca adoração",
+            "versions": [
+                {
+                    "version_name": "Original",
+                    "transposed_key": "G",
+                    "song_structure": [
+                        "I",
+                        "V1",
+                        "C",
+                        "V2",
+                        "C",
+                        "S"
+                    ],
+                    "sections": {
+                        "I": {
+                            "content_type": "intro",
+                            "content_code": "I",
+                            "content_text": "[G] [C] [Em] [D] [C]",
+                            "content_color": "#9C27B0"
+                        },
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[G]Eu te busco te procuro, oh [C]Deus\n[Em]No silêncio Tu es[D]tás[C]\n[G]Eu te busco toda hora espero em [C]Ti\nRevela-te a mim\n[Em]Conhecer-te eu quero [D]mais[C]",
+                            "content_color": "#2196F3"
+                        },
+                        "V2": {
+                            "content_type": "verse",
+                            "content_code": "V2",
+                            "content_text": "[G]Prosseguindo para o alvo eu [C]vou\n[Em]A coroa conquis[D]tar[C]\n[G]Vou lutando nada pode me impe[C]dir\nEu vou te seguir\n[Em]Conhecer-te eu quero [D]mais[C]",
+                            "content_color": "#2196F3"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[G]Senhor Te que[D]ro[Em]\n[C]Quero ouvir Tua [G]voz\n[D]Senhor te quero [C]mais\n[G]Quero Tocar-[D]Te[Em]\n[C]Tua face eu quero [G]ver\n[D]Senhor Te quero [C]mais",
+                            "content_color": "#F44336"
+                        },
+                        "S": {
+                            "content_type": "solo",
+                            "content_code": "S",
+                            "content_text": "[D] [C] [G]\n[G] [C] [A] [C] [G]",
+                            "content_color": "#673AB7"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Só Tu És Santo",
+            "author": "Morada",
+            "tempo": "",
+            "music_key": "E",
+            "language": "pt-BR",
+            "tags": [
+                "santidade",
+                "único",
+                "adoração"
+            ],
+            "downloadCount": 0,
+            "searchText": "só tu és santo morada santidade único adoração",
+            "versions": [
+                {
+                    "version_name": "Original",
+                    "transposed_key": "E",
+                    "song_structure": [
+                        "I",
+                        "V1",
+                        "V2",
+                        "C",
+                        "IL",
+                        "C"
+                    ],
+                    "sections": {
+                        "I": {
+                            "content_type": "intro",
+                            "content_code": "I",
+                            "content_text": "[E9] [A9]",
+                            "content_color": "#9C27B0"
+                        },
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[E9]Tudo está preparado aqui\n[A9]A casa e o meu coração também\n[E9/G#]Tu és o único motivo que me fez [A9]che[B]gar[A9]",
+                            "content_color": "#2196F3"
+                        },
+                        "V2": {
+                            "content_type": "verse",
+                            "content_code": "V2",
+                            "content_text": "[E9]Os filhos já estão chegando aqui\n[A9]Agora, somos dois ou três ou mais\n[E9/G#]Encontre o meu coração disposto a queimar [A9]por [B]Ti[A9]\n[E/G#]Todos os versos e canções que eu conseguir can[A9]tar\n[E/G#]Todas as vezes quebrantado, só quero Te fa[A9]lar\n[C#m]Teu é o reino e a glória pra [B]sempre![A9]\n[C#m]Teu é o domínio e o po[B]der, amém e a[A9]mém!",
+                            "content_color": "#2196F3"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[E9]Só Tu és santo! [A9]Só Tu és santo!\n[E9/G#]Não há outro como Tu, [F#m7]Não há outro como Tu\n[E9/G#]Não há outro como Tu, [A9]Não há outro como Jesus",
+                            "content_color": "#F44336"
+                        },
+                        "IL": {
+                            "content_type": "interlude",
+                            "content_code": "IL",
+                            "content_text": "[E9] [A9] [E9/G#] [F#m7] [E9/G#] [A9]",
+                            "content_color": "#9C27B0"
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

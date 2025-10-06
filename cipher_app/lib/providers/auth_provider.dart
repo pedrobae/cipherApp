@@ -75,6 +75,26 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> signInWithGoogle() async {
+    if (isLoading) return;
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _authService.signInWithGoogle();
+      // Auth state change will be handled by listener
+    } catch (e) {
+      _error = 'Erro ao entrar com Google: $e';
+      if (kDebugMode) {
+        print('Erro ao logar com Google: $e');
+      }
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<void> signOut() async {
     if (isLoading) return;
     _isLoading = true;

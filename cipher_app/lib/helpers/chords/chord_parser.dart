@@ -15,7 +15,7 @@ Song parseChordPro(String? chordProText) {
       final matches = chordPattern.allMatches(line);
 
       // Adds the plain lyric to the linesMap
-      String plainLyrics = line.replaceAll(chordPattern, '').trim();
+      String plainLyrics = line.replaceAll(chordPattern, '');
       linesMap[i] = plainLyrics;
 
       List<Chord> chords = [];

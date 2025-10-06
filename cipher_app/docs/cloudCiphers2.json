@@ -2,7 +2,9 @@
     "ciphers": [
         {
             "title": "Entrega",
+            "titleLower": "entrega",
             "author": "Vineyard",
+            "authorLower": "vineyard",
             "tempo": "",
             "music_key": "D",
             "language": "pt-BR",
@@ -12,7 +14,12 @@
                 "adoração"
             ],
             "downloadCount": 0,
-            "searchText": "entrega vineyard rendição adoração",
+            "searchTokens": [
+                "entrega",
+                "vineyard",
+                "rendicao",
+                "adoracao"
+            ],
             "versions": [
                 {
                     "version_name": "Original",

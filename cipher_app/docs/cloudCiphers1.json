@@ -2,7 +2,9 @@
     "ciphers": [
         {
             "title": "Águas Purificadoras",
+            "titleLower": "aguas purificadoras",
             "author": "Diante do Trono",
+            "authorLower": "diante do trono",
             "tempo": "",
             "music_key": "D",
             "language": "pt-BR",
@@ -11,7 +13,15 @@
                 "contemporâneo"
             ],
             "downloadCount": 0,
-            "searchText": "águas purificadoras diante do trono adoração contemporâneo",
+            "searchTokens": [
+                "aguas",
+                "purificadoras",
+                "diante",
+                "do",
+                "trono",
+                "adoracao",
+                "contemporaneo"
+            ],
             "versions": [
                 {
                     "version_name": "Original",
@@ -61,7 +71,9 @@
         },
         {
             "title": "Aquele que Está Feliz",
+            "titleLower": "aquele que esta feliz",
             "author": "Marcos Vinicius / Comunidade de Nilópolis",
+            "authorLower": "marcos vinicius / comunidade de nilopolis",
             "tempo": "",
             "music_key": "A",
             "language": "pt-BR",
@@ -72,7 +84,20 @@
                 "contemporâneo"
             ],
             "downloadCount": 0,
-            "searchText": "aquele que está feliz marcos vinicius comunidade de nilópolis alegria celebração comunidade contemporâneo",
+            "searchTokens": [
+                "aquele",
+                "que",
+                "esta",
+                "feliz",
+                "marcos",
+                "vinicius",
+                "comunidade",
+                "de",
+                "nilopolis",
+                "alegria",
+                "celebracao",
+                "contemporaneo"
+            ],
             "versions": [
                 {
                     "version_name": "Original",
@@ -109,7 +134,9 @@
         },
         {
             "title": "Coração Igual ao Teu",
+            "titleLower": "coracao igual ao teu",
             "author": "Ana Paula Valadão / Diante do Trono",
+            "authorLower": "ana paula valadao / diante do trono",
             "tempo": "",
             "music_key": "G",
             "language": "pt-BR",
@@ -120,7 +147,21 @@
                 "entrega"
             ],
             "downloadCount": 0,
-            "searchText": "coração igual ao teu ana paula valadão diante do trono adoração transformação entrega",
+            "searchTokens": [
+                "coracao",
+                "igual",
+                "ao",
+                "teu",
+                "ana",
+                "paula",
+                "valadao",
+                "diante",
+                "do",
+                "trono",
+                "adoracao",
+                "transformacao",
+                "entrega"
+            ],
             "versions": [
                 {
                     "version_name": "Original",
@@ -163,7 +204,9 @@
         },
         {
             "title": "Corpo e Família",
+            "titleLower": "corpo e familia",
             "author": "Daniel Souza",
+            "authorLower": "daniel souza",
             "tempo": "",
             "music_key": "A",
             "language": "pt-BR",
@@ -174,7 +217,15 @@
                 "unidade"
             ],
             "downloadCount": 0,
-            "searchText": "corpo e família daniel souza comunhão igreja família unidade",
+            "searchTokens": [
+                "corpo",
+                "familia",
+                "daniel",
+                "souza",
+                "comunhao",
+                "igreja",
+                "unidade"
+            ],
             "versions": [
                 {
                     "version_name": "Original",
@@ -224,7 +275,9 @@
         },
         {
             "title": "Deus Inabalável",
+            "titleLower": "deus inabalavel",
             "author": "Isaque Tseng",
+            "authorLower": "isaque tseng",
             "tempo": "",
             "music_key": "C#m",
             "language": "pt-BR",
@@ -235,7 +288,17 @@
                 "força"
             ],
             "downloadCount": 0,
-            "searchText": "deus inabalável isaque tseng confiança paz new heart força",
+            "searchTokens": [
+                "deus",
+                "inabalavel",
+                "isaque",
+                "tseng",
+                "confianca",
+                "paz",
+                "new",
+                "heart",
+                "forca"
+            ],
             "versions": [
                 {
                     "version_name": "Original",
@@ -292,7 +355,9 @@
         },
         {
             "title": "Efésios 1",
+            "titleLower": "efesios 1",
             "author": "Projeto Sola",
+            "authorLower": "projeto sola",
             "tempo": "",
             "music_key": "C",
             "language": "pt-BR",
@@ -302,7 +367,14 @@
                 "eleição"
             ],
             "downloadCount": 0,
-            "searchText": "efésios 1 projeto sola bíblico projeto sola graça eleição",
+            "searchTokens": [
+                "efesios",
+                "projeto",
+                "sola",
+                "biblico",
+                "graca",
+                "eleicao"
+            ],
             "versions": [
                 {
                     "version_name": "Original",

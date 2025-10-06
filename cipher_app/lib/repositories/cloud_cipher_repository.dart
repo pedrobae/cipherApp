@@ -191,12 +191,10 @@ class CloudCipherRepository {
       final lowerQuery = query.toLowerCase().trim();
 
       // Single query approach - search in combined searchText field
-      // Firebase document should have: searchText: "amazing grace john newton hymn classic worship"
-      final results = await _firestoreService.fetchDocuments(
+      final results = await _firestoreService.fetchDocumentsByPrefix(
         collectionPath: 'publicCiphers',
-        filters: {
-          'searchText': lowerQuery,
-        }, // Single field with all searchable content
+        fieldName: 'searchText',
+        prefix: lowerQuery,
         limit: 25,
       );
 

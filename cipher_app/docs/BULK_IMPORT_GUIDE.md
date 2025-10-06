@@ -17,13 +17,17 @@
   "ciphers": [
     {
       "title": "Nome da Cifra",
-      "author": "Nome do Autor", 
+      "titleLower": "nome da cifra",
+      "author": "Nome do Autor",
+      "authorLower": "nome do autor", 
       "tempo": "",
       "music_key": "C",
       "language": "pt-BR",
       "tags": ["hino", "adoração", "clássico"],
       "downloadCount": 0,
-      "searchText": "nome da cifra nome do autor hino adoração clássico",
+      "searchTokens": [
+        "nome", "cifra", "autor", "hino", "adoração", "clássico"
+      ],
       "versions": [
         {
           "version_name": "Original",
@@ -90,6 +94,45 @@
 
 ---
 
+## 🔍 **Campos de Busca - NOVIDADE!**
+
+Para otimizar a busca no Firebase, o sistema agora requer campos adicionais:
+
+### **Campos Obrigatórios para Busca:**
+
+| Campo | Descrição | Exemplo |
+|-------|-----------|---------|
+| `title` | Título original | `"Amazing Grace"` |
+| `titleLower` | Título em minúsculas | `"amazing grace"` |
+| `author` | Autor original | `"John Newton"` |
+| `authorLower` | Autor em minúsculas | `"john newton"` |
+| `searchTokens` | Array de tokens individuais | `["amazing", "grace", "john", "newton", "hino"]` |
+
+### **Como Gerar os Tokens:**
+```javascript
+// Exemplo de geração automática
+const title = "Amazing Grace";
+const author = "John Newton"; 
+const tags = ["hino", "clássico"];
+
+const searchTokens = [
+  ...title.toLowerCase().split(' '),
+  ...author.toLowerCase().split(' '),
+  ...tags.map(tag => tag.toLowerCase())
+].filter(token => token.length >= 2);
+
+// Resultado: ["amazing", "grace", "john", "newton", "hino", "clássico"]
+```
+
+### **Vantagens da Nova Estrutura:**
+- ✅ **Busca por prefixo**: "amaz" encontra "Amazing Grace"
+- ✅ **Busca multi-campo**: "grace newton" encontra a cifra
+- ✅ **Busca por tags**: "hino" encontra todas as cifras com essa tag
+- ✅ **Otimização Firebase**: Menos reads, mais eficiência
+- ✅ **Busca fuzzy**: Tolerância a pequenos erros de digitação
+
+---
+
 ## 📖 **Exemplo de Conversão**
 
 ### **Documento Original:**
@@ -126,13 +169,17 @@ A temer e me consolou
     {
       "cipherId": "cifra###", // Id to be created by firebase
       "title": "Graça Maravilhosa",
+      "titleLower": "graça maravilhosa",
       "author": "John Newton",
+      "authorLower": "john newton",
       "tempo": "", 
       "music_key": "G",
       "language": "pt-BR",
       "tags": ["hino", "clássico", "adoração"],
       "downloadCount": 0,
-      "searchText": "graça maravilhosa john newton hino clássico adoração",
+      "searchTokens": [
+        "graça", "maravilhosa", "john", "newton", "hino", "clássico", "adoração"
+      ],
       "versions": [
         {
           "version_name": "Original",
@@ -221,9 +268,11 @@ A temer e me consolou
 
 ### **Campos Obrigatórios:**
 - `title` - Título da cifra
+- `titleLower` - Título em minúsculas (para busca por prefixo)
 - `author` - Autor/compositor
+- `authorLower` - Autor em minúsculas (para busca por prefixo)
 - `downloadCount` - Contador de downloads (sempre inicia em 0)
-- `searchText` - String de busca com título, autor e tags em minúsculas
+- `searchTokens` - Array de tokens para busca multi-campo otimizada
 
 ### **Validações de Estrutura:**
 - JSON bem formado
@@ -237,6 +286,39 @@ A temer e me consolou
 - Song structure referencia seções existentes
 - Tags são array de strings
 - Campos de data válidos
+- `searchTokens` contém apenas tokens válidos (mínimo 2 caracteres)
+- `titleLower` e `authorLower` correspondem às versões em minúsculas
+
+---
+
+## 🤖 **Geração Automática de Campos**
+
+**NOVIDADE:** O sistema pode gerar automaticamente os novos campos de busca!
+
+### **Geração Automática Ativada:**
+Se você fornecer apenas `title`, `author` e `tags`, o sistema gerará:
+
+```json
+{
+  "title": "Amazing Grace",
+  "author": "John Newton",
+  "tags": ["hino", "clássico"],
+  
+  // ⬇️ GERADOS AUTOMATICAMENTE ⬇️
+  "titleLower": "amazing grace",
+  "authorLower": "john newton", 
+  "searchTokens": ["amazing", "grace", "john", "newton", "hino", "clássico"]
+}
+```
+
+### **Regras de Geração:**
+- **titleLower/authorLower**: Conversão automática para minúsculas
+- **searchTokens**: Divisão por espaços, remoção de pontuação, filtro de tokens ≥2 caracteres
+
+### **Quando Usar:**
+- ✅ **Para importações rápidas** - deixe o sistema gerar
+- ✅ **Para controle total** - forneça todos os campos manualmente
+- ✅ **Para correções** - gere automaticamente e depois ajuste
 
 ---
 
@@ -278,5 +360,31 @@ Hino Sem Autor: Campo 'author' é obrigatório
 - **Documentos Word** com letras e acordes
 - **PDFs** de partituras simples
 - **Listas** de músicas para buscar
+
+### **Formato de Resposta:**
+Você pode escolher entre dois formatos:
+
+#### **1. Formato Completo (Controle Total):**
+```json
+{
+  "title": "Amazing Grace",
+  "titleLower": "amazing grace",
+  "author": "John Newton", 
+  "authorLower": "john newton",
+  "searchTokens": ["amazing", "grace", "john", "newton", "hino"]
+  // ... resto dos campos
+}
+```
+
+#### **2. Formato Mínimo (Geração Automática):**
+```json
+{
+  "title": "Amazing Grace",
+  "author": "John Newton",
+  "tags": ["hino", "clássico"]
+  // Sistema gera: titleLower, authorLower, searchTokens
+```
+
+**Dica:** Use o formato mínimo para importações rápidas - o sistema otimiza automaticamente para busca! 🔍
 
 Está pronto para começar! 🚀

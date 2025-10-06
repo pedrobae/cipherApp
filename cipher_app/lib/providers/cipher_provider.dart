@@ -203,7 +203,7 @@ class CipherProvider extends ChangeNotifier {
 
     try {
       final queriedCiphers =
-          (await _cloudCipherRepository.searchCiphers(term)) ?? [];
+          (await _cloudCipherRepository.searchCiphersCascading(term)) ?? [];
 
       for (var cipher in queriedCiphers) {
         if (!_cloudCiphers.any((c) => c.firebaseId == cipher.firebaseId)) {
@@ -238,7 +238,7 @@ class CipherProvider extends ChangeNotifier {
       _filteredCloudCiphers = cloudCiphers
           .where(
             (cipher) =>
-                cipher.searchTerm.toLowerCase().contains(_searchTerm) ||
+                cipher.title.toLowerCase().contains(_searchTerm) ||
                 cipher.author.toLowerCase().contains(_searchTerm) ||
                 cipher.tags.any(
                   (tag) => tag.toLowerCase().contains(_searchTerm),

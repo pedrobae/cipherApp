@@ -2,7 +2,9 @@
     "ciphers": [
         {
             "title": "Geração que Dança",
+            "titleLower": "geração que dança",
             "author": "David Quinlan",
+            "authorLower": "david quinlan",
             "tempo": "",
             "music_key": "C",
             "language": "pt-BR",
@@ -13,7 +15,16 @@
                 "celebração"
             ],
             "downloadCount": 0,
-            "searchText": "geração que dança david quinlan ministério adoração celebração",
+            "searchTokens": [
+                "geração",
+                "que",
+                "dança",
+                "david",
+                "quinlan",
+                "ministério",
+                "adoração",
+                "celebração"
+            ],
             "versions": [
                 {
                     "version_name": "Original",
@@ -55,7 +66,9 @@
         },
         {
             "title": "Grandioso És",
+            "titleLower": "grandioso és",
             "author": "Júlio César Filho / Purples",
+            "authorLower": "júlio césar filho / purples",
             "tempo": "",
             "music_key": "Em",
             "language": "pt-BR",
@@ -66,7 +79,17 @@
                 "purples"
             ],
             "downloadCount": 0,
-            "searchText": "grandioso és júlio césar filho purples grandeza humildade dependência",
+            "searchTokens": [
+                "grandioso",
+                "és",
+                "júlio",
+                "césar",
+                "filho",
+                "purples",
+                "grandeza",
+                "humildade",
+                "dependência"
+            ],
             "versions": [
                 {
                     "version_name": "Original",
@@ -124,7 +147,9 @@
         },
         {
             "title": "Louvai o Nome (Anástasis)",
+            "titleLower": "louvai o nome (anástasis)",
             "author": "Hillsong Português",
+            "authorLower": "hillsong português",
             "tempo": "",
             "music_key": "G",
             "language": "pt-BR",
@@ -135,7 +160,18 @@
                 "anástasis"
             ],
             "downloadCount": 0,
-            "searchText": "louvai o nome anástasis hillsong ressurreição calvário",
+            "searchTokens": [
+                "louvai",
+                "o",
+                "nome",
+                "anástasis",
+                "hillsong",
+                "português",
+                "ressurreição",
+                "calvário",
+                "hillsong",
+                "anástasis"
+            ],
             "versions": [
                 {
                     "version_name": "Original",
@@ -199,7 +235,9 @@
         },
         {
             "title": "Maravilhosa Graça (This is Amazing Grace)",
+            "titleLower": "maravilhosa graça (this is amazing grace)",
             "author": "Phil Wickham, Jeremy Riddle, Josh Farro",
+            "authorLower": "phil wickham, jeremy riddle, josh farro",
             "tempo": "",
             "music_key": "G",
             "language": "pt-BR",
@@ -209,7 +247,23 @@
                 "sacrifício"
             ],
             "downloadCount": 0,
-            "searchText": "maravilhosa graça this is amazing grace phil wickham jeremy riddle josh farro redenção sacrifício",
+            "searchTokens": [
+                "maravilhosa",
+                "graça",
+                "this",
+                "is",
+                "amazing",
+                "grace",
+                "phil",
+                "wickham",
+                "jeremy",
+                "riddle",
+                "josh",
+                "farro",
+                "graça",
+                "redenção",
+                "sacrifício"
+            ],
             "versions": [
                 {
                     "version_name": "Original",
@@ -259,7 +313,9 @@
         },
         {
             "title": "Nosso Deus é Poderoso (God is Able)",
+            "titleLower": "nosso deus é poderoso (god is able)",
             "author": "Ben Fielding, Reuben Morgan",
+            "authorLower": "ben fielding, reuben morgan",
             "tempo": "",
             "music_key": "G",
             "language": "pt-BR",
@@ -270,7 +326,23 @@
                 "vitória"
             ],
             "downloadCount": 0,
-            "searchText": "nosso deus é poderoso god is able ben fielding reuben morgan poder hillsong ressurreição vitória",
+            "searchTokens": [
+                "nosso",
+                "deus",
+                "é",
+                "poderoso",
+                "god",
+                "is",
+                "able",
+                "ben",
+                "fielding",
+                "reuben",
+                "morgan",
+                "poder",
+                "hillsong",
+                "ressurreição",
+                "vitória"
+            ],
             "versions": [
                 {
                     "version_name": "Original",
@@ -329,7 +401,9 @@
         },
         {
             "title": "O Amor de Deus (Logo Eu)",
+            "titleLower": "o amor de deus (logo eu)",
             "author": "Rachel Novaes",
+            "authorLower": "rachel novaes",
             "tempo": "",
             "music_key": "A",
             "language": "pt-BR",
@@ -339,7 +413,18 @@
                 "humildade"
             ],
             "downloadCount": 0,
-            "searchText": "o amor de deus logo eu rachel novaes graça humildade",
+            "searchTokens": [
+                "o",
+                "amor",
+                "deus",
+                "logo",
+                "eu",
+                "rachel",
+                "novaes",
+                "graça",
+                "amor",
+                "humildade"
+            ],
             "versions": [
                 {
                     "version_name": "Original",

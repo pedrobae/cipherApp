@@ -2,7 +2,9 @@
     "ciphers": [
         {
             "title": "Rendido Estou",
+            "titleLower": "rendido estou",
             "author": "Hillsong / Aline Barros & Fernandinho",
+            "authorLower": "hillsong / aline barros & fernandinho",
             "tempo": "",
             "music_key": "D",
             "language": "pt-BR",
@@ -13,7 +15,17 @@
                 "adoração"
             ],
             "downloadCount": 0,
-            "searchText": "rendido estou hillsong aline barros fernandinho rendição entrega adoração",
+            "searchTokens": [
+                "rendido",
+                "estou",
+                "hillsong",
+                "aline",
+                "barros",
+                "fernandinho",
+                "rendição",
+                "entrega",
+                "adoração"
+            ],
             "versions": [
                 {
                     "version_name": "Original",
@@ -63,7 +75,9 @@
         },
         {
             "title": "Quem Sou Eu?",
+            "titleLower": "quem sou eu?",
             "author": "Mark Hall / PG",
+            "authorLower": "mark hall / pg",
             "tempo": "",
             "music_key": "G",
             "language": "pt-BR",
@@ -74,7 +88,19 @@
                 "reflexão"
             ],
             "downloadCount": 0,
-            "searchText": "quem sou eu mark hall pg humildade identidade casting crowns reflexão",
+            "searchTokens": [
+                "quem",
+                "sou",
+                "eu",
+                "mark",
+                "hall",
+                "pg",
+                "humildade",
+                "identidade",
+                "casting",
+                "crowns",
+                "reflexão"
+            ],
             "versions": [
                 {
                     "version_name": "Original",
@@ -118,7 +144,9 @@
         },
         {
             "title": "Salmo 19",
+            "titleLower": "salmo 19",
             "author": "Isaque Tseng",
+            "authorLower": "isaque tseng",
             "tempo": "",
             "music_key": "C",
             "language": "pt-BR",
@@ -129,7 +157,17 @@
                 "santidade"
             ],
             "downloadCount": 0,
-            "searchText": "salmo 19 isaque tseng new heart bíblico salmos santidade",
+            "searchTokens": [
+                "salmo",
+                "19",
+                "isaque",
+                "tseng",
+                "bíblico",
+                "new",
+                "heart",
+                "salmos",
+                "santidade"
+            ],
             "versions": [
                 {
                     "version_name": "Original",
@@ -189,7 +227,9 @@
         },
         {
             "title": "Santo pra Sempre",
+            "titleLower": "santo pra sempre",
             "author": "Gabriel Guedes",
+            "authorLower": "gabriel guedes",
             "tempo": "",
             "music_key": "G",
             "language": "pt-BR",
@@ -199,7 +239,16 @@
                 "gerações"
             ],
             "downloadCount": 0,
-            "searchText": "santo pra sempre gabriel guedes santidade eternidade gerações",
+            "searchTokens": [
+                "santo",
+                "pra",
+                "sempre",
+                "gabriel",
+                "guedes",
+                "santidade",
+                "eternidade",
+                "gerações"
+            ],
             "versions": [
                 {
                     "version_name": "Original",
@@ -248,7 +297,9 @@
         },
         {
             "title": "Senhor Te Quero (In The Secret)",
+            "titleLower": "senhor te quero (in the secret)",
             "author": "Andy Park",
+            "authorLower": "andy park",
             "tempo": "",
             "music_key": "G",
             "language": "pt-BR",
@@ -259,7 +310,20 @@
                 "adoração"
             ],
             "downloadCount": 0,
-            "searchText": "senhor te quero in the secret andy park intimidade vineyard busca adoração",
+            "searchTokens": [
+                "senhor",
+                "te",
+                "quero",
+                "in",
+                "the",
+                "secret",
+                "andy",
+                "park",
+                "intimidade",
+                "vineyard",
+                "busca",
+                "adoração"
+            ],
             "versions": [
                 {
                     "version_name": "Original",
@@ -309,7 +373,9 @@
         },
         {
             "title": "Só Tu És Santo",
+            "titleLower": "só tu és santo",
             "author": "Morada",
+            "authorLower": "morada",
             "tempo": "",
             "music_key": "E",
             "language": "pt-BR",
@@ -319,7 +385,16 @@
                 "adoração"
             ],
             "downloadCount": 0,
-            "searchText": "só tu és santo morada santidade único adoração",
+            "searchTokens": [
+                "só",
+                "tu",
+                "és",
+                "santo",
+                "morada",
+                "santidade",
+                "único",
+                "adoração"
+            ],
             "versions": [
                 {
                     "version_name": "Original",

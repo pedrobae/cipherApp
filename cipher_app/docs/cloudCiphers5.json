@@ -2,7 +2,9 @@
     "ciphers": [
         {
             "title": "Teu Amor Não Falha (Your Love Never Fails)",
+            "titleLower": "teu amor não falha (your love never fails)",
             "author": "Jesus Culture",
+            "authorLower": "jesus culture",
             "tempo": "",
             "music_key": "Am",
             "language": "pt-BR",
@@ -12,7 +14,21 @@
                 "amor"
             ],
             "downloadCount": 0,
-            "searchText": "teu amor não falha your love never fails jesus culture fidelidade constância amor",
+            "searchTokens": [
+                "teu",
+                "amor",
+                "não",
+                "falha",
+                "your",
+                "love",
+                "never",
+                "fails",
+                "jesus",
+                "culture",
+                "fidelidade",
+                "constância",
+                "amor"
+            ],
             "versions": [
                 {
                     "version_name": "Original",
@@ -62,7 +78,9 @@
         },
         {
             "title": "Todas as Gerações (Let Every Generation)",
+            "titleLower": "todas as gerações (let every generation)",
             "author": "Jon Li",
+            "authorLower": "jon li",
             "tempo": "",
             "music_key": "E",
             "language": "pt-BR",
@@ -73,7 +91,21 @@
                 "adoração"
             ],
             "downloadCount": 0,
-            "searchText": "todas as gerações let every generation jon li new heart gerações unidade new heart adoração",
+            "searchTokens": [
+                "todas",
+                "as",
+                "gerações",
+                "let",
+                "every",
+                "generation",
+                "jon",
+                "li",
+                "gerações",
+                "unidade",
+                "new",
+                "heart",
+                "adoração"
+            ],
             "versions": [
                 {
                     "version_name": "Original",
@@ -131,7 +163,9 @@
         },
         {
             "title": "Tu és Santo",
+            "titleLower": "tu és santo",
             "author": "Ronaldo Bezerra",
+            "authorLower": "ronaldo bezerra",
             "tempo": "",
             "music_key": "E",
             "language": "pt-BR",
@@ -141,7 +175,16 @@
                 "dança"
             ],
             "downloadCount": 0,
-            "searchText": "tu és santo ronaldo bezerra santidade louvor dança",
+            "searchTokens": [
+                "tu",
+                "és",
+                "santo",
+                "ronaldo",
+                "bezerra",
+                "santidade",
+                "louvor",
+                "dança"
+            ],
             "versions": [
                 {
                     "version_name": "Original",
@@ -183,7 +226,9 @@
         },
         {
             "title": "Tua Igreja Canta",
+            "titleLower": "tua igreja canta",
             "author": "Israel Salazar",
+            "authorLower": "israel salazar",
             "tempo": "",
             "music_key": "A",
             "language": "pt-BR",
@@ -193,7 +238,16 @@
                 "proclamação"
             ],
             "downloadCount": 0,
-            "searchText": "tua igreja canta israel salazar igreja reino proclamação",
+            "searchTokens": [
+                "tua",
+                "igreja",
+                "canta",
+                "israel",
+                "salazar",
+                "igreja",
+                "reino",
+                "proclamação"
+            ],
             "versions": [
                 {
                     "version_name": "Original",
@@ -249,7 +303,9 @@
         },
         {
             "title": "Vasos Quebrados (Broken Vessels)",
+            "titleLower": "vasos quebrados (broken vessels)",
             "author": "Joel Houston, Jonas Myrin",
+            "authorLower": "joel houston, jonas myrin",
             "tempo": "",
             "music_key": "C#m",
             "language": "pt-BR",
@@ -260,7 +316,20 @@
                 "quebrantamento"
             ],
             "downloadCount": 0,
-            "searchText": "vasos quebrados broken vessels joel houston jonas myrin graça restauração hillsong quebrantamento",
+            "searchTokens": [
+                "vasos",
+                "quebrados",
+                "broken",
+                "vessels",
+                "joel",
+                "houston",
+                "jonas",
+                "myrin",
+                "graça",
+                "restauração",
+                "hillsong",
+                "quebrantamento"
+            ],
             "versions": [
                 {
                     "version_name": "Original",
@@ -295,7 +364,9 @@
         },
         {
             "title": "Vim Para Adorar-Te (Here I Am to Worship)",
+            "titleLower": "vim para adorar-te (here i am to worship)",
             "author": "Tim Hughes",
+            "authorLower": "tim hughes",
             "tempo": "",
             "music_key": "E",
             "language": "pt-BR",
@@ -305,7 +376,21 @@
                 "sacrifício"
             ],
             "downloadCount": 0,
-            "searchText": "vim para adorar-te here i am to worship adoração humildade sacrifício tim hughes",
+            "searchTokens": [
+                "vim",
+                "para",
+                "adorar-te",
+                "here",
+                "i",
+                "am",
+                "to",
+                "worship",
+                "tim",
+                "hughes",
+                "adoração",
+                "humildade",
+                "sacrifício"
+            ],
             "versions": [
                 {
                     "version_name": "Original",

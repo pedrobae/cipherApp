@@ -55,7 +55,9 @@
         },
         {
             "title": "Eu Cantarei (We Will Sing)",
+            "titleLower": "eu cantarei (we will sing)",
             "author": "Jon Lo",
+            "authorLower": "jon lo",
             "tempo": "",
             "music_key": "A",
             "language": "pt-BR",
@@ -66,7 +68,20 @@
                 "adoração"
             ],
             "downloadCount": 0,
-            "searchText": "eu cantarei we will sing jon lo louvor new heart soberania adoração",
+            "searchTokens": [
+                "eu",
+                "cantarei",
+                "we",
+                "will",
+                "sing",
+                "jon",
+                "lo",
+                "louvor",
+                "new",
+                "heart",
+                "soberania",
+                "adoracao"
+            ],
             "versions": [
                 {
                     "version_name": "Original",
@@ -127,7 +142,9 @@
         },
         {
             "title": "Eu Te Bendirei",
+            "titleLower": "eu te bendirei",
             "author": "Matt Redman / Rachel Novaes / Ronaldo Bezerra",
+            "authorLower": "matt redman / rachel novaes / ronaldo bezerra",
             "tempo": "",
             "music_key": "G",
             "language": "pt-BR",
@@ -138,7 +155,21 @@
                 "bênção"
             ],
             "downloadCount": 0,
-            "searchText": "eu te bendirei matt redman rachel novaes ronaldo bezerra adoração louvor fidelidade bênção",
+            "searchTokens": [
+                "eu",
+                "te",
+                "bendirei",
+                "matt",
+                "redman",
+                "rachel",
+                "novaes",
+                "ronaldo",
+                "bezerra",
+                "adoracao",
+                "louvor",
+                "fidelidade",
+                "bencao"
+            ],
             "versions": [
                 {
                     "version_name": "Original",
@@ -189,7 +220,9 @@
         },
         {
             "title": "Eu Te Louvarei",
+            "titleLower": "eu te louvarei",
             "author": "Ronaldo Bezerra",
+            "authorLower": "ronaldo bezerra",
             "tempo": "",
             "music_key": "D",
             "language": "pt-BR",
@@ -200,7 +233,17 @@
                 "alegria"
             ],
             "downloadCount": 0,
-            "searchText": "eu te louvarei ronaldo bezerra louvor adoração salvação alegria",
+            "searchTokens": [
+                "eu",
+                "te",
+                "louvarei",
+                "ronaldo",
+                "bezerra",
+                "louvor",
+                "adoracao",
+                "salvacao",
+                "alegria"
+            ],
             "versions": [
                 {
                     "version_name": "Original",
@@ -236,7 +279,9 @@
         },
         {
             "title": "Eu Vou Construir",
+            "titleLower": "eu vou construir",
             "author": "Brett Younker, Karl Martin, Kirby Kaple, Matt Redman, Pat Barrett",
+            "authorLower": "brett younker, karl martin, kirby kaple, matt redman, pat barrett",
             "tempo": "",
             "music_key": "E",
             "language": "pt-BR",
@@ -247,7 +292,25 @@
                 "entrega"
             ],
             "downloadCount": 0,
-            "searchText": "eu vou construir brett younker karl martin kirby kaple matt redman pat barrett adoração construção fundamento entrega",
+            "searchTokens": [
+                "eu",
+                "vou",
+                "construir",
+                "brett",
+                "younker",
+                "karl",
+                "martin",
+                "kirby",
+                "kaple",
+                "matt",
+                "redman",
+                "pat",
+                "barrett",
+                "adoração",
+                "construção",
+                "fundamento",
+                "entrega"
+            ],
             "versions": [
                 {
                     "version_name": "Original",
@@ -303,6 +366,8 @@
         },
         {
             "title": "Firme Fundamento",
+            "titleLower": "firme fundamento",
+            "authorLower": "maverick city",
             "author": "Maverick City",
             "tempo": "",
             "music_key": "C",
@@ -313,7 +378,14 @@
                 "rocha"
             ],
             "downloadCount": 0,
-            "searchText": "firme fundamento maverick city confiança rocha",
+            "searchTokens": [
+                "firme",
+                "fundamento",
+                "maverick",
+                "city",
+                "confiança",
+                "rocha"
+            ],
             "versions": [
                 {
                     "version_name": "Original",

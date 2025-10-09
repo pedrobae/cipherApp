@@ -57,7 +57,8 @@ class PresentationTextSection extends StatelessWidget {
         }
 
         return Card(
-          surfaceTintColor: Theme.of(context).primaryColor,
+          color: Theme.of(context).colorScheme.surfaceContainerHigh,
+          surfaceTintColor: Theme.of(context).colorScheme.surfaceTint,
           elevation: 2,
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -85,7 +86,7 @@ class PresentationTextSection extends StatelessWidget {
                     style: TextStyle(
                       fontFamily: layoutProvider.fontFamily,
                       fontSize: layoutProvider.fontSize,
-                      color: layoutProvider.lyricColor,
+                      color: Theme.of(context).colorScheme.onSurface,
                       height: 1.2, // Good line height for reading
                     ),
                     textAlign: TextAlign.left,

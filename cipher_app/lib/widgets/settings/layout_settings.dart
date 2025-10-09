@@ -21,7 +21,7 @@ class LayoutSettings extends StatelessWidget {
     return Consumer<LayoutSettingsProvider>(
       builder: (context, settings, child) {
         return Material(
-          color: Theme.of(context).scaffoldBackgroundColor,
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -36,7 +36,10 @@ class LayoutSettings extends StatelessWidget {
                   thickness: Theme.of(context).dividerTheme.thickness,
                 ),
                 if (includeFilters) ...[
-                  Text('Filtros', style: Theme.of(context).textTheme.titleMedium),
+                  Text(
+                    'Filtros',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                   CipherFilters(settings: settings, isPresenter: isPresenter),
                   Divider(
                     color: Theme.of(context).dividerColor,
@@ -65,14 +68,17 @@ class LayoutSettings extends StatelessWidget {
                     color: Theme.of(context).dividerColor,
                     thickness: Theme.of(context).dividerTheme.thickness,
                   ),
-                  Text('Transpose', style: Theme.of(context).textTheme.titleMedium),
+                  Text(
+                    'Transpose',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                   Transposer(),
                 ],
               ],
             ),
           ),
         );
-      }
+      },
     );
   }
 }

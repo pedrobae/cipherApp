@@ -168,7 +168,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Card(
-      color: colorScheme.errorContainer.withValues(alpha: 0.9),
+      color: colorScheme.error,
       child: ListTile(
         leading: isLoading
             ? SizedBox(
@@ -176,12 +176,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 height: 24,
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
-            : Icon(icon, color: colorScheme.error),
-        title: Text(title, style: TextStyle(color: colorScheme.error)),
-        subtitle: Text(subtitle),
+            : Icon(icon, color: colorScheme.onError),
+        title: Text(title, style: TextStyle(color: colorScheme.onError)),
+        subtitle: Text(subtitle, style: TextStyle(color: colorScheme.onError)),
         trailing: isLoading
             ? null
-            : Icon(Icons.chevron_right, color: colorScheme.error),
+            : Icon(Icons.chevron_right, color: colorScheme.onError),
         onTap: onTap,
       ),
     );

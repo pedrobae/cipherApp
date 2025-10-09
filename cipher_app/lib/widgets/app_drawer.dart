@@ -1,7 +1,8 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/navigation_provider.dart';
+import 'package:cipher_app/providers/navigation_provider.dart';
+import 'package:cipher_app/providers/auth_provider.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
@@ -11,8 +12,8 @@ class AppDrawer extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Consumer<NavigationProvider>(
-      builder: (context, navigationProvider, child) {
+    return Consumer2<NavigationProvider, AuthProvider>(
+      builder: (context, navigationProvider, authProvider, child) {
         return Drawer(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadiusGeometry.horizontal(
@@ -24,8 +25,8 @@ class AppDrawer extends StatelessWidget {
             320,
           ),
           backgroundColor: colorScheme.surfaceContainerHighest,
-          child: ListView(
-            padding: EdgeInsets.zero,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               DrawerHeader(
                 decoration: BoxDecoration(
@@ -80,6 +81,20 @@ class AppDrawer extends StatelessWidget {
                   Navigator.pop(context); // Close drawer
                 },
               ),
+              // Push admin to bottom
+              const Spacer(),
+              if (authProvider.isAdmin) ...[
+                const Divider(),
+                ListTile(
+                  leading: const Icon(Icons.admin_panel_settings),
+                  title: const Text('Administração'),
+                  selected: navigationProvider.selectedIndex == 4,
+                  onTap: () {
+                    navigationProvider.navigateToAdmin();
+                    Navigator.pop(context); // Close drawer
+                  },
+                ),
+              ],
             ],
           ),
         );

@@ -23,11 +23,12 @@ class ReorderableStructureChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       height: 80,
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(color: colorScheme.primary),
         borderRadius: BorderRadius.circular(8),
       ),
       child: songStructure.isEmpty

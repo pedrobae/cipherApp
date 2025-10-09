@@ -91,7 +91,7 @@ class _CipherViewerState extends State<CipherViewer>
 
   void _showLayoutSettings() {
     showModalBottomSheet(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
@@ -114,6 +114,8 @@ class _CipherViewerState extends State<CipherViewer>
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Consumer3<CipherProvider, VersionProvider, LayoutSettingsProvider>(
       builder: (context, cipherProvider, versionProvider, settings, child) {
         // Handle loading states
@@ -132,11 +134,7 @@ class _CipherViewerState extends State<CipherViewer>
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.error_outline,
-                    size: 64,
-                    color: Theme.of(context).colorScheme.error,
-                  ),
+                  Icon(Icons.error_outline, size: 64, color: colorScheme.error),
                   const SizedBox(height: 16),
                   Text(
                     'Erro: ${cipherProvider.error ?? versionProvider.error}',

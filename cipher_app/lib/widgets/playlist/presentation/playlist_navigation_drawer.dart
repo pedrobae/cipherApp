@@ -28,8 +28,8 @@ class PlaylistNavigationDrawer extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Theme.of(context).primaryColor,
-                  Theme.of(context).primaryColor.withValues(alpha: .8),
+                  Theme.of(context).colorScheme.primary,
+                  Theme.of(context).colorScheme.tertiary,
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -55,36 +55,43 @@ class PlaylistNavigationDrawer extends StatelessWidget {
 
           // Items list
           Expanded(
-            child: playlist.items.isEmpty
-                ? const Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.playlist_play, size: 64, color: Colors.grey),
-                        SizedBox(height: 16),
-                        Text(
-                          'Playlist vazia',
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
-                        ),
-                      ],
+            child: Container(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              child: playlist.items.isEmpty
+                  ? const Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.playlist_play,
+                            size: 64,
+                            color: Colors.grey,
+                          ),
+                          SizedBox(height: 16),
+                          Text(
+                            'Playlist vazia',
+                            style: TextStyle(fontSize: 16, color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                    )
+                  : ListView.separated(
+                      separatorBuilder: (context, index) {
+                        return const Divider(
+                          height: 1,
+                          thickness: 1,
+                          indent: 16,
+                          endIndent: 16,
+                        );
+                      },
+                      itemCount: playlist.items.length,
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      itemBuilder: (context, index) {
+                        final item = playlist.items[index];
+                        return _buildNavigationItem(context, item, index);
+                      },
                     ),
-                  )
-                : ListView.separated(
-                    separatorBuilder: (context, index) {
-                      return const Divider(
-                        height: 1,
-                        thickness: 1,
-                        indent: 16,
-                        endIndent: 16,
-                      );
-                    },
-                    itemCount: playlist.items.length,
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    itemBuilder: (context, index) {
-                      final item = playlist.items[index];
-                      return _buildNavigationItem(context, item, index);
-                    },
-                  ),
+            ),
           ),
         ],
       ),

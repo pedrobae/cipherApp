@@ -41,6 +41,7 @@ class CipherContentSection extends StatelessWidget {
     }).toList();
 
     return Card(
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: MasonryGridView.count(

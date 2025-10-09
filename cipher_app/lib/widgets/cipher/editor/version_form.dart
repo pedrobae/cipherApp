@@ -145,6 +145,7 @@ class _VersionFormState extends State<VersionForm> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Consumer2<VersionProvider, CipherProvider>(
       builder: (context, versionProvider, cipherProvider, child) {
         // Trigger sync after the current build if needed
@@ -160,6 +161,7 @@ class _VersionFormState extends State<VersionForm> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Card(
+              color: colorScheme.surfaceContainerHigh,
               child: Padding(
                 padding: const EdgeInsets.all(8),
                 child: Column(
@@ -215,6 +217,7 @@ class _VersionFormState extends State<VersionForm> {
 
             // Song Structure Section
             Card(
+              color: colorScheme.surfaceContainerHigh,
               child: Padding(
                 padding: const EdgeInsets.all(8),
                 child: Column(
@@ -301,6 +304,7 @@ class _VersionFormState extends State<VersionForm> {
               ...uniqueSections.map((sectionCode) {
                 final section = version.sections![sectionCode];
                 return Card(
+                  color: colorScheme.surfaceContainerHigh,
                   margin: const EdgeInsets.only(bottom: 16),
                   child: Padding(
                     padding: const EdgeInsets.all(16),

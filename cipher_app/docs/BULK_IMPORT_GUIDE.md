@@ -92,6 +92,48 @@
 | **Pré-Refrão** | PC | `#E91E63` | Rosa - Pre-Chorus |
 | **Solo** | S | `#673AB7` | Roxo Escuro - Solo |
 
+/// Predefined section types with Portuguese display names
+predefinedSectionTypes = {
+  'I': 'Intro',
+  'V1': 'Verso 1',
+  'V2': 'Verso 2',
+  'V3': 'Verso 3',
+  'V4': 'Verso 4',
+  'C': 'Refrão',
+  'C1': 'Refrão 1',
+  'C2': 'Refrão 2',
+  'PC': 'Pré-Refrão',
+  'B': 'Ponte',
+  'B1': 'Ponte 1',
+  'B2': 'Ponte 2',
+  'S': 'Solo',
+  'O': 'Outro',
+  'F': 'Final',
+  'N': 'Anotações',
+  'T': 'Tag',
+};
+
+
+defaultSectionColors = {
+  'I': Colors.purple,
+  'V1': Colors.blue,
+  'V2': Colors.blue,
+  'V3': Colors.blue,
+  'V4': Colors.blue,
+  'C': Colors.red,
+  'C1': Colors.red,
+  'C2': Colors.red,
+  'PC': Colors.orange,
+  'B': Colors.green,
+  'B1': Colors.green,
+  'B2': Colors.green,
+  'S': Colors.amber,
+  'O': Colors.brown,
+  'F': Colors.indigo,
+  'N': Colors.grey,
+  'T': Colors.teal,
+};
+
 ---
 
 ## 🔍 **Campos de Busca - NOVIDADE!**

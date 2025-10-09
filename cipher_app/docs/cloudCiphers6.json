@@ -1,0 +1,403 @@
+{
+    "ciphers": [
+        {
+            "title": "Bondade de Deus",
+            "titleLower": "bondade de deus",
+            "author": "Bethel Music",
+            "authorLower": "bethel music",
+            "tempo": "",
+            "music_key": "A",
+            "language": "pt-BR",
+            "tags": [
+                "adoração",
+                "contemporâneo",
+                "bethel"
+            ],
+            "downloadCount": 0,
+            "searchTokens": [
+                "bondade",
+                "deus",
+                "bethel",
+                "music",
+                "adoração",
+                "contemporâneo",
+                "graça",
+                "fiel"
+            ],
+            "versions": [
+                {
+                    "version_name": "Original",
+                    "transposed_key": "A",
+                    "song_structure": [
+                        "I",
+                        "V1",
+                        "C",
+                        "V2",
+                        "C",
+                        "B",
+                        "CF"
+                    ],
+                    "sections": {
+                        "I": {
+                            "content_type": "intro",
+                            "content_code": "I",
+                            "content_text": "[A] [A4] [A] [A4]",
+                            "content_color": "#9C27B0"
+                        },
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[A]Te amo, Deus\n[D7M/A]Tua graça [A]nunca falha\n[E/G#]Todos os [F#m7]dias\n[D7M/A]Eu estou em Tuas [E6]mãos\n[F#m7]Desde quando me le[D7M/A]vanto\n[A]Até eu me de[E/G#]i[F#m7]tar\n[D7M/A]Eu cantarei a bon[E6]dade de [A]Deus",
+                            "content_color": "#2196F3"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[D7M/A]És fiel em todo [A]tempo\n[D7M/A]Em todo tempo Tu és [A]tão, tão [E6]bom\n[D7M/A]Com todo fôlego que [F#m7]tenho\n[D7M/A]Eu cantarei a bon[E6]dade de [A]Deus",
+                            "content_color": "#F44336"
+                        },
+                        "V2": {
+                            "content_type": "verse",
+                            "content_code": "V2",
+                            "content_text": "[A]Tua doce voz\n[D7M/A]Que me guia em meio ao [A]fogo\n[E/G#]Na escu[F#m7]ridão\n[D7M/A]Tua presença me con[E6]forta\n[F#m7]Sei que és meu [D7M/A]Pai\n[A]Que a[E/G#]migo [F#m7]és\n[D7M/A]Vivo na bon[E]dade de [A]Deus",
+                            "content_color": "#2196F3"
+                        },
+                        "B": {
+                            "content_type": "bridge",
+                            "content_code": "B",
+                            "content_text": "[A/C#]Tua bondade me segui[D7M/A]rá\n[E6]Me seguirá Se[A]nhor\n[A/C#]Tua bondade me segui[D7M/A]rá\n[E6]Me seguirá Se[A]nhor\n\n[A/C#]Eu me rendo a Ti, te dou o meu [D7M/A]ser\n[E6]Entrego tudo a [F#m7]Ti\n[A/C#]Tua bondade me segui[D7M/A]rá\n[E6]Me seguirá Se[A]nhor",
+                            "content_color": "#4CAF50"
+                        },
+                        "CF": {
+                            "content_type": "final",
+                            "content_code": "CF",
+                            "content_text": "[D7M/A]És fiel em todo [A]tempo\n[D7M/A]Em todo tempo Tu és [A]tão, tão [E6]bom\n[D7M/A]Com todo fôlego que [F#m7]tenho\n[D7M/A]Eu cantarei a bon[E6]dade de [A]Deus\n[D7M/A]És fiel em todo [A]tempo\n[D7M/A]Em todo tempo Tu és [A]tão, tão [E6]bom\n[D7M/A]Com todo fôlego que [F#m7]tenho\n[D7M/A]Eu cantarei a bon[E6]dade de [A]Deus",
+                            "content_color": "#FF9800"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Cantarei Teu Amor Pra Sempre",
+            "titleLower": "cantarei teu amor pra sempre",
+            "author": "David Crowder",
+            "authorLower": "david crowder",
+            "tempo": "",
+            "music_key": "E",
+            "language": "pt-BR",
+            "tags": [
+                "adoração",
+                "contemporâneo",
+                "amor"
+            ],
+            "downloadCount": 0,
+            "searchTokens": [
+                "cantarei",
+                "teu",
+                "amor",
+                "pra",
+                "sempre",
+                "david",
+                "crowder",
+                "adoração",
+                "contemporâneo"
+            ],
+            "versions": [
+                {
+                    "version_name": "Tom E",
+                    "transposed_key": "E",
+                    "song_structure": [
+                        "I",
+                        "V1",
+                        "C",
+                        "V1",
+                        "C",
+                        "B",
+                        "C",
+                        "C",
+                        "C"
+                    ],
+                    "sections": {
+                        "I": {
+                            "content_type": "intro",
+                            "content_code": "I",
+                            "content_text": "[E] [F#m7] [A9] [B]",
+                            "content_color": "#9C27B0"
+                        },
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[E]Dos montes corre para o mar\n[F#m7]Teu rio de amor por mim\n[A9]Eu abrirei meu cora[B]ção\nDeixando Tua cura en[E]trar\n[E]Me alegro por te pertencer\n[F#m7]Levantarei as minhas mãos\n[A9]O Teu amor me alcança\n[B]E me faz louvar-Te",
+                            "content_color": "#2196F3"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[E]Cantarei Teu amor pra [F#m7]sempre\n[A9]Cantarei Teu amor pra [B]sempre",
+                            "content_color": "#F44336"
+                        },
+                        "B": {
+                            "content_type": "bridge",
+                            "content_code": "B",
+                            "content_text": "[F#m7]Meu coração e[E/G#]xulta\n[A9]De alegria eu [B]canto\n[F#m7]Se o mundo conhecer a [E/G#]Ti\n[A9]Ele se encherá com Tua ale[B]gria",
+                            "content_color": "#4CAF50"
+                        }
+                    }
+                },
+                {
+                    "version_name": "Tom G",
+                    "transposed_key": "G",
+                    "song_structure": [
+                        "I",
+                        "V1",
+                        "C",
+                        "V1",
+                        "C",
+                        "B",
+                        "C",
+                        "C",
+                        "C"
+                    ],
+                    "sections": {
+                        "I": {
+                            "content_type": "intro",
+                            "content_code": "I",
+                            "content_text": "[G] [Am7] [C9] [D]",
+                            "content_color": "#9C27B0"
+                        },
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[G]Dos montes corre para o mar\n[Am7]Teu rio de amor por mim\n[C9]Eu abrirei meu cora[D]ção\nDeixando Tua cura en[G]trar\n[G]Me alegro por te pertencer\n[Am7]Levantarei as minhas mãos\n[C9]O Teu amor me alcança\n[D]E me faz louvar-Te",
+                            "content_color": "#2196F3"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[G]Cantarei Teu amor pra [Am7]sempre\n[C9]Cantarei Teu amor pra [D]sempre",
+                            "content_color": "#F44336"
+                        },
+                        "B": {
+                            "content_type": "bridge",
+                            "content_code": "B",
+                            "content_text": "[Am7]Meu coração e[G/B]xulta\n[C9]De alegria eu [D]canto\n[Am7]Se o mundo conhecer a [G/B]Ti\n[C9]Ele se encherá com Tua ale[D]gria",
+                            "content_color": "#4CAF50"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Deus Enviou (Porque Ele Vive)",
+            "titleLower": "deus enviou (porque ele vive)",
+            "author": "Bill Gaither",
+            "authorLower": "bill gaither",
+            "tempo": "",
+            "music_key": "E",
+            "language": "pt-BR",
+            "tags": [
+                "hino",
+                "clássico",
+                "ressurreição"
+            ],
+            "downloadCount": 0,
+            "searchTokens": [
+                "deus",
+                "enviou",
+                "porque",
+                "ele",
+                "vive",
+                "bill",
+                "gaither",
+                "hino",
+                "clássico",
+                "ressurreição"
+            ],
+            "versions": [
+                {
+                    "version_name": "Tom E",
+                    "transposed_key": "E",
+                    "song_structure": [
+                        "I",
+                        "V1",
+                        "C",
+                        "V2",
+                        "C"
+                    ],
+                    "sections": {
+                        "I": {
+                            "content_type": "intro",
+                            "content_code": "I",
+                            "content_text": "[E] [C#m] [F#m] [B] [E] [A] [E]",
+                            "content_color": "#9C27B0"
+                        },
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[E]Deus envi[E/G#]ou seu filho a[A]ma[Am]do\n[E]Pra me sal[C#m]var e perdo[D]ar[B]\n[E]Na cruz mor[E7]reu por meus peca[A]dos[Am]\n[E]Mas ressur[C#m]giu e [F#m]vivo com o [B]Pai es[E]tá[A][E]",
+                            "content_color": "#2196F3"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[E]Porque Ele [E7]vive posso crer no ama[A]nhã[Am]\n[E]Porque Ele [C#m]vive temor não [D]há[B]\n[E]Mas eu bem [F#m]sei eu [G#m]sei que a [E7]minha vi[A]da[Am]\n[E]Está nas [C#m]mãos do meu [F#m]Jesus que [B]vivo es[E]tá[A][E]",
+                            "content_color": "#F44336"
+                        },
+                        "V2": {
+                            "content_type": "verse",
+                            "content_code": "V2",
+                            "content_text": "[E]E quando en[E/G#]fim chegar a [A]ho[Am]ra\n[E]Em que a [C#m]morte enfren[D]ta[B]rei\n[E]Sem medo en[E7]tão terei vitó[A]ria[Am]\n[E]Verei na [C#m]glória ó meu [F#m]Jesus que [B]vivo es[E]tá[A][E]",
+                            "content_color": "#2196F3"
+                        }
+                    }
+                },
+                {
+                    "version_name": "Tom G",
+                    "transposed_key": "G",
+                    "song_structure": [
+                        "I",
+                        "V1",
+                        "C",
+                        "V2",
+                        "C"
+                    ],
+                    "sections": {
+                        "I": {
+                            "content_type": "intro",
+                            "content_code": "I",
+                            "content_text": "[G] [Em] [Am] [D] [G] [C] [G]",
+                            "content_color": "#9C27B0"
+                        },
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[G]Deus envi[G/B]ou seu filho a[C]ma[Cm]do\n[G]Pra me sal[Em]var e perdo[F]ar[D]\n[G]Na cruz mor[G7]reu por meus peca[C]dos[Cm]\n[G]Mas ressur[Em]giu e [Am]vivo com o [D]Pai es[G]tá[C][G]",
+                            "content_color": "#2196F3"
+                        },
+                        "C": {
+                            "content_type": "chorus",
+                            "content_code": "C",
+                            "content_text": "[G]Porque Ele [G7]vive posso crer no ama[C]nhã[Cm]\n[G]Porque Ele [Em]vive temor não [F]há[D]\n[G]Mas eu bem [Am]sei eu [Bm]sei que a [G7]minha vi[C]da[Cm]\n[G]Está nas [Em]mãos do meu [Am]Jesus que [D]vivo es[G]tá[C][G]",
+                            "content_color": "#F44336"
+                        },
+                        "V2": {
+                            "content_type": "verse",
+                            "content_code": "V2",
+                            "content_text": "[G]E quando en[G/B]fim chegar a [C]ho[Cm]ra\n[G]Em que a [Em]morte enfren[F]ta[D]rei\n[G]Sem medo en[G7]tão terei vitó[C]ria[Cm]\n[G]Verei na [Em]glória ó meu [Am]Jesus que [D]vivo es[G]tá[C][G]",
+                            "content_color": "#2196F3"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Ele É Exaltado",
+            "titleLower": "ele é exaltado",
+            "author": "Twila Paris",
+            "authorLower": "twila paris",
+            "tempo": "",
+            "music_key": "D",
+            "language": "pt-BR",
+            "tags": [
+                "adoração",
+                "exaltação",
+                "clássico"
+            ],
+            "downloadCount": 0,
+            "searchTokens": [
+                "ele",
+                "é",
+                "exaltado",
+                "rei",
+                "twila",
+                "paris",
+                "adoração",
+                "exaltação",
+                "clássico"
+            ],
+            "versions": [
+                {
+                    "version_name": "Tom D",
+                    "transposed_key": "D",
+                    "song_structure": [
+                        "I",
+                        "V1",
+                        "B1",
+                        "B2",
+                        "F"
+                    ],
+                    "sections": {
+                        "I": {
+                            "content_type": "intro",
+                            "content_code": "I",
+                            "content_text": "[D] | [D/F#] | [G] [A] | [G] [A] | [G] | [G/A]",
+                            "content_color": "#9C27B0"
+                        },
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[D]Ele é exaltado o [D/F#]Rei exaltado nos [G]céus, eu O lou[Bm]va[A]rei\n[D]Ele é exaltado, prá [D/F#]sempre exaltado Seu [G]nome, lou[A]va[G]rei[A][B]",
+                            "content_color": "#2196F3"
+                        },
+                        "B1": {
+                            "content_type": "bridge",
+                            "content_code": "B1",
+                            "content_text": "[Em]Ele é Se[A]nhor... [A/G]Sua verdade vai [D]sempre rei[D/F#]nar[G][G/F#]\n[Em]Terra é [A]céu, [A/G]glorificam Seu [D]santo no[D/F#]me[G][B7]",
+                            "content_color": "#4CAF50"
+                        },
+                        "B2": {
+                            "content_type": "bridge",
+                            "content_code": "B2",
+                            "content_text": "[Em]Ele é exal[D/F#]tado o [G]Rei exal[G/A]tado nos [D]céus[A/B]",
+                            "content_color": "#4CAF50"
+                        },
+                        "F": {
+                            "content_type": "final",
+                            "content_code": "F",
+                            "content_text": "[Em]Ele é Se[A]nhor... [A/G]Sua verdade vai [D]sempre rei[D/F#]nar[G][G/F#]\n[Em]Terra é [A]céu, [A/G]glorificam Seu [D]santo no[D/F#]me[G][B7]\n[Em]Ele é exal[D/F#]tado o [G]Rei exal[G/A]tado nos [D]céus[A/B]\n[Em]Ele é exal[D/F#]tado o [G]Rei exal[A/B]tado nos [E]céus",
+                            "content_color": "#FF9800"
+                        }
+                    }
+                },
+                {
+                    "version_name": "Tom E",
+                    "transposed_key": "E",
+                    "song_structure": [
+                        "V1",
+                        "B1",
+                        "B2",
+                        "B1",
+                        "F"
+                    ],
+                    "sections": {
+                        "V1": {
+                            "content_type": "verse",
+                            "content_code": "V1",
+                            "content_text": "[E]Ele é exaltado o [E/G#]Rei exaltado nos [A]céus, eu O lou[C#m]va[B]rei\n[E]Ele é exaltado, prá [E/G#]sempre exaltado Seu [A]nome, lou[B]va[A]rei[B][C#]",
+                            "content_color": "#2196F3"
+                        },
+                        "B1": {
+                            "content_type": "bridge",
+                            "content_code": "B1",
+                            "content_text": "[F#m]Ele é Se[B]nhor... [B/A]Sua verdade vai [E]sempre rei[E/G#]nar[A][A/G#]\n[F#m]Terra é [B]céu, [B/A]glorificam Seu [E]santo no[E/G#]me[C#7]",
+                            "content_color": "#4CAF50"
+                        },
+                        "B2": {
+                            "content_type": "bridge",
+                            "content_code": "B2",
+                            "content_text": "[F#m]Ele é exal[E/G#]tado o [A]Rei exal[A/B]tado nos [E]céus[C#7]",
+                            "content_color": "#4CAF50"
+                        },
+                        "F": {
+                            "content_type": "final",
+                            "content_code": "F",
+                            "content_text": "[F#m]Ele é Se[B]nhor... [B/A]Sua verdade vai [E]sempre rei[E/G#]nar[A][A/G#]\n[F#m]Terra é [B]céu, [B/A]glorificam Seu [E]santo no[E/G#]me[C#7]\n[F#m]Ele é exal[E/G#]tado o [A]Rei exal[A/B]tado nos [E]céus[C#7]\n[F#m]Ele é exal[F#m/E]tado o [D]Rei exal[A/B]tado nos [E]céus",
+                            "content_color": "#FF9800"
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

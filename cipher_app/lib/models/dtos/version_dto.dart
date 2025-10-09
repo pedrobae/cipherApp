@@ -22,10 +22,14 @@ class VersionDto {
 
   factory VersionDto.fromMap(Map<String, dynamic> map) {
     return VersionDto(
-      firebaseId: map['firebase_id'] as String?,
-      versionName: map['versionName'] as String? ?? '',
-      transposedKey: map['transposedKey'] as String? ?? '',
-      songStructure: map['songStructure'] as String? ?? '',
+      firebaseId: map['version_id'] as String? ?? '',
+      versionName: map['version_name'] as String? ?? '',
+      transposedKey: map['transposed_key'] as String? ?? '',
+      songStructure:
+          (map['song_structure'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .join(',') ??
+          '',
       createdAt: (map['createdAt'] as Timestamp).toDate(),
       sections: (map['sections'] as Map<String, dynamic>).map(
         (sectionCode, section) => MapEntry(sectionCode, section),
@@ -53,7 +57,6 @@ class VersionDto {
 
   Version toDomain() {
     return Version(
-      id: 0, // Local ID will be set when saved to local DB
       versionName: versionName,
       transposedKey: transposedKey,
       songStructure: songStructure.split(',').map((s) => s.trim()).toList(),

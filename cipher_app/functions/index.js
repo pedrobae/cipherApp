@@ -153,8 +153,8 @@ async function getAnalyticsData(eventName, period) {
         (SELECT value.string_value 
          FROM UNNEST(event_params) 
          WHERE key = 'cipher_id') as cipher_id,
-        COUNT(*) as download_count,
-        FROM \`${projectId}.analytics_${analyticsPropertyId}.events_\`
+        COUNT(*) as download_count
+      FROM \`${projectId}.analytics_${analyticsPropertyId}.events_*\`
       WHERE event_name = @eventName
         AND ${whereClause}
         AND (SELECT value.string_value 
@@ -162,6 +162,7 @@ async function getAnalyticsData(eventName, period) {
              WHERE key = 'cipher_id') IS NOT NULL
       GROUP BY cipher_id
       HAVING download_count > 0
+      ORDER BY download_count DESC
     `;
 
     const options = {

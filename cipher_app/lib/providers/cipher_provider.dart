@@ -203,7 +203,7 @@ class CipherProvider extends ChangeNotifier {
 
     try {
       final queriedCiphers =
-          (await _cloudCipherRepository.searchCiphersCascading(term)) ?? [];
+          (await _cloudCipherRepository.searchCiphers(term)) ?? [];
 
       for (var cipher in queriedCiphers) {
         if (!_cloudCiphers.any((c) => c.firebaseId == cipher.firebaseId)) {
@@ -214,6 +214,10 @@ class CipherProvider extends ChangeNotifier {
 
       if (kDebugMode) {
         print('QUERIED CLOUD CIPHERS FOR "$term" - ${queriedCiphers.length}');
+      }
+
+      if (queriedCiphers.isEmpty) {
+        _error = 'Nenhuma cifra encontrada na nuvem para "$term"';
       }
     } catch (e) {
       _error = e.toString();

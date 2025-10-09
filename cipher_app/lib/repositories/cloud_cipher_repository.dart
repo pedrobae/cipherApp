@@ -183,19 +183,15 @@ class CloudCipherRepository {
         .toList();
   }
 
-  /// Cost-effective single query search (requires authentication)
+  /// Multi field search (requires authentication)
   Future<List<CipherDto>?> searchCiphers(String query) async {
     await _requireAuth();
 
     try {
-      final lowerQuery = query.toLowerCase().trim();
-
       // Single query approach - search in combined searchText field
-      final results = await _firestoreService.fetchDocumentsByPrefix(
+      final results = await _firestoreService.fetchDocumentsMultiFieldSearch(
         collectionPath: 'publicCiphers',
-        fieldName: 'searchText',
-        prefix: lowerQuery,
-        limit: 25,
+        searchTerm: query,
       );
 
       FirebaseAnalytics.instance.logEvent(
@@ -208,9 +204,11 @@ class CloudCipherRepository {
         },
       );
 
-      return results
-          .map((doc) => CipherDto.fromMap(doc.data() as Map<String, dynamic>))
-          .toList();
+      return results.map((doc) {
+        final map = doc.data() as Map<String, dynamic>;
+        map['cipherId'] = doc.id;
+        return CipherDto.fromMap(map);
+      }).toList();
     } catch (e) {
       if (kDebugMode) {
         print('Error searching ciphers: $e');
@@ -225,7 +223,7 @@ class CloudCipherRepository {
       final lowerQuery = query.toLowerCase().trim();
       List<CipherDto> results = [];
 
-      // 1. Search in title first (most relevant, 1 read)
+      // 1. Search in title first
       final titleResults = await _firestoreService.fetchDocuments(
         collectionPath: 'publicCiphers',
         filters: {'titleLower': lowerQuery},
@@ -243,7 +241,7 @@ class CloudCipherRepository {
         return results.take(25).toList();
       }
 
-      // 3. Search in author only if needed (2nd read)
+      // 3. Search in author only if needed
       final authorResults = await _firestoreService.fetchDocuments(
         collectionPath: 'publicCiphers',
         filters: {'authorLower': lowerQuery},

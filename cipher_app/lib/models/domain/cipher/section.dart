@@ -32,11 +32,11 @@ class Section {
   factory Section.fromMap(Map<String, dynamic> map) {
     return Section(
       versionId: 0, // Will be set later
-      contentType: map['contentType'] as String? ?? '',
-      contentCode: map['contentCode'] as String? ?? '',
-      contentText: map['contentText'] as String? ?? '',
+      contentType: map['content_type'] as String? ?? '',
+      contentCode: map['content_code'] as String? ?? '',
+      contentText: map['content_text'] as String? ?? '',
       contentColor: c.colorFromHex(
-        map['contentColor'] as String? ?? '#FFFFFFFF',
+        map['content_color'] as String? ?? '#FFFFFFFF',
       ),
     );
   }

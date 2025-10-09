@@ -86,7 +86,7 @@ class _CloudCipherListState extends State<CloudCipherList> {
               children: [
                 Icon(Icons.error_outline, size: 64, color: colorScheme.error),
                 const SizedBox(height: 16),
-                Text('Erro: ${cipherProvider.error}'),
+                Text('${cipherProvider.error}'),
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () =>

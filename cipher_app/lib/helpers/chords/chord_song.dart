@@ -87,13 +87,26 @@ class Chord {
       maxLines: 1,
     )..layout(maxWidth: double.infinity, minWidth: 0);
 
+    /// TEXT PAINTER FOR THE PREVIOUS WORD
+    final previousWordPainter = TextPainter(
+      text: TextSpan(text: wordBefore, style: textStyle),
+      textDirection: TextDirection.ltr,
+      maxLines: 1,
+    )..layout(maxWidth: double.infinity, minWidth: 0);
+
     double xOffset =
         (sameLineTextPainter.width + previousCarryOver) % lineWidth;
 
     /// CHECK IF NEXT WORD LINE BREAKS
-    if (nextWordPainter.width > lineWidth - sameLineTextPainter.width) {
-      xOffset = 0;
+    if (nextWordPainter.width + previousWordPainter.width >
+        lineWidth - (sameLineTextPainter.width)) {
       lineNumber++;
+      // CHECK IF THE CHORD IS AT THE START OF A WORD
+      if (previousWordPainter.width == 0) {
+        xOffset = 0;
+      } else {
+        xOffset = previousWordPainter.width;
+      }
     }
 
     /// CHECK IF CHORD LINE BREAKS

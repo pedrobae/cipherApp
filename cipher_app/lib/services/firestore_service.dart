@@ -11,7 +11,7 @@ class FirestoreService {
     required Map<String, dynamic> data,
   }) async {
     try {
-      data['createdAt'] = FieldValue.serverTimestamp();
+      data['updatedAt'] = FieldValue.serverTimestamp();
       final docRef = await _firestore.collection(collectionPath).add(data);
       return docRef.id;
     } catch (e) {
@@ -28,7 +28,7 @@ class FirestoreService {
     required Map<String, dynamic> data,
   }) async {
     try {
-      data['createdAt'] = FieldValue.serverTimestamp();
+      data['updatedAt'] = FieldValue.serverTimestamp();
       final docRef = await _firestore
           .collection(parentCollectionPath)
           .doc(parentDocumentId)
@@ -108,6 +108,7 @@ class FirestoreService {
     required Map<String, dynamic> data,
   }) async {
     try {
+      data['updatedAt'] = FieldValue.serverTimestamp();
       await _firestore
           .collection(collectionPath)
           .doc(documentId)
@@ -127,6 +128,7 @@ class FirestoreService {
     required Map<String, dynamic> data,
   }) async {
     try {
+      data['updatedAt'] = FieldValue.serverTimestamp();
       await _firestore
           .collection(parentCollectionPath)
           .doc(parentDocumentId)

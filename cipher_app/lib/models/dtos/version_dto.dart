@@ -1,6 +1,5 @@
 import 'package:cipher_app/models/domain/cipher/section.dart';
 import 'package:cipher_app/models/domain/cipher/version.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// DTO para metadados de version (camada de separação entre a nuvem e o armazenamento local).
 class VersionDto {
@@ -8,7 +7,7 @@ class VersionDto {
   final String versionName;
   final String? transposedKey;
   final String songStructure;
-  final DateTime? createdAt;
+  final DateTime? updatedAt;
   final Map<String, Map<String, dynamic>>? sections;
 
   VersionDto({
@@ -16,7 +15,7 @@ class VersionDto {
     required this.versionName,
     this.transposedKey,
     required this.songStructure,
-    this.createdAt,
+    this.updatedAt,
     this.sections,
   });
 
@@ -30,7 +29,9 @@ class VersionDto {
               ?.map((e) => e.toString())
               .join(',') ??
           '',
-      createdAt: (map['createdAt'] as Timestamp).toDate(),
+      updatedAt: map['updatedAt'] != null
+          ? DateTime.tryParse(map['updatedAt'].toString())
+          : null,
       sections: (map['sections'] as Map<String, dynamic>).map(
         (sectionCode, section) => MapEntry(sectionCode, section),
       ),
@@ -43,7 +44,7 @@ class VersionDto {
       'versionName': versionName,
       'transposedKey': transposedKey,
       'songStructure': songStructure,
-      'createdAt': createdAt?.toIso8601String(),
+      'updatedAt': updatedAt?.toIso8601String(),
       'sections': sections?.map(
         (sectionCode, section) => MapEntry(sectionCode, {
           'contentType': section['contentType'],
@@ -60,7 +61,7 @@ class VersionDto {
       versionName: versionName,
       transposedKey: transposedKey,
       songStructure: songStructure.split(',').map((s) => s.trim()).toList(),
-      createdAt: createdAt,
+      createdAt: updatedAt,
       sections: sections?.map(
         (sectionsCode, section) =>
             MapEntry(sectionsCode, Section.fromFirestore(section)),

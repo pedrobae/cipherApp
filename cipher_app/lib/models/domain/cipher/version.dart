@@ -87,7 +87,6 @@ class Version {
       versionName: versionName,
       transposedKey: transposedKey,
       songStructure: songStructure.join(','),
-      createdAt: createdAt,
       sections: sections?.map(
         (sectionCode, section) => MapEntry(sectionCode, section.toFirestore()),
       ),

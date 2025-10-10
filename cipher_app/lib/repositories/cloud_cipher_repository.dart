@@ -206,7 +206,7 @@ class CloudCipherRepository {
 
       return results.map((doc) {
         final map = doc.data() as Map<String, dynamic>;
-        map['cipherId'] = doc.id;
+        map['firebaseId'] = doc.id;
         return CipherDto.fromFirestore(map);
       }).toList();
     } catch (e) {

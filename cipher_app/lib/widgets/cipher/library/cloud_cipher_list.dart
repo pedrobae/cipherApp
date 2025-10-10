@@ -8,6 +8,7 @@ class CloudCipherList extends StatefulWidget {
   final int? playlistId;
   final VoidCallback? searchCloudCiphers;
   final VoidCallback changeTab;
+  final Function(int cipherId, int versionId) openCipher;
 
   const CloudCipherList({
     super.key,
@@ -15,6 +16,7 @@ class CloudCipherList extends StatefulWidget {
     this.playlistId,
     this.searchCloudCiphers,
     required this.changeTab,
+    required this.openCipher,
   });
 
   @override
@@ -59,6 +61,10 @@ class _CloudCipherListState extends State<CloudCipherList> {
             onDownload: () async {
               await cipherProvider.downloadAndInsertCipher(cipher);
               widget.changeTab();
+              widget.openCipher(
+                cipherProvider.currentCipher.id!,
+                cipherProvider.currentCipher.versions.last.id!,
+              );
             },
           );
         },

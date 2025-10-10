@@ -1,5 +1,6 @@
 import 'package:cipher_app/models/domain/cipher/version.dart';
-import '../../../helpers/datetime.dart';
+import 'package:cipher_app/helpers/datetime.dart';
+import 'package:cipher_app/models/dtos/cipher_dto.dart';
 
 class Cipher {
   final int? id;
@@ -29,7 +30,7 @@ class Cipher {
   });
 
   // From JSON constructor for database
-  factory Cipher.fromJson(Map<String, dynamic> json) {
+  factory Cipher.fromSqLite(Map<String, dynamic> json) {
     return Cipher(
       id: json['id'] as int?,
       title: json['title'] as String? ?? '',
@@ -42,7 +43,7 @@ class Cipher {
       updatedAt: DatetimeHelper.parseDateTime(json['updated_at']),
       isLocal: json['isLocal'] as bool? ?? true, // Default to true for local DB
       versions: json['maps'] != null
-          ? (json['maps'] as List).map((m) => Version.fromJson(m)).toList()
+          ? (json['maps'] as List).map((m) => Version.fromSqLite(m)).toList()
           : const [],
     );
   }
@@ -64,7 +65,7 @@ class Cipher {
   }
 
   // To JSON for database
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toSqLite() {
     return {
       'id': id,
       'title': title,
@@ -94,6 +95,18 @@ class Cipher {
     };
   }
 
+  CipherDto toDto() {
+    return CipherDto(
+      title: title,
+      author: author,
+      tempo: tempo,
+      musicKey: musicKey,
+      language: language,
+      updatedAt: updatedAt,
+      tags: tags,
+    );
+  }
+
   Cipher copyWith({
     int? id,
     String? title,
@@ -120,16 +133,5 @@ class Cipher {
       isLocal: isLocal ?? this.isLocal,
       versions: versions ?? this.versions,
     );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'title': title,
-      'author': author,
-      'tempo': tempo,
-      'musicKey': musicKey,
-      'language': language,
-      'tags': tags,
-    };
   }
 }

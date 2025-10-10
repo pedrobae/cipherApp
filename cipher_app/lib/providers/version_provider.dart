@@ -335,7 +335,7 @@ class VersionProvider extends ChangeNotifier {
       // Insert new content
       for (final entry in currentVersion.sections!.entries) {
         if (entry.key.isNotEmpty) {
-          final sectionJson = entry.value.toJson();
+          final sectionJson = entry.value.toSqLite();
           await _cipherRepository.insertSection(
             currentVersion.id!,
             sectionJson['content_type'],

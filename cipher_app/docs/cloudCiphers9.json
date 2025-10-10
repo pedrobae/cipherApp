@@ -26,9 +26,9 @@
             ],
             "versions": [
                 {
-                    "version_name": "Original",
-                    "transposed_key": "A",
-                    "song_structure": [
+                    "versionName": "Original",
+                    "transposedKey": "A",
+                    "songStructure": [
                         "I",
                         "V1",
                         "C",
@@ -43,46 +43,46 @@
                     ],
                     "sections": {
                         "I": {
-                            "content_type": "intro",
-                            "content_code": "I",
-                            "content_text": "[A] [E] [F#m] [D]\n[A] [E] [F#m] [D]",
-                            "content_color": "#9C27B0"
+                            "contentType": "intro",
+                            "contentCode": "I",
+                            "contentText": "[A] [E] [F#m] [D]\n[A] [E] [F#m] [D]",
+                            "contentColor": "#9C27B0"
                         },
                         "V1": {
-                            "content_type": "verse",
-                            "content_code": "V1",
-                            "content_text": "[A]Eu olho para cruz\n[E]E para cruz eu vou\n[F#m]Do seu sofrer participar\n[D]Da sua obra eu vou cantar\n\n[A]Meu Salvador\n[E]Na cruz mostrou\n[F#m]O amor do pai\n[D]O justo Deus",
-                            "content_color": "#2196F3"
+                            "contentType": "verse",
+                            "contentCode": "V1",
+                            "contentText": "[A]Eu olho para cruz\n[E]E para cruz eu vou\n[F#m]Do seu sofrer participar\n[D]Da sua obra eu vou cantar\n\n[A]Meu Salvador\n[E]Na cruz mostrou\n[F#m]O amor do pai\n[D]O justo Deus",
+                            "contentColor": "#2196F3"
                         },
                         "C": {
-                            "content_type": "chorus",
-                            "content_code": "C",
-                            "content_text": "[A]Pela cruz, me chamou\n[F#m]Gentilmente me atraiu e [E]eu\nSem palavras me aproximo\n[D]Quebrantado por seu amor\n\n([A] [F#m] [E] [D])",
-                            "content_color": "#F44336"
+                            "contentType": "chorus",
+                            "contentCode": "C",
+                            "contentText": "[A]Pela cruz, me chamou\n[F#m]Gentilmente me atraiu e [E]eu\nSem palavras me aproximo\n[D]Quebrantado por seu amor\n\n([A] [F#m] [E] [D])",
+                            "contentColor": "#F44336"
                         },
                         "V2": {
-                            "content_type": "verse",
-                            "content_code": "V2",
-                            "content_text": "[A]Imerecida vida\n[E]De graça recebi\n[F#m]Por tua cruz\n[D]Da morte me livrou\n\n[A]Trouxe-me a vida\n[E]Eu estava condenado\n[F#m]Mas agora pela cruz\n[D]Eu fui reconciliado",
-                            "content_color": "#2196F3"
+                            "contentType": "verse",
+                            "contentCode": "V2",
+                            "contentText": "[A]Imerecida vida\n[E]De graça recebi\n[F#m]Por tua cruz\n[D]Da morte me livrou\n\n[A]Trouxe-me a vida\n[E]Eu estava condenado\n[F#m]Mas agora pela cruz\n[D]Eu fui reconciliado",
+                            "contentColor": "#2196F3"
                         },
                         "B": {
-                            "content_type": "bridge",
-                            "content_code": "B",
-                            "content_text": "[Bm]Impressionante é o seu a[D]mor\n[Bm]Me redimiu e me mos[D]trou\n[E]O quanto é fiel\n[Bm]Impressionante é o seu a[D]mor\n[Bm]Me redimiu e me mos[D]trou\n[E]O quanto é fiel",
-                            "content_color": "#4CAF50"
+                            "contentType": "bridge",
+                            "contentCode": "B",
+                            "contentText": "[Bm]Impressionante é o seu a[D]mor\n[Bm]Me redimiu e me mos[D]trou\n[E]O quanto é fiel\n[Bm]Impressionante é o seu a[D]mor\n[Bm]Me redimiu e me mos[D]trou\n[E]O quanto é fiel",
+                            "contentColor": "#4CAF50"
                         },
                         "S": {
-                            "content_type": "solo",
-                            "content_code": "S",
-                            "content_text": "[A]OooOh [F#m]Ooooh [E]Ooooh [D]",
-                            "content_color": "#673AB7"
+                            "contentType": "solo",
+                            "contentCode": "S",
+                            "contentText": "[A]OooOh [F#m]Ooooh [E]Ooooh [D]",
+                            "contentColor": "#673AB7"
                         },
                         "F": {
-                            "content_type": "final",
-                            "content_code": "F",
-                            "content_text": "[A]Quebrantado por seu amor",
-                            "content_color": "#FF9800"
+                            "contentType": "final",
+                            "contentCode": "F",
+                            "contentText": "[A]Quebrantado por seu amor",
+                            "contentColor": "#FF9800"
                         }
                     }
                 }
@@ -114,9 +114,9 @@
             ],
             "versions": [
                 {
-                    "version_name": "Original",
-                    "transposed_key": "D",
-                    "song_structure": [
+                    "versionName": "Original",
+                    "transposedKey": "D",
+                    "songStructure": [
                         "V1",
                         "C",
                         "V1",
@@ -130,22 +130,22 @@
                     ],
                     "sections": {
                         "V1": {
-                            "content_type": "verse",
-                            "content_code": "V1",
-                            "content_text": "[D9]Não há nada igual\n[G5(7M)]Não há nada melhor\nA que se compara à esperança\n[D9]viva\n[G5(7M)]Tua presença\n[D9]Eu provei e vi\n[G5(7M)]O mais doce amor\nQue liberta o meu ser\n[D9]E a vergonha desfaz\n[G5(7M)]Tua presença",
-                            "content_color": "#2196F3"
+                            "contentType": "verse",
+                            "contentCode": "V1",
+                            "contentText": "[D9]Não há nada igual\n[G5(7M)]Não há nada melhor\nA que se compara à esperança\n[D9]viva\n[G5(7M)]Tua presença\n[D9]Eu provei e vi\n[G5(7M)]O mais doce amor\nQue liberta o meu ser\n[D9]E a vergonha desfaz\n[G5(7M)]Tua presença",
+                            "contentColor": "#2196F3"
                         },
                         "C": {
-                            "content_type": "chorus",
-                            "content_code": "C",
-                            "content_text": "[D9]Santo Espírito, és bem-vindo aqui\n[G5(7M)]Vem inundar, en[Em7]cher esse lugar\n[D9]É o desejo do meu coração\n[G5(7M)]Sermos inundados por [Em7]Tua glória\n[D9]Senhor[G5]",
-                            "content_color": "#F44336"
+                            "contentType": "chorus",
+                            "contentCode": "C",
+                            "contentText": "[D9]Santo Espírito, és bem-vindo aqui\n[G5(7M)]Vem inundar, en[Em7]cher esse lugar\n[D9]É o desejo do meu coração\n[G5(7M)]Sermos inundados por [Em7]Tua glória\n[D9]Senhor[G5]",
+                            "contentColor": "#F44336"
                         },
                         "V2": {
-                            "content_type": "verse",
-                            "content_code": "V2",
-                            "content_text": "[G5(7M)]Vamos pro[D/F#]var\n[Em7]Quão real é Tua pre[D/F#]sença\n[G5(7M)]Vamos pro[D/F#]var\n[Em7]A Tua glória e bon[D/F#]dade\n[G5(7M)]Senhor",
-                            "content_color": "#2196F3"
+                            "contentType": "verse",
+                            "contentCode": "V2",
+                            "contentText": "[G5(7M)]Vamos pro[D/F#]var\n[Em7]Quão real é Tua pre[D/F#]sença\n[G5(7M)]Vamos pro[D/F#]var\n[Em7]A Tua glória e bon[D/F#]dade\n[G5(7M)]Senhor",
+                            "contentColor": "#2196F3"
                         }
                     }
                 }
@@ -178,9 +178,9 @@
             ],
             "versions": [
                 {
-                    "version_name": "Original",
-                    "transposed_key": "C",
-                    "song_structure": [
+                    "versionName": "Original",
+                    "transposedKey": "C",
+                    "songStructure": [
                         "I",
                         "V1",
                         "V2",
@@ -191,40 +191,40 @@
                     ],
                     "sections": {
                         "I": {
-                            "content_type": "intro",
-                            "content_code": "I",
-                            "content_text": "[C] [C7/E] [F] [A#7]\n[F7] [C/G] [G7]",
-                            "content_color": "#9C27B0"
+                            "contentType": "intro",
+                            "contentCode": "I",
+                            "contentText": "[C] [C7/E] [F] [A#7]\n[F7] [C/G] [G7]",
+                            "contentColor": "#9C27B0"
                         },
                         "V1": {
-                            "content_type": "verse",
-                            "content_code": "V1",
-                            "content_text": "[C]Eu sou grato por tudo que [F7]tenho\n[C]O tesouro maior desse [G7]mundo\n[C]Me foi dado co[C7]mo herança e[F7]terna\n[C/G]Maior prova de um amor tão\n[F]profundo",
-                            "content_color": "#2196F3"
+                            "contentType": "verse",
+                            "contentCode": "V1",
+                            "contentText": "[C]Eu sou grato por tudo que [F7]tenho\n[C]O tesouro maior desse [G7]mundo\n[C]Me foi dado co[C7]mo herança e[F7]terna\n[C/G]Maior prova de um amor tão\n[F]profundo",
+                            "contentColor": "#2196F3"
                         },
                         "V2": {
-                            "content_type": "verse",
-                            "content_code": "V2",
-                            "content_text": "[C]Tenho vida, alegria todo [F7]tempo\n[C]Tenho amigos, família, muitos\n[G7]irmãos\n[C]Foi Jesus, meu amigo verda[F]deiro\n[C/G]Que fez tudo ao me dar a sal[G7]va[F]ção",
-                            "content_color": "#2196F3"
+                            "contentType": "verse",
+                            "contentCode": "V2",
+                            "contentText": "[C]Tenho vida, alegria todo [F7]tempo\n[C]Tenho amigos, família, muitos\n[G7]irmãos\n[C]Foi Jesus, meu amigo verda[F]deiro\n[C/G]Que fez tudo ao me dar a sal[G7]va[F]ção",
+                            "contentColor": "#2196F3"
                         },
                         "V3": {
-                            "content_type": "verse",
-                            "content_code": "V3",
-                            "content_text": "[C]Louvarei ao Senhor em todo [F7]tempo\n[C]Seu louvor estará continua[G7]mente\n[C]Em meus lábios e tam[C7]bém no\n[F]coração\n[C/G]Jesus Cristo será sempre minha\n[F7]canção",
-                            "content_color": "#2196F3"
+                            "contentType": "verse",
+                            "contentCode": "V3",
+                            "contentText": "[C]Louvarei ao Senhor em todo [F7]tempo\n[C]Seu louvor estará continua[G7]mente\n[C]Em meus lábios e tam[C7]bém no\n[F]coração\n[C/G]Jesus Cristo será sempre minha\n[F7]canção",
+                            "contentColor": "#2196F3"
                         },
                         "C": {
-                            "content_type": "chorus",
-                            "content_code": "C",
-                            "content_text": "[C]Ie, [C7]Ie, Ieho[F7]vah\n[C]Ie, Ie, Ieho[G7]vah\n[C]Ie [C7]Ie, Ieho[F7]vah\n[Am]Ie, [G7]Ie, Ieho[F7]vah[C]",
-                            "content_color": "#F44336"
+                            "contentType": "chorus",
+                            "contentCode": "C",
+                            "contentText": "[C]Ie, [C7]Ie, Ieho[F7]vah\n[C]Ie, Ie, Ieho[G7]vah\n[C]Ie [C7]Ie, Ieho[F7]vah\n[Am]Ie, [G7]Ie, Ieho[F7]vah[C]",
+                            "contentColor": "#F44336"
                         },
                         "V4": {
-                            "content_type": "verse",
-                            "content_code": "V4",
-                            "content_text": "[C]Louvarei ao Senhor em todo [F7]tempo\n[C]Seu louvor estará continua[G7]mente\n[C]Em meus lábios e tam[C7]bém no cora[F]ção\n[C/G]Jesus Cristo será sempre nossa\n[F7]canção",
-                            "content_color": "#2196F3"
+                            "contentType": "verse",
+                            "contentCode": "V4",
+                            "contentText": "[C]Louvarei ao Senhor em todo [F7]tempo\n[C]Seu louvor estará continua[G7]mente\n[C]Em meus lábios e tam[C7]bém no cora[F]ção\n[C/G]Jesus Cristo será sempre nossa\n[F7]canção",
+                            "contentColor": "#2196F3"
                         }
                     }
                 }
@@ -256,9 +256,9 @@
             ],
             "versions": [
                 {
-                    "version_name": "Original",
-                    "transposed_key": "G",
-                    "song_structure": [
+                    "versionName": "Original",
+                    "transposedKey": "G",
+                    "songStructure": [
                         "I",
                         "V1",
                         "C",
@@ -268,28 +268,28 @@
                     ],
                     "sections": {
                         "I": {
-                            "content_type": "intro",
-                            "content_code": "I",
-                            "content_text": "si si la la do do do re (3x) si si la la do do do\n3ª vez: [G] [G/B] [C] 4ª vez: [G] [G/B] [C]",
-                            "content_color": "#9C27B0"
+                            "contentType": "intro",
+                            "contentCode": "I",
+                            "contentText": "si si la la do do do re (3x) si si la la do do do\n3ª vez: [G] [G/B] [C] 4ª vez: [G] [G/B] [C]",
+                            "contentColor": "#9C27B0"
                         },
                         "V1": {
-                            "content_type": "verse",
-                            "content_code": "V1",
-                            "content_text": "[G]Eu vim aqui pra Te encon[D]trar\n[G/B]Pra Te ouvir, pra me ren[C9]der, mais uma [Am7]vez\n[G]Não temerei, não vou fu[D]gir [G/B]vou aceitar o Teu que[C9]rer\n[Am7]Eis-me a[D4]qui[D]",
-                            "content_color": "#2196F3"
+                            "contentType": "verse",
+                            "contentCode": "V1",
+                            "contentText": "[G]Eu vim aqui pra Te encon[D]trar\n[G/B]Pra Te ouvir, pra me ren[C9]der, mais uma [Am7]vez\n[G]Não temerei, não vou fu[D]gir [G/B]vou aceitar o Teu que[C9]rer\n[Am7]Eis-me a[D4]qui[D]",
+                            "contentColor": "#2196F3"
                         },
                         "C": {
-                            "content_type": "chorus",
-                            "content_code": "C",
-                            "content_text": "[G]Tua [G/B]voz [C9]aquece o meu cora[G]ção[G/B]\n[C9]Devolve à vida a ra[Am7]zão e me faz can[D]tar\n[G]Me re[G/B]faz [C9]de novo e mais uma [G]vez[G/B]\n[C9]Moldando o meu cora[Am7]ção [G/B]ao [C]Teu [Am7]ao [G/B]Teu[C9]",
-                            "content_color": "#F44336"
+                            "contentType": "chorus",
+                            "contentCode": "C",
+                            "contentText": "[G]Tua [G/B]voz [C9]aquece o meu cora[G]ção[G/B]\n[C9]Devolve à vida a ra[Am7]zão e me faz can[D]tar\n[G]Me re[G/B]faz [C9]de novo e mais uma [G]vez[G/B]\n[C9]Moldando o meu cora[Am7]ção [G/B]ao [C]Teu [Am7]ao [G/B]Teu[C9]",
+                            "contentColor": "#F44336"
                         },
                         "V2": {
-                            "content_type": "verse",
-                            "content_code": "V2",
-                            "content_text": "[G]Eu abro mão de deci[D]dir [G/B]o que é melhor vem gover[C9]nar meu cora[Am7]ção\n[G]És o meu Deus o meu Se[D]nhor [G/B]dono de mim, e mais nin[C9]guém\n[Am7]Me Ama as[D4]sim[D]",
-                            "content_color": "#2196F3"
+                            "contentType": "verse",
+                            "contentCode": "V2",
+                            "contentText": "[G]Eu abro mão de deci[D]dir [G/B]o que é melhor vem gover[C9]nar meu cora[Am7]ção\n[G]És o meu Deus o meu Se[D]nhor [G/B]dono de mim, e mais nin[C9]guém\n[Am7]Me Ama as[D4]sim[D]",
+                            "contentColor": "#2196F3"
                         }
                     }
                 }
@@ -323,9 +323,9 @@
             ],
             "versions": [
                 {
-                    "version_name": "Original",
-                    "transposed_key": "D",
-                    "song_structure": [
+                    "versionName": "Original",
+                    "transposedKey": "D",
+                    "songStructure": [
                         "I",
                         "V1",
                         "C",
@@ -336,28 +336,28 @@
                     ],
                     "sections": {
                         "I": {
-                            "content_type": "intro",
-                            "content_code": "I",
-                            "content_text": "[D] [D4] [D]",
-                            "content_color": "#9C27B0"
+                            "contentType": "intro",
+                            "contentCode": "I",
+                            "contentText": "[D] [D4] [D]",
+                            "contentColor": "#9C27B0"
                         },
                         "V1": {
-                            "content_type": "verse",
-                            "content_code": "V1",
-                            "content_text": "[D]Vem, esta é a hora da ado[D4]ra[D]ção\n[A]Vem, dar a Ele teu cora[Em]ção[G]\n[D]Vem, assim como estás para ado[D4]rar[D]\n[A]Vem, assim como estás diante do [Em]Pai[F#m][G]\n[D]Vem",
-                            "content_color": "#2196F3"
+                            "contentType": "verse",
+                            "contentCode": "V1",
+                            "contentText": "[D]Vem, esta é a hora da ado[D4]ra[D]ção\n[A]Vem, dar a Ele teu cora[Em]ção[G]\n[D]Vem, assim como estás para ado[D4]rar[D]\n[A]Vem, assim como estás diante do [Em]Pai[F#m][G]\n[D]Vem",
+                            "contentColor": "#2196F3"
                         },
                         "C": {
-                            "content_type": "chorus",
-                            "content_code": "C",
-                            "content_text": "[G]Toda língua confessará o Se[D]nhor\n[G]Todo joelho se dobra[D]rá\n[G]Mas aquele que a Ti esco[Bm]lher\n[Em]O tesouro maior te[A4]rá[A]",
-                            "content_color": "#F44336"
+                            "contentType": "chorus",
+                            "contentCode": "C",
+                            "contentText": "[G]Toda língua confessará o Se[D]nhor\n[G]Todo joelho se dobra[D]rá\n[G]Mas aquele que a Ti esco[Bm]lher\n[Em]O tesouro maior te[A4]rá[A]",
+                            "contentColor": "#F44336"
                         },
                         "F": {
-                            "content_type": "final",
-                            "content_code": "F",
-                            "content_text": "[D]Vem (3x)",
-                            "content_color": "#FF9800"
+                            "contentType": "final",
+                            "contentCode": "F",
+                            "contentText": "[D]Vem (3x)",
+                            "contentColor": "#FF9800"
                         }
                     }
                 }

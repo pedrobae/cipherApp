@@ -20,13 +20,13 @@ class VersionDto {
     this.sections,
   });
 
-  factory VersionDto.fromMap(Map<String, dynamic> map) {
+  factory VersionDto.fromFirestore(Map<String, dynamic> map) {
     return VersionDto(
-      firebaseId: map['version_id'] as String? ?? '',
-      versionName: map['version_name'] as String? ?? '',
-      transposedKey: map['transposed_key'] as String? ?? '',
+      firebaseId: map['versionId'] as String? ?? '',
+      versionName: map['versionName'] as String? ?? '',
+      transposedKey: map['transposedKey'] as String? ?? '',
       songStructure:
-          (map['song_structure'] as List<dynamic>?)
+          (map['songStructure'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .join(',') ??
           '',
@@ -37,13 +37,13 @@ class VersionDto {
     );
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toFirestore() {
     return {
-      'firebase_id': firebaseId,
-      'version_name': versionName,
-      'transposed_key': transposedKey,
-      'song_structure': songStructure,
-      'created_at': createdAt?.toIso8601String(),
+      'firebaseId': firebaseId,
+      'versionName': versionName,
+      'transposedKey': transposedKey,
+      'songStructure': songStructure,
+      'createdAt': createdAt?.toIso8601String(),
       'sections': sections?.map(
         (sectionCode, section) => MapEntry(sectionCode, {
           'contentType': section['contentType'],
@@ -63,7 +63,7 @@ class VersionDto {
       createdAt: createdAt,
       sections: sections?.map(
         (sectionsCode, section) =>
-            MapEntry(sectionsCode, Section.fromMap(section)),
+            MapEntry(sectionsCode, Section.fromFirestore(section)),
       ),
       cipherId: 0,
     );

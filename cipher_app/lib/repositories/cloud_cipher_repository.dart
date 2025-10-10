@@ -34,7 +34,7 @@ class CloudCipherRepository {
 
     final cipherId = await _firestoreService.createDocument(
       collectionPath: 'publicCiphers',
-      data: cipher.toMap(),
+      data: cipher.toDto().toFirestore(),
     );
 
     FirebaseAnalytics.instance.logEvent(
@@ -52,7 +52,7 @@ class CloudCipherRepository {
         parentCollectionPath: 'publicCiphers',
         parentDocumentId: cipherId,
         subCollectionPath: 'versions',
-        data: version.toMap(),
+        data: version.toDto().toFirestore(),
       );
 
       FirebaseAnalytics.instance.logEvent(
@@ -70,7 +70,7 @@ class CloudCipherRepository {
   /// Creates a new version for an existing public cipher (admin only)
   Future<String> createVersionForCipher(
     String cipherId,
-    Version version,
+    VersionDto version,
   ) async {
     await _requireAdmin();
 
@@ -78,7 +78,7 @@ class CloudCipherRepository {
       parentCollectionPath: 'publicCiphers',
       parentDocumentId: cipherId,
       subCollectionPath: 'versions',
-      data: version.toMap(),
+      data: version.toFirestore(),
     );
 
     FirebaseAnalytics.instance.logEvent(
@@ -149,7 +149,7 @@ class CloudCipherRepository {
 
     List<CipherDto> ciphers =
         ((snapshot!.data() as Map<String, dynamic>)['ciphers'] as List)
-            .map<CipherDto>((map) => CipherDto.fromMap(map))
+            .map<CipherDto>((map) => CipherDto.fromFirestore(map))
             .toList();
 
     return ciphers;
@@ -178,7 +178,7 @@ class CloudCipherRepository {
     return snapshot
         .map(
           (version) =>
-              VersionDto.fromMap(version.data() as Map<String, dynamic>),
+              VersionDto.fromFirestore(version.data() as Map<String, dynamic>),
         )
         .toList();
   }
@@ -207,7 +207,7 @@ class CloudCipherRepository {
       return results.map((doc) {
         final map = doc.data() as Map<String, dynamic>;
         map['cipherId'] = doc.id;
-        return CipherDto.fromMap(map);
+        return CipherDto.fromFirestore(map);
       }).toList();
     } catch (e) {
       if (kDebugMode) {
@@ -232,7 +232,10 @@ class CloudCipherRepository {
 
       results.addAll(
         titleResults
-            .map((doc) => CipherDto.fromMap(doc.data() as Map<String, dynamic>))
+            .map(
+              (doc) =>
+                  CipherDto.fromFirestore(doc.data() as Map<String, dynamic>),
+            )
             .toList(),
       );
 
@@ -253,7 +256,10 @@ class CloudCipherRepository {
       results.addAll(
         authorResults
             .where((doc) => !existingIds.contains(doc.id))
-            .map((doc) => CipherDto.fromMap(doc.data() as Map<String, dynamic>))
+            .map(
+              (doc) =>
+                  CipherDto.fromFirestore(doc.data() as Map<String, dynamic>),
+            )
             .toList(),
       );
 
@@ -273,7 +279,8 @@ class CloudCipherRepository {
           tagResults
               .where((doc) => !allExistingIds.contains(doc.id))
               .map(
-                (doc) => CipherDto.fromMap(doc.data() as Map<String, dynamic>),
+                (doc) =>
+                    CipherDto.fromFirestore(doc.data() as Map<String, dynamic>),
               )
               .toList(),
         );

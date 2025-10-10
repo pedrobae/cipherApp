@@ -8,7 +8,7 @@ class CloudCipherCache {
 
   Future<void> saveCloudCiphers(List<CipherDto> ciphers) async {
     final prefs = await SharedPreferences.getInstance();
-    final jsonList = ciphers.map((c) => c.toMap()).toList();
+    final jsonList = ciphers.map((c) => c.toFirestore()).toList();
     await prefs.setString(_cacheKey, json.encode(jsonList));
   }
 
@@ -17,7 +17,7 @@ class CloudCipherCache {
     final jsonString = prefs.getString(_cacheKey);
     if (jsonString == null) return [];
     final List<dynamic> jsonList = json.decode(jsonString);
-    return jsonList.map((j) => CipherDto.fromMap(j)).toList();
+    return jsonList.map((j) => CipherDto.fromFirestore(j)).toList();
   }
 
   Future<void> saveLastCloudLoad(DateTime time) async {

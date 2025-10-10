@@ -97,6 +97,8 @@ class _PlaylistPresentationScreenState
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Consumer<PlaylistProvider>(
       builder: (context, playlistProvider, child) {
         final layoutProvider = context.read<LayoutSettingsProvider>();
@@ -130,9 +132,8 @@ class _PlaylistPresentationScreenState
             controller: _scrollController, // Keep your existing controller
             slivers: <Widget>[
               SliverAppBar(
-                backgroundColor: Theme.of(context).colorScheme.primaryFixedDim,
                 foregroundColor: Theme.of(context).colorScheme.onPrimaryFixed,
-                toolbarHeight: kToolbarHeight + 4,
+                toolbarHeight: kToolbarHeight - 10,
                 actions: [
                   Consumer<LayoutSettingsProvider>(
                     builder: (context, layoutProvider, child) {
@@ -153,15 +154,25 @@ class _PlaylistPresentationScreenState
                   ),
                 ],
                 floating: true,
-                flexibleSpace: FlexibleSpaceBar(
-                  centerTitle: true,
-                  title: Text(
-                    textAlign: TextAlign.center,
-                    playlist.name,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontFamily: layoutProvider.fontFamily,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.onPrimaryFixed,
+                flexibleSpace: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [colorScheme.primary, colorScheme.tertiary],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: SafeArea(
+                    child: Center(
+                      child: Text(
+                        textAlign: TextAlign.center,
+                        playlist.name,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontFamily: layoutProvider.fontFamily,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onPrimaryFixed,
+                        ),
+                      ),
                     ),
                   ),
                 ),

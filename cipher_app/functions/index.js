@@ -43,6 +43,7 @@ async function updatePopularCiphers() {
       firebaseId: doc.id,
       ...doc.data(),
     }));
+    console.log("Fetched popular ciphers:", popularCiphers);
 
     await admin.firestore().doc("stats/popularCiphers").set({
       ciphers: popularCiphers,
@@ -172,6 +173,8 @@ async function getAnalyticsData(eventName, period) {
 
     const [rows] = await bigquery.query(options);
 
+    console.log(`BigQuery returned ${rows.length} rows for event ` +
+      `${eventName} over period ${period}.`);
     return rows.map((row) => ({
       cipherId: row.cipher_id,
       downloadCount: parseInt(row.download_count),
@@ -195,6 +198,7 @@ exports.aggregateCipherDownloads = onSchedule("0 2 * * *", async (event) => {
       });
     });
     await batch.commit();
+    console.log(`Updated download counts for ${data.length} ciphers.`);
 
     await updatePopularCiphers();
 

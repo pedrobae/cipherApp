@@ -1,10 +1,10 @@
+import 'package:cipher_app/widgets/search_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/providers/cipher_provider.dart';
 import 'package:cipher_app/providers/playlist_provider.dart';
 import 'package:cipher_app/widgets/cipher/library/local_cipher_list.dart';
 import 'package:cipher_app/widgets/cipher/library/cloud_cipher_list.dart';
-import 'package:cipher_app/widgets/search_app_bar.dart';
 import 'package:cipher_app/screens/cipher_viewer.dart';
 
 class CipherLibraryScreen extends StatefulWidget {
@@ -77,19 +77,10 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen>
           ],
         ),
       ),
-      body: Column(
+      body: Stack(
         children: [
-          SearchAppBar(
-            searchController: _searchController,
-            onSearchChanged: (value) {
-              _tabController.index == 0
-                  ? cipherProvider.searchLocalCiphers(value)
-                  : cipherProvider.searchCachedCloudCiphers(value);
-            },
-            hint: 'Procure Cifras...',
-            title: widget.selectionMode ? 'Adicionar à Playlist' : null,
-          ),
-          Expanded(
+          Padding(
+            padding: const EdgeInsets.only(top: kToolbarHeight),
             child: TabBarView(
               controller: _tabController,
               children: [
@@ -135,6 +126,19 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen>
                   },
                 ),
               ],
+            ),
+          ),
+          SizedBox(
+            height: kToolbarHeight,
+            child: SearchAppBar(
+              searchController: _searchController,
+              onSearchChanged: (value) {
+                _tabController.index == 0
+                    ? cipherProvider.searchLocalCiphers(value)
+                    : cipherProvider.searchCachedCloudCiphers(value);
+              },
+              hint: 'Procure Cifras...',
+              title: widget.selectionMode ? 'Adicionar à Playlist' : null,
             ),
           ),
         ],

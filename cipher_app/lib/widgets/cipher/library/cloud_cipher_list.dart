@@ -45,7 +45,7 @@ class _CloudCipherListState extends State<CloudCipherList> {
       child: ListView.builder(
         padding: const EdgeInsets.all(4),
         cacheExtent: 200,
-        physics: const BouncingScrollPhysics(),
+        physics: const AlwaysScrollableScrollPhysics(),
         itemCount: cipherProvider.filteredCloudCiphers.length,
         itemBuilder: (context, index) {
           // Add bounds checking

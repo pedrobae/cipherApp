@@ -6,7 +6,7 @@
             "author": "Diante do Trono",
             "authorLower": "diante do trono",
             "tempo": "",
-            "music_key": "D",
+            "musicKey": "D",
             "language": "pt-BR",
             "tags": [
                 "adoração",
@@ -75,7 +75,7 @@
             "author": "Marcos Vinicius / Comunidade de Nilópolis",
             "authorLower": "marcos vinicius / comunidade de nilopolis",
             "tempo": "",
-            "music_key": "A",
+            "musicKey": "A",
             "language": "pt-BR",
             "tags": [
                 "alegria",
@@ -138,7 +138,7 @@
             "author": "Ana Paula Valadão / Diante do Trono",
             "authorLower": "ana paula valadao / diante do trono",
             "tempo": "",
-            "music_key": "G",
+            "musicKey": "G",
             "language": "pt-BR",
             "tags": [
                 "adoração",
@@ -208,7 +208,7 @@
             "author": "Daniel Souza",
             "authorLower": "daniel souza",
             "tempo": "",
-            "music_key": "A",
+            "musicKey": "A",
             "language": "pt-BR",
             "tags": [
                 "comunhão",
@@ -279,7 +279,7 @@
             "author": "Isaque Tseng",
             "authorLower": "isaque tseng",
             "tempo": "",
-            "music_key": "C#m",
+            "musicKey": "C#m",
             "language": "pt-BR",
             "tags": [
                 "confiança",
@@ -359,7 +359,7 @@
             "author": "Projeto Sola",
             "authorLower": "projeto sola",
             "tempo": "",
-            "music_key": "C",
+            "musicKey": "C",
             "language": "pt-BR",
             "tags": [
                 "bíblico",

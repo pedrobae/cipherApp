@@ -7,12 +7,14 @@ class CloudCipherList extends StatefulWidget {
   final bool selectionMode;
   final int? playlistId;
   final VoidCallback? searchCloudCiphers;
+  final VoidCallback changeTab;
 
   const CloudCipherList({
     super.key,
     this.selectionMode = false,
     this.playlistId,
     this.searchCloudCiphers,
+    required this.changeTab,
   });
 
   @override
@@ -54,14 +56,11 @@ class _CloudCipherListState extends State<CloudCipherList> {
           final cipher = cipherProvider.filteredCloudCiphers[index];
           return CloudCipherCard(
             cipher: cipher,
-            onDownload: () {
-              cipherProvider.downloadAndInsertCipher(cipher);
+            onDownload: () async {
+              await cipherProvider.downloadAndInsertCipher(cipher);
+              widget.changeTab();
             },
           );
-
-          // In selection mode, we can't filter by versions until they're loaded
-          // The filtering will happen in the CipherCard when versions are expanded
-          // For now, show all ciphers and let user expand to see available versions
         },
       ),
     );

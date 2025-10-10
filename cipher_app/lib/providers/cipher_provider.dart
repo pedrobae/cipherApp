@@ -339,7 +339,7 @@ class CipherProvider extends ChangeNotifier {
       await loadCipher(cipherLocalId);
       updateCurrentCipherInList();
     } catch (e) {
-      _error = e.toString();
+      _error = 'Downloading and inserting cipher: ${e.toString()}';
       if (kDebugMode) {
         print('Error downloading and inserting cipher: $e');
       }

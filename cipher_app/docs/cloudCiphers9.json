@@ -6,7 +6,7 @@
             "author": "Diante do Trono",
             "authorLower": "diante do trono",
             "tempo": "",
-            "music_key": "A",
+            "musicKey": "A",
             "language": "pt-BR",
             "tags": [
                 "adoração",
@@ -94,7 +94,7 @@
             "author": "Fernandinho",
             "authorLower": "fernandinho",
             "tempo": "",
-            "music_key": "D",
+            "musicKey": "D",
             "language": "pt-BR",
             "tags": [
                 "adoração",
@@ -157,7 +157,7 @@
             "author": "Vencedores por Cristo",
             "authorLower": "vencedores por cristo",
             "tempo": "",
-            "music_key": "C",
+            "musicKey": "C",
             "language": "pt-BR",
             "tags": [
                 "adoração",
@@ -236,7 +236,7 @@
             "author": "Diante do Trono",
             "authorLower": "diante do trono",
             "tempo": "",
-            "music_key": "G",
+            "musicKey": "G",
             "language": "pt-BR",
             "tags": [
                 "adoração",
@@ -301,7 +301,7 @@
             "author": "Diante do Trono",
             "authorLower": "diante do trono",
             "tempo": "",
-            "music_key": "D",
+            "musicKey": "D",
             "language": "pt-BR",
             "tags": [
                 "adoração",

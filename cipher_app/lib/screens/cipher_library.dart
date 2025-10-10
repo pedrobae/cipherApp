@@ -130,6 +130,9 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen>
                   searchCloudCiphers: () {
                     cipherProvider.searchCloudCiphers(_searchController.text);
                   },
+                  changeTab: () {
+                    _tabController.index = 0;
+                  },
                 ),
               ],
             ),

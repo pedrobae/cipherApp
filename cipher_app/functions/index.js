@@ -40,7 +40,7 @@ async function updatePopularCiphers() {
         .get();
 
     const popularCiphers = snapshot.docs.map((doc) => ({
-      id: doc.id,
+      firebaseId: doc.id,
       ...doc.data(),
     }));
 
@@ -144,7 +144,7 @@ async function getAnalyticsData(eventName, period) {
     // Get project ID from environment
     const projectId = process.env.GCLOUD_PROJECT;
 
-    const analyticsPropertyId = "12240780969"; // Android app property ID
+    const analyticsPropertyId = "507276556"; // Android app property ID
 
     const {whereClause} = parsePeriodForBigQuery(period);
 

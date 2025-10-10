@@ -6,7 +6,7 @@
             "author": "Vineyard",
             "authorLower": "vineyard",
             "tempo": "",
-            "music_key": "D",
+            "musicKey": "D",
             "language": "pt-BR",
             "tags": [
                 "entrega",
@@ -59,7 +59,7 @@
             "author": "Jon Lo",
             "authorLower": "jon lo",
             "tempo": "",
-            "music_key": "A",
+            "musicKey": "A",
             "language": "pt-BR",
             "tags": [
                 "louvor",
@@ -146,7 +146,7 @@
             "author": "Matt Redman / Rachel Novaes / Ronaldo Bezerra",
             "authorLower": "matt redman / rachel novaes / ronaldo bezerra",
             "tempo": "",
-            "music_key": "G",
+            "musicKey": "G",
             "language": "pt-BR",
             "tags": [
                 "adoração",
@@ -224,7 +224,7 @@
             "author": "Ronaldo Bezerra",
             "authorLower": "ronaldo bezerra",
             "tempo": "",
-            "music_key": "D",
+            "musicKey": "D",
             "language": "pt-BR",
             "tags": [
                 "louvor",
@@ -283,7 +283,7 @@
             "author": "Brett Younker, Karl Martin, Kirby Kaple, Matt Redman, Pat Barrett",
             "authorLower": "brett younker, karl martin, kirby kaple, matt redman, pat barrett",
             "tempo": "",
-            "music_key": "E",
+            "musicKey": "E",
             "language": "pt-BR",
             "tags": [
                 "adoração",
@@ -370,7 +370,7 @@
             "authorLower": "maverick city",
             "author": "Maverick City",
             "tempo": "",
-            "music_key": "C",
+            "musicKey": "C",
             "language": "pt-BR",
             "tags": [
                 "fundamento",

@@ -6,7 +6,7 @@
             "author": "Bethel Music",
             "authorLower": "bethel music",
             "tempo": "",
-            "music_key": "A",
+            "musicKey": "A",
             "language": "pt-BR",
             "tags": [
                 "adoração",
@@ -84,7 +84,7 @@
             "author": "David Crowder",
             "authorLower": "david crowder",
             "tempo": "",
-            "music_key": "E",
+            "musicKey": "E",
             "language": "pt-BR",
             "tags": [
                 "adoração",
@@ -194,7 +194,7 @@
             "author": "Bill Gaither",
             "authorLower": "bill gaither",
             "tempo": "",
-            "music_key": "E",
+            "musicKey": "E",
             "language": "pt-BR",
             "tags": [
                 "hino",
@@ -297,7 +297,7 @@
             "author": "Twila Paris",
             "authorLower": "twila paris",
             "tempo": "",
-            "music_key": "D",
+            "musicKey": "D",
             "language": "pt-BR",
             "tags": [
                 "adoração",

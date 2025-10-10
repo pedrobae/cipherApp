@@ -6,7 +6,7 @@
             "author": "Hillsong / Aline Barros & Fernandinho",
             "authorLower": "hillsong / aline barros & fernandinho",
             "tempo": "",
-            "music_key": "D",
+            "musicKey": "D",
             "language": "pt-BR",
             "tags": [
                 "rendição",
@@ -79,7 +79,7 @@
             "author": "Mark Hall / PG",
             "authorLower": "mark hall / pg",
             "tempo": "",
-            "music_key": "G",
+            "musicKey": "G",
             "language": "pt-BR",
             "tags": [
                 "humildade",
@@ -148,7 +148,7 @@
             "author": "Isaque Tseng",
             "authorLower": "isaque tseng",
             "tempo": "",
-            "music_key": "C",
+            "musicKey": "C",
             "language": "pt-BR",
             "tags": [
                 "bíblico",
@@ -231,7 +231,7 @@
             "author": "Gabriel Guedes",
             "authorLower": "gabriel guedes",
             "tempo": "",
-            "music_key": "G",
+            "musicKey": "G",
             "language": "pt-BR",
             "tags": [
                 "santidade",
@@ -301,7 +301,7 @@
             "author": "Andy Park",
             "authorLower": "andy park",
             "tempo": "",
-            "music_key": "G",
+            "musicKey": "G",
             "language": "pt-BR",
             "tags": [
                 "intimidade",
@@ -377,7 +377,7 @@
             "author": "Morada",
             "authorLower": "morada",
             "tempo": "",
-            "music_key": "E",
+            "musicKey": "E",
             "language": "pt-BR",
             "tags": [
                 "santidade",

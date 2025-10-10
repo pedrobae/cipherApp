@@ -6,7 +6,7 @@
             "author": "Ministério Koinonya",
             "authorLower": "ministério koinonya",
             "tempo": "",
-            "music_key": "A",
+            "musicKey": "A",
             "language": "pt-BR",
             "tags": [
                 "adoração",
@@ -79,7 +79,7 @@
             "author": "Diante do Trono",
             "authorLower": "diante do trono",
             "tempo": "",
-            "music_key": "D",
+            "musicKey": "D",
             "language": "pt-BR",
             "tags": [
                 "adoração",
@@ -153,7 +153,7 @@
             "author": "Ben Fielding, Reuben Morgan",
             "authorLower": "ben fielding, reuben morgan",
             "tempo": "",
-            "music_key": "E",
+            "musicKey": "E",
             "language": "pt-BR",
             "tags": [
                 "adoração",
@@ -236,7 +236,7 @@
             "author": "Diante do Trono",
             "authorLower": "diante do trono",
             "tempo": "",
-            "music_key": "A",
+            "musicKey": "A",
             "language": "pt-BR",
             "tags": [
                 "adoração",
@@ -310,7 +310,7 @@
             "author": "Diante do Trono",
             "authorLower": "diante do trono",
             "tempo": "",
-            "music_key": "G",
+            "musicKey": "G",
             "language": "pt-BR",
             "tags": [
                 "adoração",
@@ -370,7 +370,7 @@
             "author": "Bethel Music",
             "authorLower": "bethel music",
             "tempo": "",
-            "music_key": "E",
+            "musicKey": "E",
             "language": "pt-BR",
             "tags": [
                 "adoração",

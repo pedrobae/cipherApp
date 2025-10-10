@@ -6,7 +6,7 @@
             "author": "Jesus Culture",
             "authorLower": "jesus culture",
             "tempo": "",
-            "music_key": "Am",
+            "musicKey": "Am",
             "language": "pt-BR",
             "tags": [
                 "fidelidade",
@@ -82,7 +82,7 @@
             "author": "Jon Li",
             "authorLower": "jon li",
             "tempo": "",
-            "music_key": "E",
+            "musicKey": "E",
             "language": "pt-BR",
             "tags": [
                 "gerações",
@@ -167,7 +167,7 @@
             "author": "Ronaldo Bezerra",
             "authorLower": "ronaldo bezerra",
             "tempo": "",
-            "music_key": "E",
+            "musicKey": "E",
             "language": "pt-BR",
             "tags": [
                 "santidade",
@@ -230,7 +230,7 @@
             "author": "Israel Salazar",
             "authorLower": "israel salazar",
             "tempo": "",
-            "music_key": "A",
+            "musicKey": "A",
             "language": "pt-BR",
             "tags": [
                 "igreja",
@@ -307,7 +307,7 @@
             "author": "Joel Houston, Jonas Myrin",
             "authorLower": "joel houston, jonas myrin",
             "tempo": "",
-            "music_key": "C#m",
+            "musicKey": "C#m",
             "language": "pt-BR",
             "tags": [
                 "graça",
@@ -368,7 +368,7 @@
             "author": "Tim Hughes",
             "authorLower": "tim hughes",
             "tempo": "",
-            "music_key": "E",
+            "musicKey": "E",
             "language": "pt-BR",
             "tags": [
                 "adoração",

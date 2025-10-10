@@ -6,7 +6,7 @@
             "author": "David Quinlan",
             "authorLower": "david quinlan",
             "tempo": "",
-            "music_key": "C",
+            "musicKey": "C",
             "language": "pt-BR",
             "tags": [
                 "dança",
@@ -70,7 +70,7 @@
             "author": "Júlio César Filho / Purples",
             "authorLower": "júlio césar filho / purples",
             "tempo": "",
-            "music_key": "Em",
+            "musicKey": "Em",
             "language": "pt-BR",
             "tags": [
                 "grandeza",
@@ -151,7 +151,7 @@
             "author": "Hillsong Português",
             "authorLower": "hillsong português",
             "tempo": "",
-            "music_key": "G",
+            "musicKey": "G",
             "language": "pt-BR",
             "tags": [
                 "ressurreição",
@@ -239,7 +239,7 @@
             "author": "Phil Wickham, Jeremy Riddle, Josh Farro",
             "authorLower": "phil wickham, jeremy riddle, josh farro",
             "tempo": "",
-            "music_key": "G",
+            "musicKey": "G",
             "language": "pt-BR",
             "tags": [
                 "graça",
@@ -317,7 +317,7 @@
             "author": "Ben Fielding, Reuben Morgan",
             "authorLower": "ben fielding, reuben morgan",
             "tempo": "",
-            "music_key": "G",
+            "musicKey": "G",
             "language": "pt-BR",
             "tags": [
                 "poder",
@@ -405,7 +405,7 @@
             "author": "Rachel Novaes",
             "authorLower": "rachel novaes",
             "tempo": "",
-            "music_key": "A",
+            "musicKey": "A",
             "language": "pt-BR",
             "tags": [
                 "graça",

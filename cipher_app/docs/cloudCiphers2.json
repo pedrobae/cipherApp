@@ -22,7 +22,7 @@
             ],
             "versions": [
                 {
-                    "version_name": "Original",
+                    "versionName": "Original",
                     "transposedKey": "D",
                     "songStructure": [
                         "V1",
@@ -84,7 +84,7 @@
             ],
             "versions": [
                 {
-                    "version_name": "Original",
+                    "versionName": "Original",
                     "transposedKey": "A",
                     "songStructure": [
                         "I",
@@ -172,7 +172,7 @@
             ],
             "versions": [
                 {
-                    "version_name": "Original",
+                    "versionName": "Original",
                     "transposedKey": "G",
                     "songStructure": [
                         "I",
@@ -246,7 +246,7 @@
             ],
             "versions": [
                 {
-                    "version_name": "Original",
+                    "versionName": "Original",
                     "transposedKey": "D",
                     "songStructure": [
                         "V1",
@@ -313,7 +313,7 @@
             ],
             "versions": [
                 {
-                    "version_name": "Original",
+                    "versionName": "Original",
                     "transposedKey": "E",
                     "songStructure": [
                         "I",
@@ -388,7 +388,7 @@
             ],
             "versions": [
                 {
-                    "version_name": "Original",
+                    "versionName": "Original",
                     "transposedKey": "C",
                     "songStructure": [
                         "I",

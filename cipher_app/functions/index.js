@@ -184,7 +184,7 @@ async function getAnalyticsData(eventName, period) {
   }
 }
 
-exports.aggregateCipherDownloads = onSchedule({schedule: "0 2 * * *", memory: "256MB", timeoutSeconds: 60, maxInstances: 1}, async (event) => {
+exports.aggregateCipherDownloads = onSchedule({schedule: "0 0 * * 1", memory: "256MB", timeoutSeconds: 60, maxInstances: 1}, async (event) => {
   try {
     const data = await getAnalyticsData("cipher_downloaded", "last_7_days");
 

@@ -49,7 +49,6 @@ async function updatePopularCiphers() {
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
-    console.log("Popular ciphers updated successfully.");
   } catch (error) {
     console.error("Error updating popular ciphers:", error);
     throw error;
@@ -182,9 +181,9 @@ async function getAnalyticsData(eventName, period) {
   }
 }
 
-exports.aggregateCipherDownloads = onSchedule("0 2 * * *", async (event) => {
+exports.aggregateCipherDownloads = onSchedule({schedule: "0 2 * * *", memory: "256MB", timeoutSeconds: 60, maxInstances: 1}, async (event) => {
   try {
-    const data = await getAnalyticsData("cipher_downloaded", "yesterday");
+    const data = await getAnalyticsData("cipher_downloaded", "last_7_days");
 
     const batch = admin.firestore().batch();
     data.forEach(({cipherId, downloadCount}) => {

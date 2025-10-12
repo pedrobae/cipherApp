@@ -6,7 +6,7 @@
             "author": "Ministério Koinonya",
             "authorLower": "ministério koinonya",
             "tempo": "",
-            "music_key": "A",
+            "musicKey": "A",
             "language": "pt-BR",
             "tags": [
                 "adoração",
@@ -26,9 +26,9 @@
             ],
             "versions": [
                 {
-                    "version_name": "Original",
-                    "transposed_key": "A",
-                    "song_structure": [
+                    "versionName": "Original",
+                    "transposedKey": "A",
+                    "songStructure": [
                         "I",
                         "V1",
                         "C",
@@ -40,34 +40,34 @@
                     ],
                     "sections": {
                         "I": {
-                            "content_type": "intro",
-                            "content_code": "I",
-                            "content_text": "[A7+] [D] [E] [C#m] [F#m] [D] [C#m] [D] [E] [A] [D/E]\n(É importante...)",
-                            "content_color": "#9C27B0"
+                            "contentType": "intro",
+                            "contentCode": "I",
+                            "contentText": "[A7+] [D] [E] [C#m] [F#m] [D] [C#m] [D] [E] [A] [D/E]\n(É importante...)",
+                            "contentColor": "#9C27B0"
                         },
                         "V1": {
-                            "content_type": "verse",
-                            "content_code": "V1",
-                            "content_text": "[A7+]Muito Obrigado! (Muito Obri[F#m7]gado!)\n[E]Muito Obrigado! (Muito Obri[D]gado!)\n[A7+]É impor[D]tante saber agra[E]decer\n[C#m]À quem me fez bem\n[F#m7]À quem me aben[D]çoou\n[C#m]Quem esteve comigo\n[D]Na hora da ale[E]gria e da [A]dor",
-                            "content_color": "#2196F3"
+                            "contentType": "verse",
+                            "contentCode": "V1",
+                            "contentText": "[A7+]Muito Obrigado! (Muito Obri[F#m7]gado!)\n[E]Muito Obrigado! (Muito Obri[D]gado!)\n[A7+]É impor[D]tante saber agra[E]decer\n[C#m]À quem me fez bem\n[F#m7]À quem me aben[D]çoou\n[C#m]Quem esteve comigo\n[D]Na hora da ale[E]gria e da [A]dor",
+                            "contentColor": "#2196F3"
                         },
                         "C": {
-                            "content_type": "chorus",
-                            "content_code": "C",
-                            "content_text": "[C#m]Meu Deus nunca me aban[D]donou\n[C#m]E amigos fiéis ao meu [F#m]lado\n[E]colocou\n[C#m]Por isso eu quero agra[D]decer\n[Bm]Muito obrigado, Se[D]nhor\n[E]Muito Obrigado!",
-                            "content_color": "#F44336"
+                            "contentType": "chorus",
+                            "contentCode": "C",
+                            "contentText": "[C#m]Meu Deus nunca me aban[D]donou\n[C#m]E amigos fiéis ao meu [F#m]lado\n[E]colocou\n[C#m]Por isso eu quero agra[D]decer\n[Bm]Muito obrigado, Se[D]nhor\n[E]Muito Obrigado!",
+                            "contentColor": "#F44336"
                         },
                         "B": {
-                            "content_type": "bridge",
-                            "content_code": "B",
-                            "content_text": "[A]Eu te agradeço, meu Se[D]nhor\n[F#m]Por todas as bên[E]çãos\n[A]Tu és o meu Deus, meu Salva[D]dor\n[F#m]Eu te agra[E]deço",
-                            "content_color": "#4CAF50"
+                            "contentType": "bridge",
+                            "contentCode": "B",
+                            "contentText": "[A]Eu te agradeço, meu Se[D]nhor\n[F#m]Por todas as bên[E]çãos\n[A]Tu és o meu Deus, meu Salva[D]dor\n[F#m]Eu te agra[E]deço",
+                            "contentColor": "#4CAF50"
                         },
                         "F": {
-                            "content_type": "final",
-                            "content_code": "F",
-                            "content_text": "[A]Muito Obrigado!",
-                            "content_color": "#FF9800"
+                            "contentType": "final",
+                            "contentCode": "F",
+                            "contentText": "[A]Muito Obrigado!",
+                            "contentColor": "#FF9800"
                         }
                     }
                 }
@@ -79,7 +79,7 @@
             "author": "Diante do Trono",
             "authorLower": "diante do trono",
             "tempo": "",
-            "music_key": "D",
+            "musicKey": "D",
             "language": "pt-BR",
             "tags": [
                 "adoração",
@@ -100,9 +100,9 @@
             ],
             "versions": [
                 {
-                    "version_name": "Original",
-                    "transposed_key": "D",
-                    "song_structure": [
+                    "versionName": "Original",
+                    "transposedKey": "D",
+                    "songStructure": [
                         "I",
                         "V1",
                         "C",
@@ -114,34 +114,34 @@
                     ],
                     "sections": {
                         "I": {
-                            "content_type": "intro",
-                            "content_code": "I",
-                            "content_text": "[D] [A/D] [G/D] [A/D] (2x)",
-                            "content_color": "#9C27B0"
+                            "contentType": "intro",
+                            "contentCode": "I",
+                            "contentText": "[D] [A/D] [G/D] [A/D] (2x)",
+                            "contentColor": "#9C27B0"
                         },
                         "V1": {
-                            "content_type": "verse",
-                            "content_code": "V1",
-                            "content_text": "[D]De todas as [A]tribos povos e [G]ra[A]ças\n[D]Muitos vi[A]rão Te lou[G]var\n[D]De tantas cul[A]turas, línguas e na[G]ç[A]ões\n[Em7]No tempo e no es[C]paço virão [G/B]Te ado[A9]rar[A][A9]",
-                            "content_color": "#2196F3"
+                            "contentType": "verse",
+                            "contentCode": "V1",
+                            "contentText": "[D]De todas as [A]tribos povos e [G]ra[A]ças\n[D]Muitos vi[A]rão Te lou[G]var\n[D]De tantas cul[A]turas, línguas e na[G]ç[A]ões\n[Em7]No tempo e no es[C]paço virão [G/B]Te ado[A9]rar[A][A9]",
+                            "contentColor": "#2196F3"
                         },
                         "C": {
-                            "content_type": "chorus",
-                            "content_code": "C",
-                            "content_text": "[D]Bendito seja [D/F#]sempre o cor[G]deiro\n[Bm7]Filho de [Bm/A]Deus, raiz de Da[G]vi[A][A9]\n[D]Bendito seja [D/F#]Seu santo no[G]me\n[Bm]Cristo Je[Bm7/A]sus, pre[G]sente a[A]qui[D][A][G][Bm/A][G][A]",
-                            "content_color": "#F44336"
+                            "contentType": "chorus",
+                            "contentCode": "C",
+                            "contentText": "[D]Bendito seja [D/F#]sempre o cor[G]deiro\n[Bm7]Filho de [Bm/A]Deus, raiz de Da[G]vi[A][A9]\n[D]Bendito seja [D/F#]Seu santo no[G]me\n[Bm]Cristo Je[Bm7/A]sus, pre[G]sente a[A]qui[D][A][G][Bm/A][G][A]",
+                            "contentColor": "#F44336"
                         },
                         "V2": {
-                            "content_type": "verse",
-                            "content_code": "V2",
-                            "content_text": "[D]Remidos com[A]prados grande multi[G]d[A]ão\n[D]Muitos vi[A]rão Te lou[G]var\n[D]Povo esco[A]lhido, Teu reino e na[G]ç[A]ão\n[Em7]No tempo e no es[C]paço virão [G/B]te ado[A9]rar[A][A9]",
-                            "content_color": "#2196F3"
+                            "contentType": "verse",
+                            "contentCode": "V2",
+                            "contentText": "[D]Remidos com[A]prados grande multi[G]d[A]ão\n[D]Muitos vi[A]rão Te lou[G]var\n[D]Povo esco[A]lhido, Teu reino e na[G]ç[A]ão\n[Em7]No tempo e no es[C]paço virão [G/B]te ado[A9]rar[A][A9]",
+                            "contentColor": "#2196F3"
                         },
                         "V3": {
-                            "content_type": "verse",
-                            "content_code": "V3",
-                            "content_text": "[D]E a nós só nos [A]cabe tudo dedi[G]car[A]\n[D]Oferta su[A]ave ao Se[G]nhor\n[D]Dons e ta[A]lentos queremos consa[G]grar[A]\n[Em7]E a vida no [C]Teu altar [G/B]p'ra Teu lou[A9]vor",
-                            "content_color": "#2196F3"
+                            "contentType": "verse",
+                            "contentCode": "V3",
+                            "contentText": "[D]E a nós só nos [A]cabe tudo dedi[G]car[A]\n[D]Oferta su[A]ave ao Se[G]nhor\n[D]Dons e ta[A]lentos queremos consa[G]grar[A]\n[Em7]E a vida no [C]Teu altar [G/B]p'ra Teu lou[A9]vor",
+                            "contentColor": "#2196F3"
                         }
                     }
                 }
@@ -153,7 +153,7 @@
             "author": "Ben Fielding, Reuben Morgan",
             "authorLower": "ben fielding, reuben morgan",
             "tempo": "",
-            "music_key": "E",
+            "musicKey": "E",
             "language": "pt-BR",
             "tags": [
                 "adoração",
@@ -175,9 +175,9 @@
             ],
             "versions": [
                 {
-                    "version_name": "Original",
-                    "transposed_key": "E",
-                    "song_structure": [
+                    "versionName": "Original",
+                    "transposedKey": "E",
+                    "songStructure": [
                         "I",
                         "V1",
                         "C",
@@ -191,40 +191,40 @@
                     ],
                     "sections": {
                         "I": {
-                            "content_type": "intro",
-                            "content_code": "I",
-                            "content_text": "[E] [B] [C#m] [A] (2x)",
-                            "content_color": "#9C27B0"
+                            "contentType": "intro",
+                            "contentCode": "I",
+                            "contentText": "[E] [B] [C#m] [A] (2x)",
+                            "contentColor": "#9C27B0"
                         },
                         "V1": {
-                            "content_type": "verse",
-                            "content_code": "V1",
-                            "content_text": "[E]Poderoso\n[B]Nunca falhará\n[C#m]Maravilhoso [A]Deus\n[E]Mais que buscamos\n[B]Mais que pedimos\n[C#m]Grandes [A]coisas [B]faz",
-                            "content_color": "#2196F3"
+                            "contentType": "verse",
+                            "contentCode": "V1",
+                            "contentText": "[E]Poderoso\n[B]Nunca falhará\n[C#m]Maravilhoso [A]Deus\n[E]Mais que buscamos\n[B]Mais que pedimos\n[C#m]Grandes [A]coisas [B]faz",
+                            "contentColor": "#2196F3"
                         },
                         "C": {
-                            "content_type": "chorus",
-                            "content_code": "C",
-                            "content_text": "[E]Ressurgiu e a morte ven[B]ceu\n[C#m]Nosso Deus é pode[A]roso\n[E/G#]Em Seu nome vamos ven[B]cer\n[C#m]Nosso [B]Deus é pode[A]roso",
-                            "content_color": "#F44336"
+                            "contentType": "chorus",
+                            "contentCode": "C",
+                            "contentText": "[E]Ressurgiu e a morte ven[B]ceu\n[C#m]Nosso Deus é pode[A]roso\n[E/G#]Em Seu nome vamos ven[B]cer\n[C#m]Nosso [B]Deus é pode[A]roso",
+                            "contentColor": "#F44336"
                         },
                         "V2": {
-                            "content_type": "verse",
-                            "content_code": "V2",
-                            "content_text": "[E]Deus conosco\n[B]Sempre perto está\n[C#m]Dando a solu[A]ção\n[E]Mais que sabemos\n[B]Mais que esperamos\n[C#m]Grandes [A]coisas [B]faz",
-                            "content_color": "#2196F3"
+                            "contentType": "verse",
+                            "contentCode": "V2",
+                            "contentText": "[E]Deus conosco\n[B]Sempre perto está\n[C#m]Dando a solu[A]ção\n[E]Mais que sabemos\n[B]Mais que esperamos\n[C#m]Grandes [A]coisas [B]faz",
+                            "contentColor": "#2196F3"
                         },
                         "IL": {
-                            "content_type": "other",
-                            "content_code": "IL",
-                            "content_text": "[E] [B] [C#m] [A]",
-                            "content_color": "#795548"
+                            "contentType": "other",
+                            "contentCode": "IL",
+                            "contentText": "[E] [B] [C#m] [A]",
+                            "contentColor": "#795548"
                         },
                         "B": {
-                            "content_type": "bridge",
-                            "content_code": "B",
-                            "content_text": "[E/G#]Deus conosco, nos condu[B]zirá\n[C#m]Jamais nos dei[B]xará\nJamais nos dei[A]xará\n[E/G#]Deus por nós, quer nos abra[B]çar\n[C#m]Ele nunca falha[B]rá\nEle nunca falha[A]rá",
-                            "content_color": "#4CAF50"
+                            "contentType": "bridge",
+                            "contentCode": "B",
+                            "contentText": "[E/G#]Deus conosco, nos condu[B]zirá\n[C#m]Jamais nos dei[B]xará\nJamais nos dei[A]xará\n[E/G#]Deus por nós, quer nos abra[B]çar\n[C#m]Ele nunca falha[B]rá\nEle nunca falha[A]rá",
+                            "contentColor": "#4CAF50"
                         }
                     }
                 }
@@ -236,7 +236,7 @@
             "author": "Diante do Trono",
             "authorLower": "diante do trono",
             "tempo": "",
-            "music_key": "A",
+            "musicKey": "A",
             "language": "pt-BR",
             "tags": [
                 "adoração",
@@ -257,9 +257,9 @@
             ],
             "versions": [
                 {
-                    "version_name": "Original",
-                    "transposed_key": "A",
-                    "song_structure": [
+                    "versionName": "Original",
+                    "transposedKey": "A",
+                    "songStructure": [
                         "I",
                         "V1",
                         "C",
@@ -271,34 +271,34 @@
                     ],
                     "sections": {
                         "I": {
-                            "content_type": "intro",
-                            "content_code": "I",
-                            "content_text": "[D9] [E] [A9/C#] [D9]\n[D9] [E] [A]",
-                            "content_color": "#9C27B0"
+                            "contentType": "intro",
+                            "contentCode": "I",
+                            "contentText": "[D9] [E] [A9/C#] [D9]\n[D9] [E] [A]",
+                            "contentColor": "#9C27B0"
                         },
                         "V1": {
-                            "content_type": "verse",
-                            "content_code": "V1",
-                            "content_text": "[A]Graça sob Graça recebi\n[F#m7]E da plenitude renasci\n[E]Quando atraído me encon[D9]trei\nNo amor de [A]Deus\n[A]Viva e poderosa salvação\n[F#m7]Luz que me alcançou na escuridão\n[E]Todo meu pecado se apa[D9]gou\nNo amor de [A]Deus",
-                            "content_color": "#2196F3"
+                            "contentType": "verse",
+                            "contentCode": "V1",
+                            "contentText": "[A]Graça sob Graça recebi\n[F#m7]E da plenitude renasci\n[E]Quando atraído me encon[D9]trei\nNo amor de [A]Deus\n[A]Viva e poderosa salvação\n[F#m7]Luz que me alcançou na escuridão\n[E]Todo meu pecado se apa[D9]gou\nNo amor de [A]Deus",
+                            "contentColor": "#2196F3"
                         },
                         "C": {
-                            "content_type": "chorus",
-                            "content_code": "C",
-                            "content_text": "[D9]Logo eu, um pobre peca[E]dor\n[A/C#]Logo eu tão fraco e tão deve[D9]dor\n[Bm7]Logo eu, de graça rece[E4]bi\nO amor de [A9]Deus[A4]\n[D9]Logo eu, finito e car[E]nal\n[A/C#]Logo eu, diante de um Deus imor[D9]tal\n[Bm7]Logo eu, de graça rece[E4]bi\n[D]O amor de [E]Deus[A/C#][D9]",
-                            "content_color": "#F44336"
+                            "contentType": "chorus",
+                            "contentCode": "C",
+                            "contentText": "[D9]Logo eu, um pobre peca[E]dor\n[A/C#]Logo eu tão fraco e tão deve[D9]dor\n[Bm7]Logo eu, de graça rece[E4]bi\nO amor de [A9]Deus[A4]\n[D9]Logo eu, finito e car[E]nal\n[A/C#]Logo eu, diante de um Deus imor[D9]tal\n[Bm7]Logo eu, de graça rece[E4]bi\n[D]O amor de [E]Deus[A/C#][D9]",
+                            "contentColor": "#F44336"
                         },
                         "B": {
-                            "content_type": "bridge",
-                            "content_code": "B",
-                            "content_text": "[A9]O Amor de Deus é rico em benefícios\n[F#m7]O amor de Deus não mede sacrifícios\n[E]Nos braços desse amor recebo o per[Bm7]dão\n[F#m7]Comprado por Je[E]sus\n\n[A9]O amor de Deus é puro e consciente\n[F#m7]Como as manhãs, é firme e constante\n[E]Que se entregou na cruz e a morte\n[Bm7]derrotou\n[D]Amor de Je[E]sus[A/C#][D9][D9][E][D9]",
-                            "content_color": "#4CAF50"
+                            "contentType": "bridge",
+                            "contentCode": "B",
+                            "contentText": "[A9]O Amor de Deus é rico em benefícios\n[F#m7]O amor de Deus não mede sacrifícios\n[E]Nos braços desse amor recebo o per[Bm7]dão\n[F#m7]Comprado por Je[E]sus\n\n[A9]O amor de Deus é puro e consciente\n[F#m7]Como as manhãs, é firme e constante\n[E]Que se entregou na cruz e a morte\n[Bm7]derrotou\n[D]Amor de Je[E]sus[A/C#][D9][D9][E][D9]",
+                            "contentColor": "#4CAF50"
                         },
                         "F": {
-                            "content_type": "final",
-                            "content_code": "F",
-                            "content_text": "[D9]O amor de [E]Deus[D9]",
-                            "content_color": "#FF9800"
+                            "contentType": "final",
+                            "contentCode": "F",
+                            "contentText": "[D9]O amor de [E]Deus[D9]",
+                            "contentColor": "#FF9800"
                         }
                     }
                 }
@@ -310,7 +310,7 @@
             "author": "Diante do Trono",
             "authorLower": "diante do trono",
             "tempo": "",
-            "music_key": "G",
+            "musicKey": "G",
             "language": "pt-BR",
             "tags": [
                 "adoração",
@@ -331,9 +331,9 @@
             ],
             "versions": [
                 {
-                    "version_name": "Original",
-                    "transposed_key": "G",
-                    "song_structure": [
+                    "versionName": "Original",
+                    "transposedKey": "G",
+                    "songStructure": [
                         "C",
                         "V1",
                         "V1",
@@ -343,22 +343,22 @@
                     ],
                     "sections": {
                         "V1": {
-                            "content_type": "verse",
-                            "content_code": "V1",
-                            "content_text": "[G]Venho Senhor, minha [D/F#]vida ofe[Em]recer\n[C]Como oferta de a[G/B]mor e sacri[Am]fí[D]cio\n[G]Quero minha [D/F#]vida a Ti en[Em]tregar\n[C]Como oferta [D]viva em teu al[G]tar[C][D]",
-                            "content_color": "#2196F3"
+                            "contentType": "verse",
+                            "contentCode": "V1",
+                            "contentText": "[G]Venho Senhor, minha [D/F#]vida ofe[Em]recer\n[C]Como oferta de a[G/B]mor e sacri[Am]fí[D]cio\n[G]Quero minha [D/F#]vida a Ti en[Em]tregar\n[C]Como oferta [D]viva em teu al[G]tar[C][D]",
+                            "contentColor": "#2196F3"
                         },
                         "C": {
-                            "content_type": "chorus",
-                            "content_code": "C",
-                            "content_text": "[C]Pois pra te ado[D]rar[Bm][Em]\n[C]Foi que eu nas[D]ci[Em]\n[Bm]Cumpre em mim o teu que[C]rer\n[Am]Faça o que está em teu cora[D]ção[G][Am][Bm]\n[C]E que a cada [D]dia eu queira [Bm]mais e [Em]mais\n[Am]Es[Bm]tar [C]ao teu [C/D]lado, Se[G]nhor[Am][Bm]",
-                            "content_color": "#F44336"
+                            "contentType": "chorus",
+                            "contentCode": "C",
+                            "contentText": "[C]Pois pra te ado[D]rar[Bm][Em]\n[C]Foi que eu nas[D]ci[Em]\n[Bm]Cumpre em mim o teu que[C]rer\n[Am]Faça o que está em teu cora[D]ção[G][Am][Bm]\n[C]E que a cada [D]dia eu queira [Bm]mais e [Em]mais\n[Am]Es[Bm]tar [C]ao teu [C/D]lado, Se[G]nhor[Am][Bm]",
+                            "contentColor": "#F44336"
                         },
                         "F": {
-                            "content_type": "final",
-                            "content_code": "F",
-                            "content_text": "[C]E que a cada [D]dia eu queira [Bm]mais e [Em]mais\n[Am]Es[Bm]tar [C]ao teu [C/D]lado, Se[G]nhor\n\n(lento)\n[Am]Es[Bm]tar [C]ao teu [C/D]lado, [C]Se[G]nhor",
-                            "content_color": "#FF9800"
+                            "contentType": "final",
+                            "contentCode": "F",
+                            "contentText": "[C]E que a cada [D]dia eu queira [Bm]mais e [Em]mais\n[Am]Es[Bm]tar [C]ao teu [C/D]lado, Se[G]nhor\n\n(lento)\n[Am]Es[Bm]tar [C]ao teu [C/D]lado, [C]Se[G]nhor",
+                            "contentColor": "#FF9800"
                         }
                     }
                 }
@@ -370,7 +370,7 @@
             "author": "Bethel Music",
             "authorLower": "bethel music",
             "tempo": "",
-            "music_key": "E",
+            "musicKey": "E",
             "language": "pt-BR",
             "tags": [
                 "adoração",
@@ -390,9 +390,9 @@
             ],
             "versions": [
                 {
-                    "version_name": "Original",
-                    "transposed_key": "E",
-                    "song_structure": [
+                    "versionName": "Original",
+                    "transposedKey": "E",
+                    "songStructure": [
                         "I",
                         "V1",
                         "C",
@@ -409,34 +409,34 @@
                     ],
                     "sections": {
                         "I": {
-                            "content_type": "intro",
-                            "content_code": "I",
-                            "content_text": "[C#m] [B4] [A9] [E]\n[C#m] [B4] [A9] [E]",
-                            "content_color": "#9C27B0"
+                            "contentType": "intro",
+                            "contentCode": "I",
+                            "contentText": "[C#m] [B4] [A9] [E]\n[C#m] [B4] [A9] [E]",
+                            "contentColor": "#9C27B0"
                         },
                         "V1": {
-                            "content_type": "verse",
-                            "content_code": "V1",
-                            "content_text": "[C#m]Antes de eu fa[B4]lar\n[A9]Tu cantavas sobre mim\n[C#m]Tu tens sido [B4]tão\n[A9]Tão bom pra mim\n[C#m]Antes de eu respi[B4]rar\n[A9]Sopraste Tua vida em mim\n[C#m]Tu tens sido [B4]tão\n[A9]Tão bom pra mim",
-                            "content_color": "#2196F3"
+                            "contentType": "verse",
+                            "contentCode": "V1",
+                            "contentText": "[C#m]Antes de eu fa[B4]lar\n[A9]Tu cantavas sobre mim\n[C#m]Tu tens sido [B4]tão\n[A9]Tão bom pra mim\n[C#m]Antes de eu respi[B4]rar\n[A9]Sopraste Tua vida em mim\n[C#m]Tu tens sido [B4]tão\n[A9]Tão bom pra mim",
+                            "contentColor": "#2196F3"
                         },
                         "C": {
-                            "content_type": "chorus",
-                            "content_code": "C",
-                            "content_text": "[C#m]Oh, impressionante, infi[B4]nito\n[A9]E ousado amor de [E]Deus\n[C#m]Oh, que deixa as noventa e [B4]nove\n[A9]Só pra me encon[E]trar\n[C#m]Não posso comprá-lo, nem mere[B4]cê-lo\n[A9]Mesmo assim se entre[E]gou\n[C#m]Oh, impressionante, infi[B4]nito\n[A9]E ousado amor de [E]Deus",
-                            "content_color": "#F44336"
+                            "contentType": "chorus",
+                            "contentCode": "C",
+                            "contentText": "[C#m]Oh, impressionante, infi[B4]nito\n[A9]E ousado amor de [E]Deus\n[C#m]Oh, que deixa as noventa e [B4]nove\n[A9]Só pra me encon[E]trar\n[C#m]Não posso comprá-lo, nem mere[B4]cê-lo\n[A9]Mesmo assim se entre[E]gou\n[C#m]Oh, impressionante, infi[B4]nito\n[A9]E ousado amor de [E]Deus",
+                            "contentColor": "#F44336"
                         },
                         "V2": {
-                            "content_type": "verse",
-                            "content_code": "V2",
-                            "content_text": "[C#m]Inimigo eu [B4]fui\n[A9]Mas Teu amor lutou por mim\n[C#m]Tu tens sido [B4]tão\n[A9]Tão bom pra mim\n[C#m]Não tinha va[B4]lor\n[A9]Mas tudo pagou por mim\n[C#m]Tu tens sido [B4]tão\n[A9]Tão bom pra mim",
-                            "content_color": "#2196F3"
+                            "contentType": "verse",
+                            "contentCode": "V2",
+                            "contentText": "[C#m]Inimigo eu [B4]fui\n[A9]Mas Teu amor lutou por mim\n[C#m]Tu tens sido [B4]tão\n[A9]Tão bom pra mim\n[C#m]Não tinha va[B4]lor\n[A9]Mas tudo pagou por mim\n[C#m]Tu tens sido [B4]tão\n[A9]Tão bom pra mim",
+                            "contentColor": "#2196F3"
                         },
                         "B": {
-                            "content_type": "bridge",
-                            "content_code": "B",
-                            "content_text": "[C#m]Traz luz para as som[B4]bras\n[A9]Escala montanhas, pra me encon[E]trar\n[C#m]Derruba mura[B4]lhas\n[A9]Destrói as mentiras, pra me\n[E]encontrar",
-                            "content_color": "#4CAF50"
+                            "contentType": "bridge",
+                            "contentCode": "B",
+                            "contentText": "[C#m]Traz luz para as som[B4]bras\n[A9]Escala montanhas, pra me encon[E]trar\n[C#m]Derruba mura[B4]lhas\n[A9]Destrói as mentiras, pra me\n[E]encontrar",
+                            "contentColor": "#4CAF50"
                         }
                     }
                 }

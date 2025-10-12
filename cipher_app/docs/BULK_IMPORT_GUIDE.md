@@ -21,7 +21,7 @@
       "author": "Nome do Autor",
       "authorLower": "nome do autor", 
       "tempo": "",
-      "music_key": "C",
+      "musicKey": "C",
       "language": "pt-BR",
       "tags": ["hino", "adoração", "clássico"],
       "downloadCount": 0,
@@ -30,45 +30,45 @@
       ],
       "versions": [
         {
-          "version_name": "Original",
-          "transposed_key": "C",
-          "song_structure": ["I", "V1", "C", "V2", "C", "B", "C", "F"],
+          "versionName": "Original",
+          "transposedKey": "C",
+          "songStructure": ["I", "V1", "C", "V2", "C", "B", "C", "F"],
           "sections": {
             "I": {
-              "content_type": "intro",
-              "content_code": "I", 
-              "content_text": "[C]Introdução musical...",
-              "content_color": "#9C27B0"
+              "contentType": "intro",
+              "contentCode": "I", 
+              "contentText": "[C]Introdução musical...",
+              "contentColor": "#9C27B0"
             },
             "V1": {
-              "content_type": "verse",
-              "content_code": "V1",
-              "content_text": "[C]Graça maravilhosa [F]como doce é\n[G]Que salvou um pecador [C]como eu",
-              "content_color": "#2196F3"
+              "contentType": "verse",
+              "contentCode": "V1",
+              "contentText": "[C]Graça maravilhosa [F]como doce é\n[G]Que salvou um pecador [C]como eu",
+              "contentColor": "#2196F3"
             },
             "C": {
-              "content_type": "chorus", 
-              "content_code": "C",
-              "content_text": "[F]Aleluia, [C]aleluia\n[G]Cristo vive em [C]mim",
-              "content_color": "#F44336"
+              "contentType": "chorus", 
+              "contentCode": "C",
+              "contentText": "[F]Aleluia, [C]aleluia\n[G]Cristo vive em [C]mim",
+              "contentColor": "#F44336"
             },
             "V2": {
-              "content_type": "verse",
-              "content_code": "V2", 
-              "content_text": "[C]Segunda estrofe da música...",
-              "content_color": "#2196F3"
+              "contentType": "verse",
+              "contentCode": "V2", 
+              "contentText": "[C]Segunda estrofe da música...",
+              "contentColor": "#2196F3"
             },
             "B": {
-              "content_type": "bridge",
-              "content_code": "B",
-              "content_text": "[Am]Ponte musical [F]conectando partes...",
-              "content_color": "#4CAF50"
+              "contentType": "bridge",
+              "contentCode": "B",
+              "contentText": "[Am]Ponte musical [F]conectando partes...",
+              "contentColor": "#4CAF50"
             },
             "F": {
-              "content_type": "final",
-              "content_code": "F",
-              "content_text": "[C]Final instrumental...",
-              "content_color": "#FF9800"
+              "contentType": "final",
+              "contentCode": "F",
+              "contentText": "[C]Final instrumental...",
+              "contentColor": "#FF9800"
             }
           }
         }
@@ -215,7 +215,7 @@ A temer e me consolou
       "author": "John Newton",
       "authorLower": "john newton",
       "tempo": "", 
-      "music_key": "G",
+      "musicKey": "G",
       "language": "pt-BR",
       "tags": ["hino", "clássico", "adoração"],
       "downloadCount": 0,
@@ -224,33 +224,33 @@ A temer e me consolou
       ],
       "versions": [
         {
-          "version_name": "Original",
-          "transposed_key": "G",
-          "song_structure": ["I", "V1", "C", "V2", "C"],
+          "versionName": "Original",
+          "transposedKey": "G",
+          "songStructure": ["I", "V1", "C", "V2", "C"],
           "sections": {
             "I": {
-              "content_type": "intro",
-              "content_code": "I",
-              "content_text": "[G] - [C] - [G] - [D]",
-              "content_color": "#9C27B0"
+              "contentType": "intro",
+              "contentCode": "I",
+              "contentText": "[G] - [C] - [G] - [D]",
+              "contentColor": "#9C27B0"
             },
             "V1": {
-              "content_type": "verse",
-              "content_code": "V1", 
-              "content_text": "[G]Graça maravilhosa, [C]como doce é\n[G]Que salvou um pe[D]cador como [G]eu",
-              "content_color": "#2196F3"
+              "contentType": "verse",
+              "contentCode": "V1", 
+              "contentText": "[G]Graça maravilhosa, [C]como doce é\n[G]Que salvou um pe[D]cador como [G]eu",
+              "contentColor": "#2196F3"
             },
             "C": {
-              "content_type": "chorus",
-              "content_code": "C",
-              "content_text": "[C]Aleluia, [G]aleluia\n[D]Cristo vive em [G]mim", 
-              "content_color": "#F44336"
+              "contentType": "chorus",
+              "contentCode": "C",
+              "contentText": "[C]Aleluia, [G]aleluia\n[D]Cristo vive em [G]mim", 
+              "contentColor": "#F44336"
             },
             "V2": {
-              "content_type": "verse",
-              "content_code": "V2",
-              "content_text": "[G]Foi a graça que me en[C]sinou\n[G]A temer e me conso[D]lou[G]",
-              "content_color": "#2196F3"
+              "contentType": "verse",
+              "contentCode": "V2",
+              "contentText": "[G]Foi a graça que me en[C]sinou\n[G]A temer e me conso[D]lou[G]",
+              "contentColor": "#2196F3"
             }
           }
         }

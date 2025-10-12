@@ -9,7 +9,6 @@ class CipherDto {
   final String musicKey;
   final String tempo;
   final String language;
-  final String searchTerm;
   final List<String> tags;
   final DateTime? updatedAt;
   final int? downloadCount;
@@ -21,44 +20,48 @@ class CipherDto {
     required this.musicKey,
     required this.tempo,
     required this.language,
-    required this.searchTerm,
     this.tags = const [],
     this.updatedAt,
     this.downloadCount,
   });
 
-  factory CipherDto.fromMap(Map<String, dynamic> map) {
+  factory CipherDto.fromFirestore(Map<String, dynamic> map) {
     return CipherDto(
-      firebaseId: map['cipherId'] as String?,
+      firebaseId: map['firebaseId'] as String?,
       title: map['title'] as String? ?? '',
       author: map['author'] as String? ?? '',
       musicKey: map['musicKey'] as String? ?? '',
       tempo: map['tempo'] as String? ?? '',
       language: map['language'] as String? ?? '',
-      searchTerm: map['searchTerm'] as String? ?? '',
       tags: (map['tags'] is String)
           ? (map['tags'] as String)
                 .split(',')
                 .where((t) => t.isNotEmpty)
                 .toList()
           : (map['tags'] as List?)?.cast<String>() ?? [],
-      updatedAt: map['updated_at'] != null
-          ? DateTime.tryParse(map['updated_at'].toString())
+      updatedAt: map['updatedAt'] != null
+          ? DateTime.tryParse(map['updatedAt'].toString())
           : null,
-      downloadCount: map['download_count'] as int?,
+      downloadCount: map['downloadCount'] as int?,
     );
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toFirestore() {
     return {
       'cipherId': firebaseId,
       'title': title,
+      'titleLower': title.toLowerCase(),
       'author': author,
+      'authorLower': author.toLowerCase(),
       'musicKey': musicKey,
       'tempo': tempo,
       'language': language,
-      'searchTerm': '$title $author ${tags.join(' ')}'.toLowerCase(),
-      'tags': tags.join(','),
+      'searchTokens': [
+        ...title.toLowerCase().split(' '),
+        ...author.toLowerCase().split(' '),
+        ...tags.map((t) => t.toLowerCase()),
+      ],
+      'tags': tags,
       'updatedAt': updatedAt?.toIso8601String(),
       'downloadCount': downloadCount,
     };
@@ -100,7 +103,6 @@ class CipherDto {
       tags: tags ?? this.tags,
       updatedAt: updatedAt ?? this.updatedAt,
       downloadCount: downloadCount ?? this.downloadCount,
-      searchTerm: searchTerm ?? this.searchTerm,
     );
   }
 }

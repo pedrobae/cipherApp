@@ -39,7 +39,7 @@ class LocalCipherRepository {
 
     return await db.transaction((txn) async {
       // Insert the cipher
-      final cipherId = await txn.insert('cipher', cipher.toJson());
+      final cipherId = await txn.insert('cipher', cipher.toSqLite());
 
       // Insert tags if any
       if (cipher.tags.isNotEmpty) {
@@ -56,7 +56,7 @@ class LocalCipherRepository {
 
     return await db.transaction((txn) async {
       // Insert the cipher
-      final cipherId = await txn.insert('cipher', cipher.toJson());
+      final cipherId = await txn.insert('cipher', cipher.toSqLite());
 
       // Insert tags if any
       if (cipher.tags.isNotEmpty) {
@@ -89,7 +89,7 @@ class LocalCipherRepository {
       // Update the cipher
       await txn.update(
         'cipher',
-        cipher.toJson()..['updated_at'] = DateTime.now().toIso8601String(),
+        cipher.toSqLite()..['updated_at'] = DateTime.now().toIso8601String(),
         where: 'id = ?',
         whereArgs: [cipher.id],
       );
@@ -173,14 +173,14 @@ class LocalCipherRepository {
 
   Future<int> insertVersionToCipher(Version map) async {
     final db = await _databaseHelper.database;
-    return await db.insert('version', map.toJson());
+    return await db.insert('version', map.toSqLite());
   }
 
   Future<void> updateVersion(Version version) async {
     final db = await _databaseHelper.database;
     await db.update(
       'version',
-      version.toJson(),
+      version.toSqLite(),
       where: 'id = ?',
       whereArgs: [version.id],
     );
@@ -211,7 +211,7 @@ class LocalCipherRepository {
 
     final sections = <String, Section>{};
     for (var row in results) {
-      sections[row['content_code'] as String] = Section.fromJson({
+      sections[row['content_code'] as String] = Section.fromSqLite({
         'id': row['id'] as int,
         'version_id': mapId,
         'content_type': row['content_type'] as String,
@@ -343,18 +343,18 @@ class LocalCipherRepository {
     final version = await getVersions(row['id']);
     final tags = await getCipherTags(row['id']);
 
-    return Cipher.fromJson(row).copyWith(versions: version, tags: tags);
+    return Cipher.fromSqLite(row).copyWith(versions: version, tags: tags);
   }
 
   Future<Cipher> _buildPrunedCipher(Map<String, dynamic> row) async {
     final tags = await getCipherTags(row['id']);
 
-    return Cipher.fromJson(row).copyWith(tags: tags);
+    return Cipher.fromSqLite(row).copyWith(tags: tags);
   }
 
   Future<Version> _buildCipherVersion(Map<String, dynamic> row) async {
     final section = await getAllSections(row['id']);
-    return Version.fromRow(row).copyWith(content: section);
+    return Version.fromSqLiteNoSections(row).copyWith(content: section);
   }
 
   // Helper method to add tags within a transaction
@@ -396,7 +396,7 @@ class LocalCipherRepository {
   ) async {
     final versionId = await txn.insert(
       'version',
-      version.toJson()..['cipher_id'] = cipherId,
+      version.toSqLite()..['cipher_id'] = cipherId,
     );
     return versionId;
   }

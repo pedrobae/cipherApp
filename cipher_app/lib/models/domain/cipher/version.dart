@@ -1,4 +1,5 @@
 import 'package:cipher_app/models/domain/cipher/section.dart';
+import 'package:cipher_app/models/dtos/version_dto.dart';
 
 class Version {
   final int? id;
@@ -19,10 +20,10 @@ class Version {
     this.sections,
   });
 
-  factory Version.fromJson(Map<String, dynamic> json) {
+  factory Version.fromSqLite(Map<String, dynamic> json) {
     Map<String, Section> versionContentMap = {};
     for (Map<String, dynamic> content in json['content']) {
-      Section versionContent = Section.fromJson(content);
+      Section versionContent = Section.fromSqLite(content);
       versionContentMap[versionContent.contentCode] = versionContent;
     }
 
@@ -40,7 +41,7 @@ class Version {
   }
 
   // Factory for database row (without content - populated separately)
-  factory Version.fromRow(Map<String, dynamic> row) {
+  factory Version.fromSqLiteNoSections(Map<String, dynamic> row) {
     List<String> songStructure = [];
     final structureString = row['song_structure'] as String?;
     if (structureString != null && structureString.isNotEmpty) {
@@ -65,7 +66,7 @@ class Version {
   }
 
   // To JSON for database (without content - sections handled separately)
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toSqLite() {
     return {
       'id': id,
       'cipher_id': cipherId,
@@ -76,18 +77,20 @@ class Version {
     };
   }
 
-  Map<String, dynamic> toMap() {
-    return {
-      'songStructure': songStructure,
-      'transposedKey': transposedKey,
-      'versionName': versionName,
-      'content':
-          sections?.values.map((s) => MapEntry(s.contentCode, s.toMap())) ?? {},
-    };
-  }
-
   List<Section> getContentAsStruct() {
     return (sections ?? {}).values.toList();
+  }
+
+  VersionDto toDto() {
+    return VersionDto(
+      firebaseId: null,
+      versionName: versionName,
+      transposedKey: transposedKey,
+      songStructure: songStructure.join(','),
+      sections: sections?.map(
+        (sectionCode, section) => MapEntry(sectionCode, section.toFirestore()),
+      ),
+    );
   }
 
   bool get hasAllSections {

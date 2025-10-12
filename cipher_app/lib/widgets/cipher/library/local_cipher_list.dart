@@ -128,7 +128,7 @@ class _LocalCipherListState extends State<LocalCipherList> {
       child: ListView.builder(
         padding: const EdgeInsets.all(4),
         cacheExtent: 200,
-        physics: const BouncingScrollPhysics(),
+        physics: const AlwaysScrollableScrollPhysics(),
         itemCount: cipherProvider.filteredLocalCiphers.length,
         itemBuilder: (context, index) {
           if (index >= cipherProvider.filteredLocalCiphers.length) {

@@ -7,12 +7,16 @@ class CloudCipherList extends StatefulWidget {
   final bool selectionMode;
   final int? playlistId;
   final VoidCallback? searchCloudCiphers;
+  final VoidCallback changeTab;
+  final Function(int cipherId, int versionId) openCipher;
 
   const CloudCipherList({
     super.key,
     this.selectionMode = false,
     this.playlistId,
     this.searchCloudCiphers,
+    required this.changeTab,
+    required this.openCipher,
   });
 
   @override
@@ -43,7 +47,7 @@ class _CloudCipherListState extends State<CloudCipherList> {
       child: ListView.builder(
         padding: const EdgeInsets.all(4),
         cacheExtent: 200,
-        physics: const BouncingScrollPhysics(),
+        physics: const AlwaysScrollableScrollPhysics(),
         itemCount: cipherProvider.filteredCloudCiphers.length,
         itemBuilder: (context, index) {
           // Add bounds checking
@@ -54,14 +58,15 @@ class _CloudCipherListState extends State<CloudCipherList> {
           final cipher = cipherProvider.filteredCloudCiphers[index];
           return CloudCipherCard(
             cipher: cipher,
-            onDownload: () {
-              cipherProvider.downloadAndInsertCipher(cipher);
+            onDownload: () async {
+              await cipherProvider.downloadAndInsertCipher(cipher);
+              widget.changeTab();
+              widget.openCipher(
+                cipherProvider.currentCipher.id!,
+                cipherProvider.currentCipher.versions.last.id!,
+              );
             },
           );
-
-          // In selection mode, we can't filter by versions until they're loaded
-          // The filtering will happen in the CipherCard when versions are expanded
-          // For now, show all ciphers and let user expand to see available versions
         },
       ),
     );

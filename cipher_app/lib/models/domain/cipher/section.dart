@@ -18,7 +18,7 @@ class Section {
     required this.contentColor,
   });
 
-  factory Section.fromJson(Map<String, dynamic> json) {
+  factory Section.fromSqLite(Map<String, dynamic> json) {
     return Section(
       id: json['id'],
       versionId: json['version_id'],
@@ -29,19 +29,19 @@ class Section {
     );
   }
 
-  factory Section.fromMap(Map<String, dynamic> map) {
+  factory Section.fromFirestore(Map<String, dynamic> map) {
     return Section(
       versionId: 0, // Will be set later
-      contentType: map['content_type'] as String? ?? '',
-      contentCode: map['content_code'] as String? ?? '',
-      contentText: map['content_text'] as String? ?? '',
+      contentType: map['contentType'] as String? ?? '',
+      contentCode: map['contentCode'] as String? ?? '',
+      contentText: map['contentText'] as String? ?? '',
       contentColor: c.colorFromHex(
-        map['content_color'] as String? ?? '#FFFFFFFF',
+        map['contentColor'] as String? ?? '#FFFFFFFF',
       ),
     );
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toSqLite() {
     return {
       'id': id,
       'version_id': versionId,
@@ -52,7 +52,7 @@ class Section {
     };
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toFirestore() {
     return {
       'contentType': contentType,
       'contentCode': contentCode,

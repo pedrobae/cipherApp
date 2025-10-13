@@ -256,6 +256,13 @@ class DatabaseHelper {
     await db.execute(
       'CREATE UNIQUE INDEX idx_cipher_firebase_id ON cipher(firebase_id)',
     );
+    // For version lookups
+    await db.execute(
+      'CREATE UNIQUE INDEX idx_version_firebase_id ON version(firebase_id)',
+    );
+    await db.execute(
+      'CREATE INDEX idx_version_firebase_cipher_id ON version(firebase_cipher_id)',
+    );
     // For content queries
     await db.execute(
       'CREATE INDEX idx_section_content_type ON section(content_type)',
@@ -273,6 +280,16 @@ class DatabaseHelper {
       await db.execute('ALTER TABLE cipher ADD COLUMN firebase_id TEXT');
       await db.execute(
         'CREATE UNIQUE INDEX idx_cipher_firebase_id ON cipher(firebase_id)',
+      );
+      await db.execute(
+        'ALTER TABLE version ADD COLUMN firebase_cipher_id TEXT',
+      );
+      await db.execute('ALTER TABLE version ADD COLUMN firebase_id TEXT');
+      await db.execute(
+        'CREATE UNIQUE INDEX idx_version_firebase_id ON version(firebase_id)',
+      );
+      await db.execute(
+        'CREATE INDEX idx_version_firebase_cipher_id ON version(firebase_cipher_id)',
       );
     }
 

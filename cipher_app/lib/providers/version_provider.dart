@@ -1,11 +1,13 @@
 import 'package:cipher_app/models/domain/cipher/section.dart';
 import 'package:cipher_app/models/domain/cipher/version.dart';
 import 'package:cipher_app/models/domain/playlist/playlist_item.dart';
+import 'package:cipher_app/repositories/cloud_cipher_repository.dart';
 import 'package:cipher_app/repositories/local_cipher_repository.dart';
 import 'package:flutter/foundation.dart';
 
 class VersionProvider extends ChangeNotifier {
   final LocalCipherRepository _cipherRepository = LocalCipherRepository();
+  final CloudCipherRepository _cloudCipherRepository = CloudCipherRepository();
 
   VersionProvider();
 
@@ -13,6 +15,7 @@ class VersionProvider extends ChangeNotifier {
   List<Version> _versions = [];
   Version _currentVersion = Version.empty();
   bool _isLoading = false;
+  bool _isLoadingCloud = false;
   bool _isSaving = false;
   String? _error;
 
@@ -21,6 +24,7 @@ class VersionProvider extends ChangeNotifier {
   List<Version> get versions => _versions;
   Version get currentVersion => _currentVersion;
   bool get isLoading => _isLoading;
+  bool get isLoadingCloud => _isLoadingCloud;
   bool get isSaving => _isSaving;
   String? get error => _error;
 
@@ -52,6 +56,37 @@ class VersionProvider extends ChangeNotifier {
       if (kDebugMode) {
         print('Error creating cipher version: $e');
       }
+    } finally {
+      _isSaving = false;
+      notifyListeners();
+    }
+  }
+
+  Future<String> createVersionInCloud() async {
+    if (_isLoadingCloud) return 'Already saving';
+
+    _isLoadingCloud = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      // Create version with the correct cipher ID
+      final versionId = await _cloudCipherRepository.createVersionForCipher(
+        _currentVersion,
+      );
+      // Load the new ID into the version cache
+      _currentVersion = _currentVersion.copyWith(firebaseId: versionId);
+
+      if (kDebugMode) {
+        print('Created a new cloud version with id $versionId');
+      }
+      return versionId;
+    } catch (e) {
+      _error = e.toString();
+      if (kDebugMode) {
+        print('Error creating cloud cipher version: $e');
+      }
+      return 'Error: $e';
     } finally {
       _isSaving = false;
       notifyListeners();
@@ -230,6 +265,30 @@ class VersionProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> saveVersionInCloud() async {
+    if (_isSaving) return;
+
+    _isSaving = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _cloudCipherRepository.updateVersionOfCipher(currentVersion);
+
+      if (kDebugMode) {
+        print('Saved cloud version with id ${currentVersion.firebaseId}');
+      }
+    } catch (e) {
+      _error = e.toString();
+      if (kDebugMode) {
+        print('Error updating cloud cipher version: $e');
+      }
+    } finally {
+      _isSaving = false;
+      notifyListeners();
+    }
+  }
+
   /// ===== UTILS =====
   // Clear Cache to create a new version
   void clearCache() {
@@ -241,6 +300,17 @@ class VersionProvider extends ChangeNotifier {
     _expandedCipherId = -1;
     _versions = [];
     notifyListeners();
+  }
+
+  /// Identify if the version exists in the cloud and creates or saves (return wether the version isNew on cloud)
+  Future<bool> mergeVersionInCloud() async {
+    if (_currentVersion.firebaseId == null) {
+      await _cloudCipherRepository.createVersionForCipher(_currentVersion);
+      return true;
+    } else {
+      await _cloudCipherRepository.updateVersionOfCipher(_currentVersion);
+      return false;
+    }
   }
 
   /// ===== PLAYLIST SUPPORT =====

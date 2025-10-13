@@ -4,6 +4,7 @@ import 'package:cipher_app/models/domain/cipher/version.dart';
 /// DTO para metadados de version (camada de separação entre a nuvem e o armazenamento local).
 class VersionDto {
   final String? firebaseId; // ID na nuvem (Firebase)
+  final String? firebaseCipherId; // ID do cipher na nuvem (Firebase)
   final String versionName;
   final String? transposedKey;
   final String songStructure;
@@ -12,6 +13,7 @@ class VersionDto {
 
   VersionDto({
     this.firebaseId,
+    this.firebaseCipherId,
     required this.versionName,
     this.transposedKey,
     required this.songStructure,
@@ -22,9 +24,11 @@ class VersionDto {
   factory VersionDto.fromFirestore(
     Map<String, dynamic> map,
     String documentId,
+    String cipherDocumentId,
   ) {
     return VersionDto(
       firebaseId: documentId,
+      firebaseCipherId: cipherDocumentId,
       versionName: map['versionName'] as String? ?? '',
       transposedKey: map['transposedKey'] as String? ?? '',
       songStructure:
@@ -61,6 +65,7 @@ class VersionDto {
   Version toDomain() {
     return Version(
       firebaseId: firebaseId,
+      firebaseCipherId: firebaseCipherId,
       versionName: versionName,
       transposedKey: transposedKey,
       songStructure: songStructure.split(',').map((s) => s.trim()).toList(),

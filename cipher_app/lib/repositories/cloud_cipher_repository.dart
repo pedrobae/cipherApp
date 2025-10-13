@@ -68,23 +68,20 @@ class CloudCipherRepository {
   }
 
   /// Creates a new version for an existing public cipher (admin only)
-  Future<String> createVersionForCipher(
-    String cipherId,
-    VersionDto version,
-  ) async {
+  Future<String> createVersionForCipher(Version version) async {
     await _requireAdmin();
 
     final versionId = await _firestoreService.createSubCollectionDocument(
       parentCollectionPath: 'publicCiphers',
-      parentDocumentId: cipherId,
+      parentDocumentId: version.firebaseCipherId!,
       subCollectionPath: 'versions',
-      data: version.toFirestore(),
+      data: version.toDto().toFirestore(),
     );
 
     FirebaseAnalytics.instance.logEvent(
       name: 'cipher_version_created',
       parameters: {
-        'cipher_id': cipherId,
+        'cipher_id': version.firebaseCipherId!,
         'version_id': versionId,
         'timestamp': DateTime.now().millisecondsSinceEpoch,
       },
@@ -92,6 +89,7 @@ class CloudCipherRepository {
     return versionId;
   }
 
+  /// Create public cipher directly from JSON (admin only)(for bulk import)
   Future<String> createPublicCipherFromJson(Map<String, dynamic> json) async {
     final versions = json.remove('versions');
     final cipherId = await _firestoreService.createDocument(
@@ -183,6 +181,7 @@ class CloudCipherRepository {
           (version) => VersionDto.fromFirestore(
             version.data() as Map<String, dynamic>,
             version.id,
+            cipherId,
           ),
         )
         .toList();
@@ -317,22 +316,19 @@ class CloudCipherRepository {
 
   // ===== UPDATE =====
   /// Update an existing public cipher (admin only)
-  Future<void> updatePublicCipher(
-    String cipherId,
-    Map<String, dynamic> data,
-  ) async {
+  Future<void> updatePublicCipher(Cipher cipher) async {
     await _requireAdmin();
 
     await _firestoreService.updateDocument(
       collectionPath: 'publicCiphers',
-      documentId: cipherId,
-      data: data,
+      documentId: cipher.firebaseId!,
+      data: cipher.toDto().toFirestore(),
     );
 
     FirebaseAnalytics.instance.logEvent(
       name: 'cipher_updated',
       parameters: {
-        'cipher_id': cipherId,
+        'cipher_id': cipher.firebaseId!,
         'user_id': _authService.currentUser!.uid,
         'timestamp': DateTime.now().millisecondsSinceEpoch,
       },
@@ -340,26 +336,22 @@ class CloudCipherRepository {
   }
 
   /// Update an existing version of a public cipher (admin only)
-  Future<void> updateVersionOfCipher(
-    String cipherId,
-    String versionId,
-    Map<String, dynamic> data,
-  ) async {
+  Future<void> updateVersionOfCipher(Version version) async {
     await _requireAdmin();
 
     await _firestoreService.updateSubCollectionDocument(
       parentCollectionPath: 'publicCiphers',
-      parentDocumentId: cipherId,
+      parentDocumentId: version.firebaseCipherId!,
       subCollectionPath: 'versions',
-      documentId: versionId,
-      data: data,
+      documentId: version.firebaseId!,
+      data: version.toDto().toFirestore(),
     );
 
     FirebaseAnalytics.instance.logEvent(
       name: 'cipher_version_updated',
       parameters: {
-        'cipher_id': cipherId,
-        'version_id': versionId,
+        'cipher_id': version.firebaseCipherId!,
+        'version_id': version.firebaseId!,
         'user_id': _authService.currentUser!.uid,
         'timestamp': DateTime.now().millisecondsSinceEpoch,
       },

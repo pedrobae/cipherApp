@@ -69,6 +69,7 @@ class _CreatePlaylistDialogState extends State<CreatePlaylistDialog> {
           ? null
           : _descriptionController.text.trim(),
       createdBy: context.read<AuthProvider>().id ?? 'anonymous',
+      isPublic: false,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
       collaborators: const [],

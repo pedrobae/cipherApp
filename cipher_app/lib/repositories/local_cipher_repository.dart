@@ -156,7 +156,7 @@ class LocalCipherRepository {
     return getCipherById(result[0]['cipher_id'] as int);
   }
 
-  Future<List<Version>> getVersionsByIds(List<int> versionIds) async {
+  Future<List<Version>> getVersionsByIds(List<int?> versionIds) async {
     if (versionIds.isEmpty) return [];
 
     final db = await _databaseHelper.database;

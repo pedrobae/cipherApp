@@ -189,12 +189,12 @@ class PlaylistNavigationDrawer extends StatelessWidget {
   ) async {
     switch (item.type) {
       case 'cipher_version':
-        final version = versionProvider.getCachedVersion(item.contentId);
+        final version = versionProvider.getCachedVersion(item.contentId!);
         final cipher = cipherProvider.getCachedCipher(version!.cipherId);
         return cipher!.title;
 
       case 'text_section':
-        await textSectionProvider.loadTextSection(item.contentId);
+        await textSectionProvider.loadTextSection(item.contentId!);
         final textSection = textSectionProvider.textSections[item.contentId];
         if (textSection != null && textSection.title.isNotEmpty) {
           return textSection.title;

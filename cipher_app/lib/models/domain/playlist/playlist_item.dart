@@ -1,15 +1,19 @@
 /// Represents a content item in a playlist (cipher version or text section)
 class PlaylistItem {
   final String type; // 'cipher_version' or 'text_section'
-  final int id;
-  final int contentId;
+  final int? id;
+  final String? firebaseId;
+  final int? contentId;
+  final String? firebaseContentId;
   int position;
 
   PlaylistItem({
-    required this.id,
+    this.id,
     required this.type,
-    required this.contentId,
+    this.firebaseId,
+    this.contentId,
     required this.position,
+    this.firebaseContentId,
   });
 
   // Content type constants

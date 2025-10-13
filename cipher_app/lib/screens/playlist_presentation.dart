@@ -238,7 +238,7 @@ class _PlaylistPresentationScreenState
     switch (item.type) {
       case 'cipher_version':
         return PresentationCipherSection(
-          versionId: item.contentId,
+          versionId: item.contentId!,
           onSectionKeysCreated: (versionId, sectionKeys) {
             setState(() {
               if (!_itemKeys.containsKey(itemIndex)) {
@@ -249,7 +249,7 @@ class _PlaylistPresentationScreenState
           },
         );
       case 'text_section':
-        return PresentationTextSection(textSectionId: item.contentId);
+        return PresentationTextSection(textSectionId: item.contentId!);
       default:
         return Card(
           child: Padding(

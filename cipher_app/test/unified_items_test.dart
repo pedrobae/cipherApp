@@ -162,7 +162,7 @@ void main() {
       final reorderedItems = [
         PlaylistItem.cipherVersion(cipherMapId, 0, versionId), // Cipher first
         PlaylistItem.textSection(
-          initialItems[0].contentId,
+          initialItems[0].contentId!,
           1,
           textSectionId,
         ), // Text second

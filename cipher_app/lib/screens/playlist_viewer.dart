@@ -232,17 +232,17 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
     switch (item.type) {
       case 'cipher_version':
         return CipherVersionCard(
-          cipherVersionId: item.contentId,
+          cipherVersionId: item.contentId!,
           onDelete: () =>
-              _handleDeleteVersion(context, item.id, widget.playlistId),
+              _handleDeleteVersion(context, item.id!, widget.playlistId),
           onCopy: () => playlistProvider.duplicateVersion(
             widget.playlistId,
-            item.contentId,
+            item.contentId!,
           ),
         );
       case 'text_section':
         return TextSectionCard(
-          textSectionId: item.contentId,
+          textSectionId: item.contentId!,
           playlistId: widget.playlistId,
         );
       default:

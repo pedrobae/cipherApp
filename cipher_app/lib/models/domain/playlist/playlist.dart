@@ -6,8 +6,10 @@ import 'playlist_item.dart';
 class Playlist {
   final int id;
   final String name;
+  final String? firebaseId;
   final String? description;
   final String createdBy;
+  final bool? isPublic;
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final List<String> collaborators;
@@ -15,9 +17,11 @@ class Playlist {
 
   const Playlist({
     required this.id,
+    this.firebaseId,
     required this.name,
     this.description,
     required this.createdBy,
+    required this.isPublic,
     this.createdAt,
     this.updatedAt,
     this.collaborators = const [],
@@ -32,6 +36,7 @@ class Playlist {
       createdBy: json['created_by'] as String? ?? '',
       createdAt: DatetimeHelper.parseDateTime(json['created_at']),
       updatedAt: DatetimeHelper.parseDateTime(json['updated_at']),
+      isPublic: json['is_public'] as bool? ?? false,
       collaborators: json['collaborators'] != null
           ? List<String>.from(json['collaborators'])
           : const [],
@@ -51,6 +56,7 @@ class Playlist {
       'created_by': createdBy,
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
+      'is_public': isPublic,
       'collaborators': collaborators,
       'items': items.map((item) => item.toJson()).toList(),
     };
@@ -66,6 +72,7 @@ class Playlist {
       ), // Assuming createdBy is user ID as string
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
+      'is_public': isPublic,
     };
 
     // Only include id if it's not 0 (for updates)
@@ -85,6 +92,7 @@ class Playlist {
     DateTime? updatedAt,
     List<String>? collaborators,
     List<PlaylistItem>? items,
+    bool? isPublic,
   }) {
     return Playlist(
       id: id ?? this.id,
@@ -95,6 +103,7 @@ class Playlist {
       updatedAt: updatedAt ?? this.updatedAt,
       collaborators: collaborators ?? this.collaborators,
       items: items ?? this.items,
+      isPublic: isPublic ?? this.isPublic,
     );
   }
 
@@ -142,7 +151,7 @@ class Playlist {
       items.where((item) => item.isTextSection).toList();
 
   // Helper to get text section IDs from items
-  List<int> get textSectionIdsFromItems => items
+  List<int?> get textSectionIdsFromItems => items
       .where((item) => item.isTextSection)
       .map((item) => item.contentId)
       .toList();

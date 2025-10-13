@@ -176,7 +176,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                   final item = playlist.items[index];
                   return CustomReorderableDelayed(
                     delay: const Duration(milliseconds: 200),
-                    key: Key('${item.type}_${item.contentId}'),
+                    key: Key('${item.type}_${item.id}'),
                     index: index,
                     child: _buildItemWidget(context, item, playlistProvider),
                   );
@@ -297,11 +297,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
     }
   }
 
-  void _handleDeleteVersion(
-    BuildContext context,
-    int playlistId,
-    int versionId,
-  ) {
+  void _handleDeleteVersion(BuildContext context, int itemId, int playlistId) {
     // Show confirmation dialog first
     showDialog(
       context: context,
@@ -319,10 +315,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
 
               // Update provider for persistence
               final playlistProvider = context.read<PlaylistProvider>();
-              playlistProvider.removeCipherMapFromPlaylist(
-                playlistId,
-                versionId,
-              );
+              playlistProvider.removeCipherMapFromPlaylist(itemId, playlistId);
             },
             child: const Text('Remover'),
           ),

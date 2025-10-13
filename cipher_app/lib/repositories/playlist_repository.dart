@@ -181,18 +181,15 @@ class PlaylistRepository {
     });
   }
 
-  Future<void> removeVersionFromPlaylist(
-    int playlistId,
-    int cipherMapId,
-  ) async {
+  Future<void> removeVersionFromPlaylist(int itemId, int playlistId) async {
     final db = await _databaseHelper.database;
 
     await db.transaction((txn) async {
       // Remove cipher map relationship
       await txn.delete(
         'playlist_version',
-        where: 'playlist_id = ? AND version_id = ?',
-        whereArgs: [playlistId, cipherMapId],
+        where: 'id = ?',
+        whereArgs: [itemId],
       );
 
       // Update playlist timestamp

@@ -172,14 +172,8 @@ class PlaylistProvider extends ChangeNotifier {
   }
 
   // Remove a Cipher Map from a Playlist
-  Future<void> removeCipherMapFromPlaylist(
-    int playlistId,
-    int cipherMapId,
-  ) async {
-    await _playlistRepository.removeVersionFromPlaylist(
-      playlistId,
-      cipherMapId,
-    );
+  Future<void> removeCipherMapFromPlaylist(int itemId, int playlistId) async {
+    await _playlistRepository.removeVersionFromPlaylist(itemId, playlistId);
     await _loadPlaylist(playlistId);
   }
 

@@ -8,18 +8,23 @@ class CloudCipherCache {
 
   Future<void> saveCloudCiphers(List<CipherDto> ciphers) async {
     final prefs = await SharedPreferences.getInstance();
-    final jsonList = ciphers.map((c) => c.toFirestore()).toList();
+    final jsonList = ciphers.map((c) => c.toPersist()).toList();
     await prefs.setString(_cacheKey, json.encode(jsonList));
   }
 
   Future<List<CipherDto>> loadCloudCiphers() async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonString = prefs.getString(_cacheKey);
-    if (jsonString == null) return [];
-    final List<dynamic> jsonList = json.decode(jsonString);
-    return jsonList
-        .map((j) => CipherDto.fromFirestore(j, j['firebaseId'] as String))
-        .toList();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final jsonString = prefs.getString(_cacheKey);
+      if (jsonString == null) return [];
+      final List<dynamic> jsonList = json.decode(jsonString);
+      return jsonList
+          .map((j) => CipherDto.fromFirestore(j, j['firebaseId'] as String))
+          .toList();
+    } catch (e) {
+      // If there's an error (e.g., corrupted data), return empty list
+      return [];
+    }
   }
 
   Future<void> saveLastCloudLoad(DateTime time) async {

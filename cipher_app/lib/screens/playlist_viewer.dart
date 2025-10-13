@@ -178,7 +178,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                     delay: const Duration(milliseconds: 200),
                     key: Key('${item.type}_${item.contentId}'),
                     index: index,
-                    child: _buildItemWidget(context, item),
+                    child: _buildItemWidget(context, item, playlistProvider),
                   );
                 },
               ),
@@ -224,14 +224,21 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
     );
   }
 
-  Widget _buildItemWidget(BuildContext context, PlaylistItem item) {
+  Widget _buildItemWidget(
+    BuildContext context,
+    PlaylistItem item,
+    PlaylistProvider playlistProvider,
+  ) {
     switch (item.type) {
       case 'cipher_version':
         return CipherVersionCard(
           cipherVersionId: item.contentId,
           onDelete: () =>
               _handleDeleteVersion(context, widget.playlistId, item.contentId),
-          onCopy: () => _handleCopyVersion(context, item.contentId),
+          onCopy: () => playlistProvider.duplicateVersion(
+            widget.playlistId,
+            item.contentId,
+          ),
         );
       case 'text_section':
         return TextSectionCard(
@@ -320,16 +327,6 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
             child: const Text('Remover'),
           ),
         ],
-      ),
-    );
-  }
-
-  void _handleCopyVersion(BuildContext context, int versionId) {
-    // Show confirmation snackbar
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('ID da versão copiado para a área de transferência'),
-        duration: Duration(seconds: 2),
       ),
     );
   }

@@ -218,7 +218,7 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
                               children: [
                                 Icon(Icons.copy),
                                 SizedBox(width: 8),
-                                Text('Copiar'),
+                                Text('Duplicar'),
                               ],
                             ),
                           ),

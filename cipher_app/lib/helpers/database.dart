@@ -311,7 +311,7 @@ class DatabaseHelper {
           FOREIGN KEY (version_id) REFERENCES version (id) ON DELETE CASCADE,
           FOREIGN KEY (playlist_id) REFERENCES playlist (id) ON DELETE CASCADE,
           FOREIGN KEY (includer_id) REFERENCES user (id) ON DELETE CASCADE,
-          UNIQUE(user_id, playlist_id)
+          UNIQUE(position, playlist_id)
         )
       ''');
 

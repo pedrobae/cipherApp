@@ -100,7 +100,7 @@ class CipherProvider extends ChangeNotifier {
   Future<void> loadCloudCiphers({bool forceReload = false}) async {
     final now = DateTime.now();
     if (_lastCloudLoad != null &&
-        now.difference(_lastCloudLoad!).inHours < 24 &&
+        now.difference(_lastCloudLoad!).inDays < 7 &&
         _cloudCiphers.isNotEmpty &&
         !forceReload) {
       return;

@@ -65,6 +65,20 @@ class CipherDto {
     };
   }
 
+  Map<String, dynamic> toPersist() {
+    return {
+      'firebaseId': firebaseId,
+      'title': title,
+      'author': author,
+      'musicKey': musicKey,
+      'tempo': tempo,
+      'language': language,
+      'tags': tags,
+      'updatedAt': updatedAt?.toIso8601String(),
+      'downloadCount': downloadCount,
+    };
+  }
+
   Cipher toDomain(List<Version> versions) {
     return Cipher(
       id: null,

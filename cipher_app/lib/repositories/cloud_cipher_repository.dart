@@ -149,7 +149,10 @@ class CloudCipherRepository {
 
     List<CipherDto> ciphers =
         ((snapshot!.data() as Map<String, dynamic>)['ciphers'] as List)
-            .map<CipherDto>((map) => CipherDto.fromFirestore(map))
+            .map<CipherDto>(
+              (map) =>
+                  CipherDto.fromFirestore(map, map['firebaseId'] as String),
+            )
             .toList();
 
     return ciphers;
@@ -177,8 +180,10 @@ class CloudCipherRepository {
 
     return snapshot
         .map(
-          (version) =>
-              VersionDto.fromFirestore(version.data() as Map<String, dynamic>),
+          (version) => VersionDto.fromFirestore(
+            version.data() as Map<String, dynamic>,
+            version.id,
+          ),
         )
         .toList();
   }
@@ -206,8 +211,7 @@ class CloudCipherRepository {
 
       return results.map((doc) {
         final map = doc.data() as Map<String, dynamic>;
-        map['firebaseId'] = doc.id;
-        return CipherDto.fromFirestore(map);
+        return CipherDto.fromFirestore(map, doc.id);
       }).toList();
     } catch (e) {
       if (kDebugMode) {
@@ -233,8 +237,10 @@ class CloudCipherRepository {
       results.addAll(
         titleResults
             .map(
-              (doc) =>
-                  CipherDto.fromFirestore(doc.data() as Map<String, dynamic>),
+              (doc) => CipherDto.fromFirestore(
+                doc.data() as Map<String, dynamic>,
+                doc.id,
+              ),
             )
             .toList(),
       );
@@ -257,8 +263,10 @@ class CloudCipherRepository {
         authorResults
             .where((doc) => !existingIds.contains(doc.id))
             .map(
-              (doc) =>
-                  CipherDto.fromFirestore(doc.data() as Map<String, dynamic>),
+              (doc) => CipherDto.fromFirestore(
+                doc.data() as Map<String, dynamic>,
+                doc.id,
+              ),
             )
             .toList(),
       );
@@ -279,8 +287,10 @@ class CloudCipherRepository {
           tagResults
               .where((doc) => !allExistingIds.contains(doc.id))
               .map(
-                (doc) =>
-                    CipherDto.fromFirestore(doc.data() as Map<String, dynamic>),
+                (doc) => CipherDto.fromFirestore(
+                  doc.data() as Map<String, dynamic>,
+                  doc.id,
+                ),
               )
               .toList(),
         );

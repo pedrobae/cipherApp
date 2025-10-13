@@ -3,6 +3,7 @@ import 'package:cipher_app/models/dtos/version_dto.dart';
 
 class Version {
   final int? id;
+  final String? firebaseId;
   final int cipherId;
   final String versionName;
   final String? transposedKey;
@@ -12,6 +13,7 @@ class Version {
 
   const Version({
     this.id,
+    this.firebaseId,
     required this.cipherId,
     this.versionName = 'Original',
     this.transposedKey,
@@ -29,6 +31,7 @@ class Version {
 
     return Version(
       id: json['id'] as int?,
+      firebaseId: json['firebase_id'] as String?,
       cipherId: json['cipher_id'] as int,
       songStructure: json['song_structure'] as List<String>,
       transposedKey: json['transposed_key'] as String?,
@@ -54,6 +57,7 @@ class Version {
 
     return Version(
       id: row['id'] as int?,
+      firebaseId: row['firebase_id'] as String?,
       cipherId: row['cipher_id'] as int,
       songStructure: songStructure,
       transposedKey: row['transposed_key'] as String?,
@@ -69,6 +73,7 @@ class Version {
   Map<String, dynamic> toSqLite() {
     return {
       'id': id,
+      'firebase_id': firebaseId,
       'cipher_id': cipherId,
       'song_structure': songStructure.join(','),
       'transposed_key': transposedKey,
@@ -83,7 +88,7 @@ class Version {
 
   VersionDto toDto() {
     return VersionDto(
-      firebaseId: null,
+      firebaseId: firebaseId,
       versionName: versionName,
       transposedKey: transposedKey,
       songStructure: songStructure.join(','),
@@ -107,6 +112,7 @@ class Version {
 
   Version copyWith({
     int? id,
+    String? firebaseId,
     int? cipherId,
     List<String>? songStructure,
     String? transposedKey,
@@ -116,6 +122,7 @@ class Version {
   }) {
     return Version(
       id: id ?? this.id,
+      firebaseId: firebaseId ?? this.firebaseId,
       cipherId: cipherId ?? this.cipherId,
       songStructure: songStructure ?? this.songStructure,
       transposedKey: transposedKey ?? this.transposedKey,

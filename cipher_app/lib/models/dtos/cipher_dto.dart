@@ -25,9 +25,9 @@ class CipherDto {
     this.downloadCount,
   });
 
-  factory CipherDto.fromFirestore(Map<String, dynamic> map) {
+  factory CipherDto.fromFirestore(Map<String, dynamic> map, String documentId) {
     return CipherDto(
-      firebaseId: map['firebaseId'] as String?,
+      firebaseId: documentId,
       title: map['title'] as String? ?? '',
       author: map['author'] as String? ?? '',
       musicKey: map['musicKey'] as String? ?? '',
@@ -48,7 +48,6 @@ class CipherDto {
 
   Map<String, dynamic> toFirestore() {
     return {
-      'cipherId': firebaseId,
       'title': title,
       'titleLower': title.toLowerCase(),
       'author': author,
@@ -62,7 +61,6 @@ class CipherDto {
         ...tags.map((t) => t.toLowerCase()),
       ],
       'tags': tags,
-      'updatedAt': updatedAt?.toIso8601String(),
       'downloadCount': downloadCount,
     };
   }
@@ -70,6 +68,7 @@ class CipherDto {
   Cipher toDomain(List<Version> versions) {
     return Cipher(
       id: null,
+      firebaseId: firebaseId,
       title: title,
       author: author,
       musicKey: musicKey,

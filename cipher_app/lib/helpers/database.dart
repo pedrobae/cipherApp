@@ -24,9 +24,9 @@ class DatabaseHelper {
 
       final db = await openDatabase(
         path,
-        version:
-            3, // Updated version for table renaming: cipher_map -> version, map_content -> section
+        version: 4, // Updated version to add firebase_id column
         onCreate: _onCreate, // This will seed the database
+        onUpgrade: _onUpgrade, // Handle migrations
       );
 
       // Only seed if database existed but is empty (edge case)
@@ -66,6 +66,7 @@ class DatabaseHelper {
         tempo TEXT,
         music_key TEXT,
         language TEXT DEFAULT 'por',
+        firebase_id TEXT,
         is_deleted BOOLEAN DEFAULT 0,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -251,6 +252,10 @@ class DatabaseHelper {
     // For user lookups
     await db.execute('CREATE INDEX idx_user_google_id ON user(google_id)');
     await db.execute('CREATE INDEX idx_user_mail ON user(mail)');
+    // For cipher lookups
+    await db.execute(
+      'CREATE UNIQUE INDEX idx_cipher_firebase_id ON cipher(firebase_id)',
+    );
     // For content queries
     await db.execute(
       'CREATE INDEX idx_section_content_type ON section(content_type)',
@@ -258,6 +263,24 @@ class DatabaseHelper {
 
     // Seed the database with initial data
     await seedDatabase(db);
+  }
+
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    // Handle migrations between database versions
+
+    if (oldVersion < 4) {
+      // Migration from version 3 to 4: Add firebase_id column to cipher table
+      await db.execute('ALTER TABLE cipher ADD COLUMN firebase_id TEXT');
+      await db.execute(
+        'CREATE UNIQUE INDEX idx_cipher_firebase_id ON cipher(firebase_id)',
+      );
+    }
+
+    // Future migrations can be added here with additional if statements
+    // Example:
+    // if (oldVersion < 5) {
+    //   // Migration logic for version 5
+    // }
   }
 
   Future<void> close() async {

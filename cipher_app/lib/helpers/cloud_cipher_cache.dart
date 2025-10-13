@@ -17,7 +17,9 @@ class CloudCipherCache {
     final jsonString = prefs.getString(_cacheKey);
     if (jsonString == null) return [];
     final List<dynamic> jsonList = json.decode(jsonString);
-    return jsonList.map((j) => CipherDto.fromFirestore(j)).toList();
+    return jsonList
+        .map((j) => CipherDto.fromFirestore(j, j['firebaseId'] as String))
+        .toList();
   }
 
   Future<void> saveLastCloudLoad(DateTime time) async {

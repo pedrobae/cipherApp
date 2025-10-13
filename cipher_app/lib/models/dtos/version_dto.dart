@@ -19,9 +19,12 @@ class VersionDto {
     this.sections,
   });
 
-  factory VersionDto.fromFirestore(Map<String, dynamic> map) {
+  factory VersionDto.fromFirestore(
+    Map<String, dynamic> map,
+    String documentId,
+  ) {
     return VersionDto(
-      firebaseId: map['versionId'] as String? ?? '',
+      firebaseId: documentId,
       versionName: map['versionName'] as String? ?? '',
       transposedKey: map['transposedKey'] as String? ?? '',
       songStructure:
@@ -40,7 +43,6 @@ class VersionDto {
 
   Map<String, dynamic> toFirestore() {
     return {
-      'firebaseId': firebaseId,
       'versionName': versionName,
       'transposedKey': transposedKey,
       'songStructure': songStructure,
@@ -58,6 +60,7 @@ class VersionDto {
 
   Version toDomain() {
     return Version(
+      firebaseId: firebaseId,
       versionName: versionName,
       transposedKey: transposedKey,
       songStructure: songStructure.split(',').map((s) => s.trim()).toList(),

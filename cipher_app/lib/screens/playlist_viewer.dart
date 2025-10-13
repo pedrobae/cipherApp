@@ -231,6 +231,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
           cipherVersionId: item.contentId,
           onDelete: () =>
               _handleDeleteVersion(context, widget.playlistId, item.contentId),
+          onCopy: () => _handleCopyVersion(context, item.contentId),
         );
       case 'text_section':
         return TextSectionCard(
@@ -319,6 +320,16 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
             child: const Text('Remover'),
           ),
         ],
+      ),
+    );
+  }
+
+  void _handleCopyVersion(BuildContext context, int versionId) {
+    // Show confirmation snackbar
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('ID da versão copiado para a área de transferência'),
+        duration: Duration(seconds: 2),
       ),
     );
   }

@@ -1,0 +1,175 @@
+// Cipher App Database Schema for dbdiagram.io
+// Generated from database.dart version 5
+
+Table tag {
+  id integer [primary key, increment]
+  title text [not null]
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+Table cipher {
+  id integer [primary key, increment]
+  title text [not null]
+  author text
+  tempo text
+  music_key text
+  language text [default: 'por']
+  firebase_id text [unique]
+  is_deleted boolean [default: 0]
+  updated_at timestamp [default: `CURRENT_TIMESTAMP`]
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+  
+  indexes {
+    firebase_id [unique, name: 'idx_cipher_firebase_id']
+  }
+}
+
+Table cipher_tags {
+  id integer [primary key, increment]
+  tag_id integer [not null, ref: > tag.id]
+  cipher_id integer [not null, ref: > cipher.id]
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+  
+  indexes {
+    (tag_id, cipher_id) [unique]
+    tag_id [name: 'idx_cipher_tags_tag_id']
+    cipher_id [name: 'idx_cipher_tags_cipher_id']
+  }
+}
+
+Table version {
+  id integer [primary key, increment]
+  cipher_id integer [not null, ref: > cipher.id]
+  song_structure text [not null]
+  transposed_key text
+  version_name text
+  firebase_cipher_id text
+  firebase_id text [unique]
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+  
+  indexes {
+    cipher_id [name: 'idx_version_cipher_id']
+    firebase_id [unique, name: 'idx_version_firebase_id']
+    firebase_cipher_id [name: 'idx_version_firebase_cipher_id']
+  }
+}
+
+Table section {
+  id integer [primary key, increment]
+  version_id integer [not null, ref: > version.id]
+  content_type text [not null]
+  content_code varchar [not null]
+  content_text text [not null]
+  content_color text
+  
+  indexes {
+    version_id [name: 'idx_section_version_id']
+    content_type [name: 'idx_section_content_type']
+  }
+}
+
+Table user {
+  id integer [primary key, increment]
+  username text [unique, not null]
+  mail text [unique, not null]
+  profile_photo text
+  google_id text [unique]
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+  updated_at timestamp [default: `CURRENT_TIMESTAMP`]
+  is_active boolean [default: 1]
+  
+  indexes {
+    google_id [name: 'idx_user_google_id']
+    mail [name: 'idx_user_mail']
+  }
+}
+
+Table playlist {
+  id integer [primary key, increment]
+  name text [not null]
+  description text
+  author_id integer [not null, ref: > user.id]
+  is_public boolean [default: 0]
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+  updated_at timestamp [default: `CURRENT_TIMESTAMP`]
+  
+  indexes {
+    author_id [name: 'idx_playlist_author_id']
+  }
+}
+
+Table playlist_version {
+  id integer [primary key, increment]
+  version_id integer [not null, ref: > version.id]
+  playlist_id integer [not null, ref: > playlist.id]
+  includer_id integer [not null, ref: > user.id]
+  position integer [not null]
+  included_at timestamp [default: `CURRENT_TIMESTAMP`]
+  
+  indexes {
+    playlist_id [name: 'idx_playlist_version_playlist_id']
+    version_id [name: 'idx_playlist_version_version_id']
+  }
+  
+  Note: 'Allows multiple copies of same version (no unique constraint on playlist_id, position)'
+}
+
+Table user_playlist {
+  id integer [primary key, increment]
+  user_id integer [not null, ref: > user.id]
+  playlist_id integer [not null, ref: > playlist.id]
+  role text [not null, default: 'collaborator']
+  added_at timestamp [default: `CURRENT_TIMESTAMP`]
+  added_by integer [not null, ref: > user.id]
+  
+  indexes {
+    (user_id, playlist_id) [unique]
+    user_id [name: 'idx_user_playlist_user_id']
+    playlist_id [name: 'idx_user_playlist_playlist_id']
+  }
+}
+
+Table playlist_text {
+  id integer [primary key, increment]
+  playlist_id integer [not null, ref: > playlist.id]
+  title text [not null]
+  content text [not null]
+  position integer [not null, default: 0]
+  added_at timestamp [default: `CURRENT_TIMESTAMP`]
+  added_by integer [not null, ref: > user.id]
+}
+
+Table app_info {
+  id integer [primary key, increment]
+  remote_id text [unique]
+  title text [not null]
+  description text
+  content text
+  type text [not null]
+  priority integer [default: 0]
+  published_at timestamp
+  expires_at timestamp
+  source_url text
+  thumbnail_path text
+  language text [default: 'por']
+  is_dismissible boolean [default: 1]
+  last_fetched_at timestamp [default: `CURRENT_TIMESTAMP`]
+  cache_expires_at timestamp
+  is_stale boolean [default: 0]
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+  
+  indexes {
+    type [name: 'idx_app_info_type']
+    published_at [name: 'idx_app_info_published_at']
+    expires_at [name: 'idx_app_info_expires_at']
+    priority [name: 'idx_app_info_priority']
+  }
+}
+
+// Relationships Notes:
+// - cipher 1:many version (different arrangements of same song)
+// - version 1:many section (content blocks like verses/chorus)
+// - cipher many:many tag (via cipher_tags junction table)
+// - playlist many:many version (via playlist_version, allows duplicates)
+// - user many:many playlist (via user_playlist for collaborators)
+// - Firebase integration: cipher.firebase_id and version.firebase_id for cloud sync

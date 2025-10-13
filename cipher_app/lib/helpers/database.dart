@@ -24,7 +24,8 @@ class DatabaseHelper {
 
       final db = await openDatabase(
         path,
-        version: 4, // Updated version to add firebase_id column
+        version:
+            5, // Updated version to remove playlist position uniqueness constraint
         onCreate: _onCreate, // This will seed the database
         onUpgrade: _onUpgrade, // Handle migrations
       );
@@ -94,6 +95,8 @@ class DatabaseHelper {
         song_structure TEXT NOT NULL,
         transposed_key TEXT,
         version_name TEXT,
+        firebase_cipher_id TEXT,
+        firebase_id TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (cipher_id) REFERENCES cipher (id) ON DELETE CASCADE
       )
@@ -152,7 +155,6 @@ class DatabaseHelper {
         FOREIGN KEY (version_id) REFERENCES version (id) ON DELETE CASCADE,
         FOREIGN KEY (playlist_id) REFERENCES playlist (id) ON DELETE CASCADE,
         FOREIGN KEY (includer_id) REFERENCES user (id) ON DELETE CASCADE,
-        UNIQUE(playlist_id, version_id),
         UNIQUE(playlist_id, position)
       )
     ''');
@@ -293,11 +295,49 @@ class DatabaseHelper {
       );
     }
 
-    // Future migrations can be added here with additional if statements
-    // Example:
-    // if (oldVersion < 5) {
-    //   // Migration logic for version 5
-    // }
+    if (oldVersion < 5) {
+      // Migration from version 4 to 5: Remove unique constraint on playlist_version position
+      // SQLite doesn't support DROP CONSTRAINT, so we need to recreate the table
+
+      // 1. Create new table without the constraint
+      await db.execute('''
+        CREATE TABLE playlist_version_new (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          version_id INTEGER NOT NULL,
+          playlist_id INTEGER NOT NULL,
+          includer_id INTEGER NOT NULL,
+          position INTEGER NOT NULL,
+          included_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (version_id) REFERENCES version (id) ON DELETE CASCADE,
+          FOREIGN KEY (playlist_id) REFERENCES playlist (id) ON DELETE CASCADE,
+          FOREIGN KEY (includer_id) REFERENCES user (id) ON DELETE CASCADE,
+          UNIQUE(user_id, playlist_id)
+        )
+      ''');
+
+      // 2. Copy data from old table to new table
+      await db.execute('''
+        INSERT INTO playlist_version_new (id, version_id, playlist_id, includer_id, position, included_at)
+        SELECT id, version_id, playlist_id, includer_id, position, included_at
+        FROM playlist_version
+      ''');
+
+      // 3. Drop old table
+      await db.execute('DROP TABLE playlist_version');
+
+      // 4. Rename new table to original name
+      await db.execute(
+        'ALTER TABLE playlist_version_new RENAME TO playlist_version',
+      );
+
+      // 5. Recreate indexes
+      await db.execute(
+        'CREATE INDEX idx_playlist_version_playlist_id ON playlist_version(playlist_id)',
+      );
+      await db.execute(
+        'CREATE INDEX idx_playlist_version_version_id ON playlist_version(version_id)',
+      );
+    }
   }
 
   Future<void> close() async {

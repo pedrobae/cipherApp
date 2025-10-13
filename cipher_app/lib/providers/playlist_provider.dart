@@ -105,9 +105,9 @@ class PlaylistProvider extends ChangeNotifier {
     await _loadPlaylist(id); // Reload just this playlist
   }
 
-  // Update a Playlist with a new Cipher Map
-  Future<void> addCipherMap(int playlistId, int cipherMapId) async {
-    await _playlistRepository.addVersionToPlaylist(playlistId, cipherMapId);
+  // Update a Playlist with a version
+  Future<void> addVersion(int playlistId, int version) async {
+    await _playlistRepository.addVersionToPlaylist(playlistId, version);
     await _loadPlaylist(playlistId);
   }
 
@@ -144,6 +144,45 @@ class PlaylistProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> duplicateVersion(int playlistId, int versionId) async {
+    await _playlistRepository.addVersionToPlaylist(playlistId, versionId);
+    await _loadPlaylist(playlistId);
+  }
+
+  // ===== DELETE =====
+  // Delete a playlist
+  Future<void> deletePlaylist(int playlistId) async {
+    if (_isSaving) return;
+
+    _isDeleting = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _playlistRepository.deletePlaylist(playlistId);
+      int i = _playlists.indexWhere((p) => p.id == playlistId);
+      _playlists.removeAt(i);
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isDeleting = false;
+      notifyListeners();
+    }
+  }
+
+  // Remove a Cipher Map from a Playlist
+  Future<void> removeCipherMapFromPlaylist(
+    int playlistId,
+    int cipherMapId,
+  ) async {
+    await _playlistRepository.removeVersionFromPlaylist(
+      playlistId,
+      cipherMapId,
+    );
+    await _loadPlaylist(playlistId);
+  }
+
+  // ===== UTILITY =====
   void _updateItemOrdersOptimistically(
     Playlist playlist,
     int oldIndex,
@@ -198,40 +237,6 @@ class PlaylistProvider extends ChangeNotifier {
     playlist.items.sort((a, b) => a.order.compareTo(b.order));
   }
 
-  // ===== DELETE =====
-  // Delete a playlist
-  Future<void> deletePlaylist(int playlistId) async {
-    if (_isSaving) return;
-
-    _isDeleting = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      await _playlistRepository.deletePlaylist(playlistId);
-      int i = _playlists.indexWhere((p) => p.id == playlistId);
-      _playlists.removeAt(i);
-    } catch (e) {
-      _error = e.toString();
-    } finally {
-      _isDeleting = false;
-      notifyListeners();
-    }
-  }
-
-  // Remove a Cipher Map from a Playlist
-  Future<void> removeCipherMapFromPlaylist(
-    int playlistId,
-    int cipherMapId,
-  ) async {
-    await _playlistRepository.removeVersionFromPlaylist(
-      playlistId,
-      cipherMapId,
-    );
-    await _loadPlaylist(playlistId);
-  }
-
-  // ===== UTILITY =====
   // Clear cached data and reset state
   void clearCache() {
     _playlists.clear();

@@ -7,12 +7,14 @@ import 'package:cipher_app/widgets/cipher/editor/custom_reorderable_delayed.dart
 
 class CipherVersionCard extends StatefulWidget {
   final int cipherVersionId;
-  final VoidCallback? onDelete;
+  final VoidCallback onDelete;
+  final VoidCallback onCopy;
 
   const CipherVersionCard({
     super.key,
     required this.cipherVersionId,
-    this.onDelete,
+    required this.onDelete,
+    required this.onCopy,
   });
 
   @override
@@ -194,9 +196,9 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
                         onSelected: (value) {
                           switch (value) {
                             case 'delete':
-                              widget.onDelete?.call();
+                              widget.onDelete.call();
                             case 'copy':
-                            //  TODO copy cipher version in playlist, check the DB, repo and provider
+                              widget.onCopy.call();
                           }
                         },
                         itemBuilder: (context) => [

@@ -2,7 +2,7 @@ import 'package:cipher_app/models/domain/playlist/playlist_item.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:async';
 import '../models/domain/playlist/playlist.dart';
-import '../repositories/playlist_repository.dart';
+import '../repositories/playlist_repository_local.dart';
 
 class PlaylistProvider extends ChangeNotifier {
   final PlaylistRepository _playlistRepository = PlaylistRepository();

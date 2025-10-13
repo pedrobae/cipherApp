@@ -1,7 +1,7 @@
 import 'package:cipher_app/repositories/collaborator_repository.dart';
 import 'package:flutter/material.dart';
 import '../models/domain/collaborator.dart';
-import '../repositories/playlist_repository.dart';
+import '../repositories/playlist_repository_local.dart';
 
 class CollaboratorProvider extends ChangeNotifier {
   final CollaboratorRepository _collaboratorRepository =

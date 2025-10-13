@@ -316,7 +316,7 @@ class PlaylistRepository {
     return Playlist(
       id: playlistRow['id'] as int,
       firebaseId: playlistRow['firebase_id'] as String?,
-      isPublic: playlistRow['is_public'] as bool?,
+      isPublic: playlistRow['is_public'] == 1,
       name: playlistRow['name'] as String,
       description: playlistRow['description'] as String?,
       createdBy: playlistRow['author_id'].toString(),

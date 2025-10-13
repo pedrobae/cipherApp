@@ -1,8 +1,8 @@
 import 'package:cipher_app/models/domain/cipher/section.dart';
 import 'package:cipher_app/models/domain/cipher/version.dart';
 import 'package:cipher_app/models/domain/playlist/playlist_item.dart';
-import 'package:cipher_app/repositories/cloud_cipher_repository.dart';
-import 'package:cipher_app/repositories/local_cipher_repository.dart';
+import 'package:cipher_app/repositories/cipher_repository_cloud.dart';
+import 'package:cipher_app/repositories/cipher_repository_local.dart';
 import 'package:flutter/foundation.dart';
 
 class VersionProvider extends ChangeNotifier {

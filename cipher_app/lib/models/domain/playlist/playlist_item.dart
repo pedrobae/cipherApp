@@ -1,13 +1,15 @@
 /// Represents a content item in a playlist (cipher version or text section)
 class PlaylistItem {
   final String type; // 'cipher_version' or 'text_section'
+  final int id;
   final int contentId;
-  int order;
+  int position;
 
   PlaylistItem({
+    required this.id,
     required this.type,
     required this.contentId,
-    required this.order,
+    required this.position,
   });
 
   // Content type constants
@@ -16,9 +18,10 @@ class PlaylistItem {
 
   factory PlaylistItem.fromJson(Map<String, dynamic> json) {
     return PlaylistItem(
+      id: json['id'] as int,
       type: json['content_type'] as String,
       contentId: json['content_id'] as int,
-      order: json['order_index'] as int,
+      position: json['order_index'] as int,
     );
   }
 
@@ -26,16 +29,26 @@ class PlaylistItem {
     return {
       'content_type': type,
       'content_id': contentId,
-      'order_index': order,
+      'order_index': position,
     };
   }
 
   // Helper constructors
-  PlaylistItem.cipherVersion(int cipherVersionId, int order)
-    : this(type: cipherVersionType, contentId: cipherVersionId, order: order);
+  PlaylistItem.cipherVersion(int cipherVersionId, int order, int id)
+    : this(
+        id: id,
+        type: cipherVersionType,
+        contentId: cipherVersionId,
+        position: order,
+      );
 
-  PlaylistItem.textSection(int textSectionId, int order)
-    : this(type: textSectionType, contentId: textSectionId, order: order);
+  PlaylistItem.textSection(int textSectionId, int order, int id)
+    : this(
+        id: id,
+        type: textSectionType,
+        contentId: textSectionId,
+        position: order,
+      );
 
   // Type checking helpers
   bool get isCipherVersion => type == cipherVersionType;
@@ -43,9 +56,10 @@ class PlaylistItem {
 
   PlaylistItem copyWith({String? type, int? contentId, int? order}) {
     return PlaylistItem(
+      id: id,
       type: type ?? this.type,
       contentId: contentId ?? this.contentId,
-      order: order ?? this.order,
+      position: order ?? this.position,
     );
   }
 
@@ -55,14 +69,14 @@ class PlaylistItem {
     return other is PlaylistItem &&
         other.type == type &&
         other.contentId == contentId &&
-        other.order == order;
+        other.position == position;
   }
 
   @override
-  int get hashCode => type.hashCode ^ contentId.hashCode ^ order.hashCode;
+  int get hashCode => type.hashCode ^ contentId.hashCode ^ position.hashCode;
 
   @override
   String toString() {
-    return 'PlaylistItem(type: $type, contentId: $contentId, order: $order)';
+    return 'PlaylistItem(type: $type, contentId: $contentId, order: $position)';
   }
 }

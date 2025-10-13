@@ -90,18 +90,18 @@ void main() {
       );
 
       // Get unified items
-      final items = await playlistRepo.getPlaylistItems(playlistId);
+      final items = await playlistRepo.getItemsOfPlaylist(playlistId);
 
       expect(items.length, 3);
 
       // Check order
-      expect(items[0].order, 0);
+      expect(items[0].position, 0);
       expect(items[0].isTextSection, true);
 
-      expect(items[1].order, 1);
+      expect(items[1].position, 1);
       expect(items[1].isCipherVersion, true);
 
-      expect(items[2].order, 2);
+      expect(items[2].position, 2);
       expect(items[2].isTextSection, true);
     });
 
@@ -138,7 +138,7 @@ void main() {
       });
 
       // Add content
-      await textSectionRepo.createPlaylistText(
+      final textSectionId = await textSectionRepo.createPlaylistText(
         playlistId,
         'Text 1',
         'Content 1',
@@ -146,7 +146,7 @@ void main() {
         1,
       );
 
-      await db.insert('playlist_version', {
+      final versionId = await db.insert('playlist_version', {
         'version_id': cipherMapId,
         'playlist_id': playlistId,
         'includer_id': 1,
@@ -155,25 +155,29 @@ void main() {
       });
 
       // Get initial items
-      final initialItems = await playlistRepo.getPlaylistItems(playlistId);
+      final initialItems = await playlistRepo.getItemsOfPlaylist(playlistId);
       expect(initialItems.length, 2);
 
       // Create reordered items (swap positions)
       final reorderedItems = [
-        PlaylistItem.cipherVersion(cipherMapId, 0), // Cipher first
-        PlaylistItem.textSection(initialItems[0].contentId, 1), // Text second
+        PlaylistItem.cipherVersion(cipherMapId, 0, versionId), // Cipher first
+        PlaylistItem.textSection(
+          initialItems[0].contentId,
+          1,
+          textSectionId,
+        ), // Text second
       ];
 
       // Reorder
       await playlistRepo.savePlaylistOrder(playlistId, reorderedItems);
 
       // Verify new order
-      final newItems = await playlistRepo.getPlaylistItems(playlistId);
+      final newItems = await playlistRepo.getItemsOfPlaylist(playlistId);
       expect(newItems.length, 2);
       expect(newItems[0].isCipherVersion, true);
-      expect(newItems[0].order, 0);
+      expect(newItems[0].position, 0);
       expect(newItems[1].isTextSection, true);
-      expect(newItems[1].order, 1);
+      expect(newItems[1].position, 1);
     });
   });
 }

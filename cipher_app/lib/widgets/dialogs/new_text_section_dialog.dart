@@ -9,21 +9,13 @@ import 'package:provider/provider.dart';
 class NewTextSectionDialog extends StatefulWidget {
   final Playlist playlist;
 
-  const NewTextSectionDialog({
-    super.key,
-    required this.playlist,
-  });
+  const NewTextSectionDialog({super.key, required this.playlist});
 
   /// Shows the text section dialog
-  static void show(
-    BuildContext context, {
-    required Playlist playlist
-  }) {
+  static void show(BuildContext context, {required Playlist playlist}) {
     showDialog(
       context: context,
-      builder: (context) => NewTextSectionDialog(
-        playlist: playlist,
-      ),
+      builder: (context) => NewTextSectionDialog(playlist: playlist),
     );
   }
 
@@ -38,7 +30,7 @@ class _TextSectionDialogState extends State<NewTextSectionDialog> {
   @override
   void initState() {
     super.initState();
-    
+
     titleController = TextEditingController(text: '');
     contentController = TextEditingController(text: '');
   }
@@ -76,7 +68,7 @@ class _TextSectionDialogState extends State<NewTextSectionDialog> {
               ],
             ),
             const SizedBox(height: 16),
-            
+
             // Title field
             TextField(
               controller: titleController,
@@ -86,7 +78,7 @@ class _TextSectionDialogState extends State<NewTextSectionDialog> {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // Content field with more space
             Expanded(
               child: TextField(
@@ -102,7 +94,7 @@ class _TextSectionDialogState extends State<NewTextSectionDialog> {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // Action buttons
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -128,7 +120,7 @@ class _TextSectionDialogState extends State<NewTextSectionDialog> {
   void _saveChanges() async {
     final newTitle = titleController.text.trim();
     final newContent = contentController.text.trim();
-    
+
     if (newTitle.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -140,22 +132,23 @@ class _TextSectionDialogState extends State<NewTextSectionDialog> {
     }
 
     try {
-      final int nextPosition = widget.playlist.items.last.order + 1;
+      final int nextPosition = widget.playlist.items.last.position + 1;
       await context.read<TextSectionProvider>().createTextSection(
         TextSection(
-          playlistId: widget.playlist.id, 
-          title: newTitle, 
-          contentText: newContent, 
-          position: nextPosition), 
+          playlistId: widget.playlist.id,
+          title: newTitle,
+          contentText: newContent,
+          position: nextPosition,
+        ),
         onPlaylistRefreshNeeded: () {
           // Refresh the playlist to show updated text section
           context.read<PlaylistProvider>().loadPlaylists();
-        }
+        },
       );
-      
+
       if (mounted) {
         Navigator.pop(context);
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Seção criada com sucesso!'),

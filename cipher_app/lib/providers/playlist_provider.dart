@@ -120,9 +120,10 @@ class PlaylistProvider extends ChangeNotifier {
     final originalItems = playlist.items
         .map(
           (item) => PlaylistItem(
+            id: item.id,
             type: item.type,
             contentId: item.contentId,
-            order: item.order,
+            position: item.position,
           ),
         )
         .toList();
@@ -194,7 +195,7 @@ class PlaylistProvider extends ChangeNotifier {
     items.insert(newIndex, movedItem);
 
     for (int i = 0; i < items.length; i++) {
-      items[i].order = i;
+      items[i].position = i;
     }
   }
 
@@ -213,7 +214,7 @@ class PlaylistProvider extends ChangeNotifier {
             item.type == updatedItem.type,
       );
 
-      if (originalItem.order != updatedItem.order) {
+      if (originalItem.position != updatedItem.position) {
         changed.add(updatedItem);
       }
     }
@@ -232,9 +233,9 @@ class PlaylistProvider extends ChangeNotifier {
             item.contentId == currentItem.contentId &&
             item.type == currentItem.type,
       );
-      currentItem.order = originalItem.order;
+      currentItem.position = originalItem.position;
     }
-    playlist.items.sort((a, b) => a.order.compareTo(b.order));
+    playlist.items.sort((a, b) => a.position.compareTo(b.position));
   }
 
   // Clear cached data and reset state

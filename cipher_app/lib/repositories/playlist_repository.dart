@@ -38,7 +38,7 @@ class PlaylistRepository {
               'includer_id': int.parse(
                 playlist.createdBy,
               ), // Creator adds initial items
-              'position': item.order,
+              'position': item.position,
               'included_at': DateTime.now().toIso8601String(),
             });
             break;
@@ -79,67 +79,7 @@ class PlaylistRepository {
     List<Playlist> playlists = [];
 
     for (Map<String, dynamic> playlistData in playlistResults) {
-      // Get playlist items for this playlist (unified approach)
-      final cipherVersionResults = await db.rawQuery(
-        '''
-          SELECT version_id as content_id, position, 'cipher_version' as type 
-          FROM playlist_version 
-          WHERE playlist_id = ? 
-        ''',
-        [playlistData['id']],
-      );
-
-      final textSectionResults = await db.rawQuery(
-        '''
-          SELECT id as content_id, position, 'text_section' as type 
-          FROM playlist_text 
-          WHERE playlist_id = ? 
-        ''',
-        [playlistData['id']],
-      );
-
-      // Combine and sort all items by position
-      final allItemResults = [...cipherVersionResults, ...textSectionResults];
-      allItemResults.sort(
-        (a, b) => (a['position'] as int).compareTo(b['position'] as int),
-      );
-
-      final items = allItemResults.map((row) {
-        final type = row['type'] as String;
-        final contentId = row['content_id'] as int;
-        final position = row['position'] as int;
-
-        if (type == 'cipher_version') {
-          return PlaylistItem.cipherVersion(contentId, position);
-        } else {
-          return PlaylistItem.textSection(contentId, position);
-        }
-      }).toList();
-
-      // Get collaborator IDs for this playlist
-      final collaboratorResults = await db.rawQuery(
-        '''
-        SELECT user_id FROM user_playlist 
-        WHERE playlist_id = ?
-      ''',
-        [playlistData['id']],
-      );
-
-      final collaborators = collaboratorResults
-          .map((row) => row['user_id'].toString())
-          .toList();
-
-      // Build complete playlist object
-      final playlist = Playlist(
-        id: playlistData['id'] as int,
-        name: playlistData['name'] as String,
-        description: playlistData['description'] as String?,
-        createdBy: playlistData['author_id'].toString(),
-        createdAt: DateTime.parse(playlistData['created_at'] as String),
-        updatedAt: DateTime.parse(playlistData['updated_at'] as String),
-        collaborators: collaborators,
-        items: items,
-      );
+      final playlist = await buildPlaylist(playlistData);
       playlists.add(playlist);
     }
 
@@ -157,69 +97,7 @@ class PlaylistRepository {
     );
 
     if (playlistResults.isEmpty) return null;
-
-    final playlistData = playlistResults.first;
-
-    // Get playlist items (unified approach) - both cipher versions and text sections
-    final cipherVersionResults = await db.rawQuery(
-      '''
-      SELECT version_id as content_id, position, 'cipher_version' as type 
-      FROM playlist_version 
-      WHERE playlist_id = ? 
-    ''',
-      [playlistId],
-    );
-
-    final textSectionResults = await db.rawQuery(
-      '''
-      SELECT id as content_id, position, 'text_section' as type 
-      FROM playlist_text 
-      WHERE playlist_id = ? 
-    ''',
-      [playlistId],
-    );
-
-    // Combine and sort all items by position
-    final allItemResults = [...cipherVersionResults, ...textSectionResults];
-    allItemResults.sort(
-      (a, b) => (a['position'] as int).compareTo(b['position'] as int),
-    );
-
-    final items = allItemResults.map((row) {
-      final type = row['type'] as String;
-      final contentId = row['content_id'] as int;
-      final position = row['position'] as int;
-
-      if (type == 'cipher_version') {
-        return PlaylistItem.cipherVersion(contentId, position);
-      } else {
-        return PlaylistItem.textSection(contentId, position);
-      }
-    }).toList();
-
-    // Get collaborators
-    final collaboratorResults = await db.rawQuery(
-      '''
-      SELECT user_id FROM user_playlist 
-      WHERE playlist_id = ?
-    ''',
-      [playlistId],
-    );
-
-    final collaborators = collaboratorResults
-        .map((row) => row['user_id'].toString())
-        .toList();
-
-    return Playlist(
-      id: playlistData['id'] as int,
-      name: playlistData['name'] as String,
-      description: playlistData['description'] as String?,
-      createdBy: playlistData['author_id'].toString(),
-      createdAt: DateTime.parse(playlistData['created_at'] as String),
-      updatedAt: DateTime.parse(playlistData['updated_at'] as String),
-      collaborators: collaborators,
-      items: items,
-    );
+    return await buildPlaylist(playlistResults.first);
   }
 
   // Update playlist, for name and description
@@ -328,49 +206,6 @@ class PlaylistRepository {
   }
 
   // ===== UNIFIED PLAYLIST ITEMS =====
-  /// Get all playlist items (cipher versions and text sections) in order
-  Future<List<PlaylistItem>> getPlaylistItems(int playlistId) async {
-    final db = await _databaseHelper.database;
-
-    // Get cipher map items
-    final cipherResults = await db.query(
-      'playlist_version',
-      where: 'playlist_id = ?',
-      whereArgs: [playlistId],
-    );
-
-    // Get text section items
-    final textResults = await db.query(
-      'playlist_text',
-      where: 'playlist_id = ?',
-      whereArgs: [playlistId],
-    );
-
-    List<PlaylistItem> items = [];
-
-    // Add cipher version items
-    for (var row in cipherResults) {
-      items.add(
-        PlaylistItem.cipherVersion(
-          row['version_id'] as int,
-          row['position'] as int,
-        ),
-      );
-    }
-
-    // Add text section items
-    for (var row in textResults) {
-      items.add(
-        PlaylistItem.textSection(row['id'] as int, row['position'] as int),
-      );
-    }
-
-    // Sort by order
-    items.sort((a, b) => a.order.compareTo(b.order));
-
-    return items;
-  }
-
   /// Saves playlist items from a list
   Future<void> savePlaylistOrder(
     int playlistId,
@@ -403,19 +238,93 @@ class PlaylistRepository {
         if (item.isCipherVersion) {
           await txn.update(
             'playlist_version',
-            {'position': item.order},
+            {'position': item.position},
             where: 'playlist_id = ? AND version_id = ?',
             whereArgs: [playlistId, item.contentId],
           );
         } else if (item.isTextSection) {
           await txn.update(
             'playlist_text',
-            {'position': item.order},
+            {'position': item.position},
             where: 'id = ?',
             whereArgs: [item.contentId],
           );
         }
       }
     });
+  }
+
+  // ===== UTILS =====
+  Future<List<PlaylistItem>> getItemsOfPlaylist(int playlistId) async {
+    final db = await _databaseHelper.database;
+
+    final cipherVersionResults = await db.rawQuery(
+      '''
+          SELECT version_id as content_id, position, 'cipher_version' as type, id
+          FROM playlist_version 
+          WHERE playlist_id = ? 
+        ''',
+      [playlistId],
+    );
+
+    final textSectionResults = await db.rawQuery(
+      '''
+          SELECT id as content_id, position, 'text_section' as type, id
+          FROM playlist_text 
+          WHERE playlist_id = ? 
+        ''',
+      [playlistId],
+    );
+
+    // Combine and sort all items by position
+    final allItemResults = [...cipherVersionResults, ...textSectionResults];
+    allItemResults.sort(
+      (a, b) => (a['position'] as int).compareTo(b['position'] as int),
+    );
+
+    return allItemResults.map((row) {
+      final id = row['id'] as int;
+      final type = row['type'] as String;
+      final contentId = row['content_id'] as int;
+      final position = row['position'] as int;
+
+      if (type == 'cipher_version') {
+        return PlaylistItem.cipherVersion(contentId, position, id);
+      } else {
+        return PlaylistItem.textSection(contentId, position, id);
+      }
+    }).toList();
+  }
+
+  /// Gets collaborators for a playlist
+  Future<List<String>> getCollaborators(int playlistId) async {
+    final db = await _databaseHelper.database;
+    // Get collaborator IDs for this playlist
+    final collaboratorResults = await db.rawQuery(
+      '''
+        SELECT user_id FROM user_playlist 
+        WHERE playlist_id = ?
+      ''',
+      [playlistId],
+    );
+
+    return collaboratorResults.map((row) => row['user_id'].toString()).toList();
+  }
+
+  /// Build playlist domain object from database row
+  Future<Playlist> buildPlaylist(Map<String, dynamic> playlistRow) async {
+    final items = await getItemsOfPlaylist(playlistRow['id'] as int);
+    final collaborators = await getCollaborators(playlistRow['id'] as int);
+
+    return Playlist(
+      id: playlistRow['id'] as int,
+      name: playlistRow['name'] as String,
+      description: playlistRow['description'] as String?,
+      createdBy: playlistRow['author_id'].toString(),
+      createdAt: DateTime.parse(playlistRow['created_at'] as String),
+      updatedAt: DateTime.parse(playlistRow['updated_at'] as String),
+      collaborators: collaborators,
+      items: items,
+    );
   }
 }

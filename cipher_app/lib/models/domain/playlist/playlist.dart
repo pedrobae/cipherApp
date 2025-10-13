@@ -100,14 +100,22 @@ class Playlist {
 
   // Methods for unified content items
   Playlist addCipherVersionItem(int cipherVersionId) {
-    final newOrder = items.length;
-    final newItem = PlaylistItem.cipherVersion(cipherVersionId, newOrder);
+    final position = items.length;
+    final newItem = PlaylistItem.cipherVersion(
+      cipherVersionId,
+      position,
+      -1,
+    ); // id -1 for new items
     return copyWith(items: [...items, newItem], updatedAt: DateTime.now());
   }
 
   Playlist addTextSectionItem(int textSectionId) {
-    final newOrder = items.length;
-    final newItem = PlaylistItem.textSection(textSectionId, newOrder);
+    final position = items.length;
+    final newItem = PlaylistItem.textSection(
+      textSectionId,
+      position,
+      -1,
+    ); // id -1 for new items
     return copyWith(items: [...items, newItem], updatedAt: DateTime.now());
   }
 
@@ -141,7 +149,7 @@ class Playlist {
 
   List<PlaylistItem> get orderedItems {
     final ordered = List<PlaylistItem>.from(items)
-      ..sort((a, b) => a.order.compareTo(b.order));
+      ..sort((a, b) => a.position.compareTo(b.position));
     return ordered;
   }
 
@@ -153,7 +161,7 @@ class Playlist {
     for (int i = 0; i < items.length; i++) {
       final item = items[i];
       print(
-        '  [$i] ${item.type} - ID: ${item.contentId} (order: ${item.order})',
+        '  [$i] ${item.type} - ID: ${item.contentId} (order: ${item.position})',
       );
     }
     print('======================');

@@ -234,7 +234,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
         return CipherVersionCard(
           cipherVersionId: item.contentId,
           onDelete: () =>
-              _handleDeleteVersion(context, widget.playlistId, item.contentId),
+              _handleDeleteVersion(context, item.id, widget.playlistId),
           onCopy: () => playlistProvider.duplicateVersion(
             widget.playlistId,
             item.contentId,
@@ -315,7 +315,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
 
               // Update provider for persistence
               final playlistProvider = context.read<PlaylistProvider>();
-              playlistProvider.removeCipherMapFromPlaylist(itemId, playlistId);
+              playlistProvider.removeVersionFromPlaylist(itemId, playlistId);
             },
             child: const Text('Remover'),
           ),

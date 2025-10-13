@@ -1,3 +1,4 @@
+import 'package:cipher_app/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/domain/playlist/playlist.dart';
@@ -67,7 +68,7 @@ class _CreatePlaylistDialogState extends State<CreatePlaylistDialog> {
       description: _descriptionController.text.trim().isEmpty
           ? null
           : _descriptionController.text.trim(),
-      createdBy: '1', // TODO: Get from user session
+      createdBy: context.read<AuthProvider>().id ?? 'anonymous',
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
       collaborators: const [],

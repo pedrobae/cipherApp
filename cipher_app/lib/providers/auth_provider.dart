@@ -10,6 +10,7 @@ class AuthProvider extends ChangeNotifier {
   String? _error;
 
   bool get isAuthenticated => _user != null;
+  String? get id => _user?.uid;
   bool get isAdmin => _isAdmin;
   bool get isLoading => _isLoading;
   String? get error => _error;

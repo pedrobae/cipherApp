@@ -7,7 +7,6 @@ class PlaylistDto {
   final String name;
   final String description;
   final String ownerId; // Usuário que criou a playlist
-  final String ownerUsername;
   final bool isPublic;
   final DateTime updatedAt;
   final DateTime createdAt;
@@ -18,7 +17,6 @@ class PlaylistDto {
     required this.name,
     required this.description,
     required this.ownerId,
-    required this.ownerUsername,
     this.isPublic = false,
     required this.updatedAt,
     required this.createdAt,
@@ -31,7 +29,6 @@ class PlaylistDto {
       name: json['name'] as String? ?? '',
       description: json['description'] as String? ?? '',
       ownerId: json['ownerId'] as String? ?? '',
-      ownerUsername: json['ownerUsername'] as String? ?? '',
       isPublic: json['isPublic'] as bool? ?? false,
       updatedAt: (json['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       createdAt: (json['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
@@ -44,7 +41,6 @@ class PlaylistDto {
       'name': name,
       'description': description,
       'ownerId': ownerId,
-      'ownerUsername': ownerUsername,
       'isPublic': isPublic,
       'updatedAt': Timestamp.fromDate(updatedAt),
       'createdAt': Timestamp.fromDate(createdAt),
@@ -73,12 +69,16 @@ class PlaylistItemDto {
   final String type; // 'cipher_version' or 'text_section'
   final String? firebaseContentId;
   int? position;
+  final String? status; // e.g., 'unknown' for placeholders
+  final Map<String, dynamic>? displayFallback; // optional lightweight hints
 
   PlaylistItemDto({
     required this.id,
     required this.type,
     this.firebaseContentId,
     this.position,
+    this.status,
+    this.displayFallback,
   });
 
   factory PlaylistItemDto.fromFirestore(Map<String, dynamic> json, String id) {
@@ -87,6 +87,12 @@ class PlaylistItemDto {
       type: json['type'] as String? ?? '',
       firebaseContentId: json['firebaseContentId'] as String?,
       position: json['position'] as int?,
+      status: json['status'] as String?,
+      displayFallback: json['displayFallback'] is Map<String, dynamic>
+          ? (json['displayFallback'] as Map<String, dynamic>)
+          : (json['displayFallback'] != null
+              ? Map<String, dynamic>.from(json['displayFallback'])
+              : null),
     );
   }
 
@@ -96,6 +102,8 @@ class PlaylistItemDto {
       'type': type,
       'firebaseContentId': firebaseContentId,
       'position': position,
+      if (status != null) 'status': status,
+      if (displayFallback != null) 'displayFallback': displayFallback,
     };
   }
 
@@ -112,12 +120,16 @@ class PlaylistItemDto {
     String? type,
     String? firebaseContentId,
     int? position,
+    String? status,
+    Map<String, dynamic>? displayFallback,
   }) {
     return PlaylistItemDto(
       id: id,
       type: type ?? this.type,
       firebaseContentId: firebaseContentId ?? this.firebaseContentId,
       position: position ?? this.position,
+      status: status ?? this.status,
+      displayFallback: displayFallback ?? this.displayFallback,
     );
   }
 }

@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_print
 
+import 'package:cipher_app/models/dtos/playlist_dto.dart';
+
 import '../../../helpers/datetime.dart';
 import 'playlist_item.dart';
 
@@ -81,6 +83,19 @@ class Playlist {
     }
 
     return result;
+  }
+
+  PlaylistDto toDto() {
+    return PlaylistDto(
+      firebaseId: firebaseId,
+      name: name,
+      description: description ?? '',
+      ownerId: createdBy,
+      isPublic: isPublic ?? false,
+      updatedAt: updatedAt ?? DateTime.now(),
+      createdAt: createdAt ?? DateTime.now(),
+      collaborators: collaborators,
+    );
   }
 
   Playlist copyWith({

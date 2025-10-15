@@ -152,7 +152,7 @@ class Playlist {
     final reorderedItems = updatedItems
         .asMap()
         .entries
-        .map((entry) => entry.value.copyWith(order: entry.key))
+        .map((entry) => entry.value.copyWith(position: entry.key))
         .toList();
 
     return copyWith(items: reorderedItems, updatedAt: DateTime.now());

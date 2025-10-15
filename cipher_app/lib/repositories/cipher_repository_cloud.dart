@@ -1,36 +1,23 @@
+import 'package:cipher_app/helpers/guard.dart';
 import 'package:cipher_app/models/domain/cipher/cipher.dart';
 import 'package:cipher_app/models/domain/cipher/version.dart';
-import 'package:cipher_app/services/firestore_service.dart';
-import 'package:cipher_app/services/auth_service.dart';
 import 'package:cipher_app/models/dtos/cipher_dto.dart';
 import 'package:cipher_app/models/dtos/version_dto.dart';
+import 'package:cipher_app/services/firestore_service.dart';
+import 'package:cipher_app/services/auth_service.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 
 class CloudCipherRepository {
   final FirestoreService _firestoreService = FirestoreService();
   final AuthService _authService = AuthService();
-
-  // ===== PERMISSION HELPERS =====
-  Future<void> _requireAdmin() async {
-    if (!(await _authService.isAdmin)) {
-      throw Exception(
-        'Acesso negado: operação requer privilégios de administrador',
-      );
-    }
-  }
-
-  Future<void> _requireAuth() async {
-    if (!_authService.isAuthenticated) {
-      throw Exception('Acesso negado: usuário deve estar autenticado');
-    }
-  }
+  final GuardHelper _guardHelper = GuardHelper();
 
   // For now the user has no access to full CRUD operations in the cloud. (Read-only)
   // ===== CREATE =====
   /// Creates a new public cipher (admin only - not exposed to users)
-  Future<String> createPublicCipher(Cipher cipher) async {
-    await _requireAdmin();
+  Future<String> publishCipher(Cipher cipher) async {
+    await _guardHelper.ensureCanPublishCiphers();
 
     final cipherId = await _firestoreService.createDocument(
       collectionPath: 'publicCiphers',
@@ -45,31 +32,12 @@ class CloudCipherRepository {
         'timestamp': DateTime.now().millisecondsSinceEpoch,
       },
     );
-
-    // Create initial versions in sub-collection
-    for (Version version in cipher.versions) {
-      final versionId = await _firestoreService.createSubCollectionDocument(
-        parentCollectionPath: 'publicCiphers',
-        parentDocumentId: cipherId,
-        subCollectionPath: 'versions',
-        data: version.toDto().toFirestore(),
-      );
-
-      FirebaseAnalytics.instance.logEvent(
-        name: 'cipher_version_created',
-        parameters: {
-          'cipher_id': cipherId,
-          'version_id': versionId,
-          'timestamp': DateTime.now().millisecondsSinceEpoch,
-        },
-      );
-    }
     return cipherId;
   }
 
   /// Creates a new version for an existing public cipher (admin only)
   Future<String> createVersionForCipher(Version version) async {
-    await _requireAdmin();
+    await _guardHelper.requireAdmin();
 
     final versionId = await _firestoreService.createSubCollectionDocument(
       parentCollectionPath: 'publicCiphers',
@@ -130,7 +98,7 @@ class CloudCipherRepository {
   // ===== READ =====
   /// Fetch popular ciphers from Firestore (requires authentication)
   Future<List<CipherDto>> getPopularCiphers() async {
-    await _requireAuth();
+    await _guardHelper.requireAuth();
 
     final snapshot = await _firestoreService.fetchDocumentById(
       collectionPath: 'stats/',
@@ -158,7 +126,7 @@ class CloudCipherRepository {
 
   /// Fetch versions of a specific cipher (requires authentication)
   Future<List<VersionDto>> getVersionsOfCipher(String cipherId) async {
-    await _requireAuth();
+    await _guardHelper.requireAuth();
 
     final snapshot = await _firestoreService.fetchSubCollectionDocuments(
       parentCollectionPath: 'publicCiphers',
@@ -189,7 +157,7 @@ class CloudCipherRepository {
 
   /// Multi field search (requires authentication)
   Future<List<CipherDto>?> searchCiphers(String query) async {
-    await _requireAuth();
+    await _guardHelper.requireAuth();
 
     try {
       // Single query approach - search in combined searchText field
@@ -317,7 +285,7 @@ class CloudCipherRepository {
   // ===== UPDATE =====
   /// Update an existing public cipher (admin only)
   Future<void> updatePublicCipher(Cipher cipher) async {
-    await _requireAdmin();
+    await _guardHelper.requireAdmin();
 
     await _firestoreService.updateDocument(
       collectionPath: 'publicCiphers',
@@ -337,7 +305,7 @@ class CloudCipherRepository {
 
   /// Update an existing version of a public cipher (admin only)
   Future<void> updateVersionOfCipher(Version version) async {
-    await _requireAdmin();
+    await _guardHelper.requireAdmin();
 
     await _firestoreService.updateSubCollectionDocument(
       parentCollectionPath: 'publicCiphers',
@@ -361,7 +329,7 @@ class CloudCipherRepository {
   // ===== DELETE =====
   /// Delete a public cipher (admin only)
   Future<void> deletePublicCipher(String cipherId) async {
-    await _requireAdmin();
+    await _guardHelper.requireAdmin();
 
     await _firestoreService.deleteDocument(
       collectionPath: 'publicCiphers',
@@ -380,7 +348,7 @@ class CloudCipherRepository {
 
   /// Delete a version of a public cipher (admin only)
   Future<void> deleteVersionOfCipher(String cipherId, String versionId) async {
-    await _requireAdmin();
+    await _guardHelper.requireAdmin();
 
     await _firestoreService.deleteSubCollectionDocument(
       parentCollectionPath: 'publicCiphers',

@@ -317,10 +317,20 @@ class CipherProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final firebaseId = await _cloudCipherRepository.createPublicCipher(
+      final firebaseId = await _cloudCipherRepository.publishCipher(
         currentCipher,
       );
-      _currentCipher = _currentCipher.copyWith(firebaseId: firebaseId);
+
+      List<Version> updatedVersions = [];
+      for (var ver in currentCipher.versions) {
+        final version = ver.copyWith(firebaseCipherId: firebaseId);
+        await _cloudCipherRepository.createVersionForCipher(version);
+        updatedVersions.add(version);
+      }
+      _currentCipher = _currentCipher.copyWith(
+        firebaseId: firebaseId,
+        versions: updatedVersions,
+      );
       updateCurrentCipherInList();
 
       if (kDebugMode) {

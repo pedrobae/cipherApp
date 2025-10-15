@@ -38,32 +38,32 @@ class PlaylistItem {
   }
 
   // Helper constructors
-  PlaylistItem.cipherVersion(int cipherVersionId, int order, int id)
+  PlaylistItem.cipherVersion(int cipherVersionId, int position, int id)
     : this(
         id: id,
         type: cipherVersionType,
         contentId: cipherVersionId,
-        position: order,
+        position: position,
       );
 
-  PlaylistItem.textSection(int textSectionId, int order, int id)
+  PlaylistItem.textSection(int textSectionId, int position, int id)
     : this(
         id: id,
         type: textSectionType,
         contentId: textSectionId,
-        position: order,
+        position: position,
       );
 
   // Type checking helpers
   bool get isCipherVersion => type == cipherVersionType;
   bool get isTextSection => type == textSectionType;
 
-  PlaylistItem copyWith({String? type, int? contentId, int? order}) {
+  PlaylistItem copyWith({String? type, int? contentId, int? position}) {
     return PlaylistItem(
       id: id,
       type: type ?? this.type,
       contentId: contentId ?? this.contentId,
-      position: order ?? this.position,
+      position: position ?? this.position,
     );
   }
 

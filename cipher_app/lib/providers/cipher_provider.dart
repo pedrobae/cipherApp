@@ -4,8 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:cipher_app/models/dtos/cipher_dto.dart';
 import 'package:cipher_app/helpers/cloud_cipher_cache.dart';
 import 'package:cipher_app/models/domain/cipher/cipher.dart';
-import 'package:cipher_app/repositories/cipher_repository_cloud.dart';
-import 'package:cipher_app/repositories/cipher_repository_local.dart';
+import 'package:cipher_app/repositories/cloud_cipher_repository.dart';
+import 'package:cipher_app/repositories/local_cipher_repository.dart';
 
 class CipherProvider extends ChangeNotifier {
   final LocalCipherRepository _cipherRepository = LocalCipherRepository();

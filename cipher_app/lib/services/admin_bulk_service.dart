@@ -1,4 +1,4 @@
-import 'package:cipher_app/repositories/cipher_repository_cloud.dart';
+import 'package:cipher_app/repositories/cloud_cipher_repository.dart';
 import 'package:cipher_app/services/auth_service.dart';
 import 'package:flutter/foundation.dart';
 

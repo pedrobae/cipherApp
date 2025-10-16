@@ -3,8 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:cipher_app/models/domain/playlist/playlist.dart';
 import 'package:cipher_app/models/domain/playlist/playlist_item.dart';
 import 'package:cipher_app/models/dtos/playlist_dto.dart';
-import 'package:cipher_app/repositories/playlist_repository_local.dart';
-import 'package:cipher_app/repositories/playlist_repository_cloud.dart';
+import 'package:cipher_app/repositories/local_playlist_repository.dart';
+import 'package:cipher_app/repositories/cloud_playlist_repository.dart';
 
 class PlaylistProvider extends ChangeNotifier {
   final PlaylistRepository _playlistRepository = PlaylistRepository();

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:cipher_app/models/domain/user.dart';
-import 'package:cipher_app/repositories/user_repository.dart';
-import 'package:cipher_app/repositories/user_repository_cloud.dart';
+import 'package:cipher_app/repositories/local_user_repository.dart';
+import 'package:cipher_app/repositories/cloud_user_repository.dart';
 import 'package:flutter/foundation.dart';
 
 class UserProvider extends ChangeNotifier {

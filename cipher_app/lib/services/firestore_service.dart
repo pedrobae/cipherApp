@@ -358,6 +358,25 @@ class FirestoreService {
     }
   }
 
+  Future<List<QueryDocumentSnapshot>> fetchDocumentsContainingValue({
+    required String collectionPath,
+    required String field,
+    required dynamic value,
+    int limit = 50,
+  }) async {
+    try {
+      final querySnapshot = await _firestore
+          .collection(collectionPath)
+          .where(field, arrayContains: value)
+          .limit(limit)
+          .get();
+      return querySnapshot.docs;
+    } catch (e) {
+      FirebaseService.logError('Failed to query collection', e);
+      rethrow;
+    }
+  }
+
   // ===== HELPER METHODS =====
 
   /// Gerar tokens de pesquisa a partir de um termo

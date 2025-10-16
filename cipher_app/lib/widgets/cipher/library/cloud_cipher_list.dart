@@ -59,7 +59,7 @@ class _CloudCipherListState extends State<CloudCipherList> {
           return CloudCipherCard(
             cipher: cipher,
             onDownload: () async {
-              await cipherProvider.downloadAndInsertCipher(cipher);
+              await cipherProvider.downloadFullCipher(cipher);
               widget.changeTab();
               widget.openCipher(
                 cipherProvider.currentCipher.id!,

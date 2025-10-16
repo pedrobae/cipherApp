@@ -28,41 +28,36 @@ class VersionProvider extends ChangeNotifier {
   bool get isSaving => _isSaving;
   String? get error => _error;
 
-  // TODO: PLAYLIST CLOUD SYNC - Add method to check if version exists by firebaseId
-  // This is needed for PlaylistProvider._mergePlaylistFromCloud() to verify
-  // if versions referenced in cloud playlists exist locally.
-  //
-  // Suggested implementation:
-  // Future<Version?> getVersionByFirebaseId(String firebaseId) async {
-  //   // Check cache first
-  //   try {
-  //     return _versions.firstWhere((v) => v.firebaseId == firebaseId);
-  //   } catch (_) {
-  //     // Not in cache, query repository
-  //     return await _cipherRepository.getVersionByFirebaseId(firebaseId);
-  //   }
-  // }
+  /// Checks if a version exists locally by its Firebase ID
+  /// Returns the Version if found, otherwise null
+  Future<Version?> getVersionByFirebaseId(String firebaseId) async {
+    // Check cache first
+    try {
+      return _versions.firstWhere((v) => v.firebaseId == firebaseId);
+    } catch (_) {
+      // Not in cache, query repository
+      return await _cipherRepository.getVersionWithFirebaseId(firebaseId);
+    }
+  }
 
-  // TODO: PLAYLIST CLOUD SYNC - Add method to download missing versions from Firebase
-  // When a cloud playlist references a version that doesn't exist locally,
-  // this method should download it from Firebase and save to local SQLite.
-  //
-  // Suggested implementation:
-  // Future<Version?> downloadVersionFromCloud(String firebaseId) async {
-  //   final [cipherId, versionId] = firebaseId.split(':');
-  //   final versionDto = await _cloudCipherRepository.fetchVersionById(
-  //     cipherId: cipherId,
-  //     versionId: versionId,
-  //   );
-  //   if (versionDto != null) {
-  //     final version = versionDto.toDomain();
-  //     await _cipherRepository.insertVersionToCipher(version);
-  //     _versions.add(version);
-  //     notifyListeners();
-  //     return version;
-  //   }
-  //   return null;
-  // }
+  /// Downloads a version from Firebase by its Firebase ID and saves it locally
+  Future<Version?> downloadVersionFromCloud(
+    String cipherId,
+    String versionId,
+  ) async {
+    final versionDto = await _cloudCipherRepository.getVersionById(
+      cipherId,
+      versionId,
+    );
+    if (versionDto != null) {
+      final version = versionDto.toDomain();
+      await _cipherRepository.insertVersionToCipher(version);
+      _versions.add(version);
+      notifyListeners();
+      return version;
+    }
+    return null;
+  }
 
   /// ===== CREATE - new version to an existing cipher =====
   Future<void> createVersion(int cipherId) async {

@@ -124,6 +124,34 @@ class CloudCipherRepository {
     return ciphers;
   }
 
+  /// Fetch a public cipher by its ID (requires authentication)
+  Future<CipherDto> getCipherById(String cipherId) async {
+    await _guardHelper.requireAuth();
+
+    final docSnapshot = await _firestoreService.fetchDocumentById(
+      collectionPath: 'publicCiphers',
+      documentId: cipherId,
+    );
+
+    if (docSnapshot == null || !docSnapshot.exists) {
+      throw Exception('Cifra não encontrada');
+    }
+
+    FirebaseAnalytics.instance.logEvent(
+      name: 'fetched_cipher_by_id',
+      parameters: {
+        'cipher_id': cipherId,
+        'user_id': _authService.currentUser!.uid,
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
+      },
+    );
+
+    return CipherDto.fromFirestore(
+      docSnapshot.data() as Map<String, dynamic>,
+      docSnapshot.id,
+    );
+  }
+
   /// Fetch versions of a specific cipher (requires authentication)
   Future<List<VersionDto>> getVersionsOfCipher(String cipherId) async {
     await _guardHelper.requireAuth();
@@ -153,6 +181,25 @@ class CloudCipherRepository {
           ),
         )
         .toList();
+  }
+
+  Future<VersionDto?> getVersionById(String cipherId, String versionId) async {
+    final docSnapshot = await _firestoreService.fetchSubCollectionDocumentById(
+      parentCollectionPath: 'publicCiphers',
+      parentDocumentId: cipherId,
+      subCollectionPath: 'versions',
+      documentId: versionId,
+    );
+
+    if (docSnapshot == null || !docSnapshot.exists) {
+      return null;
+    }
+
+    return VersionDto.fromFirestore(
+      docSnapshot.data() as Map<String, dynamic>,
+      docSnapshot.id,
+      cipherId,
+    );
   }
 
   /// Multi field search (requires authentication)

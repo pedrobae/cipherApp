@@ -34,7 +34,7 @@ class LocalCipherRepository {
     return _buildCipher(results.first);
   }
 
-  Future<int> insertCipher(Cipher cipher) async {
+  Future<int> insertPrunedCipher(Cipher cipher) async {
     final db = await _databaseHelper.database;
 
     return await db.transaction((txn) async {
@@ -140,6 +140,21 @@ class LocalCipherRepository {
       where: 'id = ?',
       whereArgs: [versionId],
     );
+
+    Version version = await (_buildCipherVersion(result[0]));
+
+    return version;
+  }
+
+  Future<Version?> getVersionWithFirebaseId(String firebaseId) async {
+    final db = await _databaseHelper.database;
+    final result = await db.query(
+      'version',
+      where: 'firebase_id = ?',
+      whereArgs: [firebaseId],
+    );
+
+    if (result.isEmpty) return null;
 
     Version version = await (_buildCipherVersion(result[0]));
 

@@ -290,7 +290,9 @@ class CipherProvider extends ChangeNotifier {
 
     try {
       // Insert basic cipher info and tags
-      final cipherId = await _cipherRepository.insertCipher(currentCipher);
+      final cipherId = await _cipherRepository.insertPrunedCipher(
+        currentCipher,
+      );
 
       // Load the new ID into the cache
       _currentCipher = _currentCipher.copyWith(id: cipherId);
@@ -350,7 +352,7 @@ class CipherProvider extends ChangeNotifier {
   }
 
   /// Downloads cipher from cloud and inserts into local database
-  Future<void> downloadAndInsertCipher(CipherDto cipherDTO) async {
+  Future<void> downloadFullCipher(CipherDto cipherDTO) async {
     if (_isSaving) {
       _error = 'Já está salvando uma cifra, aguarde...';
       if (kDebugMode) {
@@ -392,6 +394,44 @@ class CipherProvider extends ChangeNotifier {
       _isSaving = false;
       notifyListeners();
     }
+  }
+
+  /// Downloads only cipher metadata from cloud and inserts into local database
+  Future<int?> downloadCipherMetadata(String cipherId) async {
+    if (_isSaving) {
+      _error = 'Já está salvando uma cifra, aguarde...';
+      if (kDebugMode) {
+        print('Already saving a cipher, aborting download.');
+      }
+      return null;
+    }
+
+    _isSaving = true;
+    _error = null;
+    int? result;
+    notifyListeners();
+
+    try {
+      final cipherDto = await _cloudCipherRepository.getCipherById(cipherId);
+
+      result = await _cipherRepository.insertPrunedCipher(
+        cipherDto.toDomain([]),
+      );
+
+      // Load the new ID into the cache
+      await loadCipher(result);
+      updateCurrentCipherInList();
+    } catch (e) {
+      _error = 'Downloading and inserting cipher metadata: ${e.toString()}';
+      if (kDebugMode) {
+        result = null;
+        print('Error downloading and inserting cipher metadata: $e');
+      }
+    } finally {
+      _isSaving = false;
+      notifyListeners();
+    }
+    return result;
   }
 
   /// ===== UPDATE =====
@@ -561,6 +601,12 @@ class CipherProvider extends ChangeNotifier {
   // Check if a cipher is already cached
   bool isCipherCached(int cipherId) {
     return (localCiphers).any((cipher) => cipher.id == cipherId);
+  }
+
+  List<String> removeLocalCiphersWithFirebaseId(List<String> firebaseIds) {
+    return firebaseIds
+        .where((id) => _localCiphers.any((cipher) => cipher.firebaseId == id))
+        .toList();
   }
 
   @override

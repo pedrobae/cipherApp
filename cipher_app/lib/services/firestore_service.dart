@@ -101,6 +101,30 @@ class FirestoreService {
     }
   }
 
+  /// Fetch a single document by ID from a specified sub-collection.
+  Future<DocumentSnapshot?> fetchSubCollectionDocumentById({
+    required String parentCollectionPath,
+    required String parentDocumentId,
+    required String subCollectionPath,
+    required String documentId,
+  }) async {
+    try {
+      final docSnapshot = await _firestore
+          .collection(parentCollectionPath)
+          .doc(parentDocumentId)
+          .collection(subCollectionPath)
+          .doc(documentId)
+          .get();
+      return docSnapshot.exists ? docSnapshot : null;
+    } catch (e) {
+      FirebaseService.logError(
+        'Failed to fetch sub-collection document by ID',
+        e,
+      );
+      rethrow;
+    }
+  }
+
   /// Update a document in a specified collection.
   Future<void> updateDocument({
     required String collectionPath,

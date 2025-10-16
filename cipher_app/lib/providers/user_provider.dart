@@ -1,10 +1,12 @@
-import 'package:flutter/foundation.dart';
 import 'dart:async';
-import '../models/domain/user.dart';
-import '../repositories/user_repository.dart';
+import 'package:cipher_app/models/domain/user.dart';
+import 'package:cipher_app/repositories/user_repository.dart';
+import 'package:cipher_app/repositories/user_repository_cloud.dart';
+import 'package:flutter/foundation.dart';
 
 class UserProvider extends ChangeNotifier {
   final UserRepository _userRepository = UserRepository();
+  final CloudUserRepository _cloudUserRepository = CloudUserRepository();
 
   UserProvider();
 
@@ -13,57 +15,65 @@ class UserProvider extends ChangeNotifier {
   String? _error;
   bool _hasInitialized = false;
   bool _isLoading = false;
+  bool _isLoadingCloud = false;
 
   // Getters
   List<User> get knownCollaborators => _knownCollaborators;
   List<User> get searchResults => _searchResults;
   String? get error => _error;
   bool get hasInitialized => _hasInitialized;
+  bool get isLoading => _isLoading;
+  bool get isLoadingCloud => _isLoadingCloud;
 
-  // TODO: PLAYLIST CLOUD SYNC - Add method to check if user exists by Firebase userId
-  // This is needed for PlaylistProvider._mergePlaylistFromCloud() to verify
-  // if collaborators referenced in cloud playlists exist locally.
-  //
-  // Suggested implementation:
-  // User? getUserByFirebaseId(String firebaseUserId) {
-  //   try {
-  //     return _knownCollaborators.firstWhere(
-  //       (user) => user.firebaseId == firebaseUserId,
-  //     );
-  //   } catch (_) {
-  //     return null;
-  //   }
-  // }
+  /// Removes all known users from a list of Firebase IDs
+  /// This is used to resolve collaborator references in playlists
+  List<String> removeKnownByFirebaseId(List<String> firebaseUserIds) {
+    return firebaseUserIds
+        .where((id) => _knownCollaborators.any((user) => user.firebaseId == id))
+        .toList();
+  }
 
-  // TODO: PLAYLIST CLOUD SYNC - Add method to download missing users from Firebase
-  // When a cloud playlist references a collaborator that doesn't exist locally,
-  // this method should download their profile from Firebase and save to local SQLite.
-  //
-  // Suggested implementation:
-  // Future<User?> downloadUserFromCloud(String firebaseUserId) async {
-  //   final userDto = await _cloudUserRepository.fetchUserById(firebaseUserId);
-  //   if (userDto != null) {
-  //     final user = userDto.toDomain();
-  //     await _userRepository.insertUser(user);
-  //     _knownCollaborators.add(user);
-  //     notifyListeners();
-  //     return user;
-  //   }
-  //   return null;
-  // }
+  /// Downloads users from Firebase if they don't exist locally
+  Future<void> downloadUsersFromCloud(List<String> firebaseUserIds) async {
+    if (_isLoadingCloud) return;
 
-  // TODO: PLAYLIST CLOUD SYNC - Add batch method to ensure multiple users exist
-  // Efficiently check and download a list of users referenced in a playlist.
-  //
-  // Suggested implementation:
-  // Future<void> ensureUsersExist(List<String> firebaseUserIds) async {
-  //   for (var userId in firebaseUserIds) {
-  //     final exists = getUserByFirebaseId(userId) != null;
-  //     if (!exists) {
-  //       await downloadUserFromCloud(userId);
-  //     }
-  //   }
-  // }
+    _isLoadingCloud = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      for (var userId in firebaseUserIds) {
+        final userDto = await _cloudUserRepository.fetchUserById(userId);
+        if (userDto != null) {
+          final user = userDto.toDomain();
+          await _userRepository.createUser(user);
+          _knownCollaborators.add(user);
+        } else {
+          if (kDebugMode) {
+            print('User with Firebase ID $userId not found in cloud.');
+          }
+          throw Exception('User with Firebase ID $userId not found in cloud.');
+        }
+      }
+    } catch (e) {
+      _error = e.toString();
+      if (kDebugMode) {
+        print('Error downloading users from cloud: $e');
+      }
+    } finally {
+      _isLoadingCloud = false;
+      notifyListeners();
+    }
+  }
+
+  /// Ensures that all users in the provided list of Firebase IDs exist locally
+  /// Downloads any missing users from the cloud
+  Future<void> ensureUsersExist(List<String> firebaseUserIds) async {
+    final missingIds = removeKnownByFirebaseId(firebaseUserIds);
+    if (missingIds.isNotEmpty) {
+      await downloadUsersFromCloud(missingIds);
+    }
+  }
 
   // Load users from local SQLite db
   Future<void> loadUsers() async {

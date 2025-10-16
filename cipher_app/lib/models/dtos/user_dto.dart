@@ -1,9 +1,7 @@
-import 'package:cipher_app/models/dtos/user_dto.dart';
+import 'package:cipher_app/models/domain/user.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../../helpers/datetime.dart';
-
-class User {
-  final int? id;
+class UserDto {
   final String? firebaseId;
   final String username;
   final String mail;
@@ -13,9 +11,8 @@ class User {
   final DateTime? updatedAt;
   final bool isActive;
 
-  const User({
-    this.id,
-    required this.firebaseId,
+  const UserDto({
+    this.firebaseId,
     required this.username,
     required this.mail,
     this.profilePhoto,
@@ -25,36 +22,35 @@ class User {
     this.isActive = true,
   });
 
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      id: json['id'] as int,
-      firebaseId: json['firebase_id'] as String,
+  factory UserDto.fromFirestore(Map<String, dynamic> json, String id) {
+    return UserDto(
+      firebaseId: id,
       username: json['username'] as String,
       mail: json['mail'] as String,
-      profilePhoto: json['profile_photo'] as String?,
-      googleId: json['google_id'] as String?,
-      createdAt: DatetimeHelper.parseDateTime(json['created_at']),
-      updatedAt: DatetimeHelper.parseDateTime(json['updated_at']),
-      isActive: (json['is_active'] as int? ?? 1) == 1,
+      profilePhoto: json['profilePhoto'] as String?,
+      googleId: json['googleId'] as String?,
+      createdAt: (json['createdAt'] as Timestamp?)?.toDate(),
+      updatedAt: (json['updatedAt'] as Timestamp?)?.toDate(),
+      isActive: (json['isActive'] as bool?) ?? true,
     );
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toFirestore() {
     return {
-      'id': id,
       'username': username,
       'mail': mail,
-      'profile_photo': profilePhoto,
-      'google_id': googleId,
-      'created_at': createdAt?.toIso8601String(),
-      'updated_at': updatedAt?.toIso8601String(),
-      'is_active': isActive ? 1 : 0,
+      'profilePhoto': profilePhoto,
+      'googleId': googleId,
+      'createdAt': createdAt != null ? Timestamp.fromDate(createdAt!) : null,
+      'updatedAt':
+          FieldValue.serverTimestamp(), // Server timestamp to avoid client clock issues
+      'isActive': isActive,
     };
   }
 
-  UserDto toDto() {
-    return UserDto(
-      firebaseId: firebaseId,
+  User toDomain() {
+    return User(
+      firebaseId: firebaseId!,
       username: username,
       mail: mail,
       profilePhoto: profilePhoto,
@@ -65,8 +61,7 @@ class User {
     );
   }
 
-  User copyWith({
-    int? id,
+  UserDto copyWith({
     String? firebaseId,
     String? username,
     String? mail,
@@ -76,8 +71,7 @@ class User {
     DateTime? updatedAt,
     bool? isActive,
   }) {
-    return User(
-      id: id ?? this.id,
+    return UserDto(
       firebaseId: firebaseId ?? this.firebaseId,
       username: username ?? this.username,
       mail: mail ?? this.mail,

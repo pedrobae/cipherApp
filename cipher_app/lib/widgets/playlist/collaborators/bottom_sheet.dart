@@ -223,7 +223,7 @@ class _CollaboratorsBottomSheetState extends State<CollaboratorsBottomSheet> {
             onPressed: () {
               context.read<CollaboratorProvider>().addCollaborator(
                 widget.playlist.id,
-                user.id,
+                user.id!,
                 selectedInstrument,
               );
               Navigator.of(context).pop();

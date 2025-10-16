@@ -142,7 +142,7 @@ class _TextSectionDialogState extends State<NewTextSectionDialog> {
         ),
         onPlaylistRefreshNeeded: () {
           // Refresh the playlist to show updated text section
-          context.read<PlaylistProvider>().loadPlaylists();
+          context.read<PlaylistProvider>().loadLocalPlaylists();
         },
       );
 

@@ -24,7 +24,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
     WidgetsBinding.instance.addObserver(this);
     // Load playlists when screen initializes
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<PlaylistProvider>().loadPlaylists();
+      context.read<PlaylistProvider>().loadLocalPlaylists();
     });
   }
 
@@ -39,7 +39,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
     super.didChangeAppLifecycleState(state);
     // Refresh data when app resumes (in case database was reset from settings)
     if (state == AppLifecycleState.resumed) {
-      context.read<PlaylistProvider>().loadPlaylists();
+      context.read<PlaylistProvider>().loadLocalPlaylists();
     }
   }
 
@@ -58,7 +58,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
             return ErrorStateWidget(
               title: 'Erro ao carregar playlists',
               message: playlistProvider.error!,
-              onRetry: () => playlistProvider.loadPlaylists(),
+              onRetry: () => playlistProvider.loadLocalPlaylists(),
             );
           }
 
@@ -73,7 +73,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
 
           // Display playlists
           return RefreshIndicator(
-            onRefresh: () => playlistProvider.loadPlaylists(),
+            onRefresh: () => playlistProvider.loadLocalPlaylists(),
             child: ListView.builder(
               padding: const EdgeInsets.all(8),
               itemCount: playlistProvider.playlists.length,

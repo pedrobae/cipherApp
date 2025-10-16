@@ -7,21 +7,13 @@ import 'package:provider/provider.dart';
 class TextSectionDialog extends StatefulWidget {
   final int textSectionId;
 
-  const TextSectionDialog({
-    super.key,
-    required this.textSectionId,
-  });
+  const TextSectionDialog({super.key, required this.textSectionId});
 
   /// Shows the text section dialog
-  static void show(
-    BuildContext context, {
-    required int textSectionId,
-  }) {
+  static void show(BuildContext context, {required int textSectionId}) {
     showDialog(
       context: context,
-      builder: (context) => TextSectionDialog(
-        textSectionId: textSectionId,
-      ),
+      builder: (context) => TextSectionDialog(textSectionId: textSectionId),
     );
   }
 
@@ -37,7 +29,7 @@ class _TextSectionDialogState extends State<TextSectionDialog> {
   @override
   void initState() {
     super.initState();
-    
+
     // Initialize with empty controllers first
     titleController = TextEditingController();
     contentController = TextEditingController();
@@ -46,11 +38,12 @@ class _TextSectionDialogState extends State<TextSectionDialog> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    
+
     // Try to get existing text section data first
-    final textSection = context.read<TextSectionProvider>()
+    final textSection = context
+        .read<TextSectionProvider>()
         .textSections[widget.textSectionId];
-    
+
     if (textSection != null && !_disposed) {
       titleController.text = textSection.title;
       contentController.text = textSection.contentText;
@@ -64,15 +57,18 @@ class _TextSectionDialogState extends State<TextSectionDialog> {
 
   void _loadTextSectionData() async {
     if (_disposed) return;
-    
+
     // Load the text section data
-    await context.read<TextSectionProvider>().loadTextSection(widget.textSectionId);
-    
+    await context.read<TextSectionProvider>().loadTextSection(
+      widget.textSectionId,
+    );
+
     if (!_disposed && mounted) {
       // Set the text values after loading
-      final textSection = context.read<TextSectionProvider>()
+      final textSection = context
+          .read<TextSectionProvider>()
           .textSections[widget.textSectionId];
-      
+
       if (textSection != null) {
         titleController.text = textSection.title;
         contentController.text = textSection.contentText;
@@ -121,7 +117,7 @@ class _TextSectionDialogState extends State<TextSectionDialog> {
               ],
             ),
             const SizedBox(height: 16),
-            
+
             // Title field
             TextField(
               controller: titleController,
@@ -131,7 +127,7 @@ class _TextSectionDialogState extends State<TextSectionDialog> {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // Content field with more space
             Expanded(
               child: TextField(
@@ -147,7 +143,7 @@ class _TextSectionDialogState extends State<TextSectionDialog> {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // Action buttons
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -173,11 +169,11 @@ class _TextSectionDialogState extends State<TextSectionDialog> {
   void _saveChanges() async {
     // Check if widget is disposed before accessing controllers
     if (!mounted) return;
-    
+
     // Read controller values BEFORE any async operations
     final newTitle = titleController.text.trim();
     final newContent = contentController.text.trim();
-    
+
     if (newTitle.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -198,13 +194,13 @@ class _TextSectionDialogState extends State<TextSectionDialog> {
         null, // Keep current position
         onPlaylistRefreshNeeded: () {
           // Refresh the playlist to show updated text section
-          context.read<PlaylistProvider>().loadPlaylists();
+          context.read<PlaylistProvider>().loadLocalPlaylists();
         },
       );
-      
+
       if (mounted) {
         Navigator.pop(context);
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Seção atualizada com sucesso!'),
@@ -240,9 +236,7 @@ class _TextSectionDialogState extends State<TextSectionDialog> {
           ),
           TextButton(
             onPressed: _confirmDelete,
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.red,
-            ),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: const Text('Excluir'),
           ),
         ],
@@ -253,22 +247,22 @@ class _TextSectionDialogState extends State<TextSectionDialog> {
   /// Confirms and executes the delete operation
   void _confirmDelete() async {
     Navigator.pop(context); // Close confirmation dialog
-    
+
     // Check if widget is disposed before proceeding
     if (!mounted) return;
-    
+
     try {
       await context.read<TextSectionProvider>().deleteTextSection(
         widget.textSectionId,
         onPlaylistRefreshNeeded: () {
           // Refresh the playlist to reflect position adjustments
-          context.read<PlaylistProvider>().loadPlaylists();
+          context.read<PlaylistProvider>().loadLocalPlaylists();
         },
       );
-      
+
       if (mounted) {
         Navigator.pop(context); // Close main dialog
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Seção excluída com sucesso!'),

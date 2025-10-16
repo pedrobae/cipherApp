@@ -1,5 +1,6 @@
 import 'package:cipher_app/models/domain/playlist/playlist.dart';
 import 'package:cipher_app/models/domain/playlist/playlist_item.dart';
+import 'package:cipher_app/models/dtos/playlist_item_dto.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PlaylistDto {
@@ -11,6 +12,7 @@ class PlaylistDto {
   final DateTime updatedAt;
   final DateTime createdAt;
   final List<String> collaborators; // userIds
+  final List<PlaylistItemDto> items;
 
   const PlaylistDto({
     this.firebaseId,
@@ -21,6 +23,7 @@ class PlaylistDto {
     required this.updatedAt,
     required this.createdAt,
     this.collaborators = const [],
+    this.items = const [],
   });
 
   factory PlaylistDto.fromFirestore(Map<String, dynamic> json, String id) {
@@ -33,6 +36,14 @@ class PlaylistDto {
       updatedAt: (json['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       createdAt: (json['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       collaborators: List<String>.from(json['collaborators'] ?? []),
+      items:
+          (json['items'] as List<dynamic>?)
+              ?.map(
+                (item) =>
+                    PlaylistItemDto.fromFirestore(item as Map<String, dynamic>),
+              )
+              .toList() ??
+          [],
     );
   }
 
@@ -45,6 +56,7 @@ class PlaylistDto {
       'updatedAt': Timestamp.fromDate(updatedAt),
       'createdAt': Timestamp.fromDate(createdAt),
       'collaborators': collaborators,
+      'items': items.map((item) => item.toFirestore()).toList(),
     };
   }
 

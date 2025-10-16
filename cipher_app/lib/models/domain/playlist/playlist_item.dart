@@ -2,7 +2,6 @@
 class PlaylistItem {
   final String type; // 'cipher_version' or 'text_section'
   final int? id;
-  final String? firebaseId;
   final int? contentId;
   final String? firebaseContentId;
   int position;
@@ -10,7 +9,6 @@ class PlaylistItem {
   PlaylistItem({
     this.id,
     required this.type,
-    this.firebaseId,
     this.contentId,
     required this.position,
     this.firebaseContentId,

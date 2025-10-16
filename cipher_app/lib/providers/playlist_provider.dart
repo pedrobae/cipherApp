@@ -1,16 +1,20 @@
-import 'package:cipher_app/models/domain/playlist/playlist_item.dart';
-import 'package:flutter/foundation.dart';
 import 'dart:async';
-import '../models/domain/playlist/playlist.dart';
-import '../repositories/playlist_repository_local.dart';
+import 'package:flutter/foundation.dart';
+import 'package:cipher_app/models/domain/playlist/playlist.dart';
+import 'package:cipher_app/models/domain/playlist/playlist_item.dart';
+import 'package:cipher_app/repositories/playlist_repository_local.dart';
+import 'package:cipher_app/repositories/playlist_repository_cloud.dart';
 
 class PlaylistProvider extends ChangeNotifier {
   final PlaylistRepository _playlistRepository = PlaylistRepository();
+  final CloudPlaylistRepository _cloudPlaylistProvider =
+      CloudPlaylistRepository();
 
   PlaylistProvider();
 
   List<Playlist> _playlists = [];
   bool _isLoading = false;
+  bool _isCloudLoading = false;
   bool _isSaving = false;
   bool _isDeleting = false;
   String? _error;
@@ -18,13 +22,14 @@ class PlaylistProvider extends ChangeNotifier {
   // Getters
   List<Playlist> get playlists => _playlists;
   bool get isLoading => _isLoading;
+  bool get isCloudLoading => _isCloudLoading;
   bool get isSaving => _isSaving;
   bool get isDeleting => _isDeleting;
   String? get error => _error;
 
   // ===== READ =====
   // Load Playlists from local SQLite database
-  Future<void> loadPlaylists() async {
+  Future<void> loadLocalPlaylists() async {
     if (_isLoading) return;
 
     _isLoading = true;
@@ -33,6 +38,24 @@ class PlaylistProvider extends ChangeNotifier {
 
     try {
       _playlists = await _playlistRepository.getAllPlaylists();
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // Load all cloud playlists of a specific user
+  Future<void> loadCloudPlaylists(String userId) async {
+    if (_isCloudLoading) return;
+
+    _isCloudLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      _playlists = await _cloudPlaylistProvider.(userId);
     } catch (e) {
       _error = e.toString();
     } finally {

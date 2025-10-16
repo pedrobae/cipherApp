@@ -4,6 +4,17 @@ import 'package:cipher_app/models/domain/playlist/playlist.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 
+// class PlaylistDto {
+//   final String? firebaseId; // Cloud ID (Firebase)
+//   final String name;
+//   final String description;
+//   final String ownerId; // User that created the playlist
+//   final bool isPublic;
+//   final DateTime updatedAt;
+//   final DateTime createdAt;
+//   final List<String> collaborators; // userIds
+//   final List<PlaylistItemDto> items; // Array whose order matters
+
 class CloudPlaylistRepository {
   final FirestoreService _firestoreService = FirestoreService();
   final GuardHelper _guardHelper = GuardHelper();
@@ -57,6 +68,49 @@ class CloudPlaylistRepository {
       );
 
       return docId;
+    });
+  }
+
+  // ===== UPDATE =====
+  /// Update an existing playlist in Firestore on the changes map
+  Future<void> updatePlaylist(
+    String firebaseId,
+    String ownerId,
+    Map<String, dynamic> changes,
+  ) async {
+    return await _withErrorHandling('update playlist', () async {
+      await _guardHelper.requireAuth();
+      await _guardHelper.requireOwnership(ownerId);
+
+      await _firestoreService.updateDocument(
+        collectionPath: 'playlists',
+        documentId: firebaseId,
+        data: changes,
+      );
+
+      await FirebaseAnalytics.instance.logEvent(
+        name: 'updated_playlist',
+        parameters: {'playlistId': firebaseId},
+      );
+    });
+  }
+
+  // ===== DELETE =====
+  /// Delete a playlist from Firestore
+  Future<void> deletePlaylist(String firebaseId, String ownerId) async {
+    return await _withErrorHandling('delete playlist', () async {
+      await _guardHelper.requireAuth();
+      await _guardHelper.requireOwnership(ownerId);
+
+      await _firestoreService.deleteDocument(
+        collectionPath: 'playlists',
+        documentId: firebaseId,
+      );
+
+      await FirebaseAnalytics.instance.logEvent(
+        name: 'deleted_playlist',
+        parameters: {'playlistId': firebaseId},
+      );
     });
   }
 

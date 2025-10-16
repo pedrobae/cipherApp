@@ -114,29 +114,6 @@ class CloudPlaylistRepository {
   }
 
   // ===== UPDATE =====
-  /// Update an existing playlist adding new version
-  Future<void> addVersionToPlaylist(Playlist playlist, String versionId) async {
-    return await _withErrorHandling('update playlist', () async {
-      await _guardHelper.requireAuth();
-      await _guardHelper.requireOwnership(playlist.createdBy);
-
-      await _firestoreService.updateDocument(
-        collectionPath: 'playlists',
-        documentId: playlist.firebaseId!,
-        data: {
-          'versions': FieldValue.arrayUnion([versionId]),
-          'updatedAt': DateTime.now().toIso8601String(),
-        },
-      );
-
-      await FirebaseAnalytics.instance.logEvent(
-        name: 'updated_playlist',
-        parameters: {'playlistId': playlist.id},
-      );
-    });
-  }
-
-  // ===== UPDATE =====
   /// Update an existing playlist in Firestore on the changes map
   Future<void> updatePlaylist(
     String firebaseId,

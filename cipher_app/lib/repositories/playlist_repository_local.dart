@@ -102,22 +102,16 @@ class PlaylistRepository {
 
   // Update playlist, for name and description
   Future<void> updatePlaylist(
-    int playlistId, {
-    String? name,
-    String? description,
-  }) async {
+    int playlistId,
+    Map<String, dynamic> changes,
+  ) async {
     final db = await _databaseHelper.database;
 
-    Map<String, dynamic> updates = {
-      'updated_at': DateTime.now().toIso8601String(),
-    };
-
-    if (name != null) updates['name'] = name;
-    if (description != null) updates['description'] = description;
+    changes['updated_at'] = DateTime.now().toIso8601String();
 
     await db.update(
       'playlist',
-      updates,
+      changes,
       where: 'id = ?',
       whereArgs: [playlistId],
     );
@@ -162,7 +156,7 @@ class PlaylistRepository {
 
       final nextPosition = positionResult.first['next_position'] as int;
 
-      // Insert cipher map relationship
+      // Insert version relationship
       await txn.insert('playlist_version', {
         'version_id': cipherMapId,
         'playlist_id': playlistId,
@@ -200,6 +194,36 @@ class PlaylistRepository {
         whereArgs: [playlistId],
       );
     });
+  }
+
+  // ===== COLLABORATOR MANAGEMENT =====
+  /// Adds a collaborator to a playlist
+  Future<void> addCollaborator(int playlistId, int userId, String role) async {
+    final db = await _databaseHelper.database;
+    final currentUserId = _currentUserId ?? 1; // Default to 1 if not set
+
+    await db.insert('user_playlist', {
+      'user_id': userId,
+      'playlist_id': playlistId,
+      'role': role,
+      'added_by': currentUserId,
+      'added_at': DateTime.now().toIso8601String(),
+    });
+  }
+
+  /// Gets collaborators for a playlist
+  Future<List<String>> getCollaborators(int playlistId) async {
+    final db = await _databaseHelper.database;
+    // Get collaborator IDs for this playlist
+    final collaboratorResults = await db.rawQuery(
+      '''
+        SELECT user_id FROM user_playlist 
+        WHERE playlist_id = ?
+      ''',
+      [playlistId],
+    );
+
+    return collaboratorResults.map((row) => row['user_id'].toString()).toList();
   }
 
   // ===== UNIFIED PLAYLIST ITEMS =====
@@ -291,21 +315,6 @@ class PlaylistRepository {
         return PlaylistItem.textSection(contentId, position, id);
       }
     }).toList();
-  }
-
-  /// Gets collaborators for a playlist
-  Future<List<String>> getCollaborators(int playlistId) async {
-    final db = await _databaseHelper.database;
-    // Get collaborator IDs for this playlist
-    final collaboratorResults = await db.rawQuery(
-      '''
-        SELECT user_id FROM user_playlist 
-        WHERE playlist_id = ?
-      ''',
-      [playlistId],
-    );
-
-    return collaboratorResults.map((row) => row['user_id'].toString()).toList();
   }
 
   /// Build playlist domain object from database row

@@ -146,7 +146,7 @@ class LocalCipherRepository {
     return version;
   }
 
-  Future<Version?> getVersionWithFirebaseId(String firebaseId) async {
+  Future<int?> getVersionWithFirebaseId(String firebaseId) async {
     final db = await _databaseHelper.database;
     final result = await db.query(
       'version',
@@ -156,9 +156,7 @@ class LocalCipherRepository {
 
     if (result.isEmpty) return null;
 
-    Version version = await (_buildCipherVersion(result[0]));
-
-    return version;
+    return result[0]['id'] as int?;
   }
 
   Future<Cipher?> getCipherWithVersionId(int versionId) async {
@@ -186,9 +184,9 @@ class LocalCipherRepository {
     return Future.wait(results.map((row) => _buildCipherVersion(row)));
   }
 
-  Future<int> insertVersionToCipher(Version map) async {
+  Future<int> insertVersionToCipher(Version version) async {
     final db = await _databaseHelper.database;
-    return await db.insert('version', map.toSqLite());
+    return await db.insert('version', version.toSqLite());
   }
 
   Future<void> updateVersion(Version version) async {

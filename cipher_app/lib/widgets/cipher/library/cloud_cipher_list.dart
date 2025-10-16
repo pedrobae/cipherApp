@@ -95,7 +95,7 @@ class _CloudCipherListState extends State<CloudCipherList> {
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () =>
-                      cipherProvider.loadLocalCiphers(forceReload: true),
+                      cipherProvider.loadCloudCiphers(forceReload: true),
                   child: const Text('Tentar Novamente'),
                 ),
               ],

@@ -599,14 +599,15 @@ class CipherProvider extends ChangeNotifier {
   }
 
   // Check if a cipher is already cached
-  bool isCipherCached(int cipherId) {
+  bool cipherIsCached(int cipherId) {
     return (localCiphers).any((cipher) => cipher.id == cipherId);
   }
 
-  List<String> removeLocalCiphersWithFirebaseId(List<String> firebaseIds) {
-    return firebaseIds
-        .where((id) => _localCiphers.any((cipher) => cipher.firebaseId == id))
+  int? cipherWithFirebaseIdIsCached(String firebaseId) {
+    final matches = _localCiphers
+        .where((cipher) => cipher.firebaseId == firebaseId)
         .toList();
+    return matches.isNotEmpty ? matches.first.id : null;
   }
 
   @override

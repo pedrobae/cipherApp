@@ -14,6 +14,7 @@ class PlaylistProvider extends ChangeNotifier {
   PlaylistProvider();
 
   List<Playlist> _playlists = [];
+  List<PlaylistDto> _cloudPlaylists = [];
   bool _isLoading = false;
   bool _isCloudLoading = false;
   bool _isSaving = false;
@@ -26,6 +27,7 @@ class PlaylistProvider extends ChangeNotifier {
 
   // Getters
   List<Playlist> get playlists => _playlists;
+  List<PlaylistDto> get cloudPlaylists => _cloudPlaylists;
   bool get isLoading => _isLoading;
   bool get isCloudLoading => _isCloudLoading;
   bool get isSaving => _isSaving;
@@ -74,25 +76,7 @@ class PlaylistProvider extends ChangeNotifier {
       final cloudPlaylists = await _cloudPlaylistProvider
           .fetchPlaylistsByUserId(userId);
 
-      // Merge cloud playlists with local ones, avoiding duplicates
-      for (var cloudDto in cloudPlaylists) {
-        final existingIndex = _playlists.indexWhere(
-          (p) => p.firebaseId == cloudDto.firebaseId,
-        );
-
-        if (existingIndex != -1) {
-          // Update existing playlist with cloud data
-          await _mergePlaylistFromCloud(cloudDto, _playlists[existingIndex]);
-        } else {
-          // Save new cloud playlist locally
-          List<PlaylistItem> items = [];
-          for (var index = 0; index < cloudDto.items.length; index++) {
-            items.add(cloudDto.items[index].toDomain(index));
-          }
-
-          await _playlistRepository.createPlaylist(cloudDto.toDomain(items));
-        }
-      }
+      _cloudPlaylists = cloudPlaylists;
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -146,27 +130,7 @@ class PlaylistProvider extends ChangeNotifier {
         return;
       }
 
-      List<PlaylistItem> items = [];
-      for (var index = 0; index < cloudDto.items.length; index++) {
-        items.add(cloudDto.items[index].toDomain(index));
-      }
-
-      int existingIndex = _playlists.indexWhere(
-        (p) => p.firebaseId == cloudDto.firebaseId,
-      );
-
-      if (existingIndex != -1) {
-        // Update existing playlist with cloud data
-        await _mergePlaylistFromCloud(cloudDto, _playlists[existingIndex]);
-      } else {
-        // Create new playlist locally
-        List<PlaylistItem> items = [];
-        for (var index = 0; index < cloudDto.items.length; index++) {
-          items.add(cloudDto.items[index].toDomain(index));
-        }
-
-        await _playlistRepository.createPlaylist(cloudDto.toDomain(items));
-      }
+      _cloudPlaylists.add(cloudDto);
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -306,43 +270,50 @@ class PlaylistProvider extends ChangeNotifier {
   }
 
   // ===== UTILITY =====
-  // Merge playlist from cloud with existing local playlist
+  // Sync playlist from cloud with existing local playlist
   // Assumes users and versions have already been synced/loaded beforehand
-  Future<void> _mergePlaylistFromCloud(
-    PlaylistDto cloudDto,
-    Playlist existingPlaylist,
-  ) async {
-    // Compare timestamps - only update if cloud is newer
-    if (existingPlaylist.updatedAt != null &&
-        cloudDto.updatedAt.isBefore(existingPlaylist.updatedAt!)) {
-      if (kDebugMode) {
-        print(
-          'Local playlist "${existingPlaylist.name}" is newer than cloud, skipping merge',
-        );
-      }
-      return;
-    }
+  Future<void> syncPlaylist(PlaylistDto cloudDto) async {
+    // Merge cloud playlists with local ones, avoiding duplicates
+    final existingIndex = _playlists.indexWhere(
+      (p) => p.firebaseId == cloudDto.firebaseId,
+    );
 
-    try {
-      // Update playlist metadata (name, description, timestamps)
-      await _playlistRepository.updatePlaylist(existingPlaylist.id, {
-        'name': cloudDto.name,
-        'description': cloudDto.description,
-        'updated_at': cloudDto.updatedAt.toIso8601String(),
-        'is_public': cloudDto.isPublic ? 1 : 0,
-      });
+    final existingPlaylist = existingIndex != -1
+        ? _playlists[existingIndex]
+        : null;
 
-      // Reload playlist to update cache
-      await _loadPlaylist(existingPlaylist.id);
+    if (existingPlaylist != null) {
+      // Update existing playlist with cloud data
+      // Compare timestamps? - only update if cloud is newer?
+      try {
+        // Update playlist metadata (name, description, timestamps)
+        await _playlistRepository.updatePlaylist(existingPlaylist.id, {
+          'name': cloudDto.name,
+          'description': cloudDto.description,
+          'updated_at': cloudDto.updatedAt.toIso8601String(),
+          'is_public': cloudDto.isPublic ? 1 : 0,
+        });
 
-      if (kDebugMode) {
-        print('Successfully merged playlist: ${cloudDto.name}');
+        // Reload playlist to update cache
+        await _loadPlaylist(existingPlaylist.id);
+
+        if (kDebugMode) {
+          print('Successfully merged playlist: ${cloudDto.name}');
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          print('Error merging playlist from cloud: $e');
+        }
+        rethrow;
       }
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error merging playlist from cloud: $e');
+    } else {
+      // Save new cloud playlist locally
+      List<PlaylistItem> items = [];
+      for (var index = 0; index < cloudDto.items.length; index++) {
+        items.add(cloudDto.items[index].toDomain(index));
       }
-      rethrow;
+
+      await _playlistRepository.createPlaylist(cloudDto.toDomain(items));
     }
   }
 

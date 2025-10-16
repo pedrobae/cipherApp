@@ -29,25 +29,36 @@ class VersionProvider extends ChangeNotifier {
   String? get error => _error;
 
   /// Checks if a version exists locally by its Firebase ID
-  /// Returns the Version if found, otherwise null
-  Future<Version?> getVersionByFirebaseId(String firebaseId) async {
+  /// Returns the local id if found, otherwise null
+  Future<int?> getVersionByFirebaseId(String firebaseId) async {
     // Check cache first
     try {
-      return _versions.firstWhere((v) => v.firebaseId == firebaseId);
+      return _versions.firstWhere((v) => v.firebaseId == firebaseId).id;
     } catch (_) {
       // Not in cache, query repository
       return await _cipherRepository.getVersionWithFirebaseId(firebaseId);
     }
   }
 
+  /// Gets a version by its local ID
+  Future<Version?> getVersionById(int versionId) async {
+    // Check cache first
+    try {
+      return _versions.firstWhere((v) => v.id == versionId);
+    } catch (_) {
+      // Not in cache, query repository
+      return await _cipherRepository.getVersionWithId(versionId);
+    }
+  }
+
   /// Downloads a version from Firebase by its Firebase ID and saves it locally
-  Future<Version?> downloadVersionFromCloud(
-    String cipherId,
-    String versionId,
+  Future<Version?> downloadVersion(
+    String cipherCloudId,
+    String versionCloudId,
   ) async {
     final versionDto = await _cloudCipherRepository.getVersionById(
-      cipherId,
-      versionId,
+      cipherCloudId,
+      versionCloudId,
     );
     if (versionDto != null) {
       final version = versionDto.toDomain();
@@ -77,7 +88,7 @@ class VersionProvider extends ChangeNotifier {
       _currentVersion = versionWithCipherId.copyWith(id: versionId);
 
       // Insert content for this map
-      await _saveSections();
+      await _saveSections(_currentVersion.id!, _currentVersion.sections!);
 
       if (kDebugMode) {
         print('Created a new version with id $versionId');
@@ -91,6 +102,37 @@ class VersionProvider extends ChangeNotifier {
       _isSaving = false;
       notifyListeners();
     }
+  }
+
+  /// Create version from version domaing object - used when importing from cloud
+  Future<int?> createVersionFromDomain(Version version) async {
+    if (_isSaving) return null;
+
+    _isSaving = true;
+    _error = null;
+    notifyListeners();
+    int? versionId;
+
+    try {
+      // Create version with the correct cipher ID
+      versionId = await _cipherRepository.insertVersionToCipher(version);
+
+      if (kDebugMode) {
+        print('Created a new version with id $versionId from domain object');
+      }
+
+      await _saveSections(versionId, version.sections!);
+    } catch (e) {
+      _error = e.toString();
+      if (kDebugMode) {
+        print('Error creating cipher version from domain object: $e');
+      }
+      versionId = null;
+    } finally {
+      _isSaving = false;
+      notifyListeners();
+    }
+    return versionId;
   }
 
   Future<String> createVersionInCloud() async {
@@ -272,7 +314,7 @@ class VersionProvider extends ChangeNotifier {
     try {
       await _cipherRepository.updateVersion(currentVersion);
       // Insert content for this map
-      await _saveSections();
+      await _saveSections(_currentVersion.id!, _currentVersion.sections!);
 
       // Check if the version exists in the versions list, if so update it
       final index = _versions.indexWhere(
@@ -427,18 +469,21 @@ class VersionProvider extends ChangeNotifier {
 
   /// ===== SAVE =====
   // Persist the data to the database
-  Future<void> _saveSections() async {
-    if (currentVersion.sections != null) {
+  Future<void> _saveSections(
+    int versionId,
+    Map<String, Section> sections,
+  ) async {
+    if (sections.isNotEmpty) {
       // For simplicity, delete all existing content and recreate
       // This could be optimized later to only update changed content
-      await _cipherRepository.deleteAllVersionSections(currentVersion.id!);
+      await _cipherRepository.deleteAllVersionSections(versionId);
 
       // Insert new content
-      for (final entry in currentVersion.sections!.entries) {
+      for (final entry in sections.entries) {
         if (entry.key.isNotEmpty) {
           final sectionJson = entry.value.toSqLite();
           await _cipherRepository.insertSection(
-            currentVersion.id!,
+            versionId,
             sectionJson['content_type'],
             sectionJson['content_code'],
             sectionJson['content_text'],

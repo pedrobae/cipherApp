@@ -25,14 +25,17 @@ class CloudPlaylistRepository {
 
   // ===== CREATE =====
   /// Publish a new playlist to Firestore
-  Future<String> publishPlaylist(Playlist playlist) async {
+  Future<String> publishPlaylist(
+    Playlist playlist,
+    String ownerFirebaseId,
+  ) async {
     return await _withErrorHandling('publish playlist', () async {
       await _guardHelper.requireAuth();
-      await _guardHelper.requireOwnership(playlist.createdBy);
+      await _guardHelper.requireOwnership(ownerFirebaseId);
 
       final docId = await _firestoreService.createDocument(
         collectionPath: 'playlists',
-        data: playlist.toDto().toFirestore(),
+        data: playlist.toDto(ownerFirebaseId).toFirestore(),
       );
 
       await FirebaseAnalytics.instance.logEvent(

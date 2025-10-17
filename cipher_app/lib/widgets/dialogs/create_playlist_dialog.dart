@@ -1,4 +1,5 @@
 import 'package:cipher_app/providers/auth_provider.dart';
+import 'package:cipher_app/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/domain/playlist/playlist.dart';
@@ -62,13 +63,18 @@ class _CreatePlaylistDialogState extends State<CreatePlaylistDialog> {
     final name = _nameController.text.trim();
     if (name.isEmpty) return;
 
+    final uid = context.read<AuthProvider>().id;
+    final createdBy = uid != null
+        ? context.read<UserProvider>().getLocalIdByFirebaseId(uid)!
+        : -1;
+
     final newPlaylist = Playlist(
       id: 0, // Will be overwritten by an auto-generated id on db insertion
       name: name,
       description: _descriptionController.text.trim().isEmpty
           ? null
           : _descriptionController.text.trim(),
-      createdBy: context.read<AuthProvider>().id ?? 'anonymous',
+      createdBy: createdBy,
       isPublic: false,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),

@@ -121,6 +121,32 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  int? getLocalIdByFirebaseId(String firebaseId) {
+    try {
+      final user = _knownCollaborators.firstWhere(
+        (user) => user.firebaseId == firebaseId,
+      );
+      return user.id;
+    } catch (e) {
+      if (kDebugMode) {
+        print('User with Firebase ID $firebaseId not found locally.');
+      }
+      throw Exception('User with Firebase ID $firebaseId not found locally.');
+    }
+  }
+
+  String getFirebaseIdByLocalId(int localId) {
+    try {
+      final user = _knownCollaborators.firstWhere((user) => user.id == localId);
+      return user.firebaseId!;
+    } catch (e) {
+      if (kDebugMode) {
+        print('User with local ID $localId not found locally.');
+      }
+      throw Exception('User with local ID $localId not found locally.');
+    }
+  }
+
   // Clears search users
   void clearSearchResults() async {
     _searchResults = _knownCollaborators;

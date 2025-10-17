@@ -76,7 +76,6 @@ class Version {
   // To JSON for database (without content - sections handled separately)
   Map<String, dynamic> toSqLite() {
     return {
-      'id': id,
       'firebase_id': firebaseId,
       'firebase_cipher_id': firebaseCipherId,
       'cipher_id': cipherId,

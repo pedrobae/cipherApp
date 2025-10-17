@@ -606,18 +606,16 @@ class CipherProvider extends ChangeNotifier {
     return (localCiphers).any((cipher) => cipher.id == cipherId);
   }
 
-  int? cipherWithFirebaseIdIsCached(String firebaseId) {
-    final matches = _localCiphers
-        .where((cipher) => cipher.firebaseId == firebaseId)
-        .toList();
+  Future<int?> cipherWithFirebaseIdIsCached(String firebaseId) async {
+    final result = await _cipherRepository.getCipherWithFirebaseId(firebaseId);
 
     if (kDebugMode) {
       print(
         'Checking if cipher with Firebase ID $firebaseId is cached: '
-        '${matches.isNotEmpty ? "Found" : "Not Found"}',
+        '${result != null ? "Found" : "Not Found"}',
       );
     }
-    return matches.isNotEmpty ? matches.first.id : null;
+    return result;
   }
 
   @override

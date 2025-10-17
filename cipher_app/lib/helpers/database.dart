@@ -135,7 +135,7 @@ class DatabaseHelper {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         description TEXT,
-        author_id INTEGER NOT NULL,
+        author_id STRING NOT NULL,
         firebase_id TEXT UNIQUE,
         is_public BOOLEAN DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -257,6 +257,9 @@ class DatabaseHelper {
     // For user lookups
     await db.execute('CREATE INDEX idx_user_google_id ON user(google_id)');
     await db.execute('CREATE INDEX idx_user_mail ON user(mail)');
+    await db.execute(
+      'CREATE UNIQUE INDEX idx_user_firebase_id ON user(firebase_id)',
+    );
     // For cipher lookups
     await db.execute(
       'CREATE UNIQUE INDEX idx_cipher_firebase_id ON cipher(firebase_id)',
@@ -343,14 +346,20 @@ class DatabaseHelper {
     }
     if (oldVersion < 6) {
       // Add firebase_id columns for cloud sync
-      await db.execute('ALTER TABLE user ADD COLUMN firebase_id TEXT UNIQUE');
-      await db.execute(
-        'ALTER TABLE playlist ADD COLUMN firebase_id TEXT UNIQUE',
-      );
+      await db.execute('ALTER TABLE user ADD COLUMN firebase_id TEXT');
+      await db.execute('ALTER TABLE playlist ADD COLUMN firebase_id TEXT');
       await db.execute(
         'ALTER TABLE playlist_version ADD COLUMN firebase_content_id TEXT',
       );
       await db.execute('ALTER TABLE playlist_text ADD COLUMN firebase_id TEXT');
+
+      // Add indexes for firebase_id columns
+      await db.execute(
+        'CREATE UNIQUE INDEX idx_user_firebase_id ON user(firebase_id)',
+      );
+      await db.execute(
+        'CREATE UNIQUE INDEX idx_playlist_firebase_id ON playlist(firebase_id)',
+      );
     }
   }
 

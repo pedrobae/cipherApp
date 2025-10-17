@@ -35,9 +35,7 @@ class PlaylistRepository {
             await txn.insert('playlist_version', {
               'version_id': item.contentId,
               'playlist_id': playlistId,
-              'includer_id': int.parse(
-                playlist.createdBy,
-              ), // Creator adds initial items
+              'includer_id': playlist.createdBy,
               'position': item.position,
               'included_at': DateTime.now().toIso8601String(),
             });
@@ -56,7 +54,7 @@ class PlaylistRepository {
             'user_id': int.parse(collaboratorId),
             'playlist_id': playlistId,
             'role': 'collaborator',
-            'added_by': int.parse(playlist.createdBy),
+            'added_by': playlist.createdBy,
             'added_at': DateTime.now().toIso8601String(),
           });
         }
@@ -420,7 +418,7 @@ class PlaylistRepository {
       isPublic: playlistRow['is_public'] == 1,
       name: playlistRow['name'] as String,
       description: playlistRow['description'] as String?,
-      createdBy: playlistRow['author_id'].toString(),
+      createdBy: playlistRow['author_id'] as int,
       createdAt: DateTime.parse(playlistRow['created_at'] as String),
       updatedAt: DateTime.parse(playlistRow['updated_at'] as String),
       collaborators: collaborators,

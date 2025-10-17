@@ -10,7 +10,7 @@ class Playlist {
   final String name;
   final String? firebaseId;
   final String? description;
-  final String createdBy;
+  final int createdBy;
   final bool? isPublic;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -35,7 +35,7 @@ class Playlist {
       id: json['id'] as int,
       name: json['name'] as String? ?? '',
       description: json['description'] as String? ?? '',
-      createdBy: json['created_by'] as String? ?? '',
+      createdBy: json['created_by'] as int? ?? 0,
       createdAt: DatetimeHelper.parseDateTime(json['created_at']),
       updatedAt: DatetimeHelper.parseDateTime(json['updated_at']),
       isPublic: json['is_public'] as bool? ?? false,
@@ -70,9 +70,7 @@ class Playlist {
       'name': name,
       'description': description,
       'firebase_id': firebaseId,
-      'author_id': int.parse(
-        createdBy,
-      ), // Assuming createdBy is user ID as string
+      'author_id': createdBy,
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
       'is_public': isPublic,
@@ -86,12 +84,12 @@ class Playlist {
     return result;
   }
 
-  PlaylistDto toDto() {
+  PlaylistDto toDto(String ownerFirebaseId) {
     return PlaylistDto(
       firebaseId: firebaseId,
       name: name,
       description: description ?? '',
-      ownerId: createdBy,
+      ownerId: ownerFirebaseId,
       isPublic: isPublic ?? false,
       updatedAt: updatedAt ?? DateTime.now(),
       createdAt: createdAt ?? DateTime.now(),
@@ -103,7 +101,7 @@ class Playlist {
     int? id,
     String? name,
     String? description,
-    String? createdBy,
+    int? createdBy,
     DateTime? createdAt,
     DateTime? updatedAt,
     List<String>? collaborators,

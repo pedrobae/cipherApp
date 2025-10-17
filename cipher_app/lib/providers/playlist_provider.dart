@@ -195,8 +195,8 @@ class PlaylistProvider extends ChangeNotifier {
     await _loadPlaylist(id); // Reload just this playlist
   }
 
-  Future<int> upsertPlaylist(Playlist playlistDto) async {
-    return await _playlistRepository.upsertPlaylist(playlistDto);
+  Future<int> upsertPlaylist(Playlist playlist) async {
+    return await _playlistRepository.upsertPlaylist(playlist);
   }
 
   // Update a Playlist with a version
@@ -310,7 +310,7 @@ class PlaylistProvider extends ChangeNotifier {
   // ===== UTILITY =====
   // Sync playlist from cloud with existing local playlist
   // Assumes users and versions have already been synced/loaded beforehand
-  Future<void> syncPlaylist(PlaylistDto cloudDto) async {
+  Future<void> syncPlaylist(PlaylistDto cloudDto, int ownerLocalId) async {
     // Merge cloud playlists with local ones, avoiding duplicates
     final existingIndex = _playlists.indexWhere(
       (p) => p.firebaseId == cloudDto.firebaseId,
@@ -351,7 +351,9 @@ class PlaylistProvider extends ChangeNotifier {
         items.add(cloudDto.items[index].toDomain(index));
       }
 
-      await _playlistRepository.createPlaylist(cloudDto.toDomain(items));
+      await _playlistRepository.createPlaylist(
+        cloudDto.toDomain(items, ownerLocalId),
+      );
     }
   }
 
@@ -468,7 +470,7 @@ class PlaylistProvider extends ChangeNotifier {
   }
 
   /// Upload pending changes for a specific playlist to Firebase
-  Future<void> uploadChanges(int playlistId) async {
+  Future<void> uploadChanges(int playlistId, String ownerFirebaseId) async {
     if (!hasPendingChanges(playlistId)) {
       if (kDebugMode) {
         print('No pending changes for playlist $playlistId');
@@ -512,7 +514,7 @@ class PlaylistProvider extends ChangeNotifier {
       if (playlist.firebaseId != null) {
         await _cloudPlaylistRepository.updatePlaylist(
           playlist.firebaseId!,
-          playlist.createdBy, // ownerId
+          ownerFirebaseId,
           updatePayload,
         );
 
@@ -538,22 +540,6 @@ class PlaylistProvider extends ChangeNotifier {
     } finally {
       _isSaving = false;
       notifyListeners();
-    }
-  }
-
-  /// Upload all pending changes for all playlists
-  Future<void> uploadAllChanges() async {
-    final playlistIds = _pendingChanges.keys.toList();
-
-    for (var playlistId in playlistIds) {
-      try {
-        await uploadChanges(playlistId);
-      } catch (e) {
-        if (kDebugMode) {
-          print('Failed to upload changes for playlist $playlistId: $e');
-        }
-        // Continue with other playlists even if one fails
-      }
     }
   }
 

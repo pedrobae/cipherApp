@@ -61,12 +61,12 @@ class PlaylistDto {
     };
   }
 
-  Playlist toDomain(List<PlaylistItem> items) {
+  Playlist toDomain(List<PlaylistItem> items, int ownerLocalId) {
     return Playlist(
       id: -1, // ID local será atribuído pelo banco de dados local
       name: name,
       description: description,
-      createdBy: ownerId,
+      createdBy: ownerLocalId,
       isPublic: isPublic,
       updatedAt: updatedAt,
       createdAt: createdAt,

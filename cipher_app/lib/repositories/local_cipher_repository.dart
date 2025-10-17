@@ -34,6 +34,20 @@ class LocalCipherRepository {
     return _buildCipher(results.first);
   }
 
+  Future<int?> getCipherWithFirebaseId(String firebaseId) async {
+    final db = await _databaseHelper.database;
+    final results = await db.query(
+      'cipher',
+      where: 'firebase_id = ? AND is_deleted = 0',
+      whereArgs: [firebaseId],
+      columns: ['id'],
+    );
+
+    if (results.isEmpty) return null;
+
+    return results.first['id'] as int?;
+  }
+
   Future<int> insertPrunedCipher(Cipher cipher) async {
     final db = await _databaseHelper.database;
 

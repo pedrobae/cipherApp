@@ -144,12 +144,11 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
 
           final syncedItems = <Map<String, dynamic>>[];
 
-          // Process items with detailed error tracking
           for (int i = 0; i < playlistDto.items.length; i++) {
             final item = playlistDto.items[i];
 
             try {
-              if (item.type == 'version') {
+              if (item.type == 'cipher_version') {
                 final parts = item.firebaseContentId!.split(':');
                 if (parts.length != 2) {
                   throw Exception(
@@ -161,9 +160,8 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                 final String versionCloudId = parts[1];
 
                 // Ensure cipher exists locally
-                int? cipherId = cipherProvider.cipherWithFirebaseIdIsCached(
-                  cipherCloudId,
-                );
+                int? cipherId = await cipherProvider
+                    .cipherWithFirebaseIdIsCached(cipherCloudId);
                 if (cipherId == null) {
                   cipherId = await cipherProvider.downloadCipherMetadata(
                     cipherCloudId,
@@ -180,6 +178,11 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                 final versionId = await versionProvider.getVersionByFirebaseId(
                   versionCloudId,
                 );
+                if (kDebugMode) {
+                  print(
+                    'Version ID for Firebase ID $versionCloudId: $versionId',
+                  );
+                }
                 if (versionId == null) {
                   final newVersion = await versionProvider.downloadVersion(
                     cipherCloudId,
@@ -198,18 +201,18 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                 }
 
                 syncedItems.add({
-                  'type': 'version',
+                  'type': 'cipher_version',
                   'contentId': versionId,
                   'position': i,
                 });
-              } else if (item.type == 'text') {
+              } else if (item.type == 'text_section') {
                 // Validate text item can be retrieved
                 final data = await playlistProvider.getTextItemByFirebaseId(
                   item.firebaseContentId!,
                 );
 
                 syncedItems.add({
-                  'type': 'text',
+                  'type': 'text_section',
                   'firebaseContentId': item.firebaseContentId!,
                   'position': i,
                   'title': data.title,
@@ -229,12 +232,15 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
           // Only upsert playlist if we successfully processed at least some items
           if (syncedItems.isNotEmpty || playlistDto.items.isEmpty) {
             final playlistId = await playlistProvider.upsertPlaylist(
-              playlistDto.toDomain([]), // We'll rebuild items from syncedItems
+              playlistDto.toDomain(
+                [],
+                userProvider.getLocalIdByFirebaseId(playlistDto.ownerId)!,
+              ),
             );
 
             // Upsert text items that were successfully validated
             for (final item in syncedItems.where(
-              (item) => item['type'] == 'text',
+              (item) => item['type'] == 'text_section',
             )) {
               await playlistProvider.upsertTextItem(
                 playlistId: playlistId,

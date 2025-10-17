@@ -48,6 +48,9 @@ class UserProvider extends ChangeNotifier {
           final user = userDto.toDomain();
           await _userRepository.createUser(user);
           _knownCollaborators.add(user);
+          if (kDebugMode) {
+            print('Downloaded and saved user: ${user.username}');
+          }
         } else {
           if (kDebugMode) {
             print('User with Firebase ID $userId not found in cloud.');

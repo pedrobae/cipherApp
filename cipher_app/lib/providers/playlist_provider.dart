@@ -82,6 +82,7 @@ class PlaylistProvider extends ChangeNotifier {
       _error = e.toString();
     } finally {
       _isLoading = false;
+      _isCloudLoading = false;
       notifyListeners();
     }
   }

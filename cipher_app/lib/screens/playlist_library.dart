@@ -29,6 +29,13 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         context.read<PlaylistProvider>().loadLocalPlaylists();
+        _syncPlaylists(
+          context.read<PlaylistProvider>(),
+          context.read<CipherProvider>(),
+          context.read<UserProvider>(),
+          context.read<VersionProvider>(),
+          context.read<AuthProvider>(),
+        );
       }
     });
   }
@@ -37,48 +44,74 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       body: Consumer3<PlaylistProvider, CipherProvider, UserProvider>(
-        builder:
-            (context, playlistProvider, cipherProvider, userProvider, child) {
-              // Handle loading state
-              if (playlistProvider.isLoading) {
-                return const Center(child: CircularProgressIndicator());
-              }
+        builder: (context, playlistProvider, cipherProvider, userProvider, child) {
+          // Handle loading state
+          if (playlistProvider.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-              // Handle error state
-              if (playlistProvider.error != null) {
-                return ErrorStateWidget(
-                  title: 'Erro ao carregar playlists',
-                  message: playlistProvider.error!,
-                  onRetry: () => playlistProvider.loadLocalPlaylists(),
-                );
-              }
+          if (playlistProvider.isCloudLoading) {
+            return Center(
+              child: const Column(
+                spacing: 8,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Carregando suas playlists da nuvem...'),
+                  CircularProgressIndicator(),
+                ],
+              ),
+            );
+          }
 
-              // Handle empty state
-              if (playlistProvider.playlists.isEmpty) {
-                return const EmptyStateWidget(
-                  icon: Icons.playlist_play,
-                  title: 'Nenhuma playlist encontrada',
-                  subtitle: 'Crie sua primeira playlist!',
-                );
-              }
+          // Handle error state
+          if (playlistProvider.error != null) {
+            return ErrorStateWidget(
+              title: 'Erro ao carregar playlists',
+              message: playlistProvider.error!,
+              onRetry: () => playlistProvider.loadLocalPlaylists(),
+            );
+          }
 
-              // Display playlists
-              return RefreshIndicator(
-                onRefresh: () => playlistProvider.loadLocalPlaylists(),
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(8),
-                  itemCount: playlistProvider.playlists.length,
-                  itemBuilder: (context, index) {
-                    final playlist = playlistProvider.playlists[index];
-                    return PlaylistCard(
-                      playlist: playlist,
-                      onTap: () => _onPlaylistTap(context, playlist),
-                      onDelete: () => _showDeleteDialog(context, playlist),
-                    );
-                  },
-                ),
+          // Handle empty state
+          if (playlistProvider.playlists.isEmpty) {
+            return const EmptyStateWidget(
+              icon: Icons.playlist_play,
+              title: 'Nenhuma playlist encontrada',
+              subtitle: 'Crie sua primeira playlist!',
+            );
+          }
+
+          // Display playlists
+          return RefreshIndicator(
+            onRefresh: () async {
+              // Capture providers synchronously to avoid using context across async gaps
+              final versionProvider = context.read<VersionProvider>();
+              final authProvider = context.read<AuthProvider>();
+
+              await playlistProvider.loadLocalPlaylists();
+              await _syncPlaylists(
+                playlistProvider,
+                cipherProvider,
+                userProvider,
+                versionProvider,
+                authProvider,
               );
             },
+            child: ListView.builder(
+              padding: const EdgeInsets.all(8),
+              itemCount: playlistProvider.playlists.length,
+              itemBuilder: (context, index) {
+                final playlist = playlistProvider.playlists[index];
+                return PlaylistCard(
+                  playlist: playlist,
+                  onTap: () => _onPlaylistTap(context, playlist),
+                  onDelete: () => _showDeleteDialog(context, playlist),
+                );
+              },
+            ),
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
         heroTag: 'playlist_fab',

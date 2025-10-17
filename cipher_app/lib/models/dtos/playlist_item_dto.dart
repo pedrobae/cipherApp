@@ -69,36 +69,22 @@ class TextItemDto {
   final String firebaseId;
   final String title;
   final String content;
-  final String createdBy;
-  final DateTime? createdAt;
 
   TextItemDto({
     required this.firebaseId,
     required this.title,
     required this.content,
-    required this.createdBy,
-    this.createdAt,
   });
 
-  factory TextItemDto.fromFirestore(Map<String, dynamic> json) {
+  factory TextItemDto.fromFirestore(Map<String, dynamic> json, String id) {
     return TextItemDto(
-      firebaseId: json['firebaseId'] as String? ?? '',
+      firebaseId: id,
       title: json['title'] as String? ?? '',
       content: json['content'] as String? ?? '',
-      createdBy: json['createdBy'] as String? ?? '',
-      createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'] as String)
-          : null,
     );
   }
 
   Map<String, dynamic> toFirestore() {
-    return {
-      'firebaseId': firebaseId,
-      'title': title,
-      'content': content,
-      'createdBy': createdBy,
-      'createdAt': createdAt?.toIso8601String(),
-    };
+    return {'firebaseId': firebaseId, 'title': title, 'content': content};
   }
 }

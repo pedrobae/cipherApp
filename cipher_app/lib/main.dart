@@ -1,3 +1,4 @@
+import 'package:cipher_app/providers/collaborator_provider.dart';
 import 'package:cipher_app/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -36,21 +37,22 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (_) => SettingsProvider()..loadSettings(),
-        ),
+        ChangeNotifierProvider(create: (_) => AdminProvider()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => CipherProvider()),
+        ChangeNotifierProvider(create: (_) => CollaboratorProvider()),
+        ChangeNotifierProvider(create: (_) => InfoProvider()),
         ChangeNotifierProvider(
           create: (_) => LayoutSettingsProvider()..loadSettings(),
         ),
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => NavigationProvider()),
-        ChangeNotifierProvider(create: (_) => CipherProvider()),
-        ChangeNotifierProvider(create: (_) => VersionProvider()),
-        ChangeNotifierProvider(create: (_) => InfoProvider()),
         ChangeNotifierProvider(create: (_) => PlaylistProvider()),
+        ChangeNotifierProvider(
+          create: (_) => SettingsProvider()..loadSettings(),
+        ),
         ChangeNotifierProvider(create: (_) => TextSectionProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
-        ChangeNotifierProvider(create: (_) => AdminProvider()),
+        ChangeNotifierProvider(create: (_) => VersionProvider()),
       ],
       child: Consumer<SettingsProvider>(
         builder: (context, settingsProvider, child) {

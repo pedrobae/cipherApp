@@ -55,7 +55,7 @@ class CloudPlaylistRepository {
       await _guardHelper.requireOwnership(createdBy);
 
       final docId = await _firestoreService.createDocument(
-        collectionPath: 'text_sections',
+        collectionPath: 'textSections',
         data: {
           'title': title,
           'content': content,
@@ -117,7 +117,7 @@ class CloudPlaylistRepository {
   Future<TextItemDto?> fetchTextItemById(String firebaseTextId) async {
     return await _withErrorHandling('fetch text item by ID', () async {
       final docSnapshot = await _firestoreService.fetchDocumentById(
-        collectionPath: 'text_sections',
+        collectionPath: 'textSections',
         documentId: firebaseTextId,
       );
 
@@ -127,6 +127,7 @@ class CloudPlaylistRepository {
 
       return TextItemDto.fromFirestore(
         docSnapshot.data() as Map<String, dynamic>,
+        docSnapshot.id,
       );
     });
   }

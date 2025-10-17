@@ -421,6 +421,9 @@ class CipherProvider extends ChangeNotifier {
       // Load the new ID into the cache
       await loadCipher(result);
       updateCurrentCipherInList();
+      if (kDebugMode) {
+        print('Downloaded and inserted cipher metadata with local ID: $result');
+      }
     } catch (e) {
       _error = 'Downloading and inserting cipher metadata: ${e.toString()}';
       if (kDebugMode) {
@@ -607,6 +610,13 @@ class CipherProvider extends ChangeNotifier {
     final matches = _localCiphers
         .where((cipher) => cipher.firebaseId == firebaseId)
         .toList();
+
+    if (kDebugMode) {
+      print(
+        'Checking if cipher with Firebase ID $firebaseId is cached: '
+        '${matches.isNotEmpty ? "Found" : "Not Found"}',
+      );
+    }
     return matches.isNotEmpty ? matches.first.id : null;
   }
 

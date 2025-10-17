@@ -46,6 +46,7 @@ class User {
       'mail': mail,
       'profile_photo': profilePhoto,
       'google_id': googleId,
+      'firebase_id': firebaseId,
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
       'is_active': isActive ? 1 : 0,

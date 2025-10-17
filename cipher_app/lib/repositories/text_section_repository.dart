@@ -18,6 +18,7 @@ class TextSectionRepository {
   // ===== CRUD =====
   Future<int> createPlaylistText(
     int playlistId,
+    String? firebaseContentId,
     String title,
     String content,
     int position,
@@ -28,6 +29,7 @@ class TextSectionRepository {
 
     return await db.insert('playlist_text', {
       'playlist_id': playlistId,
+      'firebase_id': firebaseContentId,
       'title': title,
       'content': content,
       'position': position,
@@ -51,16 +53,17 @@ class TextSectionRepository {
       if (position != null) updates['position'] = position;
 
       if (updates.isNotEmpty) {
-        
         final result = await txn.update(
           'playlist_text',
           updates,
           where: 'id = ?',
           whereArgs: [id],
         );
-        
+
         if (result == 0) {
-          throw Exception('Failed to update text section with id $id - no rows affected');
+          throw Exception(
+            'Failed to update text section with id $id - no rows affected',
+          );
         }
       }
     });

@@ -65,6 +65,7 @@ void main() {
       // Position 0: Text section
       await textSectionRepo.createPlaylistText(
         playlistId,
+        null,
         'Opening Announcements',
         'Welcome to our service!',
         0,
@@ -83,6 +84,7 @@ void main() {
       // Position 2: Another text section
       await textSectionRepo.createPlaylistText(
         playlistId,
+        null,
         'Prayer Time',
         'Let us pray together',
         2,
@@ -140,6 +142,7 @@ void main() {
       // Add content
       final textSectionId = await textSectionRepo.createPlaylistText(
         playlistId,
+        null,
         'Text 1',
         'Content 1',
         0,

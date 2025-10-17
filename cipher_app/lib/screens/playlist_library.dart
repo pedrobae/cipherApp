@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/providers/cipher_provider.dart';
@@ -216,9 +217,11 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                 });
               }
             } catch (itemError) {
-              print(
-                'Failed to sync item ${i} in playlist ${playlistDto.name}: $itemError',
-              );
+              if (kDebugMode) {
+                print(
+                  'Failed to sync item $i in playlist ${playlistDto.name}: $itemError',
+                );
+              }
               // Continue with other items rather than failing entire playlist
             }
           }
@@ -248,7 +251,11 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                 'no_items_synced';
           }
         } catch (playlistError) {
-          print('Failed to sync playlist ${playlistDto.name}: $playlistError');
+          if (kDebugMode) {
+            print(
+              'Failed to sync playlist ${playlistDto.name}: $playlistError',
+            );
+          }
           syncResults[playlistDto.firebaseId ?? 'unknown'] =
               'error: $playlistError';
         }
@@ -262,11 +269,15 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
           .where((result) => result == 'success')
           .length;
       final totalCount = syncResults.length;
-      print(
-        'Sync completed: $successCount/$totalCount playlists synced successfully',
-      );
+      if (kDebugMode) {
+        print(
+          'Sync completed: $successCount/$totalCount playlists synced successfully',
+        );
+      }
     } catch (generalError) {
-      print('Critical sync error: $generalError');
+      if (kDebugMode) {
+        print('Critical sync error: $generalError');
+      }
       // Don't clear cloud playlists if there was a general failure
       rethrow; // Let the UI handle the error
     }

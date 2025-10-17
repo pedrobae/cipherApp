@@ -24,8 +24,7 @@ class DatabaseHelper {
 
       final db = await openDatabase(
         path,
-        version:
-            5, // Updated version to remove playlist position uniqueness constraint
+        version: 6,
         onCreate: _onCreate, // This will seed the database
         onUpgrade: _onUpgrade, // Handle migrations
       );
@@ -50,25 +49,10 @@ class DatabaseHelper {
 
   Future<void> _onCreate(Database db, int version) async {
     // TODO: SCHEMA UPDATE - Add firebase_id columns to tables for cloud sync
-    // When implementing cloud sync, add firebase_id TEXT columns to:
-    //
-    // ✅ DONE:
-    // - cipher table (firebase_id) - Already has it
-    // - version table (firebase_id, firebase_cipher_id) - Already has it
-    //
     // ⏳ PENDING:
-    // - user table → Add: firebase_id TEXT UNIQUE (Firebase Auth UID)
-    // - playlist table → Add: firebase_id TEXT UNIQUE (Firestore document ID)
-    // - playlist_version table → Add: firebase_content_id TEXT (format: "cipherId:versionId")
-    // - playlist_text table → Add: firebase_id TEXT (if syncing text sections)
     //
-    // IMPORTANT: When adding firebase_id columns:
-    // 1. Update _onCreate() to include new columns
-    // 2. Update _onUpgrade() to add migration (ALTER TABLE)
-    // 3. Increment database version number
     // 4. Update seed_database.dart to include firebase_id in test data
     // 5. Update all INSERT statements in repositories
-    // 6. Update domain model constructors (User, Playlist, etc.)
     // 7. Update toJson()/fromJson() methods in domain models
 
     // Create tag table
@@ -138,7 +122,6 @@ class DatabaseHelper {
     ''');
 
     // Create user table
-    // TODO: SCHEMA UPDATE - Add firebase_id column for Firebase Auth integration
     await db.execute('''
       CREATE TABLE user (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -146,7 +129,7 @@ class DatabaseHelper {
         mail TEXT UNIQUE NOT NULL,
         profile_photo TEXT,
         google_id TEXT UNIQUE,
-        firebase_id TEXT UNIQUE,  -- TODO: Add this column (Firebase Auth UID)
+        firebase_id TEXT UNIQUE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         is_active BOOLEAN DEFAULT 1
@@ -154,14 +137,13 @@ class DatabaseHelper {
     ''');
 
     // Create playlist table
-    // TODO: SCHEMA UPDATE - Add firebase_id column for cloud playlist sync
     await db.execute('''
       CREATE TABLE playlist (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         description TEXT,
         author_id INTEGER NOT NULL,
-        firebase_id TEXT UNIQUE,  -- TODO: Add this column (Firestore document ID)
+        firebase_id TEXT UNIQUE,
         is_public BOOLEAN DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -170,14 +152,13 @@ class DatabaseHelper {
     ''');
 
     // Create playlist_version table (playlists contain specific cipher versions)
-    // TODO: SCHEMA UPDATE - Add firebase_content_id for cloud item references
     await db.execute('''
       CREATE TABLE playlist_version (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         version_id INTEGER NOT NULL,
         playlist_id INTEGER NOT NULL,
         includer_id INTEGER NOT NULL,
-        firebase_content_id TEXT,  -- TODO: Add this column (format: "cipherId:versionId")
+        firebase_content_id TEXT,
         position INTEGER NOT NULL,
         included_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (version_id) REFERENCES version (id) ON DELETE CASCADE,
@@ -204,14 +185,13 @@ class DatabaseHelper {
     ''');
 
     // Create playlist_text table, for written sections
-    // TODO: SCHEMA UPDATE - Add firebase_id if syncing text sections to cloud
     await db.execute('''
       CREATE TABLE playlist_text (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         playlist_id INTEGER NOT NULL,
         title TEXT NOT NULL,
         content TEXT NOT NULL,
-        firebase_id TEXT,  -- TODO: Optional - only if syncing text sections
+        firebase_id TEXT,
         position INTEGER NOT NULL DEFAULT 0,
         added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         added_by INTEGER NOT NULL,
@@ -367,6 +347,17 @@ class DatabaseHelper {
       await db.execute(
         'CREATE INDEX idx_playlist_version_version_id ON playlist_version(version_id)',
       );
+    }
+    if (oldVersion < 6) {
+      // Add firebase_id columns for cloud sync
+      await db.execute('ALTER TABLE user ADD COLUMN firebase_id TEXT UNIQUE');
+      await db.execute(
+        'ALTER TABLE playlist ADD COLUMN firebase_id TEXT UNIQUE',
+      );
+      await db.execute(
+        'ALTER TABLE playlist_version ADD COLUMN firebase_content_id TEXT',
+      );
+      await db.execute('ALTER TABLE playlist_text ADD COLUMN firebase_id TEXT');
     }
   }
 

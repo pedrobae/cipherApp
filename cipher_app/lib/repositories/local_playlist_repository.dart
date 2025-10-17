@@ -146,15 +146,10 @@ class PlaylistRepository {
       return playlistId;
     } else {
       // Insert new playlist
-      final playlistId = await db.insert('playlist', {
-        'firebase_id': playlist.firebaseId,
-        'name': playlist.name,
-        'description': playlist.description,
-        'created_by': playlist.createdBy,
-        'is_public': (playlist.isPublic ?? false) ? 1 : 0,
-        'created_at': playlist.createdAt,
-        'updated_at': playlist.updatedAt,
-      });
+      final playlistId = await db.insert(
+        'playlist',
+        {playlist.toDatabaseJson()} as Map<String, Object?>,
+      );
       return playlistId;
     }
   }

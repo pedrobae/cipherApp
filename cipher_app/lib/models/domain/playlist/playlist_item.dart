@@ -32,6 +32,7 @@ class PlaylistItem {
       'content_type': type,
       'content_id': contentId,
       'order_index': position,
+      'firebase_id': firebaseContentId,
     };
   }
 

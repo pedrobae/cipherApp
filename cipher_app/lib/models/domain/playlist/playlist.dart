@@ -69,6 +69,7 @@ class Playlist {
     final result = <String, dynamic>{
       'name': name,
       'description': description,
+      'firebase_id': firebaseId,
       'author_id': int.parse(
         createdBy,
       ), // Assuming createdBy is user ID as string

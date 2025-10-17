@@ -48,13 +48,6 @@ class DatabaseHelper {
   }
 
   Future<void> _onCreate(Database db, int version) async {
-    // TODO: SCHEMA UPDATE - Add firebase_id columns to tables for cloud sync
-    // ⏳ PENDING:
-    //
-    // 4. Update seed_database.dart to include firebase_id in test data
-    // 5. Update all INSERT statements in repositories
-    // 7. Update toJson()/fromJson() methods in domain models
-
     // Create tag table
     await db.execute('''
       CREATE TABLE tag (

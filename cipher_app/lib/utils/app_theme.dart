@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cipher_app/utils/palette.dart';
 
+enum ThemeColor { green, gold, orange, burgundy }
+
 class AppTheme {
   // Pre-calculated static final color schemes for optimization
   static final ColorScheme _greenLightColorScheme = ColorScheme(

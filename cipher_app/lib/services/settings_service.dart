@@ -1,11 +1,13 @@
+import 'package:cipher_app/utils/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsService {
   // App Settings Keys
   static const String _keyThemeMode = 'theme_mode';
+  static const String _keyThemeColor = 'theme_color';
   static const String _keyLocale = 'locale';
-  
+
   // Layout Settings Keys
   static const String _keyFontSize = 'layout_font_size';
   static const String _keyFontFamily = 'layout_font_family';
@@ -48,6 +50,20 @@ class SettingsService {
     return ThemeMode.values.firstWhere(
       (mode) => mode.name == value,
       orElse: () => ThemeMode.system,
+    );
+  }
+
+  /// Save theme color
+  static Future<void> setThemeColor(ThemeColor color) async {
+    await _preferences.setString(_keyThemeColor, color.name);
+  }
+
+  /// Get theme color
+  static ThemeColor getThemeColor() {
+    final value = _preferences.getString(_keyThemeColor) ?? 'green';
+    return ThemeColor.values.firstWhere(
+      (mode) => mode.name == value,
+      orElse: () => ThemeColor.green,
     );
   }
 
@@ -101,7 +117,8 @@ class SettingsService {
 
   /// Get lyric color
   static Color getLyricColor() {
-    final value = _preferences.getInt(_keyLyricColor) ?? Colors.black.toARGB32();
+    final value =
+        _preferences.getInt(_keyLyricColor) ?? Colors.black.toARGB32();
     return Color(value);
   }
 

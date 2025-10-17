@@ -4,12 +4,14 @@ import 'package:cipher_app/services/settings_service.dart';
 
 class SettingsProvider extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.system;
+  ThemeColor _themeColor = ThemeColor.green;
   String _locale = 'pt_BR';
   bool _notificationsEnabled = true;
   bool _reminderNotifications = true;
 
   // Getters
   ThemeMode get themeMode => _themeMode;
+  ThemeColor get themeColor => _themeColor;
   String get locale => _locale;
   bool get notificationsEnabled => _notificationsEnabled;
   bool get reminderNotifications => _reminderNotifications;
@@ -21,6 +23,7 @@ class SettingsProvider extends ChangeNotifier {
   /// Initialize with stored settings
   Future<void> loadSettings() async {
     _themeMode = SettingsService.getThemeMode();
+    _themeColor = SettingsService.getThemeColor();
     _locale = SettingsService.getLocale();
     _notificationsEnabled = SettingsService.getNotificationsEnabled();
     _reminderNotifications = SettingsService.getReminderNotifications();
@@ -31,6 +34,13 @@ class SettingsProvider extends ChangeNotifier {
   Future<void> setThemeMode(ThemeMode mode) async {
     _themeMode = mode;
     await SettingsService.setThemeMode(mode);
+    notifyListeners();
+  }
+
+  /// Set theme color and persist
+  Future<void> setThemeColor(ThemeColor color) async {
+    _themeColor = color;
+    await SettingsService.setThemeColor(color);
     notifyListeners();
   }
 

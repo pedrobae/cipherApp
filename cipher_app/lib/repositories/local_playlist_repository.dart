@@ -117,6 +117,48 @@ class PlaylistRepository {
     );
   }
 
+  // Upsert playlist - Universal compatibility (works on all Android/iOS versions)
+  Future<int> upsertPlaylist(Playlist playlist) async {
+    final db = await _databaseHelper.database;
+
+    // First, try to find existing playlist by firebase_id
+    final existingResult = await db.query(
+      'playlist',
+      columns: ['id'],
+      where: 'firebase_id = ?',
+      whereArgs: [playlist.firebaseId],
+    );
+
+    if (existingResult.isNotEmpty) {
+      // Update existing playlist
+      final playlistId = existingResult.first['id'] as int;
+      await db.update(
+        'playlist',
+        {
+          'name': playlist.name,
+          'description': playlist.description,
+          'is_public': (playlist.isPublic ?? false) ? 1 : 0,
+          'updated_at': playlist.updatedAt,
+        },
+        where: 'id = ?',
+        whereArgs: [playlistId],
+      );
+      return playlistId;
+    } else {
+      // Insert new playlist
+      final playlistId = await db.insert('playlist', {
+        'firebase_id': playlist.firebaseId,
+        'name': playlist.name,
+        'description': playlist.description,
+        'created_by': playlist.createdBy,
+        'is_public': (playlist.isPublic ?? false) ? 1 : 0,
+        'created_at': playlist.createdAt,
+        'updated_at': playlist.updatedAt,
+      });
+      return playlistId;
+    }
+  }
+
   // Delete playlist
   Future<void> deletePlaylist(int playlistId) async {
     final db = await _databaseHelper.database;
@@ -275,48 +317,103 @@ class PlaylistRepository {
     });
   }
 
-  // ===== UTILS =====
+  /// Gets all items of a playlist in order
   Future<List<PlaylistItem>> getItemsOfPlaylist(int playlistId) async {
-    final db = await _databaseHelper.database;
+    final versionItems = await getVersionItemsOfPlaylist(playlistId);
+    final textItems = await getTextItemsOfPlaylist(playlistId);
 
-    final cipherVersionResults = await db.rawQuery(
-      '''
-          SELECT version_id as content_id, position, 'cipher_version' as type, id
-          FROM playlist_version 
-          WHERE playlist_id = ? 
-        ''',
-      [playlistId],
-    );
+    // Combine and sort all items by position
+    final allItemResults = [...versionItems, ...textItems]
+      ..sort((a, b) => (a.position).compareTo(b.position));
+    return allItemResults;
+  }
+
+  /// Gets text items of a playlist
+  Future<List<PlaylistItem>> getTextItemsOfPlaylist(int playlistId) async {
+    final db = await _databaseHelper.database;
 
     final textSectionResults = await db.rawQuery(
       '''
-          SELECT id as content_id, position, 'text_section' as type, id
-          FROM playlist_text 
-          WHERE playlist_id = ? 
-        ''',
+        SELECT id as content_id, position, 'text_section' as type, id
+        FROM playlist_text 
+        WHERE playlist_id = ? 
+        ORDER BY position ASC
+      ''',
       [playlistId],
     );
 
-    // Combine and sort all items by position
-    final allItemResults = [...cipherVersionResults, ...textSectionResults];
-    allItemResults.sort(
-      (a, b) => (a['position'] as int).compareTo(b['position'] as int),
-    );
-
-    return allItemResults.map((row) {
+    return textSectionResults.map((row) {
       final id = row['id'] as int;
-      final type = row['type'] as String;
       final contentId = row['content_id'] as int;
       final position = row['position'] as int;
 
-      if (type == 'cipher_version') {
-        return PlaylistItem.cipherVersion(contentId, position, id);
-      } else {
-        return PlaylistItem.textSection(contentId, position, id);
-      }
+      return PlaylistItem.textSection(contentId, position, id);
     }).toList();
   }
 
+  /// Gets version items of a playlist
+  Future<List<PlaylistItem>> getVersionItemsOfPlaylist(int playlistId) async {
+    final db = await _databaseHelper.database;
+
+    final versionResults = await db.rawQuery(
+      '''
+        SELECT version_id as content_id, position, 'cipher_version' as type, id
+        FROM playlist_version 
+        WHERE playlist_id = ? 
+        ORDER BY position ASC
+      ''',
+      [playlistId],
+    );
+
+    return versionResults.map((row) {
+      final id = row['id'] as int;
+      final contentId = row['content_id'] as int;
+      final position = row['position'] as int;
+
+      return PlaylistItem.cipherVersion(contentId, position, id);
+    }).toList();
+  }
+
+  /// Inserts or updates a text item in a playlist - Universal compatibility
+  Future<void> upsertTextItem(
+    String firebaseTextId,
+    int playlistId,
+    String title,
+    String content,
+    int position,
+  ) async {
+    final db = await _databaseHelper.database;
+
+    // First, try to find existing text item by firebase_id
+    final existingResult = await db.query(
+      'playlist_text',
+      columns: ['id'],
+      where: 'firebase_id = ?',
+      whereArgs: [firebaseTextId],
+    );
+
+    if (existingResult.isNotEmpty) {
+      // Update existing text item
+      await db.update(
+        'playlist_text',
+        {'title': title, 'content': content, 'position': position},
+        where: 'firebase_id = ?',
+        whereArgs: [firebaseTextId],
+      );
+    } else {
+      // Insert new text item
+      await db.insert('playlist_text', {
+        'firebase_id': firebaseTextId,
+        'playlist_id': playlistId,
+        'title': title,
+        'content': content,
+        'position': position,
+        'added_at': DateTime.now().toIso8601String(),
+      });
+    }
+  }
+
+  // ===== UTILS =====
   /// Build playlist domain object from database row
   Future<Playlist> buildPlaylist(Map<String, dynamic> playlistRow) async {
     final items = await getItemsOfPlaylist(playlistRow['id'] as int);

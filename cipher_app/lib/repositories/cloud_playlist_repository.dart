@@ -1,5 +1,6 @@
 import 'package:cipher_app/helpers/guard.dart';
 import 'package:cipher_app/models/dtos/playlist_dto.dart';
+import 'package:cipher_app/models/dtos/playlist_item_dto.dart';
 import 'package:cipher_app/services/firestore_service.dart';
 import 'package:cipher_app/models/domain/playlist/playlist.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -109,6 +110,23 @@ class CloudPlaylistRepository {
       return PlaylistDto.fromFirestore(
         docSnapshot.data() as Map<String, dynamic>,
         docSnapshot.id,
+      );
+    });
+  }
+
+  Future<TextItemDto?> fetchTextItemById(String firebaseTextId) async {
+    return await _withErrorHandling('fetch text item by ID', () async {
+      final docSnapshot = await _firestoreService.fetchDocumentById(
+        collectionPath: 'text_sections',
+        documentId: firebaseTextId,
+      );
+
+      if (docSnapshot == null || !docSnapshot.exists) {
+        return null;
+      }
+
+      return TextItemDto.fromFirestore(
+        docSnapshot.data() as Map<String, dynamic>,
       );
     });
   }

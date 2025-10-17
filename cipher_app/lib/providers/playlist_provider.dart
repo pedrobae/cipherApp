@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cipher_app/models/dtos/playlist_item_dto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cipher_app/models/domain/playlist/playlist.dart';
 import 'package:cipher_app/models/domain/playlist/playlist_item.dart';
@@ -8,7 +9,7 @@ import 'package:cipher_app/repositories/cloud_playlist_repository.dart';
 
 class PlaylistProvider extends ChangeNotifier {
   final PlaylistRepository _playlistRepository = PlaylistRepository();
-  final CloudPlaylistRepository _cloudPlaylistProvider =
+  final CloudPlaylistRepository _cloudPlaylistRepository =
       CloudPlaylistRepository();
 
   PlaylistProvider();
@@ -73,7 +74,7 @@ class PlaylistProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final cloudPlaylists = await _cloudPlaylistProvider
+      final cloudPlaylists = await _cloudPlaylistRepository
           .fetchPlaylistsByUserId(userId);
 
       _cloudPlaylists = cloudPlaylists;
@@ -121,7 +122,7 @@ class PlaylistProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final cloudDto = await _cloudPlaylistProvider.fetchPlaylistById(
+      final cloudDto = await _cloudPlaylistRepository.fetchPlaylistById(
         firebaseId,
       );
 
@@ -136,6 +137,20 @@ class PlaylistProvider extends ChangeNotifier {
     } finally {
       _isCloudLoading = false;
       notifyListeners();
+    }
+  }
+
+  Future<TextItemDto> getTextItemByFirebaseId(String firebaseTextId) async {
+    try {
+      final textItemDto = await _cloudPlaylistRepository.fetchTextItemById(
+        firebaseTextId,
+      );
+      if (textItemDto == null) {
+        throw Exception('Item de texto não encontrado');
+      }
+      return textItemDto;
+    } catch (e) {
+      throw Exception('Erro ao buscar item de texto: $e');
     }
   }
 
@@ -177,6 +192,10 @@ class PlaylistProvider extends ChangeNotifier {
     _trackChange(id, 'metadata', {'name': name, 'description': description});
 
     await _loadPlaylist(id); // Reload just this playlist
+  }
+
+  Future<int> upsertPlaylist(Playlist playlistDto) async {
+    return await _playlistRepository.upsertPlaylist(playlistDto);
   }
 
   // Update a Playlist with a version
@@ -228,6 +247,24 @@ class PlaylistProvider extends ChangeNotifier {
 
   Future<void> duplicateVersion(int playlistId, int versionId) async {
     await _playlistRepository.addVersionToPlaylist(playlistId, versionId);
+    await _loadPlaylist(playlistId);
+  }
+
+  Future<void> upsertTextItem({
+    required int playlistId,
+    required String firebaseTextId,
+    required String title,
+    required String content,
+    required int position,
+  }) async {
+    await _playlistRepository.upsertTextItem(
+      firebaseTextId,
+      playlistId,
+      title,
+      content,
+      position,
+    );
+
     await _loadPlaylist(playlistId);
   }
 
@@ -472,7 +509,7 @@ class PlaylistProvider extends ChangeNotifier {
 
       // Upload to Firebase
       if (playlist.firebaseId != null) {
-        await _cloudPlaylistProvider.updatePlaylist(
+        await _cloudPlaylistRepository.updatePlaylist(
           playlist.firebaseId!,
           playlist.createdBy, // ownerId
           updatePayload,
@@ -517,6 +554,11 @@ class PlaylistProvider extends ChangeNotifier {
         // Continue with other playlists even if one fails
       }
     }
+  }
+
+  void clearCloudPlaylists() {
+    _cloudPlaylists.clear();
+    notifyListeners();
   }
 
   /// Clear pending changes for a playlist (without uploading)

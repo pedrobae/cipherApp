@@ -6,6 +6,7 @@ class PlaylistItemDto {
   final String? status; // e.g., 'unknown' for placeholders
   final String addedBy; // userId who added the item
   final Map<String, dynamic>? displayFallback; // optional lightweight hints
+  // Position is determined by the item's index in the playlist's items array
 
   PlaylistItemDto({
     required this.type,
@@ -61,5 +62,43 @@ class PlaylistItemDto {
       status: status ?? this.status,
       displayFallback: displayFallback ?? this.displayFallback,
     );
+  }
+}
+
+class TextItemDto {
+  final String firebaseId;
+  final String title;
+  final String content;
+  final String createdBy;
+  final DateTime? createdAt;
+
+  TextItemDto({
+    required this.firebaseId,
+    required this.title,
+    required this.content,
+    required this.createdBy,
+    this.createdAt,
+  });
+
+  factory TextItemDto.fromFirestore(Map<String, dynamic> json) {
+    return TextItemDto(
+      firebaseId: json['firebaseId'] as String? ?? '',
+      title: json['title'] as String? ?? '',
+      content: json['content'] as String? ?? '',
+      createdBy: json['createdBy'] as String? ?? '',
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'] as String)
+          : null,
+    );
+  }
+
+  Map<String, dynamic> toFirestore() {
+    return {
+      'firebaseId': firebaseId,
+      'title': title,
+      'content': content,
+      'createdBy': createdBy,
+      'createdAt': createdAt?.toIso8601String(),
+    };
   }
 }

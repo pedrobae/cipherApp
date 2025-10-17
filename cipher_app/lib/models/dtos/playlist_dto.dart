@@ -12,7 +12,8 @@ class PlaylistDto {
   final DateTime updatedAt;
   final DateTime createdAt;
   final List<String> collaborators; // userIds
-  final List<PlaylistItemDto> items;
+  final List<PlaylistItemDto>
+  items; // Array whose order matters (order of items)
 
   const PlaylistDto({
     this.firebaseId,

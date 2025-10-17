@@ -9,6 +9,14 @@ import 'sections.dart';
 import 'playlists.dart';
 import 'collaborators.dart';
 
+// TODO: SEED DATA UPDATE - Add firebase_id values when implementing cloud sync
+// When updating schema with firebase_id columns, update these files:
+// 1. users.dart → Add firebase_id field to insertUsers()
+// 2. playlists.dart → Add firebase_id field to insertPlaylists()
+// 3. versions.dart → Add firebase_id and firebase_cipher_id fields
+// 4. Test data should use realistic Firebase ID format: "abc123xyz" (28 chars)
+// 5. Ensure firebase_id values are unique across seed data
+
 Future<void> seedDatabase(Database db) async {
   await db.transaction((txn) async {
     // Insert ciphers

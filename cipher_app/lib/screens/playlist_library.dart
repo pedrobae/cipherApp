@@ -95,73 +95,147 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
     VersionProvider versionProvider,
     AuthProvider authProvider,
   ) async {
-    await playlistProvider.loadCloudPlaylists(authProvider.id!);
+    try {
+      await playlistProvider.loadCloudPlaylists(authProvider.id!);
 
-    for (final playlistDto in playlistProvider.cloudPlaylists) {
-      userProvider.ensureUsersExist(playlistDto.collaborators);
+      // Copy the list to avoid concurrent modification issues
+      final playlistsToSync = playlistProvider.cloudPlaylists.toList();
+      final syncResults =
+          <String, String>{}; // Track success/failure per playlist
 
-      // Ensure all items in the playlist exist locally
-      for (final item in playlistDto.items) {
-        // If the item is a version, ensure it exists
-        if (item.type == 'version') {
-          final String cipherCloudId = item.firebaseContentId!.split(':')[0];
-          final String versionCloudId = item.firebaseContentId!.split(':')[1];
+      for (final playlistDto in playlistsToSync) {
+        try {
+          // Ensure collaborators exist (with proper await)
+          await userProvider.ensureUsersExist(playlistDto.collaborators);
 
-          final versionId = await versionProvider.getVersionByFirebaseId(
-            versionCloudId,
-          );
+          final syncedItems = <Map<String, dynamic>>[];
 
-          // If the local version Id isn't found, ensure the cipher exists
-          if (versionId == null) {
-            int? cipherId = cipherProvider.cipherWithFirebaseIdIsCached(
-              cipherCloudId,
-            );
-            // If the cipher is also not found, download it
-            if (cipherId == null) {
-              cipherId = await cipherProvider.downloadCipherMetadata(
-                cipherCloudId,
-              );
+          // Process items with detailed error tracking
+          for (int i = 0; i < playlistDto.items.length; i++) {
+            final item = playlistDto.items[i];
 
-              if (cipherId == null) {
-                // Handle the error case where the cipher couldn't be downloaded
+            try {
+              if (item.type == 'version') {
+                final parts = item.firebaseContentId!.split(':');
+                if (parts.length != 2) {
+                  throw Exception(
+                    'Invalid firebaseContentId format: ${item.firebaseContentId}',
+                  );
+                }
+
+                final String cipherCloudId = parts[0];
+                final String versionCloudId = parts[1];
+
+                // Ensure cipher exists locally
+                int? cipherId = cipherProvider.cipherWithFirebaseIdIsCached(
+                  cipherCloudId,
+                );
+                if (cipherId == null) {
+                  cipherId = await cipherProvider.downloadCipherMetadata(
+                    cipherCloudId,
+                  );
+
+                  if (cipherId == null) {
+                    throw Exception(
+                      'Failed to download cipher: $cipherCloudId',
+                    );
+                  }
+                }
+
+                // Ensure version exists locally
+                final versionId = await versionProvider.getVersionByFirebaseId(
+                  versionCloudId,
+                );
+                if (versionId == null) {
+                  final newVersion = await versionProvider.downloadVersion(
+                    cipherCloudId,
+                    versionCloudId,
+                  );
+
+                  if (newVersion == null) {
+                    throw Exception(
+                      'Failed to download version: $versionCloudId',
+                    );
+                  }
+
+                  // Create version locally with correct cipher ID
+                  final version = newVersion.copyWith(cipherId: cipherId);
+                  await versionProvider.createVersionFromDomain(version);
+                }
+
+                syncedItems.add({
+                  'type': 'version',
+                  'contentId': versionId,
+                  'position': i,
+                });
+              } else if (item.type == 'text') {
+                // Validate text item can be retrieved
+                final data = await playlistProvider.getTextItemByFirebaseId(
+                  item.firebaseContentId!,
+                );
+
+                syncedItems.add({
+                  'type': 'text',
+                  'firebaseContentId': item.firebaseContentId!,
+                  'position': i,
+                  'title': data.title,
+                  'content': data.content,
+                });
               }
-            }
-            // Now that we have the localcipher ID, download the version
-            final newVersion = await versionProvider.downloadVersion(
-              cipherCloudId,
-              versionCloudId,
-            );
-
-            if (newVersion == null) {
-              // Handle the error case where the version couldn't be downloaded
-            }
-
-            // Create a new version locally with the correct cipher ID
-            final version = newVersion!.copyWith(cipherId: cipherId);
-            await versionProvider.createVersionFromDomain(version);
-          }
-          // Version exists locally, check update timestamps
-          else {
-            final localVersion = await versionProvider.getVersionById(
-              versionId,
-            );
-            if (localVersion.updatedAt.isBefore(playlistDto.updatedAt)) {
-              // Download the updated version
-              final updatedVersion = await versionProvider.downloadVersion(
-                cipherCloudId,
-                versionCloudId,
+            } catch (itemError) {
+              print(
+                'Failed to sync item ${i} in playlist ${playlistDto.name}: $itemError',
               );
-
-              if (updatedVersion == null) {
-                // Handle the error case where the version couldn't be downloaded
-              }
+              // Continue with other items rather than failing entire playlist
             }
-            // Local version is newer than cloud
           }
-        } else if (item.type == 'text') {
-          // Text items are always of a single playlist
+
+          // Only upsert playlist if we successfully processed at least some items
+          if (syncedItems.isNotEmpty || playlistDto.items.isEmpty) {
+            final playlistId = await playlistProvider.upsertPlaylist(
+              playlistDto.toDomain([]), // We'll rebuild items from syncedItems
+            );
+
+            // Upsert text items that were successfully validated
+            for (final item in syncedItems.where(
+              (item) => item['type'] == 'text',
+            )) {
+              await playlistProvider.upsertTextItem(
+                playlistId: playlistId,
+                firebaseTextId: item['firebaseContentId'],
+                title: item['title'],
+                content: item['content'],
+                position: item['position'],
+              );
+            }
+
+            syncResults[playlistDto.firebaseId ?? 'unknown'] = 'success';
+          } else {
+            syncResults[playlistDto.firebaseId ?? 'unknown'] =
+                'no_items_synced';
+          }
+        } catch (playlistError) {
+          print('Failed to sync playlist ${playlistDto.name}: $playlistError');
+          syncResults[playlistDto.firebaseId ?? 'unknown'] =
+              'error: $playlistError';
         }
       }
+
+      // Clear cloud playlists only after successful processing
+      playlistProvider.clearCloudPlaylists();
+
+      // Optional: Report sync results to user
+      final successCount = syncResults.values
+          .where((result) => result == 'success')
+          .length;
+      final totalCount = syncResults.length;
+      print(
+        'Sync completed: $successCount/$totalCount playlists synced successfully',
+      );
+    } catch (generalError) {
+      print('Critical sync error: $generalError');
+      // Don't clear cloud playlists if there was a general failure
+      rethrow; // Let the UI handle the error
     }
   }
 

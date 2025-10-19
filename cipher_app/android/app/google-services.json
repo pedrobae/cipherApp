@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "626503496187-npiutkhpvqu04mlms8ftu9v7ius42drl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.cipher_app",
+            "certificate_hash": "f2ee0f24c8a669328979e3c3d5c092e65823ddd4"
+          }
+        },
+        {
           "client_id": "626503496187-vgc1h886893dqh26dgbrhnpb1obepipv.apps.googleusercontent.com",
           "client_type": 3
         }

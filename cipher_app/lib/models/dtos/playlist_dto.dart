@@ -34,8 +34,8 @@ class PlaylistDto {
       description: json['description'] as String? ?? '',
       ownerId: json['ownerId'] as String? ?? '',
       isPublic: json['isPublic'] as bool? ?? false,
-      updatedAt: (json['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      createdAt: (json['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      updatedAt: (json['updatedAt'] as Timestamp).toDate(),
+      createdAt: (json['createdAt'] as Timestamp).toDate(),
       collaborators: List<String>.from(json['collaborators'] ?? []),
       items:
           (json['items'] as List<dynamic>?)

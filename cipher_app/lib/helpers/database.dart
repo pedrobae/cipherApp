@@ -277,7 +277,7 @@ class DatabaseHelper {
     );
 
     // Seed the database with initial data
-    await seedDatabase(db);
+    // await seedDatabase(db);
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {

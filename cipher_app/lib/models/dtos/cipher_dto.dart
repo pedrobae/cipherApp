@@ -1,5 +1,6 @@
 import 'package:cipher_app/models/domain/cipher/cipher.dart';
 import 'package:cipher_app/models/domain/cipher/version.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// DTO para metadados de cifra (usado para navegação, busca e listagem).
 class CipherDto {
@@ -39,9 +40,7 @@ class CipherDto {
                 .where((t) => t.isNotEmpty)
                 .toList()
           : (map['tags'] as List?)?.cast<String>() ?? [],
-      updatedAt: map['updatedAt'] != null
-          ? DateTime.tryParse(map['updatedAt'].toString())
-          : null,
+      updatedAt: (map['updatedAt'] as Timestamp).toDate(),
       downloadCount: map['downloadCount'] as int?,
     );
   }
@@ -62,6 +61,7 @@ class CipherDto {
       ],
       'tags': tags,
       'downloadCount': downloadCount,
+      'updatedAt': FieldValue.serverTimestamp(),
     };
   }
 

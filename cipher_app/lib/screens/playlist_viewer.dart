@@ -54,9 +54,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
         await versionProvider.loadVersionsForPlaylist(playlist.items);
 
         // Ensure all ciphers are loaded (loads all ciphers if not already loaded)
-        if (!cipherProvider.hasLoadedCiphers) {
-          await cipherProvider.loadCiphers();
-        }
+        await cipherProvider.loadCiphers();
 
         if (mounted) {
           setState(() {

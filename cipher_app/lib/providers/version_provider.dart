@@ -30,7 +30,7 @@ class VersionProvider extends ChangeNotifier {
 
   /// Checks if a version exists locally by its Firebase ID
   /// Returns the local id if found, otherwise null
-  Future<int?> getVersionByFirebaseId(String firebaseId) async {
+  Future<int?> getVersionIdByFirebaseId(String firebaseId) async {
     // Check cache first
     try {
       return _versions.firstWhere((v) => v.firebaseId == firebaseId).id;
@@ -51,7 +51,7 @@ class VersionProvider extends ChangeNotifier {
     }
   }
 
-  /// Downloads a version from Firebase by its Firebase ID - CHANGE 20/10 doesn't save anymore
+  /// Downloads a version from Firebase by its Firebase ID - CHANGE 20/10 doesn't save locally anymore
   Future<Version?> downloadVersion(
     String cipherCloudId,
     String versionCloudId,
@@ -217,6 +217,43 @@ class VersionProvider extends ChangeNotifier {
   }
 
   /// ===== UPDATE - update cipher version =====
+
+  /// Updates a version in the local database (nothing to do with cache)
+  Future<void> updateVersion(Version version) async {
+    if (_isSaving) return;
+
+    _isSaving = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _cipherRepository.updateVersion(version);
+
+      // Update cached version if it exists
+      final cachedVersionIndex = _versions.indexWhere(
+        (v) => v.id == version.id,
+      );
+      if (cachedVersionIndex != -1) {
+        _versions[cachedVersionIndex] = version;
+      }
+
+      // Update version on the sqlLite
+      await _cipherRepository.updateVersion(version);
+
+      if (kDebugMode) {
+        print('Updated version with id: ${version.id}');
+      }
+    } catch (e) {
+      _error = e.toString();
+      if (kDebugMode) {
+        print('Error updating cipher version: $e');
+      }
+    } finally {
+      _isSaving = false;
+      notifyListeners();
+    }
+  }
+
   // Saves a new structure of a version (playlist reordering)
   Future<void> saveUpdatedSongStructure(
     int versionId,
@@ -373,7 +410,7 @@ class VersionProvider extends ChangeNotifier {
   }
 
   /// Identify if the version exists in the cloud and creates or saves (return wether the version isNew on cloud)
-  Future<bool> mergeVersionInCloud() async {
+  Future<bool> upsertVersionInCloud() async {
     if (_currentVersion.firebaseId == null) {
       await _cloudCipherRepository.createVersionForCipher(_currentVersion);
       return true;

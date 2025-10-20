@@ -173,33 +173,35 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
               }
 
               // Ensure version exists locally
-              final versionId = await versionProvider.getVersionByFirebaseId(
+              final newVersion = await versionProvider.downloadVersion(
+                cipherCloudId,
                 versionCloudId,
               );
-              if (kDebugMode) {
-                print('Version ID for Firebase ID $versionCloudId: $versionId');
+
+              if (newVersion == null) {
+                throw Exception('Failed to download version: $versionCloudId');
               }
-              if (versionId == null) {
-                final newVersion = await versionProvider.downloadVersion(
-                  cipherCloudId,
-                  versionCloudId,
-                );
 
-                if (newVersion == null) {
-                  throw Exception(
-                    'Failed to download version: $versionCloudId',
-                  );
-                }
+              final versionLocalId = await versionProvider
+                  .getVersionIdByFirebaseId(versionCloudId);
 
+              final version = newVersion.copyWith(
+                cipherId: cipherId,
+                id: versionLocalId,
+              );
+              if (versionLocalId == null) {
                 // Create version locally with correct cipher ID
-                final version = newVersion.copyWith(cipherId: cipherId);
                 await versionProvider.createVersionFromDomain(version);
+              } else {
+                // Version already exists locally, for now overwrite it
+                // TODO: CHECK BUSINESS RULES MAYBE OPEN A CONFIRMATION DIALOG
+                await versionProvider.updateVersion(version);
               }
 
               syncedItems.add({
                 'addedBy': userProvider.getLocalIdByFirebaseId(item.addedBy),
                 'type': 'cipher_version',
-                'contentId': versionId,
+                'contentId': versionLocalId,
                 'position': i,
               });
             } else if (item.type == 'text_section') {
@@ -254,7 +256,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                   position: item['position'],
                 );
               } else if (item['type'] == 'cipher_version') {
-                await playlistProvider.upsertVersion(
+                await playlistProvider.upsertVersionOnPlaylist(
                   playlistId,
                   item['contentId'],
                   item['position'],

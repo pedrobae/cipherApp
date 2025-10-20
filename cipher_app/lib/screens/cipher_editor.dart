@@ -352,7 +352,9 @@ class _EditCipherState extends State<EditCipher>
 
   void _mergeVersionInCloud() async {
     try {
-      final isNew = await context.read<VersionProvider>().mergeVersionInCloud();
+      final isNew = await context
+          .read<VersionProvider>()
+          .upsertVersionInCloud();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

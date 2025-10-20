@@ -1,3 +1,4 @@
+import 'package:cipher_app/providers/collaborator_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -36,6 +37,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
           context.read<UserProvider>(),
           context.read<VersionProvider>(),
           context.read<AuthProvider>(),
+          context.read<CollaboratorProvider>(),
         );
       }
     });
@@ -44,76 +46,91 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Consumer3<PlaylistProvider, CipherProvider, UserProvider>(
-        builder: (context, playlistProvider, cipherProvider, userProvider, child) {
-          // Handle loading state
-          if (playlistProvider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body:
+          Consumer4<
+            PlaylistProvider,
+            CipherProvider,
+            UserProvider,
+            CollaboratorProvider
+          >(
+            builder:
+                (
+                  context,
+                  playlistProvider,
+                  cipherProvider,
+                  userProvider,
+                  collaboratorProvider,
+                  child,
+                ) {
+                  // Handle loading state
+                  if (playlistProvider.isLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-          if (playlistProvider.isCloudLoading) {
-            return Center(
-              child: const Column(
-                spacing: 8,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Carregando suas playlists da nuvem...'),
-                  CircularProgressIndicator(),
-                ],
-              ),
-            );
-          }
+                  if (playlistProvider.isCloudLoading) {
+                    return Center(
+                      child: const Column(
+                        spacing: 8,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('Carregando suas playlists da nuvem...'),
+                          CircularProgressIndicator(),
+                        ],
+                      ),
+                    );
+                  }
 
-          // Handle error state
-          if (playlistProvider.error != null) {
-            return ErrorStateWidget(
-              title: 'Erro ao carregar playlists',
-              message: playlistProvider.error!,
-              onRetry: () => playlistProvider.loadLocalPlaylists(),
-            );
-          }
+                  // Handle error state
+                  if (playlistProvider.error != null) {
+                    return ErrorStateWidget(
+                      title: 'Erro ao carregar playlists',
+                      message: playlistProvider.error!,
+                      onRetry: () => playlistProvider.loadLocalPlaylists(),
+                    );
+                  }
 
-          // Handle empty state
-          if (playlistProvider.playlists.isEmpty) {
-            return const EmptyStateWidget(
-              icon: Icons.playlist_play,
-              title: 'Nenhuma playlist encontrada',
-              subtitle: 'Crie sua primeira playlist!',
-            );
-          }
+                  // Handle empty state
+                  if (playlistProvider.playlists.isEmpty) {
+                    return const EmptyStateWidget(
+                      icon: Icons.playlist_play,
+                      title: 'Nenhuma playlist encontrada',
+                      subtitle: 'Crie sua primeira playlist!',
+                    );
+                  }
 
-          // Display playlists
-          return RefreshIndicator(
-            onRefresh: () async {
-              // Capture providers synchronously to avoid using context across async gaps
-              final versionProvider = context.read<VersionProvider>();
-              final authProvider = context.read<AuthProvider>();
+                  // Display playlists
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      // Capture providers synchronously to avoid using context across async gaps
+                      final versionProvider = context.read<VersionProvider>();
+                      final authProvider = context.read<AuthProvider>();
 
-              await playlistProvider.loadLocalPlaylists();
-              await _syncPlaylists(
-                playlistProvider,
-                cipherProvider,
-                userProvider,
-                versionProvider,
-                authProvider,
-              );
-            },
-            child: ListView.builder(
-              padding: const EdgeInsets.all(8),
-              itemCount: playlistProvider.playlists.length,
-              itemBuilder: (context, index) {
-                final playlist = playlistProvider.playlists[index];
-                return PlaylistCard(
-                  playlist: playlist,
-                  onTap: () => _onPlaylistTap(context, playlist),
-                  onDelete: () => _showDeleteDialog(context, playlist),
-                );
-              },
-            ),
-          );
-        },
-      ),
+                      await playlistProvider.loadLocalPlaylists();
+                      await _syncPlaylists(
+                        playlistProvider,
+                        cipherProvider,
+                        userProvider,
+                        versionProvider,
+                        authProvider,
+                        collaboratorProvider,
+                      );
+                    },
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(8),
+                      itemCount: playlistProvider.playlists.length,
+                      itemBuilder: (context, index) {
+                        final playlist = playlistProvider.playlists[index];
+                        return PlaylistCard(
+                          playlist: playlist,
+                          onTap: () => _onPlaylistTap(context, playlist),
+                          onDelete: () => _showDeleteDialog(context, playlist),
+                        );
+                      },
+                    ),
+                  );
+                },
+          ),
       floatingActionButton: FloatingActionButton(
         heroTag: 'playlist_fab',
         onPressed: () => _showCreatePlaylistDialog(context),
@@ -128,6 +145,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
     UserProvider userProvider,
     VersionProvider versionProvider,
     AuthProvider authProvider,
+    CollaboratorProvider collaboratorProvider,
   ) async {
     try {
       await playlistProvider.loadCloudPlaylists(authProvider.id!);
@@ -140,92 +158,94 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
       for (final playlistDto in playlistsToSync) {
         try {
           // Ensure collaborators exist (with proper await)
-          await userProvider.ensureUsersExist(playlistDto.collaborators);
+          await userProvider.ensureUsersExist(
+            playlistDto.collaborators
+                .map((collaborator) => collaborator['id'] as String)
+                .toList(),
+          );
 
-          final syncedItems = <Map<String, dynamic>>[];
+          List<Map<String, dynamic>> syncedItems = [];
 
           for (int i = 0; i < playlistDto.items.length; i++) {
             final item = playlistDto.items[i];
 
-            try {
-              if (item.type == 'cipher_version') {
-                final parts = item.firebaseContentId!.split(':');
-                if (parts.length != 2) {
-                  throw Exception(
-                    'Invalid firebaseContentId format: ${item.firebaseContentId}',
-                  );
-                }
-
-                final String cipherCloudId = parts[0];
-                final String versionCloudId = parts[1];
-
-                // Ensure cipher exists locally
-                int? cipherId = await cipherProvider
-                    .cipherWithFirebaseIdIsCached(cipherCloudId);
-                if (cipherId == null) {
-                  cipherId = await cipherProvider.downloadCipherMetadata(
-                    cipherCloudId,
-                  );
-
-                  if (cipherId == null) {
-                    throw Exception(
-                      'Failed to download cipher: $cipherCloudId',
-                    );
-                  }
-                }
-
-                // Ensure version exists locally
-                final versionId = await versionProvider.getVersionByFirebaseId(
-                  versionCloudId,
+            if (item.type == 'cipher_version') {
+              final parts = item.firebaseContentId!.split(':');
+              if (parts.length != 2) {
+                throw Exception(
+                  'Invalid firebaseContentId format: ${item.firebaseContentId}',
                 );
-                if (kDebugMode) {
-                  print(
-                    'Version ID for Firebase ID $versionCloudId: $versionId',
-                  );
-                }
-                if (versionId == null) {
-                  final newVersion = await versionProvider.downloadVersion(
-                    cipherCloudId,
-                    versionCloudId,
-                  );
-
-                  if (newVersion == null) {
-                    throw Exception(
-                      'Failed to download version: $versionCloudId',
-                    );
-                  }
-
-                  // Create version locally with correct cipher ID
-                  final version = newVersion.copyWith(cipherId: cipherId);
-                  await versionProvider.createVersionFromDomain(version);
-                }
-
-                syncedItems.add({
-                  'type': 'cipher_version',
-                  'contentId': versionId,
-                  'position': i,
-                });
-              } else if (item.type == 'text_section') {
-                // Validate text item can be retrieved
-                final data = await playlistProvider.getTextItemByFirebaseId(
-                  item.firebaseContentId!,
-                );
-
-                syncedItems.add({
-                  'type': 'text_section',
-                  'firebaseContentId': item.firebaseContentId!,
-                  'position': i,
-                  'title': data.title,
-                  'content': data.content,
-                });
               }
-            } catch (itemError) {
+
+              final String cipherCloudId = parts[0];
+              final String versionCloudId = parts[1];
+
+              // Ensure cipher exists locally
+              int? cipherId = await cipherProvider.cipherWithFirebaseIdIsCached(
+                cipherCloudId,
+              );
+              if (cipherId == null) {
+                cipherId = await cipherProvider.downloadCipherMetadata(
+                  cipherCloudId,
+                );
+
+                if (cipherId == null) {
+                  throw Exception('Failed to download cipher: $cipherCloudId');
+                }
+              }
+
+              // Ensure version exists locally
+              final newVersion = await versionProvider.downloadVersion(
+                cipherCloudId,
+                versionCloudId,
+              );
+
+              if (newVersion == null) {
+                throw Exception('Failed to download version: $versionCloudId');
+              }
+
+              final versionLocalId = await versionProvider
+                  .getVersionIdByFirebaseId(versionCloudId);
+
+              final version = newVersion.copyWith(
+                cipherId: cipherId,
+                id: versionLocalId,
+              );
+              if (versionLocalId == null) {
+                // Create version locally with correct cipher ID
+                await versionProvider.createVersionFromDomain(version);
+              } else {
+                // Version already exists locally, for now overwrite it
+                // TODO: CHECK BUSINESS RULES MAYBE OPEN A CONFIRMATION DIALOG
+                await versionProvider.updateVersion(version);
+              }
+
+              syncedItems.add({
+                'addedBy': userProvider.getLocalIdByFirebaseId(item.addedBy),
+                'type': 'cipher_version',
+                'contentId': versionLocalId,
+                'position': i,
+              });
+            } else if (item.type == 'text_section') {
+              // Validate text item can be retrieved
+              final data = await playlistProvider.downloadTextItemByFirebaseId(
+                item.firebaseContentId!,
+              );
+
               if (kDebugMode) {
                 print(
-                  'Failed to sync item $i in playlist ${playlistDto.name}: $itemError',
+                  'Downloaded text item ${item.firebaseContentId} for playlist ${playlistDto.name}',
                 );
               }
-              // Continue with other items rather than failing entire playlist
+
+              syncedItems.add({
+                'addedBy': data.addedBy,
+                'type': 'text_section',
+                'firebaseContentId': item.firebaseContentId!,
+                'position': i,
+                'title': data.title,
+                'content': data.content,
+              });
             }
           }
 
@@ -238,17 +258,46 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
               ),
             );
 
-            // Upsert text items that were successfully validated
-            for (final item in syncedItems.where(
-              (item) => item['type'] == 'text_section',
-            )) {
-              await playlistProvider.upsertTextItem(
-                playlistId: playlistId,
-                firebaseTextId: item['firebaseContentId'],
-                title: item['title'],
-                content: item['content'],
-                position: item['position'],
+            if (kDebugMode) {
+              print(
+                'Upserted playlist "${playlistDto.name}" with local ID $playlistId',
               );
+            }
+
+            // Upsert text items that were successfully validated
+            for (final item in syncedItems) {
+              if (item['type'] == 'text_section') {
+                await playlistProvider.upsertTextItem(
+                  addedBy: userProvider.getLocalIdByFirebaseId(
+                    playlistDto.ownerId,
+                  )!,
+                  playlistId: playlistId,
+                  firebaseTextId: item['firebaseContentId'],
+                  title: item['title'],
+                  content: item['content'],
+                  position: item['position'],
+                );
+              } else if (item['type'] == 'cipher_version') {
+                await playlistProvider.upsertVersionOnPlaylist(
+                  playlistId,
+                  item['contentId'],
+                  item['position'],
+                  item['addedBy'],
+                );
+              }
+            }
+            // Insert collaborators
+            for (final collaborator in playlistDto.collaborators) {
+              final collaboratorLocalId = userProvider.getLocalIdByFirebaseId(
+                collaborator['id'] as String,
+              );
+              if (collaboratorLocalId != null) {
+                await collaboratorProvider.addCollaborator(
+                  playlistId,
+                  collaboratorLocalId,
+                  collaborator['role'] as String,
+                );
+              }
             }
 
             syncResults[playlistDto.firebaseId ?? 'unknown'] = 'success';
@@ -256,14 +305,11 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
             syncResults[playlistDto.firebaseId ?? 'unknown'] =
                 'no_items_synced';
           }
-        } catch (playlistError) {
+        } catch (e) {
           if (kDebugMode) {
-            print(
-              'Failed to sync playlist ${playlistDto.name}: $playlistError',
-            );
+            print('Failed to sync playlist ${playlistDto.name}: $e');
           }
-          syncResults[playlistDto.firebaseId ?? 'unknown'] =
-              'error: $playlistError';
+          syncResults[playlistDto.firebaseId ?? 'unknown'] = 'error: $e';
         }
       }
 

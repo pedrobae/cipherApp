@@ -190,7 +190,8 @@ exports.aggregateCipherDownloads = onSchedule({
   maxInstances: 1,
 }, async (event) => {
   try {
-    const data = await getAnalyticsData("cipher_downloaded", "last_7_days");
+    const data = await getAnalyticsData("fetched_cipher_versions",
+        "last_7_days");
 
     const batch = admin.firestore().batch();
     data.forEach(({cipherId, downloadCount}) => {

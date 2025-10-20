@@ -29,7 +29,9 @@ class UserProvider extends ChangeNotifier {
   /// This is used to resolve collaborator references in playlists
   List<String> removeKnownByFirebaseId(List<String> firebaseUserIds) {
     return firebaseUserIds
-        .where((id) => _knownCollaborators.any((user) => user.firebaseId == id))
+        .where(
+          (id) => _knownCollaborators.every((user) => user.firebaseId != id),
+        )
         .toList();
   }
 
@@ -46,8 +48,8 @@ class UserProvider extends ChangeNotifier {
         final userDto = await _cloudUserRepository.fetchUserById(userId);
         if (userDto != null) {
           final user = userDto.toDomain();
-          await _userRepository.createUser(user);
-          _knownCollaborators.add(user);
+          final userId = await _userRepository.createUser(user);
+          _knownCollaborators.add(user.copyWith(id: userId));
           if (kDebugMode) {
             print('Downloaded and saved user: ${user.username}');
           }

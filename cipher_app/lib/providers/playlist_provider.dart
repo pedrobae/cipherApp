@@ -16,6 +16,7 @@ class PlaylistProvider extends ChangeNotifier {
 
   List<Playlist> _playlists = [];
   List<PlaylistDto> _cloudPlaylists = [];
+  Playlist? _currentPlaylist;
   bool _isLoading = false;
   bool _isCloudLoading = false;
   bool _isSaving = false;
@@ -29,6 +30,7 @@ class PlaylistProvider extends ChangeNotifier {
   // Getters
   List<Playlist> get playlists => _playlists;
   List<PlaylistDto> get cloudPlaylists => _cloudPlaylists;
+  Playlist? get currentPlaylist => _currentPlaylist;
   bool get isLoading => _isLoading;
   bool get isCloudLoading => _isCloudLoading;
   bool get isSaving => _isSaving;
@@ -88,7 +90,7 @@ class PlaylistProvider extends ChangeNotifier {
   }
 
   // Load Single Playlist by ID
-  Future<void> _loadPlaylist(int id) async {
+  Future<void> loadPlaylist(int id) async {
     if (_isLoading) return;
 
     _isLoading = true;
@@ -100,7 +102,7 @@ class PlaylistProvider extends ChangeNotifier {
         id,
       ))!;
       int existingIndex = _playlists.indexWhere((p) => p.id == playlist.id);
-
+      _currentPlaylist = playlist;
       if (existingIndex != -1) {
         _playlists[existingIndex] = playlist;
       } else {
@@ -141,7 +143,9 @@ class PlaylistProvider extends ChangeNotifier {
     }
   }
 
-  Future<TextItemDto> getTextItemByFirebaseId(String firebaseTextId) async {
+  Future<TextItemDto> downloadTextItemByFirebaseId(
+    String firebaseTextId,
+  ) async {
     try {
       final textItemDto = await _cloudPlaylistRepository.fetchTextItemById(
         firebaseTextId,
@@ -192,7 +196,7 @@ class PlaylistProvider extends ChangeNotifier {
     // Track metadata changes
     _trackChange(id, 'metadata', {'name': name, 'description': description});
 
-    await _loadPlaylist(id); // Reload just this playlist
+    await loadPlaylist(id); // Reload just this playlist
   }
 
   Future<int> upsertPlaylist(Playlist playlist) async {
@@ -200,13 +204,44 @@ class PlaylistProvider extends ChangeNotifier {
   }
 
   // Update a Playlist with a version
-  Future<void> addVersion(int playlistId, int versionId) async {
+  Future<void> addVersionToPlaylist(int playlistId, int versionId) async {
     await _playlistRepository.addVersionToPlaylist(playlistId, versionId);
 
     // Track added version
     _trackChange(playlistId, 'addedVersions', versionId);
 
-    await _loadPlaylist(playlistId);
+    await loadPlaylist(playlistId);
+  }
+
+  Future<void> upsertVersionOnPlaylist(
+    int playlistId,
+    int versionId,
+    int position,
+    int? addedBy,
+  ) async {
+    // Check if the version already exists in the playlist
+    final playlistVersionId = await _playlistRepository.getPlaylistVersionId(
+      playlistId,
+      versionId,
+    );
+
+    if (playlistVersionId == null) {
+      // Version isn't in the playlist, add it
+      await _playlistRepository.addVersionToPlaylistAtPosition(
+        playlistId,
+        versionId,
+        position,
+        includerId: addedBy,
+      );
+    } else {
+      // Version exists, just update its position
+      await _playlistRepository.updatePlaylistVersionPosition(
+        playlistVersionId,
+        position,
+      );
+    }
+
+    await loadPlaylist(playlistId);
   }
 
   // Reorder playlist items with optimistic updates
@@ -248,10 +283,11 @@ class PlaylistProvider extends ChangeNotifier {
 
   Future<void> duplicateVersion(int playlistId, int versionId) async {
     await _playlistRepository.addVersionToPlaylist(playlistId, versionId);
-    await _loadPlaylist(playlistId);
+    await loadPlaylist(playlistId);
   }
 
   Future<void> upsertTextItem({
+    required int addedBy,
     required int playlistId,
     required String firebaseTextId,
     required String title,
@@ -259,6 +295,7 @@ class PlaylistProvider extends ChangeNotifier {
     required int position,
   }) async {
     await _playlistRepository.upsertTextItem(
+      addedBy,
       firebaseTextId,
       playlistId,
       title,
@@ -266,7 +303,7 @@ class PlaylistProvider extends ChangeNotifier {
       position,
     );
 
-    await _loadPlaylist(playlistId);
+    await loadPlaylist(playlistId);
   }
 
   // ===== DELETE =====
@@ -304,7 +341,7 @@ class PlaylistProvider extends ChangeNotifier {
       _trackChange(playlistId, 'removedVersions', versionId);
     }
 
-    await _loadPlaylist(playlistId);
+    await loadPlaylist(playlistId);
   }
 
   // ===== UTILITY =====
@@ -333,7 +370,7 @@ class PlaylistProvider extends ChangeNotifier {
         });
 
         // Reload playlist to update cache
-        await _loadPlaylist(existingPlaylist.id);
+        await loadPlaylist(existingPlaylist.id);
 
         if (kDebugMode) {
           print('Successfully merged playlist: ${cloudDto.name}');

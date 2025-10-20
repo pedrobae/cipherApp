@@ -3,18 +3,20 @@ import 'package:cipher_app/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   late final AuthProvider _authProvider;
 
@@ -47,13 +49,20 @@ class _LoginScreenState extends State<LoginScreen> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     _authProvider.removeListener(_authListener);
     super.dispose();
   }
 
-  void _toggleObscure() {
+  void _toggleObscurePassword() {
     setState(() {
       _obscurePassword = !_obscurePassword;
+    });
+  }
+
+  void _toggleObscureConfirmPassword() {
+    setState(() {
+      _obscureConfirmPassword = !_obscureConfirmPassword;
     });
   }
 
@@ -73,6 +82,16 @@ class _LoginScreenState extends State<LoginScreen> {
     }
     if (value.length < 6) {
       return 'A senha deve ter pelo menos 6 caracteres';
+    }
+    return null;
+  }
+
+  String? _validateConfirmPassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Confirme a senha';
+    }
+    if (value != _passwordController.text) {
+      return 'As senhas não coincidem';
     }
     return null;
   }
@@ -112,10 +131,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Bem-vindo ao App de Cifras',
+                    'Criar Nova Conta',
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: colorScheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Junte-se ao App de Cifras',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -172,7 +198,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           TextFormField(
                             controller: _passwordController,
                             obscureText: _obscurePassword,
-                            textInputAction: TextInputAction.done,
+                            textInputAction: TextInputAction.next,
                             maxLines: 1,
                             decoration: InputDecoration(
                               label: const Text(
@@ -193,7 +219,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 tooltip: _obscurePassword
                                     ? 'Mostrar senha'
                                     : 'Ocultar senha',
-                                onPressed: _toggleObscure,
+                                onPressed: _toggleObscurePassword,
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
@@ -207,6 +233,46 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                             validator: _validatePassword,
+                          ),
+                          const SizedBox(height: 16),
+                          TextFormField(
+                            controller: _confirmPasswordController,
+                            obscureText: _obscureConfirmPassword,
+                            textInputAction: TextInputAction.done,
+                            maxLines: 1,
+                            decoration: InputDecoration(
+                              label: const Text(
+                                'Confirmar Senha',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              prefixIcon: Icon(
+                                Icons.lock_outline,
+                                color: colorScheme.primary,
+                              ),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscureConfirmPassword
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                  color: colorScheme.primary,
+                                ),
+                                tooltip: _obscureConfirmPassword
+                                    ? 'Mostrar senha'
+                                    : 'Ocultar senha',
+                                onPressed: _toggleObscureConfirmPassword,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(30),
+                                borderSide: BorderSide(
+                                  color: colorScheme.primary,
+                                  width: 2,
+                                ),
+                              ),
+                            ),
+                            validator: _validateConfirmPassword,
                           ),
                           const SizedBox(height: 12),
                           if (authProvider.isLoading)
@@ -229,9 +295,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton.icon(
-                              icon: const Icon(Icons.login),
+                              icon: const Icon(Icons.person_add),
                               label: Text(
-                                'Entrar',
+                                'Criar Conta',
                                 style: theme.textTheme.labelLarge!.copyWith(
                                   color: colorScheme.onPrimaryContainer,
                                   fontWeight: FontWeight.bold,
@@ -250,7 +316,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   : () {
                                       if (_formKey.currentState?.validate() ??
                                           false) {
-                                        authProvider.signInWithEmail(
+                                        authProvider.signUpWithEmail(
                                           _emailController.text,
                                           _passwordController.text,
                                         );
@@ -258,104 +324,20 @@ class _LoginScreenState extends State<LoginScreen> {
                                     },
                             ),
                           ),
-                          // Divider between login and other options
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Divider(
-                                    color: colorScheme.outlineVariant,
-                                    thickness: 1,
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                  ),
-                                  child: Text(
-                                    'ou',
-                                    style: TextStyle(
-                                      color: colorScheme.outline,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Divider(
-                                    color: colorScheme.outlineVariant,
-                                    thickness: 1,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          // Google Sign-In Button
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton.icon(
-                              icon: const Icon(Icons.g_mobiledata, size: 24),
-                              label: Text(
-                                'Entrar com Google',
-                                style: theme.textTheme.labelLarge!.copyWith(
-                                  color: colorScheme.onSecondaryContainer,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: colorScheme.secondaryContainer,
-                                foregroundColor:
-                                    colorScheme.onSecondaryContainer,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                elevation: 2,
-                              ),
-                              onPressed: authProvider.isLoading
-                                  ? null
-                                  : () => authProvider.signInWithGoogle(),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton.icon(
-                              icon: const Icon(Icons.person_outline),
-                              label: Text(
-                                'Entrar Anonimamente',
-                                style: theme.textTheme.labelLarge!.copyWith(
-                                  color: colorScheme.onPrimary,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: colorScheme.primary,
-                                foregroundColor: colorScheme.onPrimary,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                elevation: 2,
-                              ),
-                              onPressed: authProvider.isLoading
-                                  ? null
-                                  : () => authProvider.signInAnonymously(),
-                            ),
-                          ),
-                          // Sign Up Link
+                          // Back to Login Button
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                'Não tem uma conta? ',
+                                'Já tem uma conta? ',
                                 style: TextStyle(
                                   color: colorScheme.onSurfaceVariant,
                                 ),
                               ),
                               TextButton(
-                                onPressed: () =>
-                                    Navigator.of(context).pushNamed('/signup'),
+                                onPressed: () => Navigator.of(context).pop(),
                                 child: Text(
-                                  'Criar Conta',
+                                  'Entrar',
                                   style: TextStyle(
                                     color: colorScheme.primary,
                                     fontWeight: FontWeight.bold,

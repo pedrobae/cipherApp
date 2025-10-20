@@ -197,7 +197,7 @@ class DatabaseHelper {
     await db.execute('''
       CREATE TABLE app_info (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        remote_id TEXT UNIQUE,
+        firebase_id TEXT UNIQUE,
         title TEXT NOT NULL,
         description TEXT,
         content TEXT,
@@ -273,7 +273,7 @@ class DatabaseHelper {
     );
     // For content queries
     await db.execute(
-      'CREATE INDEX idx_section_content_type ON section(content_type)',
+      'CREATE INDEX idx_section_content_type OwN section(content_type)',
     );
 
     // Seed the database with initial data

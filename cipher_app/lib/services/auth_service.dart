@@ -52,6 +52,21 @@ class AuthService {
     }
   }
 
+  Future<User?> signUpWithEmailAndPassword(
+    String email,
+    String password,
+  ) async {
+    try {
+      final userCredential = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return userCredential.user;
+    } catch (e) {
+      throw Exception('Failed to sign up with email and password: $e');
+    }
+  }
+
   Future<User?> signInWithGoogle() async {
     try {
       // Trigger the authentication flow

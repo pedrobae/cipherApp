@@ -91,7 +91,7 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen>
                   onTap: (int versionId, int cipherId) {
                     if (widget.selectionMode) {
                       try {
-                        context.read<PlaylistProvider>().addVersion(
+                        context.read<PlaylistProvider>().addVersionToPlaylist(
                           widget.playlistId!,
                           versionId,
                         );

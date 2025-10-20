@@ -13,8 +13,13 @@ import 'package:cipher_app/widgets/settings/layout_settings.dart';
 
 class PlaylistPresentationScreen extends StatefulWidget {
   final int playlistId;
+  final int? initialSectionIndex;
 
-  const PlaylistPresentationScreen({super.key, required this.playlistId});
+  const PlaylistPresentationScreen({
+    super.key,
+    required this.playlistId,
+    this.initialSectionIndex,
+  });
 
   @override
   State<PlaylistPresentationScreen> createState() =>
@@ -26,58 +31,33 @@ class _PlaylistPresentationScreenState
   late ScrollController _scrollController;
   final Map<int, Map<int, GlobalKey>> _itemKeys = {};
   bool _isScrolling = false;
-  bool _versionsLoaded = false;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-    // Pre-load versions for the presentation
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadPlaylistVersions();
-    });
-  }
 
-  Future<void> _loadPlaylistVersions() async {
-    try {
+    // Pre-load versions for the presentation
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final versionProvider = context.read<VersionProvider>();
+      final cipherProvider = context.read<CipherProvider>();
       final playlistProvider = context.read<PlaylistProvider>();
-      final playlist = playlistProvider.playlists.firstWhere(
-        (p) => p.id == widget.playlistId,
-        orElse: () => throw Exception('Playlist not found'),
+      // Load versions for playlist
+      await versionProvider.loadVersionsForPlaylist(
+        playlistProvider.playlists
+            .firstWhere((p) => p.id == widget.playlistId)
+            .items,
       );
 
-      if (playlist.items.isNotEmpty) {
-        final versionProvider = context.read<VersionProvider>();
-        final cipherProvider = context.read<CipherProvider>();
+      // Ensure all ciphers are loaded (loads all ciphers if not already loaded)
+      await cipherProvider.loadCiphers();
 
-        // Load versions for playlist
-        await versionProvider.loadVersionsForPlaylist(playlist.items);
-
-        // Ensure all ciphers are loaded (loads all ciphers if not already loaded)
-        await cipherProvider.loadCiphers();
-
-        if (mounted) {
-          setState(() {
-            _versionsLoaded = true;
-          });
-        }
-      } else {
-        if (mounted) {
-          setState(() {
-            _versionsLoaded = true;
-          });
-        }
+      // Scroll to initial section if provided
+      if (widget.initialSectionIndex != null) {
+        await Future.delayed(const Duration(milliseconds: 500));
+        await _scrollToItem(widget.initialSectionIndex!, null);
       }
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error loading playlist versions: $e');
-      }
-      if (mounted) {
-        setState(() {
-          _versionsLoaded = true; // Still show the UI even if loading failed
-        });
-      }
-    }
+    });
   }
 
   @override
@@ -99,138 +79,136 @@ class _PlaylistPresentationScreenState
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Consumer<PlaylistProvider>(
-      builder: (context, playlistProvider, child) {
-        final layoutProvider = context.read<LayoutSettingsProvider>();
+    return Consumer3<PlaylistProvider, LayoutSettingsProvider, VersionProvider>(
+      builder:
+          (context, playlistProvider, layoutProvider, versionProvider, child) {
+            final playlist = playlistProvider.playlists.firstWhere(
+              (p) => p.id == widget.playlistId,
+              orElse: () => throw Exception('Playlist not found'),
+            );
 
-        final playlist = playlistProvider.playlists.firstWhere(
-          (p) => p.id == widget.playlistId,
-          orElse: () => throw Exception('Playlist not found'),
-        );
+            // Generate keys for each item for scroll targeting
+            for (int i = 0; i < playlist.items.length; i++) {
+              if (!_itemKeys.containsKey(i)) {
+                _itemKeys[i] = {-1: GlobalKey()};
+              }
+            }
 
-        // Show loading if versions haven't been loaded yet
-        if (!_versionsLoaded) {
-          return Scaffold(
-            appBar: AppBar(title: Text(playlist.name), centerTitle: true),
-            body: const Center(child: CircularProgressIndicator()),
-          );
-        }
-
-        // Generate keys for each item for scroll targeting
-        for (int i = 0; i < playlist.items.length; i++) {
-          if (!_itemKeys.containsKey(i)) {
-            _itemKeys[i] = {-1: GlobalKey()};
-          }
-        }
-
-        return Scaffold(
-          endDrawer: PlaylistNavigationDrawer(
-            playlist: playlist,
-            onItemSelected: (index) => _scrollToItem(index, null),
-          ),
-          body: CustomScrollView(
-            controller: _scrollController, // Keep your existing controller
-            slivers: <Widget>[
-              SliverAppBar(
-                foregroundColor: Theme.of(context).colorScheme.onPrimaryFixed,
-                toolbarHeight: kToolbarHeight - 10,
-                actions: [
-                  Consumer<LayoutSettingsProvider>(
-                    builder: (context, layoutProvider, child) {
-                      return IconButton(
-                        icon: const Icon(Icons.visibility),
-                        tooltip: 'Configurações de Layout',
-                        onPressed: () =>
-                            _showLayoutSettings(context, layoutProvider),
-                      );
-                    },
-                  ),
-                  Builder(
-                    builder: (context) => DrawerButton(
-                      onPressed: () {
-                        Scaffold.of(context).openEndDrawer();
-                      },
-                    ),
-                  ),
-                ],
-                floating: true,
-                flexibleSpace: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [colorScheme.primary, colorScheme.tertiary],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
-                  child: SafeArea(
-                    child: Center(
-                      child: Text(
-                        textAlign: TextAlign.center,
-                        playlist.name,
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontFamily: layoutProvider.fontFamily,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.onPrimaryFixed,
+            return Scaffold(
+              endDrawer: PlaylistNavigationDrawer(
+                playlist: playlist,
+                onItemSelected: (index) => _scrollToItem(index, null),
+              ),
+              body: CustomScrollView(
+                controller: _scrollController, // Keep your existing controller
+                slivers: <Widget>[
+                  SliverAppBar(
+                    foregroundColor: Theme.of(
+                      context,
+                    ).colorScheme.onPrimaryFixed,
+                    toolbarHeight: kToolbarHeight - 10,
+                    actions: [
+                      Consumer<LayoutSettingsProvider>(
+                        builder: (context, layoutProvider, child) {
+                          return IconButton(
+                            icon: const Icon(Icons.visibility),
+                            tooltip: 'Configurações de Layout',
+                            onPressed: () =>
+                                _showLayoutSettings(context, layoutProvider),
+                          );
+                        },
+                      ),
+                      Builder(
+                        builder: (context) => DrawerButton(
+                          onPressed: () {
+                            Scaffold.of(context).openEndDrawer();
+                          },
+                        ),
+                      ),
+                    ],
+                    floating: true,
+                    flexibleSpace: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [colorScheme.primary, colorScheme.tertiary],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                      child: SafeArea(
+                        child: Center(
+                          child: Text(
+                            textAlign: TextAlign.center,
+                            playlist.name,
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(
+                                  fontFamily: layoutProvider.fontFamily,
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onPrimaryFixed,
+                                ),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ),
-              SliverList(
-                delegate: SliverChildListDelegate([
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      spacing: 4,
-                      children: [
-                        const SizedBox(height: 12),
-                        if (playlist.description?.isNotEmpty == true)
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(16),
-                            margin: const EdgeInsets.only(bottom: 8),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).cardColor,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: Theme.of(context).dividerColor,
-                                width: 1,
-                              ),
-                            ),
-                            child: Text(
-                              playlist.description!,
-                              style: Theme.of(context).textTheme.bodyLarge
-                                  ?.copyWith(
-                                    fontStyle: FontStyle.italic,
-                                    fontFamily: layoutProvider.fontFamily,
+                  SliverList(
+                    delegate: SliverChildListDelegate([
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          spacing: 4,
+                          children: [
+                            const SizedBox(height: 12),
+                            if (playlist.description?.isNotEmpty == true)
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(16),
+                                margin: const EdgeInsets.only(bottom: 8),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).cardColor,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: Theme.of(context).dividerColor,
+                                    width: 1,
                                   ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
+                                ),
+                                child: Text(
+                                  playlist.description!,
+                                  style: Theme.of(context).textTheme.bodyLarge
+                                      ?.copyWith(
+                                        fontStyle: FontStyle.italic,
+                                        fontFamily: layoutProvider.fontFamily,
+                                      ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
 
-                        ...playlist.items.asMap().entries.map((entry) {
-                          final itemIndex = entry.key;
-                          final item = entry.value;
+                            ...playlist.items.asMap().entries.map((entry) {
+                              final itemIndex = entry.key;
+                              final item = entry.value;
 
-                          return Container(
-                            key: _itemKeys[itemIndex]![-1],
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [_buildItemContent(item, itemIndex)],
-                            ),
-                          );
-                        }),
-                        const SizedBox(height: 200),
-                      ],
-                    ),
+                              return Container(
+                                key: _itemKeys[itemIndex]![-1],
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    _buildItemContent(item, itemIndex),
+                                  ],
+                                ),
+                              );
+                            }),
+                            const SizedBox(height: 200),
+                          ],
+                        ),
+                      ),
+                    ]),
                   ),
-                ]),
+                ],
               ),
-            ],
-          ),
-        );
-      },
+            );
+          },
     );
   }
 
@@ -268,6 +246,11 @@ class _PlaylistPresentationScreenState
   }
 
   Future<void> _scrollToItem(int itemIndex, int? sectionIndex) async {
+    if (kDebugMode) {
+      print(
+        'Scrolling to itemIndex: $itemIndex, sectionIndex: ${sectionIndex ?? 'null'}',
+      );
+    }
     if (!_itemKeys.containsKey(itemIndex)) return;
 
     if (!_itemKeys[itemIndex]!.containsKey(sectionIndex)) sectionIndex = -1;

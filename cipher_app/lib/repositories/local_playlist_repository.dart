@@ -130,13 +130,14 @@ class PlaylistRepository {
     if (existingResult.isNotEmpty) {
       // Update existing playlist
       final playlistId = existingResult.first['id'] as int;
+
       await db.update(
         'playlist',
         {
           'name': playlist.name,
           'description': playlist.description,
           'is_public': (playlist.isPublic ?? false) ? 1 : 0,
-          'updated_at': playlist.updatedAt,
+          'updated_at': playlist.updatedAt!.toIso8601String(),
         },
         where: 'id = ?',
         whereArgs: [playlistId],
@@ -146,7 +147,7 @@ class PlaylistRepository {
       // Insert new playlist
       final playlistId = await db.insert(
         'playlist',
-        {playlist.toDatabaseJson()} as Map<String, Object?>,
+        playlist.toDatabaseJson() as Map<String, Object?>,
       );
       return playlistId;
     }
@@ -208,6 +209,42 @@ class PlaylistRepository {
         whereArgs: [playlistId],
       );
     });
+  }
+
+  /// Adds a version to a specific position in the playlist (used when importing)
+  Future<void> addVersionToPlaylistAtPosition(
+    int playlistId,
+    int cipherMapId,
+    int position, {
+    int? includerId,
+  }) async {
+    final db = await _databaseHelper.database;
+
+    await db.transaction((txn) async {
+      // Insert version relationship at the desired position
+      await txn.insert('playlist_version', {
+        'version_id': cipherMapId,
+        'playlist_id': playlistId,
+        'includer_id': includerId,
+        'position': position,
+        'included_at': DateTime.now().toIso8601String(),
+      });
+    });
+  }
+
+  /// Upserts a version's position in a playlist
+  Future<void> updatePlaylistVersionPosition(
+    int playlistVersionId,
+    int newPosition,
+  ) async {
+    final db = await _databaseHelper.database;
+
+    await db.update(
+      'playlist_version',
+      {'position': newPosition},
+      where: 'id = ?',
+      whereArgs: [playlistVersionId],
+    );
   }
 
   Future<void> removeVersionFromPlaylist(int itemId, int playlistId) async {
@@ -367,8 +404,27 @@ class PlaylistRepository {
     }).toList();
   }
 
+  /// Gets version item ID in a playlist by playlist and version IDs
+  Future<int?> getPlaylistVersionId(int playlistId, int versionId) async {
+    final db = await _databaseHelper.database;
+
+    final result = await db.query(
+      'playlist_version',
+      columns: ['id'],
+      where: 'playlist_id = ? AND version_id = ?',
+      whereArgs: [playlistId, versionId],
+    );
+
+    if (result.isNotEmpty) {
+      return result.first['id'] as int;
+    } else {
+      return null;
+    }
+  }
+
   /// Inserts or updates a text item in a playlist - Universal compatibility
   Future<void> upsertTextItem(
+    int addedBy,
     String firebaseTextId,
     int playlistId,
     String title,
@@ -396,6 +452,7 @@ class PlaylistRepository {
     } else {
       // Insert new text item
       await db.insert('playlist_text', {
+        'added_by': addedBy,
         'firebase_id': firebaseTextId,
         'playlist_id': playlistId,
         'title': title,

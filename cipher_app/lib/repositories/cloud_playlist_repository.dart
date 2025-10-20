@@ -84,7 +84,7 @@ class CloudPlaylistRepository {
       final querySnapshot = await _firestoreService
           .fetchDocumentsContainingValue(
             collectionPath: 'playlists',
-            field: 'collaborators',
+            field: 'collaboratorIds',
             value: userId,
           );
 

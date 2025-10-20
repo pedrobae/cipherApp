@@ -29,7 +29,9 @@ class UserProvider extends ChangeNotifier {
   /// This is used to resolve collaborator references in playlists
   List<String> removeKnownByFirebaseId(List<String> firebaseUserIds) {
     return firebaseUserIds
-        .where((id) => _knownCollaborators.any((user) => user.firebaseId == id))
+        .where(
+          (id) => _knownCollaborators.every((user) => user.firebaseId != id),
+        )
         .toList();
   }
 

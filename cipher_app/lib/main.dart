@@ -51,7 +51,7 @@ class MyApp extends StatelessWidget {
           create: (_) => SettingsProvider()..loadSettings(),
         ),
         ChangeNotifierProvider(create: (_) => TextSectionProvider()),
-        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()..loadUsers()),
         ChangeNotifierProvider(create: (_) => VersionProvider()),
       ],
       child: Consumer<SettingsProvider>(

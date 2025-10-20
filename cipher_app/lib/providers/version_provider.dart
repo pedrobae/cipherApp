@@ -51,7 +51,7 @@ class VersionProvider extends ChangeNotifier {
     }
   }
 
-  /// Downloads a version from Firebase by its Firebase ID and saves it locally
+  /// Downloads a version from Firebase by its Firebase ID - CHANGE 20/10 doesn't save anymore
   Future<Version?> downloadVersion(
     String cipherCloudId,
     String versionCloudId,
@@ -62,9 +62,6 @@ class VersionProvider extends ChangeNotifier {
     );
     if (versionDto != null) {
       final version = versionDto.toDomain();
-      await _cipherRepository.insertVersionToCipher(version);
-      _versions.add(version);
-      notifyListeners();
       return version;
     }
     return null;

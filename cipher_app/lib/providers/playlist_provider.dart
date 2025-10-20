@@ -141,7 +141,9 @@ class PlaylistProvider extends ChangeNotifier {
     }
   }
 
-  Future<TextItemDto> getTextItemByFirebaseId(String firebaseTextId) async {
+  Future<TextItemDto> downloadTextItemByFirebaseId(
+    String firebaseTextId,
+  ) async {
     try {
       final textItemDto = await _cloudPlaylistRepository.fetchTextItemById(
         firebaseTextId,
@@ -209,6 +211,37 @@ class PlaylistProvider extends ChangeNotifier {
     await _loadPlaylist(playlistId);
   }
 
+  Future<void> upsertVersion(
+    int playlistId,
+    int versionId,
+    int position,
+    int? addedBy,
+  ) async {
+    // Check if the version already exists in the playlist
+    final playlistVersionId = await _playlistRepository.getPlaylistVersionId(
+      playlistId,
+      versionId,
+    );
+
+    if (playlistVersionId == null) {
+      // Version isn't in the playlist, add it
+      await _playlistRepository.addVersionToPlaylistAtPosition(
+        playlistId,
+        versionId,
+        position,
+        includerId: addedBy,
+      );
+    } else {
+      // Version exists, just update its position
+      await _playlistRepository.updatePlaylistVersionPosition(
+        playlistVersionId,
+        position,
+      );
+    }
+
+    await _loadPlaylist(playlistId);
+  }
+
   // Reorder playlist items with optimistic updates
   Future<void> reorderItems(
     int oldIndex,
@@ -252,6 +285,7 @@ class PlaylistProvider extends ChangeNotifier {
   }
 
   Future<void> upsertTextItem({
+    required int addedBy,
     required int playlistId,
     required String firebaseTextId,
     required String title,
@@ -259,6 +293,7 @@ class PlaylistProvider extends ChangeNotifier {
     required int position,
   }) async {
     await _playlistRepository.upsertTextItem(
+      addedBy,
       firebaseTextId,
       playlistId,
       title,

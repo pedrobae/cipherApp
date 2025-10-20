@@ -197,7 +197,7 @@ class DatabaseHelper {
     await db.execute('''
       CREATE TABLE app_info (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        remote_id TEXT UNIQUE,
+        firebase_id TEXT UNIQUE,
         title TEXT NOT NULL,
         description TEXT,
         content TEXT,
@@ -277,7 +277,7 @@ class DatabaseHelper {
     );
 
     // Seed the database with initial data
-    await seedDatabase(db);
+    // await seedDatabase(db);
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {

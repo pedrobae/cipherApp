@@ -76,8 +76,8 @@ class Playlist {
       'is_public': isPublic,
     };
 
-    // Only include id if it's not 0 (for updates)
-    if (id != 0) {
+    // Only include id if it's not -1 (for updates)
+    if (id != -1) {
       result['id'] = id;
     }
 

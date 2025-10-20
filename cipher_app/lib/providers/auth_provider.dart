@@ -56,6 +56,26 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> signUpWithEmail(String email, String password) async {
+    if (isLoading) return;
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _authService.signUpWithEmailAndPassword(email, password);
+      // Auth state change will be handled by listener
+    } catch (e) {
+      _error = 'Erro ao criar conta: $e';
+      if (kDebugMode) {
+        print('Erro ao criar conta com email: $e');
+      }
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<void> signInAnonymously() async {
     if (isLoading) return;
     _isLoading = true;

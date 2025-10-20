@@ -84,7 +84,10 @@ class Playlist {
     return result;
   }
 
-  PlaylistDto toDto(String ownerFirebaseId) {
+  PlaylistDto toDto(
+    String ownerFirebaseId,
+    List<Map<String, dynamic>> collaborators,
+  ) {
     return PlaylistDto(
       firebaseId: firebaseId,
       name: name,

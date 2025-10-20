@@ -11,7 +11,7 @@ class PlaylistDto {
   final bool isPublic;
   final DateTime updatedAt;
   final DateTime createdAt;
-  final List<String> collaborators; // userIds
+  final List<Map<String, dynamic>> collaborators; // userIds
   final List<PlaylistItemDto>
   items; // Array whose order matters (order of items)
 
@@ -36,7 +36,9 @@ class PlaylistDto {
       isPublic: json['isPublic'] as bool? ?? false,
       updatedAt: (json['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       createdAt: (json['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      collaborators: List<String>.from(json['collaborators'] ?? []),
+      collaborators: List<Map<String, dynamic>>.from(
+        json['collaborators'] ?? [],
+      ),
       items:
           (json['items'] as List<dynamic>?)
               ?.map(
@@ -70,7 +72,9 @@ class PlaylistDto {
       isPublic: isPublic,
       updatedAt: updatedAt,
       createdAt: createdAt,
-      collaborators: collaborators,
+      collaborators: collaborators
+          .map((collaborator) => collaborator['id'] as String)
+          .toList(),
       items: items,
       firebaseId: firebaseId,
     );

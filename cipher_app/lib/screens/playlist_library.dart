@@ -1,3 +1,4 @@
+import 'package:cipher_app/providers/collaborator_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -36,6 +37,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
           context.read<UserProvider>(),
           context.read<VersionProvider>(),
           context.read<AuthProvider>(),
+          context.read<CollaboratorProvider>(),
         );
       }
     });
@@ -44,76 +46,91 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Consumer3<PlaylistProvider, CipherProvider, UserProvider>(
-        builder: (context, playlistProvider, cipherProvider, userProvider, child) {
-          // Handle loading state
-          if (playlistProvider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body:
+          Consumer4<
+            PlaylistProvider,
+            CipherProvider,
+            UserProvider,
+            CollaboratorProvider
+          >(
+            builder:
+                (
+                  context,
+                  playlistProvider,
+                  cipherProvider,
+                  userProvider,
+                  collaboratorProvider,
+                  child,
+                ) {
+                  // Handle loading state
+                  if (playlistProvider.isLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-          if (playlistProvider.isCloudLoading) {
-            return Center(
-              child: const Column(
-                spacing: 8,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Carregando suas playlists da nuvem...'),
-                  CircularProgressIndicator(),
-                ],
-              ),
-            );
-          }
+                  if (playlistProvider.isCloudLoading) {
+                    return Center(
+                      child: const Column(
+                        spacing: 8,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('Carregando suas playlists da nuvem...'),
+                          CircularProgressIndicator(),
+                        ],
+                      ),
+                    );
+                  }
 
-          // Handle error state
-          if (playlistProvider.error != null) {
-            return ErrorStateWidget(
-              title: 'Erro ao carregar playlists',
-              message: playlistProvider.error!,
-              onRetry: () => playlistProvider.loadLocalPlaylists(),
-            );
-          }
+                  // Handle error state
+                  if (playlistProvider.error != null) {
+                    return ErrorStateWidget(
+                      title: 'Erro ao carregar playlists',
+                      message: playlistProvider.error!,
+                      onRetry: () => playlistProvider.loadLocalPlaylists(),
+                    );
+                  }
 
-          // Handle empty state
-          if (playlistProvider.playlists.isEmpty) {
-            return const EmptyStateWidget(
-              icon: Icons.playlist_play,
-              title: 'Nenhuma playlist encontrada',
-              subtitle: 'Crie sua primeira playlist!',
-            );
-          }
+                  // Handle empty state
+                  if (playlistProvider.playlists.isEmpty) {
+                    return const EmptyStateWidget(
+                      icon: Icons.playlist_play,
+                      title: 'Nenhuma playlist encontrada',
+                      subtitle: 'Crie sua primeira playlist!',
+                    );
+                  }
 
-          // Display playlists
-          return RefreshIndicator(
-            onRefresh: () async {
-              // Capture providers synchronously to avoid using context across async gaps
-              final versionProvider = context.read<VersionProvider>();
-              final authProvider = context.read<AuthProvider>();
+                  // Display playlists
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      // Capture providers synchronously to avoid using context across async gaps
+                      final versionProvider = context.read<VersionProvider>();
+                      final authProvider = context.read<AuthProvider>();
 
-              await playlistProvider.loadLocalPlaylists();
-              await _syncPlaylists(
-                playlistProvider,
-                cipherProvider,
-                userProvider,
-                versionProvider,
-                authProvider,
-              );
-            },
-            child: ListView.builder(
-              padding: const EdgeInsets.all(8),
-              itemCount: playlistProvider.playlists.length,
-              itemBuilder: (context, index) {
-                final playlist = playlistProvider.playlists[index];
-                return PlaylistCard(
-                  playlist: playlist,
-                  onTap: () => _onPlaylistTap(context, playlist),
-                  onDelete: () => _showDeleteDialog(context, playlist),
-                );
-              },
-            ),
-          );
-        },
-      ),
+                      await playlistProvider.loadLocalPlaylists();
+                      await _syncPlaylists(
+                        playlistProvider,
+                        cipherProvider,
+                        userProvider,
+                        versionProvider,
+                        authProvider,
+                        collaboratorProvider,
+                      );
+                    },
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(8),
+                      itemCount: playlistProvider.playlists.length,
+                      itemBuilder: (context, index) {
+                        final playlist = playlistProvider.playlists[index];
+                        return PlaylistCard(
+                          playlist: playlist,
+                          onTap: () => _onPlaylistTap(context, playlist),
+                          onDelete: () => _showDeleteDialog(context, playlist),
+                        );
+                      },
+                    ),
+                  );
+                },
+          ),
       floatingActionButton: FloatingActionButton(
         heroTag: 'playlist_fab',
         onPressed: () => _showCreatePlaylistDialog(context),
@@ -128,6 +145,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
     UserProvider userProvider,
     VersionProvider versionProvider,
     AuthProvider authProvider,
+    CollaboratorProvider collaboratorProvider,
   ) async {
     try {
       await playlistProvider.loadCloudPlaylists(authProvider.id!);
@@ -140,7 +158,11 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
       for (final playlistDto in playlistsToSync) {
         try {
           // Ensure collaborators exist (with proper await)
-          await userProvider.ensureUsersExist(playlistDto.collaborators);
+          await userProvider.ensureUsersExist(
+            playlistDto.collaborators
+                .map((collaborator) => collaborator['id'] as String)
+                .toList(),
+          );
 
           List<Map<String, dynamic>> syncedItems = [];
 
@@ -264,6 +286,20 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                 );
               }
             }
+            // Insert collaborators
+            for (final collaborator in playlistDto.collaborators) {
+              final collaboratorLocalId = userProvider.getLocalIdByFirebaseId(
+                collaborator['id'] as String,
+              );
+              if (collaboratorLocalId != null) {
+                await collaboratorProvider.addCollaborator(
+                  playlistId,
+                  collaboratorLocalId,
+                  collaborator['role'] as String,
+                );
+              }
+            }
+
             syncResults[playlistDto.firebaseId ?? 'unknown'] = 'success';
           } else {
             syncResults[playlistDto.firebaseId ?? 'unknown'] =

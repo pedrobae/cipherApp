@@ -28,6 +28,7 @@ class CloudPlaylistRepository {
   Future<String> publishPlaylist(
     Playlist playlist,
     String ownerFirebaseId,
+    List<Map<String, dynamic>> collaborators,
   ) async {
     return await _withErrorHandling('publish playlist', () async {
       await _guardHelper.requireAuth();
@@ -35,7 +36,7 @@ class CloudPlaylistRepository {
 
       final docId = await _firestoreService.createDocument(
         collectionPath: 'playlists',
-        data: playlist.toDto(ownerFirebaseId).toFirestore(),
+        data: playlist.toDto(ownerFirebaseId, collaborators).toFirestore(),
       );
 
       await FirebaseAnalytics.instance.logEvent(

@@ -34,7 +34,7 @@ class CollaboratorRepository {
   Future<int> addCollaborator(
     int playlistId,
     int userId,
-    String instrument,
+    String role,
     int addedBy,
   ) async {
     final db = await _databaseHelper.database;
@@ -48,13 +48,13 @@ class CollaboratorRepository {
 
     if (existingCollaborator.isNotEmpty) {
       // Update the instrument if the user is already a collaborator
-      return updateCollaboratorInstrument(playlistId, userId, instrument);
+      return updateCollaboratorRole(playlistId, userId, role);
     } else {
       // Insert a new collaborator record
       return await db.insert('user_playlist', {
         'playlist_id': playlistId,
         'user_id': userId,
-        'role': instrument, // Role field stores the instrument
+        'role': role, // Role field stores the instrument
         'added_by': addedBy,
         'added_at': DateTime.now().toIso8601String(),
       });
@@ -62,7 +62,7 @@ class CollaboratorRepository {
   }
 
   /// Updates a collaborator's instrument
-  Future<int> updateCollaboratorInstrument(
+  Future<int> updateCollaboratorRole(
     int playlistId,
     int userId,
     String instrument,

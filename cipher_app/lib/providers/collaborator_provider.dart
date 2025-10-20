@@ -45,11 +45,7 @@ class CollaboratorProvider extends ChangeNotifier {
   }
 
   // Add collaborator to a playlist
-  Future<void> addCollaborator(
-    int playlistId,
-    int userId,
-    String instrument,
-  ) async {
+  Future<void> addCollaborator(int playlistId, int userId, String role) async {
     try {
       _isLoading = true;
       _error = null;
@@ -61,7 +57,7 @@ class CollaboratorProvider extends ChangeNotifier {
       await _collaboratorRepository.addCollaborator(
         playlistId,
         userId,
-        instrument,
+        role,
         currentUserId,
       );
 
@@ -87,7 +83,7 @@ class CollaboratorProvider extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      await _collaboratorRepository.updateCollaboratorInstrument(
+      await _collaboratorRepository.updateCollaboratorRole(
         playlistId,
         userId,
         instrument,

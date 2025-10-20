@@ -48,8 +48,8 @@ class UserProvider extends ChangeNotifier {
         final userDto = await _cloudUserRepository.fetchUserById(userId);
         if (userDto != null) {
           final user = userDto.toDomain();
-          await _userRepository.createUser(user);
-          _knownCollaborators.add(user);
+          final userId = await _userRepository.createUser(user);
+          _knownCollaborators.add(user.copyWith(id: userId));
           if (kDebugMode) {
             print('Downloaded and saved user: ${user.username}');
           }

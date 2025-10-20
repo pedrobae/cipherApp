@@ -34,17 +34,11 @@ class PlaylistDto {
       description: json['description'] as String? ?? '',
       ownerId: json['ownerId'] as String? ?? '',
       isPublic: json['isPublic'] as bool? ?? false,
-<<<<<<< HEAD
-      updatedAt: (json['updatedAt'] as Timestamp).toDate(),
-      createdAt: (json['createdAt'] as Timestamp).toDate(),
-      collaborators: List<String>.from(json['collaborators'] ?? []),
-=======
       updatedAt: (json['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       createdAt: (json['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       collaborators: List<Map<String, dynamic>>.from(
         json['collaborators'] ?? [],
       ),
->>>>>>> 2913355711628567c63960daaf0d433adb20bb2f
       items:
           (json['items'] as List<dynamic>?)
               ?.map(

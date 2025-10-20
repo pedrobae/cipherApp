@@ -1,3 +1,5 @@
+import 'package:cipher_app/providers/playlist_provider.dart';
+import 'package:cipher_app/screens/playlist_presentation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/screens/cipher_viewer.dart';
@@ -7,11 +9,13 @@ import 'package:cipher_app/widgets/cipher/editor/custom_reorderable_delayed.dart
 
 class CipherVersionCard extends StatefulWidget {
   final int cipherVersionId;
+  final int index;
   final VoidCallback onDelete;
   final VoidCallback onCopy;
 
   const CipherVersionCard({
     super.key,
+    required this.index,
     required this.cipherVersionId,
     required this.onDelete,
     required this.onCopy,
@@ -79,8 +83,8 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
             .where((s) => s.isNotEmpty)
             .toList();
 
-        return Consumer<CipherProvider>(
-          builder: (context, cipherProvider, child) {
+        return Consumer2<CipherProvider, PlaylistProvider>(
+          builder: (context, cipherProvider, playlistProvider, child) {
             final cipher = cipherProvider.getCachedCipher(version.cipherId);
 
             // If cipher is not cached yet, show loading indicator
@@ -95,11 +99,12 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
 
             return InkWell(
               onTap: () {
-                Navigator.of(context).push(
+                Navigator.push(
+                  context,
                   MaterialPageRoute(
-                    builder: (context) => CipherViewer(
-                      cipherId: cipher.id!,
-                      versionId: version.id!,
+                    builder: (context) => PlaylistPresentationScreen(
+                      playlistId: playlistProvider.currentPlaylist!.id,
+                      initialSectionIndex: widget.index,
                     ),
                   ),
                 );
@@ -199,6 +204,15 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
                               widget.onDelete.call();
                             case 'copy':
                               widget.onCopy.call();
+                            case 'edit':
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => CipherViewer(
+                                    cipherId: cipher.id!,
+                                    versionId: version.id!,
+                                  ),
+                                ),
+                              );
                           }
                         },
                         itemBuilder: (context) => [
@@ -219,6 +233,16 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
                                 Icon(Icons.copy),
                                 SizedBox(width: 8),
                                 Text('Duplicar'),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: 'edit',
+                            child: Row(
+                              children: [
+                                Icon(Icons.edit),
+                                SizedBox(width: 8),
+                                Text('Editar'),
                               ],
                             ),
                           ),

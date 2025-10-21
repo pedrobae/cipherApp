@@ -1,0 +1,116 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return request.auth != null && 
+             request.auth.token.admin == true;
+    }
+    
+    function isOwner(ownerId) {
+      return request.auth != null && 
+             request.auth.uid == ownerId;
+    }
+    
+    function hasValidTimestamp() {
+      return request.resource.data.updatedAt == request.time ||
+             request.resource.data.timestamp == request.time;
+    }
+    
+    // ===== USERS COLLECTION =====
+    match /users/{userId} {
+      // Users can read and write their own profile data
+      allow read, write: if isAuthenticated() && isOwner(userId);
+      
+      // Admins can read all user profiles (for admin panel)
+      allow read: if isAdmin();
+    }
+    
+    // ===== PUBLIC CIPHERS COLLECTION =====
+    match /publicCiphers/{cipherId} {
+      // Anyone authenticated can read cipher metadata
+      allow read: if isAuthenticated();
+      
+      // Only admins can create, update, or delete public ciphers
+      allow create, update, delete: if isAdmin();
+      
+      // Validate cipher data structure
+      allow create, update: if isAdmin() && 
+        request.resource.data.keys().hasAll(['title', 'author', 'musicKey', 'language', 'primaryTag']) &&
+        request.resource.data.title is string &&
+        request.resource.data.author is string &&
+        request.resource.data.musicKey is string &&
+        request.resource.data.language is string &&
+        request.resource.data.primaryTag is string;
+      
+      // Versions subcollection
+      match /versions/{versionId} {
+        // Anyone authenticated can read version data
+        allow read: if isAuthenticated();
+        
+        // Only admins can modify versions
+        allow create, update, delete: if isAdmin();
+        
+        // Validate version structure (sections are embedded in the version document)
+        allow create, update: if isAdmin() &&
+          request.resource.data.keys().hasAll(['songStructure', 'transposedKey', 'versionName']) &&
+          request.resource.data.songStructure is string &&
+          request.resource.data.transposedKey is string &&
+          request.resource.data.versionName is string &&
+          request.resource.data.sections is list;
+      }
+    }
+    
+    // ===== PLAYLISTS COLLECTION =====
+    match /playlists/{playlistId} {
+      // Read access: all authenticated users (client-side filtering for collaborators)
+      allow read: if isAuthenticated();
+      
+      // Create: only authenticated users can create playlists
+      allow create: if isAuthenticated() &&
+        request.resource.data.owner == request.auth.uid &&
+        hasValidTimestamp();
+      
+      // Update: only owner can update playlist metadata
+      allow update: if isAuthenticated() && 
+        isOwner(resource.data.owner) &&
+        request.resource.data.owner == resource.data.owner && // Can't change owner
+        hasValidTimestamp();
+      
+      // Delete: only owner or admin can delete
+      allow delete: if isAuthenticated() && 
+        (isOwner(resource.data.owner) || isAdmin());
+      
+      // Validate playlist structure on create/update
+      // collaborators is array of maps with userId and role
+      // items is array of maps with type, contentId, order
+      allow create, update: if request.resource.data.keys().hasAll(['name', 'description', 'owner', 'public']) &&
+        request.resource.data.name is string &&
+        request.resource.data.description is string &&
+        request.resource.data.owner is string &&
+        request.resource.data.public is bool &&
+        request.resource.data.collaborators is list &&
+        request.resource.data.items is list;
+    }
+    
+    // ===== STATS COLLECTION =====
+    match /stats/{document=**} {
+      // Read: anyone authenticated
+      allow read: if isAuthenticated();
+      
+      // Write: only Cloud Functions and admins
+      allow write: if false; // Only Cloud Functions can write to stats
+    }
+    
+    // Deny access to any other collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -16,10 +16,6 @@ class SettingsProvider extends ChangeNotifier {
   bool get notificationsEnabled => _notificationsEnabled;
   bool get reminderNotifications => _reminderNotifications;
 
-  // Theme getters
-  ThemeData get lightTheme => _lightTheme;
-  ThemeData get darkTheme => _darkTheme;
-
   /// Initialize with stored settings
   Future<void> loadSettings() async {
     _themeMode = SettingsService.getThemeMode();
@@ -79,24 +75,25 @@ class SettingsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Get theme data based on current theme mode
-  ThemeData getThemeData(Brightness brightness) {
-    final isDark =
-        brightness == Brightness.dark ||
-        (_themeMode == ThemeMode.dark ||
-            (_themeMode == ThemeMode.system &&
-                WidgetsBinding.instance.platformDispatcher.platformBrightness ==
-                    Brightness.dark));
+  // Theme getters
+  ThemeData get lightTheme =>
+      AppTheme.getTheme(_getColorString(_themeColor), false);
+  ThemeData get darkTheme =>
+      AppTheme.getTheme(_getColorString(_themeColor), true);
 
-    if (isDark) {
-      return _darkTheme;
-    } else {
-      return _lightTheme;
+  /// Convert ThemeColor enum to string for AppTheme
+  String _getColorString(ThemeColor color) {
+    switch (color) {
+      case ThemeColor.green:
+        return 'green';
+      case ThemeColor.gold:
+        return 'gold';
+      case ThemeColor.orange:
+        return 'orange';
+      case ThemeColor.burgundy:
+        return 'burgundy';
     }
   }
-
-  final ThemeData _darkTheme = AppTheme.getTheme('gold', true);
-  final ThemeData _lightTheme = AppTheme.getTheme('green', false);
 
   /// Reset all settings to defaults
   Future<void> resetToDefaults() async {

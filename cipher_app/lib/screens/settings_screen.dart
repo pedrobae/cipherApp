@@ -1,4 +1,5 @@
 import 'package:cipher_app/providers/version_provider.dart';
+import 'package:cipher_app/utils/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
@@ -415,42 +416,181 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _showThemeDialog(BuildContext context) {
-    final settingsProvider = context.read<SettingsProvider>();
-
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Escolher Tema'),
-        content: RadioGroup(
-          groupValue: settingsProvider.themeMode,
-          onChanged: (dynamic value) => settingsProvider.setThemeMode(value),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              RadioListTile<ThemeMode>(
-                title: const Text('Claro'),
-                subtitle: const Text('Sempre usar tema claro'),
-                value: ThemeMode.light,
-              ),
-              RadioListTile<ThemeMode>(
-                title: const Text('Escuro'),
-                subtitle: const Text('Sempre usar tema escuro'),
-                value: ThemeMode.dark,
-              ),
-              RadioListTile<ThemeMode>(
-                title: const Text('Sistema'),
-                subtitle: const Text('Seguir configuração do sistema'),
-                value: ThemeMode.system,
-              ),
-            ],
+      builder: (context) => Consumer<SettingsProvider>(
+        builder: (context, settingsProvider, child) => AlertDialog.adaptive(
+          title: const Text('Escolher Tema'),
+          content: SizedBox(
+            width: 300,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Color palette selection
+                const Text(
+                  'Cor do Tema:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
+                _buildColorPalette(settingsProvider),
+                const SizedBox(height: 24),
+
+                // Theme mode selection
+                const Text(
+                  'Modo:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
+                _buildThemeModeSelection(settingsProvider),
+              ],
+            ),
           ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancelar'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Concluído'),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+      ),
+    );
+  }
+
+  Widget _buildColorPalette(SettingsProvider settingsProvider) {
+    final colors = [
+      {
+        'name': 'Verde',
+        'value': ThemeColor.green,
+        'preview': const Color(0xFF145550),
+      },
+      {
+        'name': 'Dourado',
+        'value': ThemeColor.gold,
+        'preview': const Color(0xFFE6B428),
+      },
+      {
+        'name': 'Laranja',
+        'value': ThemeColor.orange,
+        'preview': const Color(0xFFE66423),
+      },
+      {
+        'name': 'Vinho',
+        'value': ThemeColor.burgundy,
+        'preview': const Color(0xFF5A002D),
+      },
+    ];
+
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: colors.map((colorData) {
+        final isSelected = settingsProvider.themeColor == colorData['value'];
+
+        return GestureDetector(
+          onTap: () =>
+              settingsProvider.setThemeColor(colorData['value'] as ThemeColor),
+          child: Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              color: colorData['preview'] as Color,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: isSelected
+                    ? Theme.of(context).colorScheme.secondary
+                    : Colors.transparent,
+                width: 3,
+              ),
+              boxShadow: isSelected
+                  ? [
+                      BoxShadow(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.primary.withValues(alpha: 0.3),
+                        blurRadius: 8,
+                        spreadRadius: 2,
+                      ),
+                    ]
+                  : null,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              spacing: 4,
+              children: [
+                if (isSelected)
+                  Icon(Icons.check, color: Colors.white, size: 20)
+                else
+                  Container(
+                    width: 20,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      color: Colors.white24,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                Text(
+                  colorData['name'] as String,
+                  style: isSelected
+                      ? const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                        )
+                      : const TextStyle(color: Colors.white70, fontSize: 10),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
           ),
-        ],
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildThemeModeSelection(SettingsProvider settingsProvider) {
+    final modes = [
+      {'name': 'Claro', 'value': ThemeMode.light, 'icon': Icons.light_mode},
+      {'name': 'Escuro', 'value': ThemeMode.dark, 'icon': Icons.dark_mode},
+      {
+        'name': 'Sistema',
+        'value': ThemeMode.system,
+        'icon': Icons.brightness_auto,
+      },
+    ];
+
+    return RadioGroup<ThemeMode>(
+      onChanged: (value) => settingsProvider.setThemeMode(value!),
+      groupValue: settingsProvider.themeMode,
+      child: Column(
+        children: modes.map((modeData) {
+          final isSelected = settingsProvider.themeMode == modeData['value'];
+
+          return RadioListTile<ThemeMode>(
+            value: modeData['value'] as ThemeMode,
+            title: Row(
+              children: [
+                Icon(
+                  modeData['icon'] as IconData,
+                  size: 20,
+                  color: isSelected
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.6),
+                ),
+                const SizedBox(width: 12),
+                Text(modeData['name'] as String),
+              ],
+            ),
+            contentPadding: EdgeInsets.zero,
+            visualDensity: VisualDensity.compact,
+          );
+        }).toList(),
       ),
     );
   }

@@ -38,7 +38,7 @@ class Playlist {
       createdBy: json['created_by'] as int? ?? 0,
       createdAt: DatetimeHelper.parseDateTime(json['created_at']),
       updatedAt: DatetimeHelper.parseDateTime(json['updated_at']),
-      isPublic: json['is_public'] as bool? ?? false,
+      isPublic: _parseBoolean(json['is_public']),
       collaborators: json['collaborators'] != null
           ? List<String>.from(json['collaborators'])
           : const [],
@@ -73,7 +73,7 @@ class Playlist {
       'author_id': createdBy,
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
-      'is_public': isPublic,
+      'is_public': (isPublic ?? false) ? 1 : 0,
     };
 
     // Only include id if it's not -1 (for updates)
@@ -191,5 +191,16 @@ class Playlist {
       );
     }
     print('======================');
+  }
+
+  // Helper method to parse boolean from database (handles both bool and int types)
+  static bool _parseBoolean(dynamic value) {
+    if (value is bool) {
+      return value;
+    } else if (value is int) {
+      return value == 1;
+    } else {
+      return false;
+    }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:cipher_app/models/domain/user.dart';
+import 'package:cipher_app/helpers/firestore_timestamp_helper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserDto {
@@ -29,8 +30,8 @@ class UserDto {
       mail: json['mail'] as String,
       profilePhoto: json['profilePhoto'] as String?,
       googleId: json['googleId'] as String?,
-      createdAt: (json['createdAt'] as Timestamp?)?.toDate(),
-      updatedAt: (json['updatedAt'] as Timestamp?)?.toDate(),
+      createdAt: FirestoreTimestampHelper.toDateTime(json['createdAt']),
+      updatedAt: FirestoreTimestampHelper.toDateTime(json['updatedAt']),
       isActive: (json['isActive'] as bool?) ?? true,
     );
   }
@@ -41,7 +42,7 @@ class UserDto {
       'mail': mail,
       'profilePhoto': profilePhoto,
       'googleId': googleId,
-      'createdAt': createdAt != null ? Timestamp.fromDate(createdAt!) : null,
+      'createdAt': FirestoreTimestampHelper.fromDateTime(createdAt),
       'updatedAt':
           FieldValue.serverTimestamp(), // Server timestamp to avoid client clock issues
       'isActive': isActive,

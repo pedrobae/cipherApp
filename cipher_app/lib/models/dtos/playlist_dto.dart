@@ -1,7 +1,7 @@
 import 'package:cipher_app/models/domain/playlist/playlist.dart';
 import 'package:cipher_app/models/domain/playlist/playlist_item.dart';
 import 'package:cipher_app/models/dtos/playlist_item_dto.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cipher_app/helpers/firestore_timestamp_helper.dart';
 
 class PlaylistDto {
   final String? firebaseId; // ID na nuvem (Firebase)
@@ -34,8 +34,12 @@ class PlaylistDto {
       description: json['description'] as String? ?? '',
       ownerId: json['ownerId'] as String? ?? '',
       isPublic: json['isPublic'] as bool? ?? false,
-      updatedAt: (json['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      createdAt: (json['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      updatedAt:
+          FirestoreTimestampHelper.toDateTime(json['updatedAt']) ??
+          DateTime.now(),
+      createdAt:
+          FirestoreTimestampHelper.toDateTime(json['createdAt']) ??
+          DateTime.now(),
       collaborators: List<Map<String, dynamic>>.from(
         json['collaborators'] ?? [],
       ),
@@ -56,8 +60,8 @@ class PlaylistDto {
       'description': description,
       'ownerId': ownerId,
       'isPublic': isPublic,
-      'updatedAt': Timestamp.fromDate(updatedAt),
-      'createdAt': Timestamp.fromDate(createdAt),
+      'updatedAt': FirestoreTimestampHelper.fromDateTime(updatedAt),
+      'createdAt': FirestoreTimestampHelper.fromDateTime(createdAt),
       'collaborators': collaborators,
       'items': items.map((item) => item.toFirestore()).toList(),
     };

@@ -1,5 +1,6 @@
 import 'package:cipher_app/models/domain/cipher/section.dart';
 import 'package:cipher_app/models/domain/cipher/version.dart';
+import 'package:cipher_app/helpers/firestore_timestamp_helper.dart';
 
 /// DTO para metadados de version (camada de separação entre a nuvem e o armazenamento local).
 class VersionDto {
@@ -36,9 +37,7 @@ class VersionDto {
               ?.map((e) => e.toString())
               .join(',') ??
           '',
-      updatedAt: map['updatedAt'] != null
-          ? DateTime.tryParse(map['updatedAt'].toString())
-          : null,
+      updatedAt: FirestoreTimestampHelper.toDateTime(map['updatedAt']),
       sections: (map['sections'] as Map<String, dynamic>).map(
         (sectionCode, section) => MapEntry(sectionCode, section),
       ),
@@ -50,7 +49,7 @@ class VersionDto {
       'versionName': versionName,
       'transposedKey': transposedKey,
       'songStructure': songStructure,
-      'updatedAt': updatedAt?.toIso8601String(),
+      'updatedAt': FirestoreTimestampHelper.fromDateTime(updatedAt),
       'sections': sections?.map(
         (sectionCode, section) => MapEntry(sectionCode, {
           'contentType': section['contentType'],

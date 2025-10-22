@@ -594,11 +594,12 @@ class CipherProvider extends ChangeNotifier {
   /// ===== CIPHER CACHING =====
   // Get cached cipher by ID (returns null if not in cache)
   Cipher? getCachedCipher(int cipherId) {
-    try {
-      return _localCiphers.firstWhere((cipher) => cipher.id == cipherId);
-    } catch (e) {
-      return null;
+    for (var cipher in _localCiphers) {
+      if (cipher.id == cipherId) {
+        return cipher;
+      }
     }
+    return null;
   }
 
   // Check if a cipher is already cached

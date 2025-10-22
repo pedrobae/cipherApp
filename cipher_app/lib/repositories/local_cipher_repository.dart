@@ -194,7 +194,6 @@ class LocalCipherRepository {
       whereArgs: versionIds,
       orderBy: 'id',
     );
-
     return Future.wait(results.map((row) => _buildCipherVersion(row)));
   }
 

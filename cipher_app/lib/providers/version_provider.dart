@@ -31,24 +31,13 @@ class VersionProvider extends ChangeNotifier {
   /// Checks if a version exists locally by its Firebase ID
   /// Returns the local id if found, otherwise null
   Future<int?> getVersionIdByFirebaseId(String firebaseId) async {
-    // Check cache first
-    try {
-      return _versions.firstWhere((v) => v.firebaseId == firebaseId).id;
-    } catch (_) {
-      // Not in cache, query repository
-      return await _cipherRepository.getVersionWithFirebaseId(firebaseId);
+    for (var v in _versions) {
+      if (v.firebaseId == firebaseId) {
+        return v.id;
+      }
     }
-  }
-
-  /// Gets a version by its local ID
-  Future<Version?> getVersionById(int versionId) async {
-    // Check cache first
-    try {
-      return _versions.firstWhere((v) => v.id == versionId);
-    } catch (_) {
-      // Not in cache, query repository
-      return await _cipherRepository.getVersionWithId(versionId);
-    }
+    // Not in cache, query repository
+    return await _cipherRepository.getVersionWithFirebaseId(firebaseId);
   }
 
   /// Downloads a version from Firebase by its Firebase ID - CHANGE 20/10 doesn't save locally anymore
@@ -460,11 +449,12 @@ class VersionProvider extends ChangeNotifier {
 
   // Get cached version by ID (returns null if not in cache)
   Version? getCachedVersion(int versionId) {
-    try {
-      return _versions.firstWhere((version) => version.id == versionId);
-    } catch (e) {
-      return null;
+    for (var version in _versions) {
+      if (version.id == versionId) {
+        return version;
+      }
     }
+    return null;
   }
 
   // Check if a version is already cached

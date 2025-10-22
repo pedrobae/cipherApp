@@ -204,19 +204,24 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                 throw Exception('Failed to download version: $versionCloudId');
               }
 
-              final versionLocalId = await versionProvider
+              int? versionLocalId = await versionProvider
                   .getVersionIdByFirebaseId(versionCloudId);
 
-              final version = newVersion.copyWith(
-                cipherId: cipherId,
-                id: versionLocalId,
-              );
               if (versionLocalId == null) {
                 // Create version locally with correct cipher ID
-                await versionProvider.createVersionFromDomain(version);
+                final version = newVersion.copyWith(cipherId: cipherId);
+
+                versionLocalId = await versionProvider.createVersionFromDomain(
+                  version,
+                );
               } else {
                 // Version already exists locally, for now overwrite it
                 // TODO: CHECK BUSINESS RULES MAYBE OPEN A CONFIRMATION DIALOG
+                final version = newVersion.copyWith(
+                  cipherId: cipherId,
+                  id: versionLocalId,
+                );
+
                 await versionProvider.updateVersion(version);
               }
 
@@ -326,6 +331,10 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
           'Sync completed: $successCount/$totalCount playlists synced successfully',
         );
       }
+
+      // Clear version and cipher providers after sync
+      versionProvider.clearVersions();
+      cipherProvider.clearCurrentCipher();
     } catch (generalError) {
       if (kDebugMode) {
         print('Critical sync error: $generalError');

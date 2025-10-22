@@ -121,9 +121,10 @@ class Chord {
     /// CHECK IF NEXT WORD LINE BREAKS
     if (nextWordPainter.width > lineWidth - sameLineTextPainter.width) {
       lineNumber++;
+      xOffset = 0;
       // CHECK IF THE CHORD IS AT THE START OF A WORD
-      if (previousWordPainter.width == 0) {
-        xOffset = 0;
+      if (previousWordPainter.width != 0) {
+        xOffset += previousWordPainter.width;
       }
     }
 

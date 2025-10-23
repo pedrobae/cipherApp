@@ -8,6 +8,8 @@ class NavigationProvider extends ChangeNotifier {
   static const String infoRoute = '/info';
   static const String homeRoute = '/home';
   static const String admin = '/admin';
+  static const String bulkImportRoute = '/bulk_import';
+  static const String userManagementRoute = '/user_management';
 
   int _selectedIndex = 0;
   String _currentRoute = homeRoute;
@@ -47,6 +49,14 @@ class NavigationProvider extends ChangeNotifier {
 
   void navigateToAdmin() {
     _navigateToRoute(4, admin);
+  }
+
+  void navigateToBulkImport() {
+    _navigateToRoute(5, bulkImportRoute);
+  }
+
+  void navigateToUserManagement() {
+    _navigateToRoute(6, userManagementRoute);
   }
 
   void _navigateToRoute(int index, String route) {
@@ -104,6 +114,10 @@ class NavigationProvider extends ChangeNotifier {
         return 3;
       case admin:
         return 4;
+      case bulkImportRoute:
+        return 5;
+      case userManagementRoute:
+        return 6;
       default:
         return -1;
     }
@@ -123,6 +137,10 @@ class NavigationProvider extends ChangeNotifier {
         return appName;
       case admin:
         return 'Administração';
+      case bulkImportRoute:
+        return 'Importação em Massa';
+      case userManagementRoute:
+        return 'Gerenciamento de Usuários';
       default:
         return 'App de Cifras';
     }
@@ -174,6 +192,28 @@ class NavigationProvider extends ChangeNotifier {
     );
   }
 
+  AdminItem getBulkImportItem({Color? iconColor, double iconSize = 64}) {
+    return AdminItem(
+      route: bulkImportRoute,
+      title: 'Importação em Massa',
+      icon: Icon(Icons.upload_file, color: iconColor, size: iconSize),
+      index: 5,
+    );
+  }
+
+  AdminItem getUserManagementItem({Color? iconColor, double iconSize = 64}) {
+    return AdminItem(
+      route: '/user_management',
+      title: 'Gerenciamento de Usuários',
+      icon: Icon(
+        Icons.supervised_user_circle,
+        color: iconColor,
+        size: iconSize,
+      ),
+      index: 6,
+    );
+  }
+
   // Compose navigation lists as needed
   List<NavigationItem> getNavigationItems({
     Color? iconColor,
@@ -186,6 +226,13 @@ class NavigationProvider extends ChangeNotifier {
       getInfoItem(iconColor: iconColor, iconSize: iconSize),
     ];
   }
+
+  List<AdminItem> getAdminItems({Color? iconColor, double iconSize = 64}) {
+    return [
+      getBulkImportItem(iconColor: iconColor, iconSize: iconSize),
+      getUserManagementItem(iconColor: iconColor, iconSize: iconSize),
+    ];
+  }
 }
 
 // Helper class for navigation items
@@ -196,6 +243,21 @@ class NavigationItem {
   final int index;
 
   NavigationItem({
+    required this.route,
+    required this.title,
+    required this.icon,
+    required this.index,
+  });
+}
+
+// Helper class for admin items
+class AdminItem {
+  final String route;
+  final String title;
+  final Icon icon;
+  final int index;
+
+  AdminItem({
     required this.route,
     required this.title,
     required this.icon,

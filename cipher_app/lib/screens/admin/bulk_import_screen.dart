@@ -4,14 +4,14 @@ import 'package:provider/provider.dart';
 import 'package:cipher_app/providers/admin_provider.dart';
 import 'package:cipher_app/services/admin_bulk_service.dart';
 
-class AdminBulkImportScreen extends StatefulWidget {
-  const AdminBulkImportScreen({super.key});
+class BulkImportScreen extends StatefulWidget {
+  const BulkImportScreen({super.key});
 
   @override
-  State<AdminBulkImportScreen> createState() => _AdminBulkImportScreenState();
+  State<BulkImportScreen> createState() => _BulkImportScreenState();
 }
 
-class _AdminBulkImportScreenState extends State<AdminBulkImportScreen> {
+class _BulkImportScreenState extends State<BulkImportScreen> {
   final TextEditingController _jsonController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   bool _uploadToCloud = true;

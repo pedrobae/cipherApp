@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:cipher_app/services/admin_bulk_service.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 
 class AdminProvider extends ChangeNotifier {
   final AdminBulkService _bulkService = AdminBulkService();
@@ -136,6 +137,24 @@ class AdminProvider extends ChangeNotifier {
       return 0;
     } catch (e) {
       return 0;
+    }
+  }
+
+  Future<void> grantAdminRole(String userId) async {
+    try {
+      final functions = FirebaseFunctions.instance;
+      final callable = functions.httpsCallable('grantAdminRole');
+
+      final result = await callable.call({'uid': userId});
+
+      if (kDebugMode) {
+        print('Admin granted: ${result.data['message']}');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error granting admin: $e');
+      }
+      rethrow;
     }
   }
 }

@@ -189,10 +189,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 break;
                               case NavigationProvider.admin:
                                 if (authProvider.isAdmin) {
-                                  navigationProvider.navigateTo(
-                                    4,
-                                    NavigationProvider.admin,
-                                  );
+                                  navigationProvider.navigateToAdmin();
                                 } else {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(

@@ -27,6 +27,16 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
   @override
   void initState() {
     super.initState();
+    _loadPlaylist();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadPlaylist();
+  }
+
+  void _loadPlaylist() {
     // Load versions when the widget initializes
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final playlistProvider = context.read<PlaylistProvider>();

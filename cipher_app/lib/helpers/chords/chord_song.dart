@@ -130,7 +130,7 @@ class Chord {
 
     /// CHECK IF CHORD IS LARGER THAN THE NEXT WORD TO PUSH THE NEXT CHORD RIGHT
     if (nextWordPainter.width < chordPainter.width) {
-      carryOver += chordPainter.width - nextWordPainter.width;
+      carryOver += chordPainter.width - nextWordPainter.width + 4;
     }
 
     double yOffset = lineHeight * (lineNumber + offset);

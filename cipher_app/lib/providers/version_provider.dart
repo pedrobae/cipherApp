@@ -465,8 +465,10 @@ class VersionProvider extends ChangeNotifier {
   /// ===== SECTION MANAGEMENT =====
   /// ===== CREATE =====
   // Add a new section
-  void cacheAddSection(Section newSection) {
-    _currentVersion.sections![newSection.contentCode] = newSection;
+  void cacheAddSection(Section newSection, bool isNewSection) {
+    if (isNewSection) {
+      _currentVersion.sections![newSection.contentCode] = newSection;
+    }
 
     _currentVersion.songStructure.add(newSection.contentCode);
 

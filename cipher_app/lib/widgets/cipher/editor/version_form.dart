@@ -83,9 +83,11 @@ class _VersionFormState extends State<VersionForm> {
     String? sectionType,
     Color? customColor,
   }) {
+    bool isNewSection = false;
     // Create text controller for this section
     if (!_sectionControllers.containsKey(sectionCode)) {
       _sectionControllers[sectionCode] = TextEditingController();
+      isNewSection = true;
     }
 
     // Create the section - either custom or use predefined values
@@ -111,7 +113,7 @@ class _VersionFormState extends State<VersionForm> {
         contentText: '',
         contentColor: color ?? Colors.grey,
       );
-      versionProvider.cacheAddSection(newSection);
+      versionProvider.cacheAddSection(newSection, isNewSection);
     }
   }
 

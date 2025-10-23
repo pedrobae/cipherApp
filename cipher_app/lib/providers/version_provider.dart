@@ -153,7 +153,7 @@ class VersionProvider extends ChangeNotifier {
   }
 
   /// ===== READ - Load version from versionId =====
-  Future<void> loadVersionById(int versionId) async {
+  Future<void> setCurrentVersion(int versionId) async {
     if (_isLoading) return;
 
     _isLoading = true;
@@ -198,6 +198,36 @@ class VersionProvider extends ChangeNotifier {
       _versions = [];
       if (kDebugMode) {
         print('Error loading versions of cipher: $e');
+      }
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Load a version into cache by its local ID
+  Future<void> loadVersionById(int versionId) async {
+    if (_isLoading) return;
+
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final version = await _cipherRepository.getVersionWithId(versionId);
+      if (version == null) {
+        throw Exception('Version with id $versionId not found locally');
+      }
+
+      _versions.add(version);
+      if (kDebugMode) {
+        print('Loaded the version: ${_versions.last.versionName} into cache');
+      }
+    } catch (e) {
+      _error = e.toString();
+      _currentVersion = Version.empty();
+      if (kDebugMode) {
+        print('Error loading cipher version by id: $e');
       }
     } finally {
       _isLoading = false;

@@ -233,14 +233,8 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CipherLibraryScreen(
-          selectionMode: true,
-          playlistId: playlist.id,
-          excludeVersionIds: playlist.items
-              .where((item) => item.type == 'cipher_version')
-              .map((item) => item.contentId)
-              .toList(), // Don't show already added
-        ),
+        builder: (context) =>
+            CipherLibraryScreen(selectionMode: true, playlistId: playlist.id),
       ),
     );
   }

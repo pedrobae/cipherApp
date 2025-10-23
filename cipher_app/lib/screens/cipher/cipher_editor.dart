@@ -57,7 +57,7 @@ class _EditCipherState extends State<EditCipher>
           versionProvider.clearCache();
         } else {
           // Load the version
-          await versionProvider.loadVersionById(widget.versionId!);
+          await versionProvider.setCurrentVersion(widget.versionId!);
         }
       }
 

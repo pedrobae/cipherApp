@@ -32,10 +32,14 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
     // Pre-load cipher data if not already loaded
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final cipherProvider = context.read<CipherProvider>();
+      final versionProvider = context.read<VersionProvider>();
 
-      // Ensure all ciphers are loaded (loads all ciphers if not already loaded)
-      if (!cipherProvider.hasLoadedCiphers) {
-        cipherProvider.loadCiphers();
+      // Ensure the cipher is loaded (loads all ciphers if not already loaded)
+      cipherProvider.loadCiphers();
+
+      // Ensure the specific version is loaded
+      if (!versionProvider.isVersionCached(widget.cipherVersionId)) {
+        versionProvider.loadVersionById(widget.cipherVersionId);
       }
     });
   }

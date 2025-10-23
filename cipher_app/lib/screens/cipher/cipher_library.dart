@@ -10,13 +10,11 @@ import 'package:cipher_app/screens/cipher/cipher_viewer.dart';
 class CipherLibraryScreen extends StatefulWidget {
   final bool selectionMode;
   final int? playlistId;
-  final List<int?>? excludeVersionIds;
 
   const CipherLibraryScreen({
     super.key,
     this.selectionMode = false,
     this.playlistId,
-    this.excludeVersionIds,
   });
 
   @override

@@ -1,5 +1,5 @@
 import 'package:cipher_app/providers/cipher_provider.dart';
-import 'package:cipher_app/screens/cipher_editor.dart';
+import 'package:cipher_app/screens/cipher/cipher_editor.dart';
 import 'package:cipher_app/widgets/cipher/library/expandible_cipher_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

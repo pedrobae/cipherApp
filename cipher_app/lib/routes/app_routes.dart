@@ -7,9 +7,9 @@ import 'package:cipher_app/screens/main_screen.dart';
 import 'package:cipher_app/screens/admin/bulk_import_screen.dart';
 import 'package:flutter/material.dart';
 import '../screens/home_screen.dart';
-import '../screens/cipher_library.dart';
+import '../screens/cipher/cipher_library.dart';
 import '../screens/info_screen.dart';
-import '../screens/playlist_library.dart';
+import '../screens/playlist/playlist_library.dart';
 import '../screens/settings_screen.dart';
 
 class AppRoutes {

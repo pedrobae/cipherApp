@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/models/domain/cipher/cipher.dart';
 import 'package:cipher_app/providers/version_provider.dart';
-import 'package:cipher_app/screens/cipher_editor.dart';
+import 'package:cipher_app/screens/cipher/cipher_editor.dart';
 import 'package:cipher_app/widgets/cipher/tag_chip.dart';
 
 class CipherCard extends StatefulWidget {

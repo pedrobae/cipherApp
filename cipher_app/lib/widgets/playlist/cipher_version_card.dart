@@ -1,8 +1,8 @@
 import 'package:cipher_app/providers/playlist_provider.dart';
-import 'package:cipher_app/screens/playlist_presentation.dart';
+import 'package:cipher_app/screens/playlist/playlist_presentation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cipher_app/screens/cipher_viewer.dart';
+import 'package:cipher_app/screens/cipher/cipher_viewer.dart';
 import 'package:cipher_app/providers/cipher_provider.dart';
 import 'package:cipher_app/providers/version_provider.dart';
 import 'package:cipher_app/widgets/cipher/editor/custom_reorderable_delayed.dart';

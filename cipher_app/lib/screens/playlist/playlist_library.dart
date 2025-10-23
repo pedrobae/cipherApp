@@ -7,7 +7,7 @@ import 'package:cipher_app/providers/user_provider.dart';
 import 'package:cipher_app/providers/version_provider.dart';
 import 'package:cipher_app/providers/playlist_provider.dart';
 import 'package:cipher_app/providers/auth_provider.dart';
-import 'package:cipher_app/screens/playlist_viewer.dart';
+import 'package:cipher_app/screens/playlist/playlist_viewer.dart';
 import 'package:cipher_app/models/domain/playlist/playlist.dart';
 import 'package:cipher_app/widgets/dialogs/create_playlist_dialog.dart';
 import 'package:cipher_app/widgets/dialogs/delete_playlist_dialog.dart';

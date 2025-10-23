@@ -123,7 +123,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                         final playlist = playlistProvider.playlists[index];
                         return PlaylistCard(
                           playlist: playlist,
-                          onTap: () => _onPlaylistTap(context, playlist),
+                          onTap: () => _onPlaylistTap(context, playlist.id),
                           onDelete: () => _showDeleteDialog(context, playlist),
                         );
                       },
@@ -164,7 +164,8 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                 .toList(),
           );
 
-          List<Map<String, dynamic>> syncedItems = [];
+          List<Map<String, dynamic>> textSectionItems = [];
+          List<Map<String, dynamic>> versionSectionItems = [];
 
           for (int i = 0; i < playlistDto.items.length; i++) {
             final item = playlistDto.items[i];
@@ -225,14 +226,13 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                 await versionProvider.updateVersion(version);
               }
 
-              syncedItems.add({
+              versionSectionItems.add({
                 'addedBy': userProvider.getLocalIdByFirebaseId(item.addedBy),
-                'type': 'cipher_version',
                 'contentId': versionLocalId,
                 'position': i,
               });
             } else if (item.type == 'text_section') {
-              // Validate text item can be retrieved
+              // Download text section content
               final data = await playlistProvider.downloadTextItemByFirebaseId(
                 item.firebaseContentId!,
               );
@@ -243,8 +243,8 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                 );
               }
 
-              syncedItems.add({
-                'addedBy': data.addedBy,
+              textSectionItems.add({
+                'addedBy': userProvider.getLocalIdByFirebaseId(item.addedBy),
                 'type': 'text_section',
                 'firebaseContentId': item.firebaseContentId!,
                 'position': i,
@@ -255,7 +255,9 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
           }
 
           // Only upsert playlist if we successfully processed at least some items
-          if (syncedItems.isNotEmpty || playlistDto.items.isEmpty) {
+          if (versionSectionItems.isNotEmpty ||
+              playlistDto.items.isEmpty ||
+              textSectionItems.isNotEmpty) {
             final playlistId = await playlistProvider.upsertPlaylist(
               playlistDto.toDomain(
                 [],
@@ -269,27 +271,34 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
               );
             }
 
+            // Prune existing items and collaborators
+            await playlistProvider.prunePlaylistItems(
+              playlistId,
+              versionSectionItems,
+              textSectionItems,
+            );
+
             // Upsert text items that were successfully validated
-            for (final item in syncedItems) {
-              if (item['type'] == 'text_section') {
-                await playlistProvider.upsertTextItem(
-                  addedBy: userProvider.getLocalIdByFirebaseId(
-                    playlistDto.ownerId,
-                  )!,
-                  playlistId: playlistId,
-                  firebaseTextId: item['firebaseContentId'],
-                  title: item['title'],
-                  content: item['content'],
-                  position: item['position'],
-                );
-              } else if (item['type'] == 'cipher_version') {
-                await playlistProvider.upsertVersionOnPlaylist(
-                  playlistId,
-                  item['contentId'],
-                  item['position'],
-                  item['addedBy'],
-                );
-              }
+            for (final item in textSectionItems) {
+              await playlistProvider.upsertTextItem(
+                addedBy: userProvider.getLocalIdByFirebaseId(
+                  playlistDto.ownerId,
+                )!,
+                playlistId: playlistId,
+                firebaseTextId: item['firebaseContentId'],
+                title: item['title'],
+                content: item['content'],
+                position: item['position'],
+              );
+            }
+            // Upsert version items
+            for (final item in versionSectionItems) {
+              await playlistProvider.upsertVersionOnPlaylist(
+                playlistId,
+                item['contentId'],
+                item['position'],
+                item['addedBy'],
+              );
             }
             // Insert collaborators
             for (final collaborator in playlistDto.collaborators) {
@@ -344,10 +353,10 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
     }
   }
 
-  void _onPlaylistTap(BuildContext context, Playlist playlist) {
+  void _onPlaylistTap(BuildContext context, int playlistId) async {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => PlaylistViewer(playlistId: playlist.id),
+        builder: (context) => PlaylistViewer(playlistId: playlistId),
       ),
     );
   }

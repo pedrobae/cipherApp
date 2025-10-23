@@ -69,13 +69,11 @@ class TextItemDto {
   final String firebaseId;
   final String title;
   final String content;
-  final String addedBy;
 
   TextItemDto({
     required this.firebaseId,
     required this.title,
     required this.content,
-    required this.addedBy,
   });
 
   factory TextItemDto.fromFirestore(Map<String, dynamic> json, String id) {
@@ -83,16 +81,10 @@ class TextItemDto {
       firebaseId: id,
       title: json['title'] as String? ?? '',
       content: json['content'] as String? ?? '',
-      addedBy: json['addedBy'] as String? ?? '',
     );
   }
 
   Map<String, dynamic> toFirestore() {
-    return {
-      'firebaseId': firebaseId,
-      'title': title,
-      'content': content,
-      'addedBy': addedBy,
-    };
+    return {'firebaseId': firebaseId, 'title': title, 'content': content};
   }
 }

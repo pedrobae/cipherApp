@@ -463,6 +463,38 @@ class PlaylistRepository {
     }
   }
 
+  /// Prunes playlist items present in the provided lists
+  Future<void> prunePlaylistItems(
+    int playlistId,
+    List<int> textItemIds,
+    List<int> versionItemIds,
+  ) async {
+    final db = await _databaseHelper.database;
+
+    // Prune versions
+    if (versionItemIds.isNotEmpty) {
+      final versionPlaceholders = List.filled(
+        versionItemIds.length,
+        '?',
+      ).join(', ');
+      await db.delete(
+        'playlist_version',
+        where: 'id IN ($versionPlaceholders)',
+        whereArgs: [...versionItemIds],
+      );
+    }
+
+    // Prune text sections
+    if (textItemIds.isNotEmpty) {
+      final textPlaceholders = List.filled(textItemIds.length, '?').join(', ');
+      await db.delete(
+        'playlist_text',
+        where: 'playlist_id = ? AND id IN ($textPlaceholders)',
+        whereArgs: [playlistId, ...textItemIds],
+      );
+    }
+  }
+
   // ===== UTILS =====
   /// Build playlist domain object from database row
   Future<Playlist> buildPlaylist(Map<String, dynamic> playlistRow) async {

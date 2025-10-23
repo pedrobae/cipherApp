@@ -220,15 +220,6 @@ exports.aggregateCipherDownloads = onSchedule({
 
 // Grant admin privileges to a user by email
 exports.grantAdminRole = onCall(async (request) => {
-  // Debug logging for v2 API
-  console.log("grantAdminRole called (v2)");
-  console.log("Request auth:", request.auth);
-  console.log("Request auth uid:", request.auth && request.auth.uid);
-  console.log("Request auth token:", request.auth && request.auth.token);
-  console.log("Admin claim:",
-      request.auth && request.auth.token && request.auth.token.admin);
-  console.log("Data received:", request.data);
-
   // Only existing admins can grant admin role
   if (!request.auth || !request.auth.token.admin) {
     console.log("Permission denied - no auth or no admin claim");
@@ -248,10 +239,6 @@ exports.grantAdminRole = onCall(async (request) => {
   }
 
   try {
-    // First, look up the user by email to get their UID
-    console.log(`Looking up user by email: ${email}`);
-    const userRecord = await admin.auth().getUserByEmail(email);
-    console.log(`Found user with UID: ${userRecord.uid}`);
 
     // Set custom claims using the UID
     await admin.auth().setCustomUserClaims(userRecord.uid, {admin: true});

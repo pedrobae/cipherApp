@@ -101,8 +101,10 @@ class PlaylistProvider extends ChangeNotifier {
       final Playlist playlist = (await _playlistRepository.getPlaylistById(
         id,
       ))!;
-      int existingIndex = _playlists.indexWhere((p) => p.id == playlist.id);
       _currentPlaylist = playlist;
+
+      /// Upsert the playlist on the _playlists list
+      int existingIndex = _playlists.indexWhere((p) => p.id == playlist.id);
       if (existingIndex != -1) {
         _playlists[existingIndex] = playlist;
       } else {
@@ -342,6 +344,41 @@ class PlaylistProvider extends ChangeNotifier {
     }
 
     await loadPlaylist(playlistId);
+  }
+
+  /// Prune playlist items to insert the items from the cloud version
+  Future<void> prunePlaylistItems(
+    int playlistId,
+    List<Map<String, dynamic>> versionSectionItems,
+    List<Map<String, dynamic>> textSectionItems,
+  ) async {
+    final playlist = _playlists.firstWhere((p) => p.id == playlistId);
+
+    List<int> textItemsToPrune = [];
+    List<int> versionItemsToPrune = [];
+
+    for (final item in playlist.items) {
+      if (item.type == 'text_section') {
+        if (!textSectionItems.any(
+          (textItem) =>
+              (textItem['firebaseContentId'] == item.firebaseContentId),
+        )) {
+          textItemsToPrune.add(item.id!);
+        }
+      } else if (item.type == 'cipher_version') {
+        if (!versionSectionItems.any(
+          (versionItem) => (versionItem['contentId'] == item.contentId),
+        )) {
+          versionItemsToPrune.add(item.id!);
+        }
+      }
+    }
+
+    _playlistRepository.prunePlaylistItems(
+      playlistId,
+      textItemsToPrune,
+      versionItemsToPrune,
+    );
   }
 
   // ===== UTILITY =====

@@ -1,3 +1,4 @@
+import 'package:cipher_app/providers/version_provider.dart';
 import 'package:cipher_app/widgets/search_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -91,6 +92,9 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen>
                       try {
                         context.read<PlaylistProvider>().addVersionToPlaylist(
                           widget.playlistId!,
+                          versionId,
+                        );
+                        context.read<VersionProvider>().loadVersionById(
                           versionId,
                         );
                         Navigator.pop(context);

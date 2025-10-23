@@ -15,10 +15,9 @@ import 'package:cipher_app/widgets/dialogs/edit_playlist_dialog.dart';
 import 'package:cipher_app/widgets/dialogs/new_text_section_dialog.dart';
 
 class PlaylistViewer extends StatefulWidget {
-  final int playlistId; // Receive the playlist ID from the parent
+  final int playlistId;
 
   const PlaylistViewer({super.key, required this.playlistId});
-
   @override
   State<PlaylistViewer> createState() => _PlaylistViewerState();
 }
@@ -27,24 +26,12 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
   @override
   void initState() {
     super.initState();
-    _loadPlaylist();
-  }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _loadPlaylist();
-  }
-
-  void _loadPlaylist() {
     // Load versions when the widget initializes
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final playlistProvider = context.read<PlaylistProvider>();
       final versionProvider = context.read<VersionProvider>();
       final cipherProvider = context.read<CipherProvider>();
-
-      // Load the playlist
-      await playlistProvider.loadPlaylist(widget.playlistId);
+      final playlistProvider = context.read<PlaylistProvider>();
 
       // Load versions for playlist
       await versionProvider.loadVersionsForPlaylist(
@@ -63,9 +50,10 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
       builder:
           (context, playlistProvider, versionProvider, cipherProvider, child) {
             final colorScheme = Theme.of(context).colorScheme;
+
             final playlist = playlistProvider.currentPlaylist;
             // Handle loading state
-            if (playlist == null) {
+            if (playlistProvider.isLoading || playlist == null) {
               return const Scaffold(
                 body: Center(child: CircularProgressIndicator()),
               );
@@ -256,17 +244,20 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
         return CipherVersionCard(
           cipherVersionId: item.contentId!,
           index: item.position,
-          onDelete: () =>
-              _handleDeleteVersion(context, item.id!, widget.playlistId),
+          onDelete: () => _handleDeleteVersion(
+            context,
+            item.id!,
+            playlistProvider.currentPlaylist!.id,
+          ),
           onCopy: () => playlistProvider.duplicateVersion(
-            widget.playlistId,
+            playlistProvider.currentPlaylist!.id,
             item.contentId!,
           ),
         );
       case 'text_section':
         return TextSectionCard(
           textSectionId: item.contentId!,
-          playlistId: widget.playlistId,
+          playlistId: playlistProvider.currentPlaylist!.id,
         );
       default:
         return Card(

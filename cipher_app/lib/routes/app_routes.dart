@@ -37,7 +37,14 @@ class AppRoutes {
       NavigationProvider.playlistsRoute: const PlaylistLibraryScreen(),
       NavigationProvider.settingsRoute: const SettingsScreen(),
       NavigationProvider.infoRoute: const InfoScreen(),
-      if (isAdmin) NavigationProvider.admin: const BulkImportScreen(),
+      if (isAdmin) NavigationProvider.admin: const AdminScreen(),
+    };
+  }
+
+  static Map<String, Widget> adminRoutes() {
+    return {
+      NavigationProvider.bulkImportRoute: const BulkImportScreen(),
+      NavigationProvider.userManagementRoute: const UserManagementScreen(),
     };
   }
 }

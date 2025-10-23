@@ -26,6 +26,8 @@ class NavigationProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
+  /// USED BY THE MAIN SCREEN TO NAVIGATE BETWEEN CONTENT SCREENS
+
   // Navigation methods following your provider pattern
   void navigateToHome() {
     _navigateToRoute(0, homeRoute);
@@ -49,14 +51,6 @@ class NavigationProvider extends ChangeNotifier {
 
   void navigateToAdmin() {
     _navigateToRoute(4, admin);
-  }
-
-  void navigateToBulkImport() {
-    _navigateToRoute(5, bulkImportRoute);
-  }
-
-  void navigateToUserManagement() {
-    _navigateToRoute(6, userManagementRoute);
   }
 
   void _navigateToRoute(int index, String route) {
@@ -114,10 +108,6 @@ class NavigationProvider extends ChangeNotifier {
         return 3;
       case admin:
         return 4;
-      case bulkImportRoute:
-        return 5;
-      case userManagementRoute:
-        return 6;
       default:
         return -1;
     }

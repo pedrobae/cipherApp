@@ -8,8 +8,7 @@
  */
 
 const {setGlobalOptions} = require("firebase-functions");
-
-// For cost control, you can set the maximum number of containers that can be
+const {onCall} = require("firebase-functions/v2/https");
 // running at the same time. This helps mitigate the impact of unexpected
 // traffic spikes by instead downgrading performance. This limit is a
 // per-function limit. You can override the limit for each function using the
@@ -219,27 +218,60 @@ exports.aggregateCipherDownloads = onSchedule({
 
 // === ADMIN FUNCTIONS ===
 
-// Grant admin privileges to a user (call this function manually)
-exports.grantAdminRole = functions.https.onCall(async (data, context) => {
+// Grant admin privileges to a user by email
+exports.grantAdminRole = onCall(async (request) => {
+  // Debug logging for v2 API
+  console.log("grantAdminRole called (v2)");
+  console.log("Request auth:", request.auth);
+  console.log("Request auth uid:", request.auth && request.auth.uid);
+  console.log("Request auth token:", request.auth && request.auth.token);
+  console.log("Admin claim:",
+      request.auth && request.auth.token && request.auth.token.admin);
+  console.log("Data received:", request.data);
+
   // Only existing admins can grant admin role
-  if (!context.auth || !context.auth.token.admin) {
+  if (!request.auth || !request.auth.token.admin) {
+    console.log("Permission denied - no auth or no admin claim");
     throw new functions.https.HttpsError(
         "permission-denied",
         "Only admins can grant admin role.",
     );
   }
 
-  const {uid} = data;
+  const {email} = request.data;
+
+  if (!email) {
+    throw new functions.https.HttpsError(
+        "invalid-argument",
+        "Email is required.",
+    );
+  }
 
   try {
-    // Set custom claims
-    await admin.auth().setCustomUserClaims(uid, {admin: true});
+    // First, look up the user by email to get their UID
+    console.log(`Looking up user by email: ${email}`);
+    const userRecord = await admin.auth().getUserByEmail(email);
+    console.log(`Found user with UID: ${userRecord.uid}`);
+
+    // Set custom claims using the UID
+    await admin.auth().setCustomUserClaims(userRecord.uid, {admin: true});
 
     return {
-      message: `Admin role granted to user ${uid}`,
+      message: `Admin role granted to ${email} (UID: ${userRecord.uid})`,
       success: true,
+      uid: userRecord.uid,
+      email: email,
     };
   } catch (error) {
+    console.log("Error in grantAdminRole:", error);
+
+    if (error.code === "auth/user-not-found") {
+      throw new functions.https.HttpsError(
+          "not-found",
+          `User with email ${email} not found in Firebase Auth.`,
+      );
+    }
+
     throw new functions.https.HttpsError(
         "internal",
         "Failed to grant admin role",

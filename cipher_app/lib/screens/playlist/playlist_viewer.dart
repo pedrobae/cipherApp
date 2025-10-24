@@ -1,3 +1,4 @@
+import 'package:cipher_app/providers/collaborator_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/models/domain/playlist/playlist.dart';
@@ -5,6 +6,8 @@ import 'package:cipher_app/models/domain/playlist/playlist_item.dart';
 import 'package:cipher_app/providers/cipher_provider.dart';
 import 'package:cipher_app/providers/playlist_provider.dart';
 import 'package:cipher_app/providers/version_provider.dart';
+import 'package:cipher_app/providers/auth_provider.dart';
+import 'package:cipher_app/providers/user_provider.dart';
 import 'package:cipher_app/screens/cipher/cipher_library.dart';
 import 'package:cipher_app/screens/playlist/playlist_presentation.dart';
 import 'package:cipher_app/widgets/playlist/cipher_version_card.dart';
@@ -15,9 +18,15 @@ import 'package:cipher_app/widgets/dialogs/edit_playlist_dialog.dart';
 import 'package:cipher_app/widgets/dialogs/new_text_section_dialog.dart';
 
 class PlaylistViewer extends StatefulWidget {
-  final int playlistId;
+  final int playlistId; // Receive the playlist ID from the parent
+  final VoidCallback? syncPlaylist;
 
-  const PlaylistViewer({super.key, required this.playlistId});
+  const PlaylistViewer({
+    super.key,
+    required this.playlistId,
+    this.syncPlaylist,
+  });
+
   @override
   State<PlaylistViewer> createState() => _PlaylistViewerState();
 }
@@ -26,12 +35,24 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
   @override
   void initState() {
     super.initState();
+    _loadPlaylist();
+  }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadPlaylist();
+  }
+
+  void _loadPlaylist() {
     // Load versions when the widget initializes
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final playlistProvider = context.read<PlaylistProvider>();
       final versionProvider = context.read<VersionProvider>();
       final cipherProvider = context.read<CipherProvider>();
-      final playlistProvider = context.read<PlaylistProvider>();
+
+      // Load the playlist
+      await playlistProvider.loadPlaylist(widget.playlistId);
 
       // Load versions for playlist
       await versionProvider.loadVersionsForPlaylist(
@@ -46,14 +67,29 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
   @override
   Widget build(BuildContext context) {
     // Read the playlist from the provider
-    return Consumer3<PlaylistProvider, VersionProvider, CipherProvider>(
+    return Consumer6<
+      PlaylistProvider,
+      VersionProvider,
+      CipherProvider,
+      UserProvider,
+      AuthProvider,
+      CollaboratorProvider
+    >(
       builder:
-          (context, playlistProvider, versionProvider, cipherProvider, child) {
+          (
+            context,
+            playlistProvider,
+            versionProvider,
+            cipherProvider,
+            userProvider,
+            authProvider,
+            collaboratorProvider,
+            child,
+          ) {
             final colorScheme = Theme.of(context).colorScheme;
-
             final playlist = playlistProvider.currentPlaylist;
             // Handle loading state
-            if (playlistProvider.isLoading || playlist == null) {
+            if (playlist == null) {
               return const Scaffold(
                 body: Center(child: CircularProgressIndicator()),
               );
@@ -77,6 +113,46 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                     ),
                   ],
                 ),
+                actions: [
+                  if (widget.syncPlaylist != null) ...[
+                    IconButton(
+                      onPressed: widget.syncPlaylist,
+                      icon: Icon(Icons.cloud_sync),
+                    ),
+                    if (playlist.createdBy ==
+                        userProvider.getLocalIdByFirebaseId(
+                          authProvider.id!,
+                        )) ...[
+                      IconButton(
+                        onPressed: () async {
+                          collaboratorProvider.loadCollaborators(playlist.id);
+
+                          final fullCollaborators = collaboratorProvider
+                              .getCollaboratorsForPlaylist(playlist.id);
+
+                          List<Map<String, dynamic>> collaborators = [];
+                          for (final fullCollab in fullCollaborators) {
+                            collaborators.add({
+                              'id': userProvider.getFirebaseIdByLocalId(
+                                fullCollab.id,
+                              ),
+                              'role': fullCollab.role,
+                            });
+                          }
+
+                          playlistProvider.uploadPlaylist(
+                            playlist,
+                            userProvider.getFirebaseIdByLocalId(
+                              playlist.createdBy,
+                            ),
+                            collaborators,
+                          );
+                        },
+                        icon: const Icon(Icons.cloud_upload),
+                      ),
+                    ],
+                  ],
+                ],
               ),
               body: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -244,20 +320,17 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
         return CipherVersionCard(
           cipherVersionId: item.contentId!,
           index: item.position,
-          onDelete: () => _handleDeleteVersion(
-            context,
-            item.id!,
-            playlistProvider.currentPlaylist!.id,
-          ),
+          onDelete: () =>
+              _handleDeleteVersion(context, item.id!, widget.playlistId),
           onCopy: () => playlistProvider.duplicateVersion(
-            playlistProvider.currentPlaylist!.id,
+            widget.playlistId,
             item.contentId!,
           ),
         );
       case 'text_section':
         return TextSectionCard(
           textSectionId: item.contentId!,
-          playlistId: playlistProvider.currentPlaylist!.id,
+          playlistId: widget.playlistId,
         );
       default:
         return Card(

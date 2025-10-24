@@ -17,9 +17,11 @@ class PlaylistProvider extends ChangeNotifier {
   List<Playlist> _playlists = [];
   List<PlaylistDto> _cloudPlaylists = [];
   Playlist? _currentPlaylist;
+  PlaylistDto? _currentCloudPlaylist;
   bool _isLoading = false;
   bool _isCloudLoading = false;
   bool _isSaving = false;
+  bool _isCloudSaving = false;
   bool _isDeleting = false;
   String? _error;
 
@@ -31,9 +33,11 @@ class PlaylistProvider extends ChangeNotifier {
   List<Playlist> get playlists => _playlists;
   List<PlaylistDto> get cloudPlaylists => _cloudPlaylists;
   Playlist? get currentPlaylist => _currentPlaylist;
+  PlaylistDto? get currentCloudPlaylist => _currentCloudPlaylist;
   bool get isLoading => _isLoading;
   bool get isCloudLoading => _isCloudLoading;
   bool get isSaving => _isSaving;
+  bool get isCloudSaving => _isCloudSaving;
   bool get isDeleting => _isDeleting;
   String? get error => _error;
 
@@ -119,7 +123,7 @@ class PlaylistProvider extends ChangeNotifier {
   }
 
   // Load Single Playlist by Firebase ID
-  Future<void> loadPlaylistByFirebaseId(String firebaseId) async {
+  Future<void> loadCloudPlaylist(String firebaseId) async {
     if (_isCloudLoading) return;
 
     _isCloudLoading = true;
@@ -136,7 +140,7 @@ class PlaylistProvider extends ChangeNotifier {
         return;
       }
 
-      _cloudPlaylists.add(cloudDto);
+      _currentCloudPlaylist = cloudDto;
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -179,6 +183,32 @@ class PlaylistProvider extends ChangeNotifier {
       _error = e.toString();
     } finally {
       _isSaving = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> uploadPlaylist(
+    Playlist playlist,
+    String ownerFirebaseId,
+    List<Map<String, dynamic>> collaborators,
+  ) async {
+    if (_isCloudSaving) return;
+
+    _isCloudSaving = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _cloudPlaylistRepository.publishPlaylist(
+        playlist.toDto(ownerFirebaseId, collaborators),
+      );
+    } catch (e) {
+      _error = e.toString();
+      if (kDebugMode) {
+        print('Error Uploading Playlist: $e');
+      }
+    } finally {
+      _isCloudLoading = false;
       notifyListeners();
     }
   }

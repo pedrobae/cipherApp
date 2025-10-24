@@ -1,3 +1,4 @@
+import 'package:cipher_app/models/dtos/playlist_dto.dart';
 import 'package:cipher_app/providers/collaborator_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -47,10 +48,12 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       body:
-          Consumer4<
+          Consumer6<
             PlaylistProvider,
             CipherProvider,
             UserProvider,
+            VersionProvider,
+            AuthProvider,
             CollaboratorProvider
           >(
             builder:
@@ -59,6 +62,8 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                   playlistProvider,
                   cipherProvider,
                   userProvider,
+                  versionProvider,
+                  authProvider,
                   collaboratorProvider,
                   child,
                 ) {
@@ -102,10 +107,6 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                   // Display playlists
                   return RefreshIndicator(
                     onRefresh: () async {
-                      // Capture providers synchronously to avoid using context across async gaps
-                      final versionProvider = context.read<VersionProvider>();
-                      final authProvider = context.read<AuthProvider>();
-
                       await playlistProvider.loadLocalPlaylists();
                       await _syncPlaylists(
                         playlistProvider,
@@ -123,7 +124,17 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                         final playlist = playlistProvider.playlists[index];
                         return PlaylistCard(
                           playlist: playlist,
-                          onTap: () => _onPlaylistTap(context, playlist.id),
+                          onTap: () => _onPlaylistTap(
+                            context,
+                            playlist.id,
+                            playlistProvider,
+                            cipherProvider,
+                            userProvider,
+                            versionProvider,
+                            authProvider,
+                            collaboratorProvider,
+                            playlistFirebaseId: playlist.firebaseId,
+                          ),
                           onDelete: () => _showDeleteDialog(context, playlist),
                         );
                       },
@@ -156,181 +167,21 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
           <String, String>{}; // Track success/failure per playlist
 
       for (final playlistDto in playlistsToSync) {
-        try {
-          // Ensure collaborators exist (with proper await)
-          await userProvider.ensureUsersExist(
-            playlistDto.collaborators
-                .map((collaborator) => collaborator['id'] as String)
-                .toList(),
-          );
+        final (firebaseId, status) = await _syncPlaylist(
+          playlistProvider,
+          cipherProvider,
+          userProvider,
+          versionProvider,
+          collaboratorProvider,
+          playlistDto: playlistDto,
+        );
 
-          List<Map<String, dynamic>> textSectionItems = [];
-          List<Map<String, dynamic>> versionSectionItems = [];
-
-          for (int i = 0; i < playlistDto.items.length; i++) {
-            final item = playlistDto.items[i];
-
-            if (item.type == 'cipher_version') {
-              final parts = item.firebaseContentId!.split(':');
-              if (parts.length != 2) {
-                throw Exception(
-                  'Invalid firebaseContentId format: ${item.firebaseContentId}',
-                );
-              }
-
-              final String cipherCloudId = parts[0];
-              final String versionCloudId = parts[1];
-
-              // Ensure cipher exists locally
-              int? cipherId = await cipherProvider.cipherWithFirebaseIdIsCached(
-                cipherCloudId,
-              );
-              if (cipherId == null) {
-                cipherId = await cipherProvider.downloadCipherMetadata(
-                  cipherCloudId,
-                );
-
-                if (cipherId == null) {
-                  throw Exception('Failed to download cipher: $cipherCloudId');
-                }
-              }
-
-              // Ensure version exists locally
-              final newVersion = await versionProvider.downloadVersion(
-                cipherCloudId,
-                versionCloudId,
-              );
-
-              if (newVersion == null) {
-                throw Exception('Failed to download version: $versionCloudId');
-              }
-
-              int? versionLocalId = await versionProvider
-                  .getVersionIdByFirebaseId(versionCloudId);
-
-              if (versionLocalId == null) {
-                // Create version locally with correct cipher ID
-                final version = newVersion.copyWith(cipherId: cipherId);
-
-                versionLocalId = await versionProvider.createVersionFromDomain(
-                  version,
-                );
-              } else {
-                // Version already exists locally, for now overwrite it
-                // TODO: CHECK BUSINESS RULES MAYBE OPEN A CONFIRMATION DIALOG
-                final version = newVersion.copyWith(
-                  cipherId: cipherId,
-                  id: versionLocalId,
-                );
-
-                await versionProvider.updateVersion(version);
-              }
-
-              versionSectionItems.add({
-                'addedBy': userProvider.getLocalIdByFirebaseId(item.addedBy),
-                'contentId': versionLocalId,
-                'position': i,
-              });
-            } else if (item.type == 'text_section') {
-              // Download text section content
-              final data = await playlistProvider.downloadTextItemByFirebaseId(
-                item.firebaseContentId!,
-              );
-
-              if (kDebugMode) {
-                print(
-                  'Downloaded text item ${item.firebaseContentId} for playlist ${playlistDto.name}',
-                );
-              }
-
-              textSectionItems.add({
-                'addedBy': userProvider.getLocalIdByFirebaseId(item.addedBy),
-                'type': 'text_section',
-                'firebaseContentId': item.firebaseContentId!,
-                'position': i,
-                'title': data.title,
-                'content': data.content,
-              });
-            }
-          }
-
-          // Only upsert playlist if we successfully processed at least some items
-          if (versionSectionItems.isNotEmpty ||
-              playlistDto.items.isEmpty ||
-              textSectionItems.isNotEmpty) {
-            final playlistId = await playlistProvider.upsertPlaylist(
-              playlistDto.toDomain(
-                [],
-                userProvider.getLocalIdByFirebaseId(playlistDto.ownerId)!,
-              ),
-            );
-
-            if (kDebugMode) {
-              print(
-                'Upserted playlist "${playlistDto.name}" with local ID $playlistId',
-              );
-            }
-
-            // Prune existing items and collaborators
-            await playlistProvider.prunePlaylistItems(
-              playlistId,
-              versionSectionItems,
-              textSectionItems,
-            );
-
-            // Upsert text items that were successfully validated
-            for (final item in textSectionItems) {
-              await playlistProvider.upsertTextItem(
-                addedBy: userProvider.getLocalIdByFirebaseId(
-                  playlistDto.ownerId,
-                )!,
-                playlistId: playlistId,
-                firebaseTextId: item['firebaseContentId'],
-                title: item['title'],
-                content: item['content'],
-                position: item['position'],
-              );
-            }
-            // Upsert version items
-            for (final item in versionSectionItems) {
-              await playlistProvider.upsertVersionOnPlaylist(
-                playlistId,
-                item['contentId'],
-                item['position'],
-                item['addedBy'],
-              );
-            }
-            // Insert collaborators
-            for (final collaborator in playlistDto.collaborators) {
-              final collaboratorLocalId = userProvider.getLocalIdByFirebaseId(
-                collaborator['id'] as String,
-              );
-              if (collaboratorLocalId != null) {
-                await collaboratorProvider.addCollaborator(
-                  playlistId,
-                  collaboratorLocalId,
-                  collaborator['role'] as String,
-                );
-              }
-            }
-
-            syncResults[playlistDto.firebaseId ?? 'unknown'] = 'success';
-          } else {
-            syncResults[playlistDto.firebaseId ?? 'unknown'] =
-                'no_items_synced';
-          }
-        } catch (e) {
-          if (kDebugMode) {
-            print('Failed to sync playlist ${playlistDto.name}: $e');
-          }
-          syncResults[playlistDto.firebaseId ?? 'unknown'] = 'error: $e';
-        }
+        syncResults[firebaseId] = status;
       }
 
       // Clear cloud playlists only after successful processing
       playlistProvider.clearCloudPlaylists();
 
-      // Optional: Report sync results to user
       final successCount = syncResults.values
           .where((result) => result == 'success')
           .length;
@@ -341,7 +192,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
         );
       }
 
-      // Clear version and cipher providers after sync
+      // Clear versions and current cipher after sync
       versionProvider.clearVersions();
       cipherProvider.clearCurrentCipher();
     } catch (generalError) {
@@ -353,12 +204,226 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
     }
   }
 
-  void _onPlaylistTap(BuildContext context, int playlistId) async {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => PlaylistViewer(playlistId: playlistId),
-      ),
-    );
+  Future<(String, String)> _syncPlaylist(
+    PlaylistProvider playlistProvider,
+    CipherProvider cipherProvider,
+    UserProvider userProvider,
+    VersionProvider versionProvider,
+    CollaboratorProvider collaboratorProvider, {
+    PlaylistDto? playlistDto,
+  }) async {
+    try {
+      playlistDto ??= playlistProvider.currentCloudPlaylist;
+
+      if (playlistDto == null) {
+        throw Exception("No playlist dto received or loaded");
+      }
+
+      // Ensure collaborators exist (with proper await)
+      await userProvider.ensureUsersExist(
+        playlistDto.collaborators
+            .map((collaborator) => collaborator['id'] as String)
+            .toList(),
+      );
+
+      List<Map<String, dynamic>> textSectionItems = [];
+      List<Map<String, dynamic>> versionSectionItems = [];
+
+      for (int i = 0; i < playlistDto.items.length; i++) {
+        final item = playlistDto.items[i];
+
+        if (item.type == 'cipher_version') {
+          final parts = item.firebaseContentId!.split(':');
+          if (parts.length != 2) {
+            throw Exception(
+              'Invalid firebaseContentId format: ${item.firebaseContentId}',
+            );
+          }
+
+          final String cipherCloudId = parts[0];
+          final String versionCloudId = parts[1];
+
+          // Ensure cipher exists locally
+          int? cipherId = await cipherProvider.cipherWithFirebaseIdIsCached(
+            cipherCloudId,
+          );
+          if (cipherId == null) {
+            cipherId = await cipherProvider.downloadCipherMetadata(
+              cipherCloudId,
+            );
+
+            if (cipherId == null) {
+              throw Exception('Failed to download cipher: $cipherCloudId');
+            }
+          }
+
+          // Ensure version exists locally
+          final newVersion = await versionProvider.downloadVersion(
+            cipherCloudId,
+            versionCloudId,
+          );
+
+          if (newVersion == null) {
+            throw Exception('Failed to download version: $versionCloudId');
+          }
+
+          int? versionLocalId = await versionProvider.getVersionIdByFirebaseId(
+            versionCloudId,
+          );
+
+          if (versionLocalId == null) {
+            // Create version locally with correct cipher ID
+            final version = newVersion.copyWith(cipherId: cipherId);
+
+            versionLocalId = await versionProvider.createVersionFromDomain(
+              version,
+            );
+          } else {
+            // Version already exists locally, for now overwrite it
+            // TODO: CHECK BUSINESS RULES MAYBE OPEN A CONFIRMATION DIALOG
+            final version = newVersion.copyWith(
+              cipherId: cipherId,
+              id: versionLocalId,
+            );
+
+            await versionProvider.updateVersion(version);
+          }
+
+          versionSectionItems.add({
+            'addedBy': userProvider.getLocalIdByFirebaseId(item.addedBy),
+            'contentId': versionLocalId,
+            'position': i,
+          });
+        } else if (item.type == 'text_section') {
+          // Download text section content
+          final data = await playlistProvider.downloadTextItemByFirebaseId(
+            item.firebaseContentId!,
+          );
+
+          if (kDebugMode) {
+            print(
+              'Downloaded text item ${item.firebaseContentId} for playlist ${playlistDto.name}',
+            );
+          }
+
+          textSectionItems.add({
+            'addedBy': userProvider.getLocalIdByFirebaseId(item.addedBy),
+            'type': 'text_section',
+            'firebaseContentId': item.firebaseContentId!,
+            'position': i,
+            'title': data.title,
+            'content': data.content,
+          });
+        }
+      }
+
+      // Only upsert playlist if we successfully processed at least some items
+      if (versionSectionItems.isNotEmpty ||
+          playlistDto.items.isEmpty ||
+          textSectionItems.isNotEmpty) {
+        final playlistId = await playlistProvider.upsertPlaylist(
+          playlistDto.toDomain(
+            [],
+            userProvider.getLocalIdByFirebaseId(playlistDto.ownerId)!,
+          ),
+        );
+
+        if (kDebugMode) {
+          print(
+            'Upserted playlist "${playlistDto.name}" with local ID $playlistId',
+          );
+        }
+
+        // Prune existing items and collaborators
+        await playlistProvider.prunePlaylistItems(
+          playlistId,
+          versionSectionItems,
+          textSectionItems,
+        );
+
+        // Upsert text items that were successfully validated
+        for (final item in textSectionItems) {
+          await playlistProvider.upsertTextItem(
+            addedBy: userProvider.getLocalIdByFirebaseId(playlistDto.ownerId)!,
+            playlistId: playlistId,
+            firebaseTextId: item['firebaseContentId'],
+            title: item['title'],
+            content: item['content'],
+            position: item['position'],
+          );
+        }
+        // Upsert version items
+        for (final item in versionSectionItems) {
+          await playlistProvider.upsertVersionOnPlaylist(
+            playlistId,
+            item['contentId'],
+            item['position'],
+            item['addedBy'],
+          );
+        }
+        // Insert collaborators
+        for (final collaborator in playlistDto.collaborators) {
+          final collaboratorLocalId = userProvider.getLocalIdByFirebaseId(
+            collaborator['id'] as String,
+          );
+          if (collaboratorLocalId != null) {
+            await collaboratorProvider.addCollaborator(
+              playlistId,
+              collaboratorLocalId,
+              collaborator['role'] as String,
+            );
+          }
+        }
+
+        return (playlistDto.firebaseId ?? 'unknown', 'success');
+      } else {
+        return (playlistDto.firebaseId ?? 'unknown', 'no_items_synced');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Failed to sync playlist ${playlistDto?.name}: $e');
+      }
+      return (playlistDto?.firebaseId ?? 'unknown', 'error: $e');
+    }
+  }
+
+  void _onPlaylistTap(
+    BuildContext context,
+    int playlistId,
+    PlaylistProvider playlistProvider,
+    CipherProvider cipherProvider,
+    UserProvider userProvider,
+    VersionProvider versionProvider,
+    AuthProvider authProvider,
+    CollaboratorProvider collaboratorProvider, {
+    String? playlistFirebaseId,
+  }) async {
+    if (playlistFirebaseId == null) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => PlaylistViewer(playlistId: playlistId),
+        ),
+      );
+    } else {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => PlaylistViewer(
+            playlistId: playlistId,
+            syncPlaylist: () async {
+              playlistProvider.loadCloudPlaylist(playlistFirebaseId);
+
+              await _syncPlaylist(
+                playlistProvider,
+                cipherProvider,
+                userProvider,
+                versionProvider,
+                collaboratorProvider,
+              );
+            },
+          ),
+        ),
+      );
+    }
   }
 
   void _showDeleteDialog(BuildContext context, Playlist playlist) {

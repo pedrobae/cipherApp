@@ -11,7 +11,8 @@ class PlaylistDto {
   final bool isPublic;
   final DateTime updatedAt;
   final DateTime createdAt;
-  final List<Map<String, dynamic>> collaborators; // userIds
+  final List<Map<String, dynamic>>
+  collaborators; // {'id': String, 'role': String}
   final List<PlaylistItemDto>
   items; // Array whose order matters (order of items)
 

@@ -5,7 +5,7 @@ class Collaborator {
   final int id;
   final int userId;
   final int playlistId;
-  final String instrument; // 'guitarist', 'vocalist', 'drummer', etc.
+  final String role; // 'guitarist', 'vocalist', 'drummer', etc.
   final int addedBy;
   final DateTime? addedAt;
 
@@ -18,7 +18,7 @@ class Collaborator {
     required this.id,
     required this.userId,
     required this.playlistId,
-    required this.instrument,
+    required this.role,
     required this.addedBy,
     this.addedAt,
     this.username,
@@ -31,8 +31,7 @@ class Collaborator {
       id: json['id'] as int,
       userId: json['user_id'] as int,
       playlistId: json['playlist_id'] as int,
-      instrument:
-          json['role'] as String, // 'role' field stores instrument in DB
+      role: json['role'] as String, // 'role' field stores instrument in DB
       addedBy: json['added_by'] as int,
       addedAt: DatetimeHelper.parseDateTime(json['added_at']),
       username: json['username'] as String?,
@@ -46,7 +45,7 @@ class Collaborator {
       'id': id,
       'user_id': userId,
       'playlist_id': playlistId,
-      'role': instrument, // Store instrument in 'role' field
+      'role': role, // Store instrument in 'role' field
       'added_by': addedBy,
       'added_at': addedAt?.toIso8601String(),
     };
@@ -67,7 +66,7 @@ class Collaborator {
       id: id ?? this.id,
       userId: userId ?? this.userId,
       playlistId: playlistId ?? this.playlistId,
-      instrument: instrument ?? this.instrument,
+      role: instrument ?? this.role,
       addedBy: addedBy ?? this.addedBy,
       addedAt: addedAt ?? this.addedAt,
       username: username ?? this.username,

@@ -29,7 +29,7 @@ class CollaboratorTile extends StatelessWidget {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Chip(label: Text(collaborator.instrument)),
+          Chip(label: Text(collaborator.role)),
           PopupMenuButton(
             icon: const Icon(Icons.more_vert),
             onSelected: (value) {
@@ -65,7 +65,7 @@ class CollaboratorTile extends StatelessWidget {
     BuildContext context,
     Collaborator collaborator,
   ) {
-    String selectedInstrument = collaborator.instrument;
+    String selectedInstrument = collaborator.role;
     final instrumentOptions = context
         .read<CollaboratorProvider>()
         .getCommonInstruments();

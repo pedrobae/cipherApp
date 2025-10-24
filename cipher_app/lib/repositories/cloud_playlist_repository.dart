@@ -2,7 +2,6 @@ import 'package:cipher_app/helpers/guard.dart';
 import 'package:cipher_app/models/dtos/playlist_dto.dart';
 import 'package:cipher_app/models/dtos/playlist_item_dto.dart';
 import 'package:cipher_app/services/firestore_service.dart';
-import 'package:cipher_app/models/domain/playlist/playlist.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 
@@ -25,18 +24,14 @@ class CloudPlaylistRepository {
 
   // ===== CREATE =====
   /// Publish a new playlist to Firestore
-  Future<String> publishPlaylist(
-    Playlist playlist,
-    String ownerFirebaseId,
-    List<Map<String, dynamic>> collaborators,
-  ) async {
+  Future<String> publishPlaylist(PlaylistDto playlistDto) async {
     return await _withErrorHandling('publish playlist', () async {
       await _guardHelper.requireAuth();
-      await _guardHelper.requireOwnership(ownerFirebaseId);
+      await _guardHelper.requireOwnership(playlistDto.ownerId);
 
       final docId = await _firestoreService.createDocument(
         collectionPath: 'playlists',
-        data: playlist.toDto(ownerFirebaseId, collaborators).toFirestore(),
+        data: playlistDto.toFirestore(),
       );
 
       await FirebaseAnalytics.instance.logEvent(

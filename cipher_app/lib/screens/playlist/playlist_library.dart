@@ -267,7 +267,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
             throw Exception('Failed to download version: $versionCloudId');
           }
 
-          int? versionLocalId = await versionProvider.getVersionIdByFirebaseId(
+          int? versionLocalId = await versionProvider.getLocalIdByFirebaseId(
             versionCloudId,
           );
 

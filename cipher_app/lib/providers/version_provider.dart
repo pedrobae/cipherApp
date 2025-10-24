@@ -30,7 +30,7 @@ class VersionProvider extends ChangeNotifier {
 
   /// Checks if a version exists locally by its Firebase ID
   /// Returns the local id if found, otherwise null
-  Future<int?> getVersionIdByFirebaseId(String firebaseId) async {
+  Future<int?> getLocalIdByFirebaseId(String firebaseId) async {
     for (var v in _versions) {
       if (v.firebaseId == firebaseId) {
         return v.id;
@@ -38,6 +38,18 @@ class VersionProvider extends ChangeNotifier {
     }
     // Not in cache, query repository
     return await _cipherRepository.getVersionWithFirebaseId(firebaseId);
+  }
+
+  Future<String?> getFirebaseIdByLocalId(int localId) async {
+    // cipherFirebaseId:versionFirebaseId
+    for (var v in _versions) {
+      if (v.id == localId) {
+        return '${v.firebaseCipherId}:${v.firebaseId}';
+      }
+    }
+    // Not in cache, query repository
+    final version = await _cipherRepository.getVersionWithId(localId);
+    return '${version?.firebaseCipherId}:${version?.firebaseId}';
   }
 
   /// Downloads a version from Firebase by its Firebase ID - CHANGE 20/10 doesn't save locally anymore

@@ -263,6 +263,8 @@ class _TextSectionDialogState extends State<TextSectionDialog> {
       if (mounted) {
         Navigator.pop(context); // Close main dialog
 
+        context.read<PlaylistProvider>().trackChange('textSections');
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Seção excluída com sucesso!'),

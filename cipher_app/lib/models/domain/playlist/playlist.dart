@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:cipher_app/models/dtos/playlist_dto.dart';
+import 'package:cipher_app/models/dtos/playlist_item_dto.dart';
 
 import '../../../helpers/datetime.dart';
 import 'playlist_item.dart';
@@ -87,6 +88,7 @@ class Playlist {
   PlaylistDto toDto(
     String ownerFirebaseId,
     List<Map<String, dynamic>> collaborators,
+    List<PlaylistItemDto> items,
   ) {
     return PlaylistDto(
       firebaseId: firebaseId,
@@ -97,6 +99,7 @@ class Playlist {
       updatedAt: updatedAt ?? DateTime.now(),
       createdAt: createdAt ?? DateTime.now(),
       collaborators: collaborators,
+      items: items,
     );
   }
 

@@ -1,4 +1,8 @@
-import 'package:cipher_app/providers/collaborator_provider.dart';
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:cipher_app/models/dtos/playlist_item_dto.dart';
+import 'package:cipher_app/providers/text_section_provider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/models/domain/playlist/playlist.dart';
@@ -8,6 +12,7 @@ import 'package:cipher_app/providers/playlist_provider.dart';
 import 'package:cipher_app/providers/version_provider.dart';
 import 'package:cipher_app/providers/auth_provider.dart';
 import 'package:cipher_app/providers/user_provider.dart';
+import 'package:cipher_app/providers/collaborator_provider.dart';
 import 'package:cipher_app/screens/cipher/cipher_library.dart';
 import 'package:cipher_app/screens/playlist/playlist_presentation.dart';
 import 'package:cipher_app/widgets/playlist/cipher_version_card.dart';
@@ -119,38 +124,25 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                       onPressed: widget.syncPlaylist,
                       icon: Icon(Icons.cloud_sync),
                     ),
-                    if (playlist.createdBy ==
-                        userProvider.getLocalIdByFirebaseId(
-                          authProvider.id!,
-                        )) ...[
-                      IconButton(
-                        onPressed: () async {
-                          collaboratorProvider.loadCollaborators(playlist.id);
-
-                          final fullCollaborators = collaboratorProvider
-                              .getCollaboratorsForPlaylist(playlist.id);
-
-                          List<Map<String, dynamic>> collaborators = [];
-                          for (final fullCollab in fullCollaborators) {
-                            collaborators.add({
-                              'id': userProvider.getFirebaseIdByLocalId(
-                                fullCollab.id,
-                              ),
-                              'role': fullCollab.role,
-                            });
-                          }
-
-                          playlistProvider.uploadPlaylist(
-                            playlist,
-                            userProvider.getFirebaseIdByLocalId(
-                              playlist.createdBy,
-                            ),
-                            collaborators,
-                          );
-                        },
-                        icon: const Icon(Icons.cloud_upload),
-                      ),
-                    ],
+                  ],
+                  if (playlist.createdBy ==
+                      userProvider.getLocalIdByFirebaseId(
+                        authProvider.id!,
+                      )) ...[
+                    IconButton(
+                      onPressed: () {
+                        _publishPlaylist(
+                          collaboratorProvider,
+                          userProvider,
+                          playlistProvider,
+                          authProvider,
+                          cipherProvider,
+                          versionProvider,
+                          playlist,
+                        );
+                      },
+                      icon: const Icon(Icons.cloud_upload),
+                    ),
                   ],
                 ],
               ),
@@ -426,5 +418,104 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
       context: context,
       builder: (context) => NewTextSectionDialog(playlist: playlist),
     );
+  }
+
+  Future<void> _publishPlaylist(
+    CollaboratorProvider collaboratorProvider,
+    UserProvider userProvider,
+    PlaylistProvider playlistProvider,
+    AuthProvider authProvider,
+    CipherProvider cipherProvider,
+    VersionProvider versionProvider,
+    Playlist playlist,
+  ) async {
+    final textSectionProvider = context.read<TextSectionProvider>();
+
+    collaboratorProvider.loadCollaborators(playlist.id);
+    final ownerFirebaseId = userProvider.getFirebaseIdByLocalId(
+      playlist.createdBy,
+    );
+
+    final fullCollaborators = collaboratorProvider.getCollaboratorsForPlaylist(
+      playlist.id,
+    );
+
+    List<Map<String, dynamic>> collaborators = [];
+    for (final fullCollab in fullCollaborators) {
+      collaborators.add({'id': ownerFirebaseId, 'role': fullCollab.role});
+    }
+
+    List<PlaylistItemDto> items = [];
+    for (final item in playlist.items) {
+      if (item.firebaseContentId == null) {
+        // Gets the Firebase Ids of the items
+        if (item.type == 'cipher_version') {
+          final itemContentFirebaseId = await versionProvider
+              .getFirebaseIdByLocalId(item.contentId!);
+
+          if (itemContentFirebaseId == null) {
+            // The version does not exist remotely yet, cannot publish
+            if (kDebugMode) {
+              print(
+                'Cannot publish playlist because version ${item.contentId} does not exist remotely.',
+              );
+            }
+            // Show error message and abort
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Não é possível publicar a playlist porque a versão ${item.contentId} não existe remotamente.',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onError,
+                    ),
+                  ),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          } else {
+            item.firebaseContentId = itemContentFirebaseId;
+          }
+        } else if (item.type == 'text_section') {
+          // Create the text section in Firestore and get its Firebase ID
+          String? textSectionFirebaseId = await textSectionProvider
+              .getFirebaseIdByLocalId(item.contentId!);
+
+          if (textSectionFirebaseId == null) {
+            // The text section does not exist remotely yet, create it
+            final textSection = await textSectionProvider.getTextSectionById(
+              item.contentId!,
+            );
+            if (textSection != null) {
+              final newFirebaseId = await textSectionProvider
+                  .publishTextSection(textSection.toDto());
+              textSectionFirebaseId = newFirebaseId;
+            }
+          }
+          item.firebaseContentId = textSectionFirebaseId;
+        } else {
+          if (kDebugMode) {
+            print('Unknown item type: ${item.type}');
+          }
+          continue;
+        }
+      }
+      items.add(item.toDto(ownerFirebaseId));
+    }
+
+    final playlistDto = playlist.toDto(ownerFirebaseId, collaborators, items);
+
+    if (playlist.firebaseId == null) {
+      if (kDebugMode) {
+        print('Publishing new playlist: ${playlist.name}');
+      }
+      playlistProvider.uploadPlaylist(playlistDto);
+    } else {
+      if (kDebugMode) {
+        print('Updating existing playlist: ${playlist.name}');
+      }
+      playlistProvider.uploadChanges(playlist.id, playlistDto);
+    }
   }
 }

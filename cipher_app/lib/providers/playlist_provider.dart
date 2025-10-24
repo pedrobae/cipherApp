@@ -149,11 +149,11 @@ class PlaylistProvider extends ChangeNotifier {
     }
   }
 
-  Future<TextItemDto> downloadTextItemByFirebaseId(
+  Future<TextSectionDto> downloadTextItemByFirebaseId(
     String firebaseTextId,
   ) async {
     try {
-      final textItemDto = await _cloudPlaylistRepository.fetchTextItemById(
+      final textItemDto = await _cloudPlaylistRepository.fetchTextSectionById(
         firebaseTextId,
       );
       if (textItemDto == null) {
@@ -187,11 +187,7 @@ class PlaylistProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> uploadPlaylist(
-    Playlist playlist,
-    String ownerFirebaseId,
-    List<Map<String, dynamic>> collaborators,
-  ) async {
+  Future<void> uploadPlaylist(PlaylistDto playlist) async {
     if (_isCloudSaving) return;
 
     _isCloudSaving = true;
@@ -199,9 +195,7 @@ class PlaylistProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _cloudPlaylistRepository.publishPlaylist(
-        playlist.toDto(ownerFirebaseId, collaborators),
-      );
+      await _cloudPlaylistRepository.publishPlaylist(playlist);
     } catch (e) {
       _error = e.toString();
       if (kDebugMode) {
@@ -226,7 +220,7 @@ class PlaylistProvider extends ChangeNotifier {
     });
 
     // Track metadata changes
-    _trackChange(id, 'metadata', {'name': name, 'description': description});
+    trackChange('metadata', playlistId: id);
 
     await loadPlaylist(id); // Reload just this playlist
   }
@@ -240,7 +234,7 @@ class PlaylistProvider extends ChangeNotifier {
     await _playlistRepository.addVersionToPlaylist(playlistId, versionId);
 
     // Track added version
-    _trackChange(playlistId, 'addedVersions', versionId);
+    trackChange('versions', playlistId: playlistId);
 
     await loadPlaylist(playlistId);
   }
@@ -304,7 +298,7 @@ class PlaylistProvider extends ChangeNotifier {
       await _playlistRepository.savePlaylistOrder(playlist.id, changedList);
 
       // Track item reordering
-      _trackChange(playlist.id, 'itemsReordered', true);
+      trackChange('itemsReordered', playlistId: playlist.id);
     } catch (e) {
       _rollbackItemOrders(playlist, originalItems);
       notifyListeners();
@@ -370,7 +364,7 @@ class PlaylistProvider extends ChangeNotifier {
 
     // Track removed version
     if (versionId != null) {
-      _trackChange(playlistId, 'removedVersions', versionId);
+      trackChange('versions', playlistId: playlistId);
     }
 
     await loadPlaylist(playlistId);
@@ -528,45 +522,12 @@ class PlaylistProvider extends ChangeNotifier {
 
   // ===== CHANGE TRACKING & CLOUD SYNC =====
   /// Track a change for later upload to cloud
-  void _trackChange(int playlistId, String changeType, dynamic value) {
+  void trackChange(String changeType, {int? playlistId}) {
+    playlistId ??= _currentPlaylist!.id;
+
     _pendingChanges.putIfAbsent(playlistId, () => {});
 
-    switch (changeType) {
-      case 'metadata':
-        // Merge metadata changes
-        if (_pendingChanges[playlistId]!.containsKey('metadata')) {
-          final existingMetadata =
-              _pendingChanges[playlistId]!['metadata'] as Map<String, dynamic>;
-          _pendingChanges[playlistId]!['metadata'] = {
-            ...existingMetadata,
-            ...(value as Map<String, dynamic>),
-          };
-        } else {
-          _pendingChanges[playlistId]!['metadata'] = value;
-        }
-        break;
-
-      case 'addedVersions':
-        // Accumulate added versions
-        _pendingChanges[playlistId]!['addedVersions'] ??= <int>[];
-        (_pendingChanges[playlistId]!['addedVersions'] as List<int>).add(value);
-        break;
-
-      case 'removedVersions':
-        // Accumulate removed versions
-        _pendingChanges[playlistId]!['removedVersions'] ??= <int>[];
-        (_pendingChanges[playlistId]!['removedVersions'] as List<int>).add(
-          value,
-        );
-        break;
-
-      case 'itemsReordered':
-        _pendingChanges[playlistId]!['itemsReordered'] = true;
-        break;
-
-      default:
-        _pendingChanges[playlistId]![changeType] = value;
-    }
+    _pendingChanges[playlistId]![changeType] = true;
 
     if (kDebugMode) {
       print('Tracked change for playlist $playlistId: $changeType');
@@ -574,16 +535,20 @@ class PlaylistProvider extends ChangeNotifier {
   }
 
   /// Upload pending changes for a specific playlist to Firebase
-  Future<void> uploadChanges(int playlistId, String ownerFirebaseId) async {
-    if (!hasPendingChanges(playlistId)) {
+  Future<void> uploadChanges(
+    int playlistLocalId,
+    PlaylistDto playlistDto,
+  ) async {
+    if (!hasPendingChanges(playlistLocalId)) {
       if (kDebugMode) {
-        print('No pending changes for playlist $playlistId');
+        print('No pending changes for playlist $playlistLocalId');
       }
       return;
     }
 
-    final playlist = _playlists.firstWhere((p) => p.id == playlistId);
-    final changes = _pendingChanges[playlistId]!;
+    final changes = _pendingChanges[playlistLocalId]!;
+
+    if (_isSaving) return;
 
     try {
       _isSaving = true;
@@ -594,51 +559,55 @@ class PlaylistProvider extends ChangeNotifier {
 
       // Add metadata changes
       if (changes.containsKey('metadata')) {
-        updatePayload.addAll(changes['metadata']);
+        updatePayload.addAll({
+          'name': playlistDto.name,
+          'description': playlistDto.description,
+        });
       }
 
-      // Add items if reordered or added/removed
+      // Add items if reordered or changed versions or text sections
       if (changes.containsKey('itemsReordered') ||
-          changes.containsKey('addedVersions') ||
-          changes.containsKey('removedVersions')) {
+          changes.containsKey('versions') ||
+          changes.containsKey('textSections')) {
         // Get current playlist items and convert to DTOs
-        // This ensures we upload the current state
-        updatePayload['items'] = playlist.items
-            .map(
-              (item) => {
-                'type': item.type,
-                'firebaseContentId': item.firebaseContentId,
-                'position': item.position,
-              },
-            )
+        updatePayload['items'] = [
+          for (final item in playlistDto.items) ...[item.toFirestore()],
+        ];
+      }
+
+      // Add collaborators if changed
+      if (changes.containsKey('collaborators')) {
+        updatePayload['collaborators'] = playlistDto.collaborators;
+        updatePayload['collaboratorIds'] = playlistDto.collaborators
+            .map((c) => c['id'])
             .toList();
       }
 
       // Upload to Firebase
-      if (playlist.firebaseId != null) {
+      if (playlistDto.firebaseId != null) {
         await _cloudPlaylistRepository.updatePlaylist(
-          playlist.firebaseId!,
-          ownerFirebaseId,
+          playlistDto.firebaseId!,
+          playlistDto.ownerId,
           updatePayload,
         );
 
         // Clear pending changes for this playlist
-        _pendingChanges.remove(playlistId);
+        _pendingChanges.remove(playlistLocalId);
 
         if (kDebugMode) {
-          print('Successfully uploaded changes for playlist $playlistId');
+          print('Successfully uploaded changes for playlist $playlistLocalId');
         }
       } else {
         if (kDebugMode) {
           print(
-            'Playlist $playlistId has no firebaseId, cannot upload changes',
+            'Playlist $playlistDto has no firebaseId, cannot upload changes',
           );
         }
       }
     } catch (e) {
       _error = 'Erro ao fazer upload das alterações: $e';
       if (kDebugMode) {
-        print('Error uploading changes for playlist $playlistId: $e');
+        print('Error uploading changes for playlist $playlistLocalId: $e');
       }
       rethrow;
     } finally {

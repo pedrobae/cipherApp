@@ -43,24 +43,14 @@ class CloudPlaylistRepository {
     });
   }
 
-  /// Publishes a new text section to Firestore
-  Future<String> publishTextSection(
-    String title,
-    String content,
-    String createdBy,
-  ) async {
+  /// Publish a new text section to Firestore
+  Future<String> publishTextSection(TextSectionDto textSectionDto) async {
     return await _withErrorHandling('publish text section', () async {
       await _guardHelper.requireAuth();
-      await _guardHelper.requireOwnership(createdBy);
 
       final docId = await _firestoreService.createDocument(
         collectionPath: 'textSections',
-        data: {
-          'title': title,
-          'content': content,
-          'createdBy': createdBy,
-          'createdAt': DateTime.now().toIso8601String(),
-        },
+        data: textSectionDto.toFirestore()..remove('firebaseId'),
       );
 
       await FirebaseAnalytics.instance.logEvent(
@@ -113,8 +103,8 @@ class CloudPlaylistRepository {
     });
   }
 
-  Future<TextItemDto?> fetchTextItemById(String firebaseTextId) async {
-    return await _withErrorHandling('fetch text item by ID', () async {
+  Future<TextSectionDto?> fetchTextSectionById(String firebaseTextId) async {
+    return await _withErrorHandling('fetch text section by ID', () async {
       final docSnapshot = await _firestoreService.fetchDocumentById(
         collectionPath: 'textSections',
         documentId: firebaseTextId,
@@ -124,7 +114,7 @@ class CloudPlaylistRepository {
         return null;
       }
 
-      return TextItemDto.fromFirestore(
+      return TextSectionDto.fromFirestore(
         docSnapshot.data() as Map<String, dynamic>,
         docSnapshot.id,
       );
@@ -151,6 +141,23 @@ class CloudPlaylistRepository {
       await FirebaseAnalytics.instance.logEvent(
         name: 'updated_playlist',
         parameters: {'playlistId': firebaseId},
+      );
+    });
+  }
+
+  Future<void> updateTextSection(TextSectionDto textSectionDto) async {
+    return await _withErrorHandling('update text section', () async {
+      await _guardHelper.requireAuth();
+
+      await _firestoreService.updateDocument(
+        collectionPath: 'textSections',
+        documentId: textSectionDto.firebaseId!,
+        data: textSectionDto.toFirestore(),
+      );
+
+      await FirebaseAnalytics.instance.logEvent(
+        name: 'updated_text_section',
+        parameters: {'textSectionId': textSectionDto.firebaseId!},
       );
     });
   }
@@ -192,10 +199,7 @@ class CloudPlaylistRepository {
         print('Error during $actionDescription: $e');
       }
 
-      // Rethrow with user-friendly message
-      throw Exception(
-        'Erro ao $actionDescription. Tente novamente mais tarde.',
-      );
+      rethrow;
     }
   }
 }

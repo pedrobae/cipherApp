@@ -1,16 +1,21 @@
+import 'package:cipher_app/models/domain/playlist/playlist_text_section.dart';
+import 'package:cipher_app/models/dtos/playlist_item_dto.dart';
+import 'package:cipher_app/repositories/text_section_repository.dart';
+import 'package:cipher_app/repositories/cloud_playlist_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:async';
-import '../models/domain/playlist/playlist_text_section.dart';
-import '../repositories/text_section_repository.dart';
 
 class TextSectionProvider extends ChangeNotifier {
   final TextSectionRepository _textSectionRepo = TextSectionRepository();
+  final CloudPlaylistRepository _cloudPlaylistRepository =
+      CloudPlaylistRepository();
 
   TextSectionProvider();
 
   Map<int, TextSection> _textSections = {};
   bool _isLoading = false;
   bool _isSaving = false;
+  bool _isCloudSaving = false;
   bool _isDeleting = false;
   String? _error;
 
@@ -18,6 +23,7 @@ class TextSectionProvider extends ChangeNotifier {
   Map<int, TextSection> get textSections => _textSections;
   bool get isLoading => _isLoading;
   bool get isSaving => _isSaving;
+  bool get isCloudSaving => _isCloudSaving;
   bool get isDeleting => _isDeleting;
   String? get error => _error;
 
@@ -47,7 +53,7 @@ class TextSectionProvider extends ChangeNotifier {
   }) async {
     if (kDebugMode) {
       print(
-        '===== Loading - $textSectionId - Forced Reload - $forceReload =====',
+        '===== Loading Text Section - $textSectionId - Forced Reload - $forceReload =====',
       );
     }
     // Check if already loaded (unless forcing reload)
@@ -68,6 +74,29 @@ class TextSectionProvider extends ChangeNotifier {
     } finally {
       notifyListeners();
     }
+  }
+
+  Future<String?> getFirebaseIdByLocalId(int localId) async {
+    // Check cache first
+    if (_textSections.containsKey(localId)) {
+      return _textSections[localId]!.firebaseId;
+    }
+    // Not in cache, query repository
+    final textSection = await _textSectionRepo.getTextSection(localId);
+    return textSection?.firebaseId;
+  }
+
+  Future<TextSection?> getTextSectionById(int id) async {
+    // Check cache first
+    if (_textSections.containsKey(id)) {
+      return _textSections[id];
+    }
+    // Not in cache, query repository
+    final textSection = await _textSectionRepo.getTextSection(id);
+    if (textSection != null) {
+      _textSections[id] = textSection;
+    }
+    return textSection;
   }
 
   // ===== CREATE =====
@@ -93,7 +122,7 @@ class TextSectionProvider extends ChangeNotifier {
       );
       await loadTextSection(id, forceReload: true);
 
-      // Notify that playlist needs refresh due to position adjustments
+      // Notify that playlist needs refresh due to item adjustments
       onPlaylistRefreshNeeded?.call();
     } catch (e) {
       _error = e.toString();
@@ -101,6 +130,21 @@ class TextSectionProvider extends ChangeNotifier {
     } finally {
       _isSaving = false;
       notifyListeners();
+    }
+  }
+
+  Future<String?> publishTextSection(TextSectionDto textSectionDto) async {
+    try {
+      final firebaseId = await _cloudPlaylistRepository.publishTextSection(
+        textSectionDto,
+      );
+      return firebaseId;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error publishing text section: $e');
+      }
+      _error = e.toString();
+      return null;
     }
   }
 
@@ -137,6 +181,26 @@ class TextSectionProvider extends ChangeNotifier {
       rethrow;
     } finally {
       _isSaving = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> updateCloudTextSection(TextSectionDto textSectionDto) async {
+    if (_isCloudSaving) return;
+
+    _isCloudSaving = true;
+    _error = null;
+
+    try {
+      await _cloudPlaylistRepository.updateTextSection(textSectionDto);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error updating cloud text section: $e');
+      }
+      _error = e.toString();
+      rethrow;
+    } finally {
+      _isCloudSaving = false;
       notifyListeners();
     }
   }

@@ -30,10 +30,10 @@ class PlaylistItemDto {
     );
   }
 
-  Map<String, dynamic> toFirestore() {
+  Map<String, dynamic> toFirestore({String? firebaseContentId}) {
     return {
       'type': type,
-      'firebaseContentId': firebaseContentId,
+      'firebaseContentId': this.firebaseContentId ?? firebaseContentId,
       'addedBy': addedBy,
       'status': status,
       'displayFallback': displayFallback,
@@ -65,19 +65,15 @@ class PlaylistItemDto {
   }
 }
 
-class TextItemDto {
-  final String firebaseId;
+class TextSectionDto {
+  final String? firebaseId;
   final String title;
   final String content;
 
-  TextItemDto({
-    required this.firebaseId,
-    required this.title,
-    required this.content,
-  });
+  TextSectionDto({this.firebaseId, required this.title, required this.content});
 
-  factory TextItemDto.fromFirestore(Map<String, dynamic> json, String id) {
-    return TextItemDto(
+  factory TextSectionDto.fromFirestore(Map<String, dynamic> json, String id) {
+    return TextSectionDto(
       firebaseId: id,
       title: json['title'] as String? ?? '',
       content: json['content'] as String? ?? '',

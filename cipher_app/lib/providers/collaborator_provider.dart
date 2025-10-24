@@ -97,7 +97,7 @@ class CollaboratorProvider extends ChangeNotifier {
         );
         if (index != -1) {
           final updatedCollaborator = playlistCollaborators[index].copyWith(
-            instrument: instrument,
+            role: instrument,
           );
           playlistCollaborators[index] = updatedCollaborator;
           _collaboratorsByPlaylist[playlistId] = playlistCollaborators;

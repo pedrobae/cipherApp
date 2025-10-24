@@ -120,4 +120,46 @@ class CollaboratorRepository {
 
     return null;
   }
+
+  /// Batch add collaborators to a playlist in a single transaction
+  Future<void> addCollaboratorsBatch(
+    int playlistId,
+    List<Map<String, dynamic>> collaborators,
+    int addedBy,
+  ) async {
+    final db = await _databaseHelper.database;
+
+    await db.transaction((txn) async {
+      for (final collaborator in collaborators) {
+        final userId = collaborator['userId'] as int;
+        final role = collaborator['role'] as String;
+
+        // Check if the user is already a collaborator
+        final existingCollaborator = await txn.query(
+          'user_playlist',
+          where: 'playlist_id = ? AND user_id = ?',
+          whereArgs: [playlistId, userId],
+        );
+
+        if (existingCollaborator.isNotEmpty) {
+          // Update the role if the user is already a collaborator
+          await txn.update(
+            'user_playlist',
+            {'role': role},
+            where: 'playlist_id = ? AND user_id = ?',
+            whereArgs: [playlistId, userId],
+          );
+        } else {
+          // Insert a new collaborator record
+          await txn.insert('user_playlist', {
+            'playlist_id': playlistId,
+            'user_id': userId,
+            'role': role,
+            'added_by': addedBy,
+            'added_at': DateTime.now().toIso8601String(),
+          });
+        }
+      }
+    });
+  }
 }

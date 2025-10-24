@@ -40,6 +40,14 @@ class PlaylistProvider extends ChangeNotifier {
   bool get isCloudSaving => _isCloudSaving;
   bool get isDeleting => _isDeleting;
   String? get error => _error;
+  Playlist? getPlaylistByFirebaseId(String firebaseId) {
+    for (var p in _playlists) {
+      if (p.firebaseId == firebaseId) {
+        return p;
+      }
+    }
+    return null;
+  }
 
   // Check if a playlist has pending changes to upload
   bool hasPendingChanges(int playlistId) {
@@ -149,6 +157,23 @@ class PlaylistProvider extends ChangeNotifier {
     }
   }
 
+  /// Load Single Playlist by Share Code
+  Future<void> loadCloudPlaylistByCode(String code) async {
+    try {
+      final playlistDto = await _cloudPlaylistRepository.fetchPlaylistByCode(
+        code,
+      );
+
+      if (playlistDto == null) {
+        throw Exception('Playlist not found with code $code.');
+      }
+
+      _currentCloudPlaylist = playlistDto;
+    } catch (e) {
+      throw Exception('Error loading playlist by code: $e');
+    }
+  }
+
   Future<TextSectionDto> downloadTextItemByFirebaseId(
     String firebaseTextId,
   ) async {
@@ -227,6 +252,38 @@ class PlaylistProvider extends ChangeNotifier {
 
   Future<int> upsertPlaylist(Playlist playlist) async {
     return await _playlistRepository.upsertPlaylist(playlist);
+  }
+
+  /// Sync entire playlist with all its items in a single transaction
+  /// This prevents database locking issues during bulk sync operations
+  Future<int> syncPlaylistWithTransaction(
+    Playlist playlist,
+    List<Map<String, dynamic>> versionSectionItems,
+    List<Map<String, dynamic>> textSectionItems,
+    List<int> textItemsToPrune,
+    List<int> versionItemsToPrune,
+  ) async {
+    final playlistId = await _playlistRepository.syncPlaylistWithTransaction(
+      playlist,
+      versionSectionItems,
+      textSectionItems,
+      textItemsToPrune,
+      versionItemsToPrune,
+    );
+    
+    // Reload the playlist in the provider's cache
+    await loadPlaylist(playlistId);
+    
+    return playlistId;
+  }
+
+  /// Add a collaborator to a cloud playlist
+  Future<void> addCollaboratorToPlaylist(
+    String playlistId,
+    String userId,
+    String role,
+  ) async {
+    await _cloudPlaylistRepository.addCollaborator(playlistId, userId, role);
   }
 
   // Update a Playlist with a version
@@ -370,12 +427,13 @@ class PlaylistProvider extends ChangeNotifier {
     await loadPlaylist(playlistId);
   }
 
-  /// Prune playlist items to insert the items from the cloud version
-  Future<void> prunePlaylistItems(
+  /// Calculate which items need to be pruned before syncing
+  /// Returns (textItemsToPrune, versionItemsToPrune)
+  (List<int>, List<int>) calculateItemsToPrune(
     int playlistId,
     List<Map<String, dynamic>> versionSectionItems,
     List<Map<String, dynamic>> textSectionItems,
-  ) async {
+  ) {
     final playlist = _playlists.firstWhere((p) => p.id == playlistId);
 
     List<int> textItemsToPrune = [];
@@ -397,6 +455,21 @@ class PlaylistProvider extends ChangeNotifier {
         }
       }
     }
+
+    return (textItemsToPrune, versionItemsToPrune);
+  }
+
+  /// Prune playlist items to insert the items from the cloud version
+  Future<void> prunePlaylistItems(
+    int playlistId,
+    List<Map<String, dynamic>> versionSectionItems,
+    List<Map<String, dynamic>> textSectionItems,
+  ) async {
+    final (textItemsToPrune, versionItemsToPrune) = calculateItemsToPrune(
+      playlistId,
+      versionSectionItems,
+      textSectionItems,
+    );
 
     _playlistRepository.prunePlaylistItems(
       playlistId,
@@ -562,6 +635,8 @@ class PlaylistProvider extends ChangeNotifier {
         updatePayload.addAll({
           'name': playlistDto.name,
           'description': playlistDto.description,
+          'shareCode': playlistDto.shareCode,
+          'isPublic': playlistDto.isPublic,
         });
       }
 

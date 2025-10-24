@@ -48,7 +48,7 @@ class VersionDto {
     return {
       'versionName': versionName,
       'transposedKey': transposedKey,
-      'songStructure': songStructure,
+      'songStructure': songStructure.split(',').map((s) => s.trim()).toList(),
       'updatedAt': FirestoreTimestampHelper.fromDateTime(updatedAt),
       'sections': sections?.map(
         (sectionCode, section) => MapEntry(sectionCode, {

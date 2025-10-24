@@ -15,13 +15,19 @@ class CollaboratorTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return ListTile(
+      contentPadding: EdgeInsets.only(left: 8),
       leading: CircleAvatar(
+        backgroundColor: colorScheme.primary,
         backgroundImage: collaborator.profilePhoto != null
             ? NetworkImage(collaborator.profilePhoto!)
             : null,
         child: collaborator.profilePhoto == null
-            ? Text(collaborator.username?[0] ?? '?')
+            ? Text(
+                collaborator.username?[0] ?? '?',
+                style: TextStyle(color: colorScheme.onPrimary),
+              )
             : null,
       ),
       title: Text(collaborator.username ?? 'Usuário'),
@@ -29,9 +35,17 @@ class CollaboratorTile extends StatelessWidget {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Chip(label: Text(collaborator.role)),
+          Chip(
+            label: Text(
+              collaborator.role,
+              style: TextStyle(color: colorScheme.onPrimary),
+            ),
+            color: WidgetStateColor.fromMap({
+              WidgetState.any: colorScheme.primary,
+            }),
+          ),
           PopupMenuButton(
-            icon: const Icon(Icons.more_vert),
+            icon: Icon(Icons.more_vert, color: colorScheme.primary),
             onSelected: (value) {
               if (value == 'edit') {
                 _showInstrumentSelectionDialog(context, collaborator);

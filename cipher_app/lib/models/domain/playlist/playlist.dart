@@ -2,8 +2,8 @@
 
 import 'package:cipher_app/models/dtos/playlist_dto.dart';
 import 'package:cipher_app/models/dtos/playlist_item_dto.dart';
-
-import '../../../helpers/datetime.dart';
+import 'package:cipher_app/helpers/codes.dart';
+import 'package:cipher_app/helpers/datetime.dart';
 import 'playlist_item.dart';
 
 class Playlist {
@@ -16,6 +16,7 @@ class Playlist {
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final List<String> collaborators;
+  final String? shareCode;
   final List<PlaylistItem> items; // Unified content items
 
   const Playlist({
@@ -28,6 +29,7 @@ class Playlist {
     this.createdAt,
     this.updatedAt,
     this.collaborators = const [],
+    required this.shareCode,
     this.items = const [],
   });
 
@@ -43,6 +45,7 @@ class Playlist {
       collaborators: json['collaborators'] != null
           ? List<String>.from(json['collaborators'])
           : const [],
+      shareCode: json['invite_code'] as String,
       items: json['items'] != null
           ? (json['items'] as List)
                 .map((item) => PlaylistItem.fromJson(item))
@@ -61,6 +64,7 @@ class Playlist {
       'updated_at': updatedAt?.toIso8601String(),
       'is_public': isPublic,
       'collaborators': collaborators,
+      'invite_code': shareCode,
       'items': items.map((item) => item.toJson()).toList(),
     };
   }
@@ -74,6 +78,7 @@ class Playlist {
       'author_id': createdBy,
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
+      'invite_code': shareCode ?? generateShareCode(),
       'is_public': (isPublic ?? false) ? 1 : 0,
     };
 
@@ -99,6 +104,7 @@ class Playlist {
       updatedAt: updatedAt ?? DateTime.now(),
       createdAt: createdAt ?? DateTime.now(),
       collaborators: collaborators,
+      shareCode: shareCode!,
       items: items,
     );
   }
@@ -111,6 +117,7 @@ class Playlist {
     DateTime? createdAt,
     DateTime? updatedAt,
     List<String>? collaborators,
+    String? shareCode,
     List<PlaylistItem>? items,
     bool? isPublic,
   }) {
@@ -122,6 +129,7 @@ class Playlist {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       collaborators: collaborators ?? this.collaborators,
+      shareCode: shareCode ?? this.shareCode,
       items: items ?? this.items,
       isPublic: isPublic ?? this.isPublic,
     );

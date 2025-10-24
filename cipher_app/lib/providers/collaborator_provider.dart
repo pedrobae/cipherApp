@@ -1,7 +1,6 @@
 import 'package:cipher_app/repositories/collaborator_repository.dart';
 import 'package:flutter/material.dart';
 import '../models/domain/collaborator.dart';
-import '../repositories/local_playlist_repository.dart';
 
 class CollaboratorProvider extends ChangeNotifier {
   final CollaboratorRepository _collaboratorRepository =
@@ -45,14 +44,16 @@ class CollaboratorProvider extends ChangeNotifier {
   }
 
   // Add collaborator to a playlist
-  Future<void> addCollaborator(int playlistId, int userId, String role) async {
+  Future<void> addCollaborator(
+    int playlistId,
+    int userId,
+    String role,
+    int currentUserId,
+  ) async {
     try {
       _isLoading = true;
       _error = null;
       notifyListeners();
-
-      // Get the current user ID for the 'added by' field
-      final currentUserId = PlaylistRepository.getCurrentUserId() ?? 1;
 
       await _collaboratorRepository.addCollaborator(
         playlistId,

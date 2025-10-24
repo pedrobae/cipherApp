@@ -13,6 +13,7 @@ class PlaylistDto {
   final DateTime createdAt;
   final List<Map<String, dynamic>>
   collaborators; // {'id': String, 'role': String}
+  final String shareCode;
   final List<PlaylistItemDto>
   items; // Array whose order matters (order of items)
 
@@ -25,6 +26,7 @@ class PlaylistDto {
     required this.updatedAt,
     required this.createdAt,
     this.collaborators = const [],
+    required this.shareCode,
     this.items = const [],
   });
 
@@ -44,6 +46,7 @@ class PlaylistDto {
       collaborators: List<Map<String, dynamic>>.from(
         json['collaborators'] ?? [],
       ),
+      shareCode: json['shareCode'] as String,
       items:
           (json['items'] as List<dynamic>?)
               ?.map(
@@ -64,6 +67,7 @@ class PlaylistDto {
       'updatedAt': FirestoreTimestampHelper.fromDateTime(updatedAt),
       'createdAt': FirestoreTimestampHelper.fromDateTime(createdAt),
       'collaborators': collaborators,
+      'shareCode': shareCode,
       'items': items.map((item) => item.toFirestore()).toList(),
     };
   }
@@ -80,6 +84,7 @@ class PlaylistDto {
       collaborators: collaborators
           .map((collaborator) => collaborator['id'] as String)
           .toList(),
+      shareCode: shareCode,
       items: items,
       firebaseId: firebaseId,
     );

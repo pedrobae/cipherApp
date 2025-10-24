@@ -5,6 +5,7 @@ import 'package:cipher_app/services/firebase_service.dart';
 class FirestoreService {
   final FirebaseFirestore _firestore = FirebaseService().firestore;
 
+  // ===== CREATE METHODS =====
   /// Create a new document in a specified collection, with auto-generated ID.
   Future<String> createDocument({
     required String collectionPath,
@@ -41,6 +42,7 @@ class FirestoreService {
     }
   }
 
+  // ===== READ METHODS =====
   /// Fetch documents from a specified collection with optional query parameters.
   Future<List<QueryDocumentSnapshot>> fetchDocuments({
     required String collectionPath,
@@ -80,6 +82,29 @@ class FirestoreService {
       return querySnapshot.docs;
     } catch (e) {
       FirebaseService.logError('Failed to fetch sub-collection documents', e);
+      rethrow;
+    }
+  }
+
+  /// Fetch a single document by matching a field value.
+  Future<DocumentSnapshot?> fetchDocumentByField({
+    required String collectionPath,
+    required String fieldName,
+    required dynamic fieldValue,
+  }) async {
+    try {
+      final querySnapshot = await _firestore
+          .collection(collectionPath)
+          .where(fieldName, isEqualTo: fieldValue)
+          .limit(1)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        return querySnapshot.docs.first;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      FirebaseService.logError('Failed to fetch document by field', e);
       rethrow;
     }
   }
@@ -125,6 +150,7 @@ class FirestoreService {
     }
   }
 
+  // ===== UPDATE METHODS =====
   /// Update a document in a specified collection.
   Future<void> updateDocument({
     required String collectionPath,
@@ -165,6 +191,25 @@ class FirestoreService {
     }
   }
 
+  /// Update an array field in a document by adding a value.
+  Future<void> addToArrayField({
+    required String collectionPath,
+    required String documentId,
+    required String arrayField,
+    required dynamic value,
+  }) async {
+    try {
+      await _firestore.collection(collectionPath).doc(documentId).update({
+        arrayField: FieldValue.arrayUnion([value]),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      FirebaseService.logError('Failed to add to array field', e);
+      rethrow;
+    }
+  }
+
+  // ===== DELETE METHODS =====
   /// Delete a document from a specified collection.
   Future<void> deleteDocument({
     required String collectionPath,

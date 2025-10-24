@@ -1,20 +1,22 @@
-import '../helpers/database.dart';
-import '../models/domain/playlist/playlist.dart';
-import '../models/domain/playlist/playlist_item.dart';
+import 'package:cipher_app/helpers/database.dart';
+import 'package:cipher_app/models/domain/playlist/playlist.dart';
+import 'package:cipher_app/models/domain/playlist/playlist_item.dart';
+
+// class Playlist {
+//   final int id;
+//   final String name;
+//   final String? firebaseId;
+//   final String? description;
+//   final int createdBy;
+//   final bool? isPublic;
+//   final DateTime? createdAt;
+//   final DateTime? updatedAt;
+//   final List<String> collaborators;
+//   final String? shareCode;
+//   final List<PlaylistItem> items;
 
 class PlaylistRepository {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
-  static int? _currentUserId;
-
-  // Static method to set current user ID (for testing and app initialization)
-  static void setCurrentUserId(int userId) {
-    _currentUserId = userId;
-  }
-
-  // Static method to get current user ID
-  static int? getCurrentUserId() {
-    return _currentUserId;
-  }
 
   // ===== PLAYLIST CRUD =====
   // Creates a new playlist, as well as the playlist_cipher, and user_playlist relational objects
@@ -177,7 +179,7 @@ class PlaylistRepository {
     int? includerId,
   }) async {
     final db = await _databaseHelper.database;
-    final effectiveIncluderId = includerId ?? _currentUserId ?? 1;
+    final effectiveIncluderId = includerId;
 
     await db.transaction((txn) async {
       // Get current max position
@@ -270,15 +272,19 @@ class PlaylistRepository {
 
   // ===== COLLABORATOR MANAGEMENT =====
   /// Adds a collaborator to a playlist
-  Future<void> addCollaborator(int playlistId, int userId, String role) async {
+  Future<void> addCollaborator(
+    int playlistId,
+    int userId,
+    String role,
+    int includerId,
+  ) async {
     final db = await _databaseHelper.database;
-    final currentUserId = _currentUserId ?? 1; // Default to 1 if not set
 
     await db.insert('user_playlist', {
       'user_id': userId,
       'playlist_id': playlistId,
       'role': role,
-      'added_by': currentUserId,
+      'added_by': includerId,
       'added_at': DateTime.now().toIso8601String(),
     });
   }
@@ -510,8 +516,146 @@ class PlaylistRepository {
       createdBy: playlistRow['author_id'] as int,
       createdAt: DateTime.parse(playlistRow['created_at'] as String),
       updatedAt: DateTime.parse(playlistRow['updated_at'] as String),
+      shareCode: playlistRow['invite_code'] as String,
       collaborators: collaborators,
       items: items,
     );
+  }
+
+  /// Sync entire playlist with all its items in a single transaction
+  /// This prevents database locking issues during bulk sync operations
+  Future<int> syncPlaylistWithTransaction(
+    Playlist playlist,
+    List<Map<String, dynamic>> versionSectionItems,
+    List<Map<String, dynamic>> textSectionItems,
+    List<int> textItemsToPrune,
+    List<int> versionItemsToPrune,
+  ) async {
+    final db = await _databaseHelper.database;
+    late int playlistId;
+
+    await db.transaction((txn) async {
+      // 1. Upsert playlist
+      final existingResult = await txn.query(
+        'playlist',
+        columns: ['id'],
+        where: 'firebase_id = ?',
+        whereArgs: [playlist.firebaseId],
+      );
+
+      if (existingResult.isNotEmpty) {
+        // Update existing playlist
+        playlistId = existingResult.first['id'] as int;
+        await txn.update(
+          'playlist',
+          {
+            'name': playlist.name,
+            'description': playlist.description,
+            'is_public': (playlist.isPublic ?? false) ? 1 : 0,
+            'updated_at': playlist.updatedAt!.toIso8601String(),
+          },
+          where: 'id = ?',
+          whereArgs: [playlistId],
+        );
+      } else {
+        // Insert new playlist
+        playlistId = await txn.insert(
+          'playlist',
+          playlist.toDatabaseJson() as Map<String, Object?>,
+        );
+      }
+
+      // 2. Prune old items
+      if (versionItemsToPrune.isNotEmpty) {
+        final versionPlaceholders = List.filled(
+          versionItemsToPrune.length,
+          '?',
+        ).join(', ');
+        await txn.delete(
+          'playlist_version',
+          where: 'id IN ($versionPlaceholders)',
+          whereArgs: [...versionItemsToPrune],
+        );
+      }
+
+      if (textItemsToPrune.isNotEmpty) {
+        final textPlaceholders = List.filled(
+          textItemsToPrune.length,
+          '?',
+        ).join(', ');
+        await txn.delete(
+          'playlist_text',
+          where: 'playlist_id = ? AND id IN ($textPlaceholders)',
+          whereArgs: [playlistId, ...textItemsToPrune],
+        );
+      }
+
+      // 3. Upsert text items
+      for (final item in textSectionItems) {
+        final existingTextResult = await txn.query(
+          'playlist_text',
+          columns: ['id'],
+          where: 'firebase_id = ?',
+          whereArgs: [item['firebaseContentId']],
+        );
+
+        if (existingTextResult.isNotEmpty) {
+          // Update existing text item
+          await txn.update(
+            'playlist_text',
+            {
+              'title': item['title'],
+              'content': item['content'],
+              'position': item['position'],
+            },
+            where: 'firebase_id = ?',
+            whereArgs: [item['firebaseContentId']],
+          );
+        } else {
+          // Insert new text item
+          await txn.insert('playlist_text', {
+            'added_by': item['addedBy'],
+            'firebase_id': item['firebaseContentId'],
+            'playlist_id': playlistId,
+            'title': item['title'],
+            'content': item['content'],
+            'position': item['position'],
+            'added_at': DateTime.now().toIso8601String(),
+          });
+        }
+      }
+
+      // 4. Upsert version items
+      for (final item in versionSectionItems) {
+        // Check if this version is already in the playlist
+        final existingVersionResult = await txn.query(
+          'playlist_version',
+          columns: ['id'],
+          where: 'playlist_id = ? AND version_id = ?',
+          whereArgs: [playlistId, item['contentId']],
+        );
+
+        if (existingVersionResult.isNotEmpty) {
+          // Update existing version item position
+          await txn.update(
+            'playlist_version',
+            {'position': item['position']},
+            where: 'id = ?',
+            whereArgs: [existingVersionResult.first['id']],
+          );
+        } else {
+          // Insert new version item
+          await txn.insert('playlist_version', {
+            'version_id': item['contentId'],
+            'playlist_id': playlistId,
+            'includer_id': item['addedBy'],
+            'position': item['position'],
+            'included_at': DateTime.now().toIso8601String(),
+          });
+        }
+      }
+    });
+
+    return playlistId;
   }
 }

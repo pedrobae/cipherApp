@@ -121,6 +121,26 @@ class CloudPlaylistRepository {
     });
   }
 
+  /// Fetches a playlist by its invite code
+  Future<PlaylistDto?> fetchPlaylistByCode(String code) async {
+    return await _withErrorHandling('find playlist by invite code', () async {
+      final docSnapshot = await _firestoreService.fetchDocumentByField(
+        collectionPath: 'playlists',
+        fieldName: 'inviteCode',
+        fieldValue: code,
+      );
+
+      if (docSnapshot == null) {
+        throw Exception('No playlist found with the provided invite code.');
+      }
+
+      return PlaylistDto.fromFirestore(
+        docSnapshot.data() as Map<String, dynamic>,
+        docSnapshot.id,
+      );
+    });
+  }
+
   // ===== UPDATE =====
   /// Update an existing playlist in Firestore on the changes map
   Future<void> updatePlaylist(
@@ -158,6 +178,35 @@ class CloudPlaylistRepository {
       await FirebaseAnalytics.instance.logEvent(
         name: 'updated_text_section',
         parameters: {'textSectionId': textSectionDto.firebaseId!},
+      );
+    });
+  }
+
+  Future<void> addCollaborator(
+    String playlistId,
+    String userId,
+    String role,
+  ) async {
+    return await _withErrorHandling('add collaborator to playlist', () async {
+      await _guardHelper.requireAuth();
+
+      await _firestoreService.addToArrayField(
+        collectionPath: 'playlists',
+        documentId: playlistId,
+        arrayField: 'collaboratorIds',
+        value: userId,
+      );
+
+      await _firestoreService.addToArrayField(
+        collectionPath: 'playlists',
+        documentId: playlistId,
+        arrayField: 'collaborators',
+        value: {'userId': userId, 'role': role},
+      );
+
+      await FirebaseAnalytics.instance.logEvent(
+        name: 'added_collaborator',
+        parameters: {'playlistId': playlistId, 'userId': userId},
       );
     });
   }

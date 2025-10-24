@@ -1,10 +1,11 @@
+import 'package:cipher_app/providers/auth_provider.dart';
 import 'package:cipher_app/providers/user_provider.dart';
 import 'package:cipher_app/widgets/playlist/collaborators/list.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../models/domain/playlist/playlist.dart';
-import '../../../models/domain/user.dart';
-import '../../../providers/collaborator_provider.dart';
+import 'package:cipher_app/models/domain/playlist/playlist.dart';
+import 'package:cipher_app/models/domain/user.dart';
+import 'package:cipher_app/providers/collaborator_provider.dart';
 
 class CollaboratorsBottomSheet extends StatefulWidget {
   final Playlist playlist;
@@ -39,6 +40,8 @@ class _CollaboratorsBottomSheetState extends State<CollaboratorsBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     return Container(
       padding: const EdgeInsets.all(8),
       child: Column(
@@ -46,14 +49,25 @@ class _CollaboratorsBottomSheetState extends State<CollaboratorsBottomSheet> {
         children: [
           Row(
             children: [
-              Text(
-                'Colaboradores',
-                style: Theme.of(context).textTheme.titleLarge,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Text(
+                  'Colaboradores',
+                  style: theme.textTheme.titleLarge!.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.primary,
+                  ),
+                ),
               ),
               const Spacer(),
-              if (!_isSearching)
+              IconButton(
+                onPressed: _openShareDialog,
+                icon: Icon(Icons.share, color: colorScheme.primary),
+                tooltip: 'Gerar código de compartilhamento',
+              ),
+              if (!_isSearching) ...[
                 IconButton(
-                  icon: const Icon(Icons.person_add),
+                  icon: Icon(Icons.person_add, color: colorScheme.primary),
                   tooltip: 'Adicionar colaborador',
                   onPressed: () {
                     setState(() {
@@ -61,9 +75,9 @@ class _CollaboratorsBottomSheetState extends State<CollaboratorsBottomSheet> {
                     });
                   },
                 ),
-              if (_isSearching)
+              ] else ...[
                 IconButton(
-                  icon: const Icon(Icons.group),
+                  icon: Icon(Icons.group, color: colorScheme.primary),
                   tooltip: 'Cancelar busca',
                   onPressed: () {
                     setState(() {
@@ -73,6 +87,7 @@ class _CollaboratorsBottomSheetState extends State<CollaboratorsBottomSheet> {
                     });
                   },
                 ),
+              ],
             ],
           ),
           const SizedBox(height: 16),
@@ -225,6 +240,9 @@ class _CollaboratorsBottomSheetState extends State<CollaboratorsBottomSheet> {
                 widget.playlist.id,
                 user.id!,
                 selectedInstrument,
+                context.read<UserProvider>().getLocalIdByFirebaseId(
+                  context.read<AuthProvider>().id!,
+                )!,
               );
               Navigator.of(context).pop();
               setState(() {
@@ -236,5 +254,9 @@ class _CollaboratorsBottomSheetState extends State<CollaboratorsBottomSheet> {
         ],
       ),
     );
+  }
+
+  void _openShareDialog() {
+    // TODO: Implement share code display
   }
 }

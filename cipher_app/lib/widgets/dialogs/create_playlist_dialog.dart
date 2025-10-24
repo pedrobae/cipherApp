@@ -1,3 +1,4 @@
+import 'package:cipher_app/helpers/codes.dart';
 import 'package:cipher_app/providers/auth_provider.dart';
 import 'package:cipher_app/providers/user_provider.dart';
 import 'package:flutter/material.dart';
@@ -79,6 +80,7 @@ class _CreatePlaylistDialogState extends State<CreatePlaylistDialog> {
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
       collaborators: const [],
+      shareCode: generateShareCode(),
       items: const [],
     );
 

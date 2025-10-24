@@ -1,5 +1,6 @@
 import 'package:cipher_app/models/dtos/playlist_dto.dart';
 import 'package:cipher_app/providers/collaborator_provider.dart';
+import 'package:cipher_app/widgets/playlist/join_playlist_dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -131,8 +132,8 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                             cipherProvider,
                             userProvider,
                             versionProvider,
-                            authProvider,
                             collaboratorProvider,
+                            authProvider,
                             playlistFirebaseId: playlist.firebaseId,
                           ),
                           onDelete: () => _showDeleteDialog(context, playlist),
@@ -143,8 +144,8 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                 },
           ),
       floatingActionButton: FloatingActionButton(
-        heroTag: 'playlist_fab',
-        onPressed: () => _showCreatePlaylistDialog(context),
+        heroTag: 'add_playlist_fab',
+        onPressed: () => _showAddPlaylistActions(context),
         child: const Icon(Icons.add),
       ),
     );
@@ -167,12 +168,13 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
           <String, String>{}; // Track success/failure per playlist
 
       for (final playlistDto in playlistsToSync) {
-        final (firebaseId, status) = await _syncPlaylist(
+        final (firebaseId, status) = await syncPlaylist(
           playlistProvider,
           cipherProvider,
           userProvider,
           versionProvider,
           collaboratorProvider,
+          authProvider,
           playlistDto: playlistDto,
         );
 
@@ -204,12 +206,13 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
     }
   }
 
-  Future<(String, String)> _syncPlaylist(
+  Future<(String, String)> syncPlaylist(
     PlaylistProvider playlistProvider,
     CipherProvider cipherProvider,
     UserProvider userProvider,
     VersionProvider versionProvider,
-    CollaboratorProvider collaboratorProvider, {
+    CollaboratorProvider collaboratorProvider,
+    AuthProvider authProvider, {
     PlaylistDto? playlistDto,
   }) async {
     try {
@@ -371,6 +374,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
               playlistId,
               collaboratorLocalId,
               collaborator['role'] as String,
+              userProvider.getLocalIdByFirebaseId(authProvider.id!)!,
             );
           }
         }
@@ -394,8 +398,8 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
     CipherProvider cipherProvider,
     UserProvider userProvider,
     VersionProvider versionProvider,
-    AuthProvider authProvider,
-    CollaboratorProvider collaboratorProvider, {
+    CollaboratorProvider collaboratorProvider,
+    AuthProvider authProvider, {
     String? playlistFirebaseId,
   }) async {
     if (playlistFirebaseId == null) {
@@ -412,12 +416,13 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
             syncPlaylist: () async {
               playlistProvider.loadCloudPlaylist(playlistFirebaseId);
 
-              await _syncPlaylist(
+              await syncPlaylist(
                 playlistProvider,
                 cipherProvider,
                 userProvider,
                 versionProvider,
                 collaboratorProvider,
+                authProvider,
               );
             },
           ),
@@ -433,10 +438,48 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
     );
   }
 
+  void _showAddPlaylistActions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.add),
+              title: const Text('Criar Nova Playlist'),
+              onTap: () {
+                Navigator.pop(context);
+                _showCreatePlaylistDialog(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.group_add),
+              title: const Text('Entrar em Playlist'),
+              subtitle: const Text('Use um código de convite'),
+              onTap: () {
+                Navigator.pop(context);
+                _showJoinPlaylistDialog(context, syncPlaylist);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _showCreatePlaylistDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) => const CreatePlaylistDialog(),
+    );
+  }
+
+  void _showJoinPlaylistDialog(BuildContext context, syncPlaylist) {
+    showDialog(
+      context: context,
+      builder: (context) => JoinPlaylistDialog(syncPlaylist: syncPlaylist),
     );
   }
 }

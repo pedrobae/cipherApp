@@ -251,7 +251,10 @@ class PlaylistProvider extends ChangeNotifier {
   }
 
   Future<int> upsertPlaylist(Playlist playlist) async {
-    return await _playlistRepository.upsertPlaylist(playlist);
+    final playlistId = await _playlistRepository.upsertPlaylist(playlist);
+    await loadPlaylist(playlistId);
+
+    return playlistId;
   }
 
   /// Sync entire playlist with all its items in a single transaction
@@ -270,10 +273,10 @@ class PlaylistProvider extends ChangeNotifier {
       textItemsToPrune,
       versionItemsToPrune,
     );
-    
+
     // Reload the playlist in the provider's cache
     await loadPlaylist(playlistId);
-    
+
     return playlistId;
   }
 

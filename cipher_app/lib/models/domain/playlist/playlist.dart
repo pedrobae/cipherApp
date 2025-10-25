@@ -45,7 +45,7 @@ class Playlist {
       collaborators: json['collaborators'] != null
           ? List<String>.from(json['collaborators'])
           : const [],
-      shareCode: json['invite_code'] as String,
+      shareCode: json['share_code'] as String,
       items: json['items'] != null
           ? (json['items'] as List)
                 .map((item) => PlaylistItem.fromJson(item))
@@ -64,7 +64,7 @@ class Playlist {
       'updated_at': updatedAt?.toIso8601String(),
       'is_public': isPublic,
       'collaborators': collaborators,
-      'invite_code': shareCode,
+      'share_code': shareCode,
       'items': items.map((item) => item.toJson()).toList(),
     };
   }
@@ -78,7 +78,7 @@ class Playlist {
       'author_id': createdBy,
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
-      'invite_code': shareCode ?? generateShareCode(),
+      'share_code': shareCode ?? generateShareCode(),
       'is_public': (isPublic ?? false) ? 1 : 0,
     };
 

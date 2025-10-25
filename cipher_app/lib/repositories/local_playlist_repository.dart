@@ -516,7 +516,7 @@ class PlaylistRepository {
       createdBy: playlistRow['author_id'] as int,
       createdAt: DateTime.parse(playlistRow['created_at'] as String),
       updatedAt: DateTime.parse(playlistRow['updated_at'] as String),
-      shareCode: playlistRow['invite_code'] as String,
+      shareCode: playlistRow['share_code'] as String? ?? '',
       collaborators: collaborators,
       items: items,
     );

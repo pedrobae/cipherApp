@@ -137,6 +137,7 @@ class DatabaseHelper {
         description TEXT,
         author_id STRING NOT NULL,
         firebase_id TEXT UNIQUE,
+        share_code TEXT UNIQUE,
         is_public BOOLEAN DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

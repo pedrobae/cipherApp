@@ -48,7 +48,7 @@ class CollaboratorProvider extends ChangeNotifier {
     int playlistId,
     int userId,
     String role,
-    int currentUserId,
+    int includerId,
   ) async {
     try {
       _isLoading = true;
@@ -59,7 +59,7 @@ class CollaboratorProvider extends ChangeNotifier {
         playlistId,
         userId,
         role,
-        currentUserId,
+        includerId,
       );
 
       // Reload collaborators to refresh the list

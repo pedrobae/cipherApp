@@ -24,6 +24,8 @@ class PlaylistLibraryScreen extends StatefulWidget {
   State<PlaylistLibraryScreen> createState() => _PlaylistLibraryScreenState();
 }
 
+typedef SyncPlaylistFunction = Future<void> Function(PlaylistDto playlistDto);
+
 class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
     with WidgetsBindingObserver {
   @override
@@ -47,32 +49,33 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body:
-          Consumer6<
-            PlaylistProvider,
-            CipherProvider,
-            UserProvider,
-            VersionProvider,
-            AuthProvider,
-            CollaboratorProvider
-          >(
-            builder:
-                (
-                  context,
-                  playlistProvider,
-                  cipherProvider,
-                  userProvider,
-                  versionProvider,
-                  authProvider,
-                  collaboratorProvider,
-                  child,
-                ) {
+    return Consumer6<
+      PlaylistProvider,
+      CipherProvider,
+      UserProvider,
+      VersionProvider,
+      AuthProvider,
+      CollaboratorProvider
+    >(
+      builder:
+          (
+            context,
+            playlistProvider,
+            cipherProvider,
+            userProvider,
+            versionProvider,
+            authProvider,
+            collaboratorProvider,
+            child,
+          ) {
+            return Scaffold(
+              body: Builder(
+                builder: (context) {
                   // Handle loading state
                   if (playlistProvider.isLoading) {
                     return const Center(child: CircularProgressIndicator());
                   }
-
+                  // Handle cloud loading state
                   if (playlistProvider.isCloudLoading) {
                     return Center(
                       child: const Column(
@@ -86,8 +89,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                       ),
                     );
                   }
-
-                  // Handle error state
+                  // Handle Error State
                   if (playlistProvider.error != null) {
                     return ErrorStateWidget(
                       title: 'Erro ao carregar playlists',
@@ -95,7 +97,6 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                       onRetry: () => playlistProvider.loadLocalPlaylists(),
                     );
                   }
-
                   // Handle empty state
                   if (playlistProvider.playlists.isEmpty) {
                     return const EmptyStateWidget(
@@ -104,8 +105,6 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                       subtitle: 'Crie sua primeira playlist!',
                     );
                   }
-
-                  // Display playlists
                   return RefreshIndicator(
                     onRefresh: () async {
                       await playlistProvider.loadLocalPlaylists();
@@ -142,12 +141,25 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                     ),
                   );
                 },
-          ),
-      floatingActionButton: FloatingActionButton(
-        heroTag: 'add_playlist_fab',
-        onPressed: () => _showAddPlaylistActions(context),
-        child: const Icon(Icons.add),
-      ),
+              ),
+              floatingActionButton: FloatingActionButton(
+                heroTag: 'add_playlist_fab',
+                onPressed: () => _showAddPlaylistActions(
+                  context,
+                  (playlistDto) => syncPlaylist(
+                    playlistProvider,
+                    cipherProvider,
+                    userProvider,
+                    versionProvider,
+                    collaboratorProvider,
+                    authProvider,
+                    playlistDto: playlistDto,
+                  ),
+                ),
+                child: const Icon(Icons.add),
+              ),
+            );
+          },
     );
   }
 
@@ -438,7 +450,10 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
     );
   }
 
-  void _showAddPlaylistActions(BuildContext context) {
+  void _showAddPlaylistActions(
+    BuildContext context,
+    SyncPlaylistFunction syncPlaylist,
+  ) {
     showModalBottomSheet(
       context: context,
       builder: (context) => Container(
@@ -476,7 +491,10 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
     );
   }
 
-  void _showJoinPlaylistDialog(BuildContext context, syncPlaylist) {
+  void _showJoinPlaylistDialog(
+    BuildContext context,
+    SyncPlaylistFunction syncPlaylist,
+  ) {
     showDialog(
       context: context,
       builder: (context) => JoinPlaylistDialog(syncPlaylist: syncPlaylist),

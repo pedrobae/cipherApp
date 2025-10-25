@@ -123,10 +123,10 @@ class CloudPlaylistRepository {
 
   /// Fetches a playlist by its invite code
   Future<PlaylistDto?> fetchPlaylistByCode(String code) async {
-    return await _withErrorHandling('find playlist by invite code', () async {
+    return await _withErrorHandling('fetch_playlist_by_invite_code', () async {
       final docSnapshot = await _firestoreService.fetchDocumentByField(
         collectionPath: 'playlists',
-        fieldName: 'inviteCode',
+        fieldName: 'shareCode',
         fieldValue: code,
       );
 
@@ -201,7 +201,7 @@ class CloudPlaylistRepository {
         collectionPath: 'playlists',
         documentId: playlistId,
         arrayField: 'collaborators',
-        value: {'userId': userId, 'role': role},
+        value: {'id': userId, 'role': role},
       );
 
       await FirebaseAnalytics.instance.logEvent(

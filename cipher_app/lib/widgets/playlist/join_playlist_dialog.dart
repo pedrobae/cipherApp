@@ -128,6 +128,7 @@ class _JoinPlaylistDialogState extends State<JoinPlaylistDialog> {
       final playlist = playlistProvider.getPlaylistByFirebaseId(
         playlistDto.firebaseId!,
       );
+
       // Add current user as collaborator to the local database
       await collaboratorProvider.addCollaborator(
         playlist!.id,
@@ -135,6 +136,11 @@ class _JoinPlaylistDialogState extends State<JoinPlaylistDialog> {
         roleController.text,
         userProvider.getLocalIdByFirebaseId(playlistDto.ownerId)!,
       );
+
+      // Close Dialog
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
     } catch (e) {
       if (kDebugMode) {
         print('Error joining playlist: $e');

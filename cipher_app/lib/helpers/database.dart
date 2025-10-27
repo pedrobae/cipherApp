@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cipher_app/helpers/seed_data/info.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'seed_data/seed_database.dart';
@@ -207,10 +208,10 @@ class DatabaseHelper {
         published_at TIMESTAMP,
         expires_at TIMESTAMP,
         source_url TEXT,
-        thumbnail_path TEXT,
+        link TEXT,
         language TEXT DEFAULT 'por',
         is_dismissible BOOLEAN DEFAULT 1,
-        last_fetched_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        fetched_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         cache_expires_at TIMESTAMP,
         is_stale BOOLEAN DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -278,7 +279,7 @@ class DatabaseHelper {
     );
 
     // Seed the database with initial data
-    // await seedDatabase(db);
+    await seedInfoDatabase(db);
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {

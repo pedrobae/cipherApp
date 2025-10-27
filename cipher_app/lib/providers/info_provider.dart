@@ -9,39 +9,28 @@ class InfoProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
   InfoType? _selectedType;
-  String _searchQuery = '';
 
   List<InfoItem> get infoItems {
     List<InfoItem> items = _selectedType == null
         ? _infoItems
         : _infoItems.where((item) => item.type == _selectedType).toList();
-    
-    // Apply search filter if there's a query
-    if (_searchQuery.isNotEmpty) {
-      items = items.where((item) =>
-          item.title.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          item.description.toLowerCase().contains(_searchQuery.toLowerCase())
-      ).toList();
-    }
-    
+
     return items;
   }
 
   bool get isLoading => _isLoading;
   String? get error => _error;
   InfoType? get selectedType => _selectedType;
-  String get searchQuery => _searchQuery;
 
   Future<void> loadInfo() async {
-    if (_isLoading) return; // Prevent multiple simultaneous loads
-    
+    if (_isLoading) return;
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
       _infoItems = await _infoRepository.getAllInfo();
-      
+
       // Clear expired info items in background
       _infoRepository.clearExpiredInfo();
     } catch (e) {
@@ -59,37 +48,7 @@ class InfoProvider extends ChangeNotifier {
     }
   }
 
-  void setSearchQuery(String query) {
-    if (_searchQuery != query) {
-      _searchQuery = query;
-      notifyListeners();
-    }
-  }
-
-  Future<void> searchInfo(String query) async {
-    setSearchQuery(query);
-    
-    if (query.trim().isEmpty) {
-      // If query is empty, show all items (already filtered by type if applicable)
-      return;
-    }
-
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      _infoItems = await _infoRepository.searchInfo(query);
-    } catch (e) {
-      _error = 'Erro ao pesquisar informações: $e';
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
   Future<void> refresh() async {
-    _searchQuery = '';
     _selectedType = null;
     await loadInfo();
   }
@@ -180,7 +139,6 @@ class InfoProvider extends ChangeNotifier {
   // Clear all filters and search
   void clearFilters() {
     _selectedType = null;
-    _searchQuery = '';
     notifyListeners();
   }
 
@@ -190,7 +148,6 @@ class InfoProvider extends ChangeNotifier {
     _isLoading = false;
     _error = null;
     _selectedType = null;
-    _searchQuery = '';
     notifyListeners();
   }
 }

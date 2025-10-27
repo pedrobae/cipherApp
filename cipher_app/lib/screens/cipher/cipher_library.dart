@@ -1,4 +1,5 @@
 import 'package:cipher_app/providers/auth_provider.dart';
+import 'package:cipher_app/providers/selection_provider.dart';
 import 'package:cipher_app/providers/user_provider.dart';
 import 'package:cipher_app/providers/version_provider.dart';
 import 'package:cipher_app/widgets/search_app_bar.dart';
@@ -54,12 +55,13 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen>
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Consumer5<
+    return Consumer6<
       CipherProvider,
       UserProvider,
       AuthProvider,
       PlaylistProvider,
-      VersionProvider
+      VersionProvider,
+      SelectionProvider
     >(
       builder:
           (
@@ -69,6 +71,7 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen>
             authProvider,
             playlistProvider,
             versionProvider,
+            selectionProvider,
             child,
           ) {
             return Scaffold(
@@ -108,43 +111,29 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen>
                       controller: _tabController,
                       children: [
                         LocalCipherList(
-                          onTap: (int versionId, int cipherId) {
-                            if (widget.selectionMode) {
-                              try {
-                                playlistProvider.addVersionToPlaylist(
-                                  widget.playlistId!,
-                                  versionId,
-                                  userProvider.getLocalIdByFirebaseId(
-                                    authProvider.id!,
-                                  )!,
-                                );
-                                versionProvider.loadVersionsForPlaylist(
-                                  playlistProvider.currentPlaylist!.items,
-                                );
-                                Navigator.pop(context);
-                              } catch (error) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      'Erro ao adicionar à playlist: $error',
-                                    ),
-                                    backgroundColor: Theme.of(
-                                      context,
-                                    ).colorScheme.error,
-                                  ),
-                                );
-                              }
-                            } else {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => CipherViewer(
-                                    cipherId: cipherId,
-                                    versionId: versionId,
-                                  ),
-                                ),
-                              );
-                            }
+                          onTap: (int versionId, int cipherId) =>
+                              onTapCipherVersion(
+                                versionId,
+                                cipherId,
+                                playlistProvider,
+                                userProvider,
+                                authProvider,
+                                versionProvider,
+                                selectionProvider,
+                              ),
+                          onLongPress: (int versionId, int cipherId) {
+                            onLongPressCipherVersion(
+                              versionId,
+                              cipherId,
+                              playlistProvider,
+                              userProvider,
+                              authProvider,
+                              versionProvider,
+                              selectionProvider,
+                            );
                           },
+                          selectionMode: widget.selectionMode,
+                          playlistId: widget.playlistId,
                         ),
                         CloudCipherList(
                           searchCloudCiphers: _searchCloudCiphers,
@@ -209,5 +198,69 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen>
 
   void _searchCloudCiphers() {
     _cipherProvider.searchCloudCiphers(_searchController.text);
+  }
+
+  void onTapCipherVersion(
+    int versionId,
+    int cipherId,
+    PlaylistProvider playlistProvider,
+    UserProvider userProvider,
+    AuthProvider authProvider,
+    VersionProvider versionProvider,
+    SelectionProvider selectionProvider,
+  ) {
+    if (widget.selectionMode) {
+      try {
+        if (selectionProvider.isSelectionMode) {
+          selectionProvider.toggleItemSelection(versionId);
+          return;
+        }
+        playlistProvider.addVersionToPlaylist(
+          widget.playlistId!,
+          versionId,
+          userProvider.getLocalIdByFirebaseId(authProvider.id!)!,
+        );
+        versionProvider.loadVersionsForPlaylist(
+          playlistProvider.currentPlaylist!.items,
+        );
+        Navigator.pop(context);
+      } catch (error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao adicionar à playlist: $error'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    } else {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) =>
+              CipherViewer(cipherId: cipherId, versionId: versionId),
+        ),
+      );
+    }
+  }
+
+  Future<void> onLongPressCipherVersion(
+    int versionId,
+    int cipherId,
+    PlaylistProvider playlistProvider,
+    UserProvider userProvider,
+    AuthProvider authProvider,
+    VersionProvider versionProvider,
+    SelectionProvider selectionProvider,
+  ) async {
+    if (!widget.selectionMode) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) =>
+              CipherViewer(cipherId: cipherId, versionId: versionId),
+        ),
+      );
+    } else {
+      selectionProvider.enableSelectionMode();
+      selectionProvider.toggleItemSelection(versionId);
+    }
   }
 }

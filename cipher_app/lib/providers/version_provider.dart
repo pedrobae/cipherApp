@@ -437,7 +437,6 @@ class VersionProvider extends ChangeNotifier {
   void clearVersions() {
     _expandedCipherId = -1;
     _versions = [];
-    notifyListeners();
   }
 
   /// Identify if the version exists in the cloud and creates or saves (return wether the version isNew on cloud)

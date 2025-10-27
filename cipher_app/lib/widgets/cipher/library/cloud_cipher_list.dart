@@ -1,10 +1,11 @@
 import 'package:cipher_app/providers/cipher_provider.dart';
+import 'package:cipher_app/providers/selection_provider.dart';
 import 'package:cipher_app/widgets/cipher/library/cloud_cipher_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class CloudCipherList extends StatefulWidget {
-  final bool selectionMode;
+  final bool isAddingToPlaylist;
   final int? playlistId;
   final VoidCallback? searchCloudCiphers;
   final VoidCallback changeTab;
@@ -12,7 +13,7 @@ class CloudCipherList extends StatefulWidget {
 
   const CloudCipherList({
     super.key,
-    this.selectionMode = false,
+    this.isAddingToPlaylist = false,
     this.playlistId,
     this.searchCloudCiphers,
     required this.changeTab,
@@ -27,10 +28,10 @@ class _CloudCipherListState extends State<CloudCipherList> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _loadDataIfNeeded();
+    _ensureDataLoad();
   }
 
-  void _loadDataIfNeeded() {
+  void _ensureDataLoad() {
     final cipherProvider = Provider.of<CipherProvider>(context, listen: false);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
@@ -39,7 +40,10 @@ class _CloudCipherListState extends State<CloudCipherList> {
     });
   }
 
-  Widget _buildCiphersList(CipherProvider cipherProvider) {
+  Widget _buildCiphersList(
+    CipherProvider cipherProvider,
+    SelectionProvider selectionProvider,
+  ) {
     return RefreshIndicator(
       onRefresh: () async {
         await cipherProvider.loadCloudCiphers(forceReload: true);
@@ -56,18 +60,92 @@ class _CloudCipherListState extends State<CloudCipherList> {
           }
 
           final cipher = cipherProvider.filteredCloudCiphers[index];
-          return CloudCipherCard(
-            cipher: cipher,
-            onDownload: () async {
-              await cipherProvider.downloadFullCipher(cipher);
-              widget.changeTab();
-              widget.openCipher(
-                cipherProvider.currentCipher.id!,
-                cipherProvider.currentCipher.versions.last.id!,
-              );
+          return GestureDetector(
+            onLongPress: () => {
+              selectionProvider.enableSelectionMode(),
+              selectionProvider.toggleItemSelection(cipher),
             },
+            child: CloudCipherCard(
+              cipher: cipher,
+              onTap: () {
+                selectionProvider.toggleItemSelection(cipher);
+              },
+              onDownload: () async {
+                await cipherProvider.downloadFullCipher(cipher);
+                widget.changeTab();
+                widget.openCipher(
+                  cipherProvider.currentCipher.id!,
+                  cipherProvider.currentCipher.versions.last.id!,
+                );
+              },
+            ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildBatchDownloadButton(
+    SelectionProvider selectionProvider,
+    CipherProvider cipherProvider,
+  ) {
+    return Positioned(
+      bottom: 4,
+      left: 8,
+      right: 8,
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 400),
+        transitionBuilder: (child, animation) {
+          return SlideTransition(
+            position:
+                Tween<Offset>(
+                  begin: const Offset(0, 1), // Start from bottom
+                  end: Offset.zero,
+                ).animate(
+                  CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.easeInOutCubic,
+                  ),
+                ),
+            child: FadeTransition(
+              opacity: animation,
+              child: ScaleTransition(
+                scale: Tween<double>(begin: 0.8, end: 1.0).animate(
+                  CurvedAnimation(parent: animation, curve: Curves.elasticOut),
+                ),
+                child: child,
+              ),
+            ),
+          );
+        },
+        child: selectionProvider.isSelectionMode
+            ? SizedBox(
+                key: const ValueKey('batch_download_container'),
+                width: double.infinity,
+                child: ElevatedButton(
+                  key: const ValueKey('batch_download_button'),
+                  style: ButtonStyle(
+                    shadowColor: WidgetStateProperty.resolveWith((states) {
+                      return Colors.transparent;
+                    }),
+                  ),
+                  onPressed: () async {
+                    // Handle bulk download
+                    final selectedCiphers = selectionProvider.selectedItems;
+                    for (var cipher in selectedCiphers) {
+                      await cipherProvider.downloadFullCipher(cipher);
+                    }
+                    selectionProvider.disableSelectionMode();
+                    widget.changeTab();
+                  },
+                  child: selectionProvider.selectedItems.length == 1
+                      ? Text('Baixar a cifra selecionada')
+                      : Text(
+                          'Baixar ${selectionProvider.selectedItems.length} cifras selecionadas',
+                        ),
+                ),
+              )
+            : const SizedBox.shrink(key: ValueKey('empty_space')),
       ),
     );
   }
@@ -77,8 +155,8 @@ class _CloudCipherListState extends State<CloudCipherList> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Consumer<CipherProvider>(
-      builder: (context, cipherProvider, child) {
+    return Consumer2<CipherProvider, SelectionProvider>(
+      builder: (context, cipherProvider, selectionProvider, child) {
         // Handle loading state
         if (cipherProvider.isLoadingCloud) {
           return const Center(child: CircularProgressIndicator());
@@ -146,7 +224,13 @@ class _CloudCipherListState extends State<CloudCipherList> {
           );
         }
         // Display cipher list
-        return _buildCiphersList(cipherProvider);
+        return Stack(
+          children: [
+            _buildCiphersList(cipherProvider, selectionProvider),
+            // Always show the button for animation to work
+            _buildBatchDownloadButton(selectionProvider, cipherProvider),
+          ],
+        );
       },
     );
   }

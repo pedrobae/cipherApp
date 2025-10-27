@@ -1,4 +1,5 @@
 import 'package:cipher_app/providers/collaborator_provider.dart';
+import 'package:cipher_app/providers/selection_provider.dart';
 import 'package:cipher_app/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -47,6 +48,7 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(create: (_) => NavigationProvider()),
         ChangeNotifierProvider(create: (_) => PlaylistProvider()),
+        ChangeNotifierProvider(create: (_) => SelectionProvider()),
         ChangeNotifierProvider(
           create: (_) => SettingsProvider()..loadSettings(),
         ),

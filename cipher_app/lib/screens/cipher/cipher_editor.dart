@@ -9,8 +9,14 @@ import 'package:cipher_app/widgets/cipher/editor/version_form.dart';
 class EditCipher extends StatefulWidget {
   final int? cipherId; // Null for new cipher, populated for edit
   final int? versionId; // Null for new version, populated for edit
+  final bool editCipher;
 
-  const EditCipher({super.key, this.cipherId, this.versionId});
+  const EditCipher({
+    super.key,
+    this.cipherId,
+    this.versionId,
+    this.editCipher = false,
+  });
 
   @override
   State<EditCipher> createState() => _EditCipherState();
@@ -87,7 +93,7 @@ class _EditCipherState extends State<EditCipher>
   }
 
   void _navigateStartTab() {
-    if (_isNewCipher) {
+    if (_isNewCipher || widget.editCipher) {
       _tabController.animateTo(0);
     } else {
       _tabController.animateTo(1);

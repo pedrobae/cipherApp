@@ -1,4 +1,8 @@
+import 'package:cipher_app/providers/auth_provider.dart';
 import 'package:cipher_app/providers/cipher_provider.dart';
+import 'package:cipher_app/providers/playlist_provider.dart';
+import 'package:cipher_app/providers/selection_provider.dart';
+import 'package:cipher_app/providers/user_provider.dart';
 import 'package:cipher_app/screens/cipher/cipher_editor.dart';
 import 'package:cipher_app/widgets/cipher/library/expandible_cipher_card.dart';
 import 'package:flutter/material.dart';
@@ -8,12 +12,14 @@ class LocalCipherList extends StatefulWidget {
   final bool selectionMode;
   final int? playlistId;
   final Function(int versionId, int cipherId) onTap;
+  final Function(int versionId, int cipherId) onLongPress;
 
   const LocalCipherList({
     super.key,
     this.selectionMode = false,
     this.playlistId,
     required this.onTap,
+    required this.onLongPress,
   });
 
   @override
@@ -36,8 +42,9 @@ class _LocalCipherListState extends State<LocalCipherList> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Consumer<CipherProvider>(
-      builder: (context, cipherProvider, child) {
+    return Consumer2<CipherProvider, SelectionProvider>(
+      builder: (context, cipherProvider, selectionProvider, child) {
+        // Handle loading state
         if (cipherProvider.isLoading) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -97,7 +104,8 @@ class _LocalCipherListState extends State<LocalCipherList> {
               // Display cipher list
               _buildCiphersList(cipherProvider),
             ],
-            if (!widget.selectionMode)
+
+            if (!widget.selectionMode) ...[
               Positioned(
                 bottom: MediaQuery.of(context).viewInsets.bottom + 8,
                 right: MediaQuery.of(context).viewInsets.right + 8,
@@ -110,10 +118,13 @@ class _LocalCipherListState extends State<LocalCipherList> {
                     );
                   },
                   icon: const Icon(Icons.add),
-                  label: const Text('Adicionar Cifra'),
+                  label: const Text('Nova Cifra'),
                   heroTag: 'library_fab',
                 ),
               ),
+            ] else if (selectionProvider.isSelectionMode) ...[
+              _buildBatchAddButton(selectionProvider, cipherProvider),
+            ],
           ],
         );
       },
@@ -136,8 +147,85 @@ class _LocalCipherListState extends State<LocalCipherList> {
           }
 
           final cipher = cipherProvider.filteredLocalCiphers[index];
-          return CipherCard(cipher: cipher, onTap: widget.onTap);
+          return CipherCard(
+            cipher: cipher,
+            onTap: widget.onTap,
+            onLongPress: widget.onLongPress,
+          );
         },
+      ),
+    );
+  }
+
+  Widget _buildBatchAddButton(
+    SelectionProvider selectionProvider,
+    CipherProvider cipherProvider,
+  ) {
+    return Positioned(
+      bottom: 4,
+      left: 8,
+      right: 8,
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 400),
+        transitionBuilder: (child, animation) {
+          return SlideTransition(
+            position:
+                Tween<Offset>(
+                  begin: const Offset(0, 1), // Start from bottom
+                  end: Offset.zero,
+                ).animate(
+                  CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.easeInOutCubic,
+                  ),
+                ),
+            child: FadeTransition(
+              opacity: animation,
+              child: ScaleTransition(
+                scale: Tween<double>(begin: 0.8, end: 1.0).animate(
+                  CurvedAnimation(parent: animation, curve: Curves.elasticOut),
+                ),
+                child: child,
+              ),
+            ),
+          );
+        },
+        child: selectionProvider.isSelectionMode
+            ? SizedBox(
+                key: const ValueKey('batch_add_to_playlist_container'),
+                width: double.infinity,
+                child: ElevatedButton(
+                  key: const ValueKey('batch_add_to_playlist_button'),
+                  style: ButtonStyle(
+                    shadowColor: WidgetStateProperty.resolveWith((states) {
+                      return Colors.transparent;
+                    }),
+                  ),
+                  onPressed: () async {
+                    final authProvider = context.read<AuthProvider>();
+                    final userProvider = context.read<UserProvider>();
+                    // Handle adding selected versions to playlist
+                    for (var versionId in selectionProvider.selectedItems) {
+                      await context
+                          .read<PlaylistProvider>()
+                          .addVersionToPlaylist(
+                            widget.playlistId!,
+                            versionId,
+                            userProvider.getLocalIdByFirebaseId(
+                              authProvider.id!,
+                            )!,
+                          );
+                    }
+                    selectionProvider.disableSelectionMode();
+                  },
+                  child: selectionProvider.selectedItems.length == 1
+                      ? Text('Adicionar à Playlist')
+                      : Text(
+                          'Adicionar ${selectionProvider.selectedItems.length} versões à Playlist',
+                        ),
+                ),
+              )
+            : const SizedBox.shrink(key: ValueKey('empty_space')),
       ),
     );
   }

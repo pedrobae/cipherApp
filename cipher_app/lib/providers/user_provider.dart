@@ -153,4 +153,14 @@ class UserProvider extends ChangeNotifier {
   void clearSearchResults() async {
     _searchResults = _knownCollaborators;
   }
+
+  void clearCache() {
+    _knownCollaborators = [];
+    _searchResults = [];
+    _error = null;
+    _hasInitialized = false;
+    _isLoading = false;
+    _isLoadingCloud = false;
+    notifyListeners();
+  }
 }

@@ -3,10 +3,27 @@ import 'package:cipher_app/widgets/playlist/collaborators/tile.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class CollaboratorList extends StatelessWidget {
+class CollaboratorList extends StatefulWidget {
   const CollaboratorList({super.key, required this.playlistId});
 
   final int playlistId;
+
+  @override
+  State<CollaboratorList> createState() => _CollaboratorListState();
+}
+
+class _CollaboratorListState extends State<CollaboratorList> {
+  @override
+  void initState() {
+    super.initState();
+    // Load collaborators when the widget is initialized
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<CollaboratorProvider>(
+        context,
+        listen: false,
+      ).loadCollaborators(widget.playlistId);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +44,7 @@ class CollaboratorList extends StatelessWidget {
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () {
-                    provider.loadCollaborators(playlistId);
+                    provider.loadCollaborators(widget.playlistId);
                   },
                   child: const Text('Tentar Novamente'),
                 ),
@@ -36,7 +53,9 @@ class CollaboratorList extends StatelessWidget {
           );
         }
 
-        final collaborators = provider.getCollaboratorsForPlaylist(playlistId);
+        final collaborators = provider.getCollaboratorsForPlaylist(
+          widget.playlistId,
+        );
         if (collaborators.isEmpty) {
           return Center(
             child: Column(
@@ -58,7 +77,7 @@ class CollaboratorList extends StatelessWidget {
               final collaborator = collaborators[index];
               return CollaboratorTile(
                 collaborator: collaborator,
-                playlistId: playlistId,
+                playlistId: widget.playlistId,
               );
             },
           ),

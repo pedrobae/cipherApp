@@ -20,6 +20,7 @@ class CollaboratorsBottomSheet extends StatefulWidget {
 class _CollaboratorsBottomSheetState extends State<CollaboratorsBottomSheet> {
   final TextEditingController _searchController = TextEditingController();
   bool _isSearching = false;
+  bool _showShareCode = false;
 
   @override
   void initState() {
@@ -45,6 +46,8 @@ class _CollaboratorsBottomSheetState extends State<CollaboratorsBottomSheet> {
     return Container(
       padding: const EdgeInsets.all(8),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: 16,
         mainAxisSize: MainAxisSize.min,
         children: [
           Row(
@@ -61,9 +64,13 @@ class _CollaboratorsBottomSheetState extends State<CollaboratorsBottomSheet> {
               ),
               const Spacer(),
               IconButton(
-                onPressed: _openShareDialog,
+                onPressed: () {
+                  setState(() {
+                    _showShareCode = !_showShareCode;
+                  });
+                },
                 icon: Icon(Icons.share, color: colorScheme.primary),
-                tooltip: 'Gerar código de compartilhamento',
+                tooltip: 'Mostrar código de compartilhamento',
               ),
               if (!_isSearching) ...[
                 IconButton(
@@ -90,7 +97,39 @@ class _CollaboratorsBottomSheetState extends State<CollaboratorsBottomSheet> {
               ],
             ],
           ),
-          const SizedBox(height: 16),
+          if (_showShareCode) ...[
+            Card(
+              color: colorScheme.primary,
+              child: Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Código de Compartilhamento',
+                      style: theme.textTheme.titleMedium!.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onPrimary,
+                      ),
+                    ),
+                    Card(
+                      color: colorScheme.onPrimary,
+                      child: Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: SelectableText(
+                          widget.playlist.shareCode ?? 'N/A',
+                          style: theme.textTheme.bodyLarge!.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: colorScheme.primary,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
           _isSearching
               ? _buildSearchSection(context)
               : CollaboratorList(playlistId: widget.playlist.id),
@@ -254,9 +293,5 @@ class _CollaboratorsBottomSheetState extends State<CollaboratorsBottomSheet> {
         ],
       ),
     );
-  }
-
-  void _openShareDialog() {
-    // TODO: Implement share code display
   }
 }

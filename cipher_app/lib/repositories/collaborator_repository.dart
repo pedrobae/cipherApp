@@ -65,13 +65,13 @@ class CollaboratorRepository {
   Future<int> updateCollaboratorRole(
     int playlistId,
     int userId,
-    String instrument,
+    String role,
   ) async {
     final db = await _databaseHelper.database;
 
     return await db.update(
       'user_playlist',
-      {'role': instrument}, // Role field stores the instrument
+      {'role': role}, // Role field stores the instrument
       where: 'playlist_id = ? AND user_id = ?',
       whereArgs: [playlistId, userId],
     );

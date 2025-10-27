@@ -26,11 +26,13 @@ class CollaboratorProvider extends ChangeNotifier {
 
   // Load collaborators for a playlist
   Future<void> loadCollaborators(int playlistId) async {
-    try {
-      _isLoading = true;
-      _error = null;
-      notifyListeners();
+    if (_isLoading) return;
 
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
       final collaborators = await _collaboratorRepository
           .getPlaylistCollaborators(playlistId);
 

@@ -145,6 +145,11 @@ class _JoinPlaylistDialogState extends State<JoinPlaylistDialog> {
       if (kDebugMode) {
         print('Error joining playlist: $e');
       }
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('$e')));
+      }
     }
   }
 }

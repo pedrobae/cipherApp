@@ -1,3 +1,5 @@
+import 'package:cipher_app/providers/auth_provider.dart';
+import 'package:cipher_app/providers/user_provider.dart';
 import 'package:cipher_app/providers/version_provider.dart';
 import 'package:cipher_app/widgets/search_app_bar.dart';
 import 'package:flutter/material.dart';
@@ -49,133 +51,159 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen>
 
   @override
   Widget build(BuildContext context) {
-    final cipherProvider = Provider.of<CipherProvider>(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Scaffold(
-      appBar: widget.selectionMode
-          ? AppBar(
-              title: const Text('Adicionar à Playlist'),
-              backgroundColor: colorScheme.surface,
-            )
-          : null,
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: colorScheme.surfaceContainerHighest,
-          boxShadow: [
-            BoxShadow(
-              color: colorScheme.shadow.withValues(alpha: .3),
-              blurRadius: 2,
-              offset: const Offset(0, -1),
-            ),
-          ],
-        ),
-        child: TabBar(
-          controller: _tabController,
-          tabs: [
-            const Tab(text: 'Local', icon: Icon(Icons.my_library_music)),
-            const Tab(text: 'Cloud', icon: Icon(Icons.cloud)),
-          ],
-        ),
-      ),
-      body: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: kToolbarHeight),
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                LocalCipherList(
-                  onTap: (int versionId, int cipherId) {
-                    if (widget.selectionMode) {
-                      try {
-                        context.read<PlaylistProvider>().addVersionToPlaylist(
-                          widget.playlistId!,
-                          versionId,
-                        );
-                        context.read<VersionProvider>().loadVersionById(
-                          versionId,
-                        );
-                        Navigator.pop(context);
-                      } catch (error) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Erro ao adicionar à playlist: $error',
-                            ),
-                            backgroundColor: Theme.of(
-                              context,
-                            ).colorScheme.error,
-                          ),
-                        );
-                      }
-                    } else {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => CipherViewer(
-                            cipherId: cipherId,
-                            versionId: versionId,
-                          ),
-                        ),
-                      );
-                    }
-                  },
-                ),
-                CloudCipherList(
-                  searchCloudCiphers: _searchCloudCiphers,
-                  changeTab: () {
-                    _tabController.index = 0;
-                  },
-                  openCipher: (int cipherId, int versionId) {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => CipherViewer(
-                          cipherId: cipherId,
-                          versionId: versionId,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: kToolbarHeight,
-            child: SearchAppBar(
-              searchController: _searchController,
-              onSearchChanged: (value) {
-                _tabController.index == 0
-                    ? cipherProvider.searchLocalCiphers(value)
-                    : cipherProvider.searchCachedCloudCiphers(value);
-              },
-              hint: 'Procure Cifras...',
-              title: widget.selectionMode ? 'Adicionar à Playlist' : null,
-            ),
-          ),
-          AnimatedBuilder(
-            animation: _tabController,
-            builder: (context, child) {
-              return _tabController.index == 1
-                  ? Positioned(
-                      right: 0,
-                      top: 3,
-                      child: IconButton(
-                        icon: Icon(
-                          Icons.cloud_download,
-                          color: Theme.of(context).colorScheme.primary,
-                          size: kToolbarHeight / 1.5,
-                        ),
-                        tooltip: 'Procurar na Nuvem',
-                        onPressed: _searchCloudCiphers,
-                      ),
+    return Consumer5<
+      CipherProvider,
+      UserProvider,
+      AuthProvider,
+      PlaylistProvider,
+      VersionProvider
+    >(
+      builder:
+          (
+            context,
+            cipherProvider,
+            userProvider,
+            authProvider,
+            playlistProvider,
+            versionProvider,
+            child,
+          ) {
+            return Scaffold(
+              appBar: widget.selectionMode
+                  ? AppBar(
+                      title: const Text('Adicionar à Playlist'),
+                      backgroundColor: colorScheme.surface,
                     )
-                  : const SizedBox.shrink();
-            },
-          ),
-        ],
-      ),
+                  : null,
+              bottomNavigationBar: Container(
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceContainerHighest,
+                  boxShadow: [
+                    BoxShadow(
+                      color: colorScheme.shadow.withValues(alpha: .3),
+                      blurRadius: 2,
+                      offset: const Offset(0, -1),
+                    ),
+                  ],
+                ),
+                child: TabBar(
+                  controller: _tabController,
+                  tabs: [
+                    const Tab(
+                      text: 'Local',
+                      icon: Icon(Icons.my_library_music),
+                    ),
+                    const Tab(text: 'Cloud', icon: Icon(Icons.cloud)),
+                  ],
+                ),
+              ),
+              body: Stack(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: kToolbarHeight),
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        LocalCipherList(
+                          onTap: (int versionId, int cipherId) {
+                            if (widget.selectionMode) {
+                              try {
+                                playlistProvider.addVersionToPlaylist(
+                                  widget.playlistId!,
+                                  versionId,
+                                  userProvider.getLocalIdByFirebaseId(
+                                    authProvider.id!,
+                                  )!,
+                                );
+                                versionProvider.loadVersionsForPlaylist(
+                                  playlistProvider.currentPlaylist!.items,
+                                );
+                                Navigator.pop(context);
+                              } catch (error) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'Erro ao adicionar à playlist: $error',
+                                    ),
+                                    backgroundColor: Theme.of(
+                                      context,
+                                    ).colorScheme.error,
+                                  ),
+                                );
+                              }
+                            } else {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => CipherViewer(
+                                    cipherId: cipherId,
+                                    versionId: versionId,
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                        CloudCipherList(
+                          searchCloudCiphers: _searchCloudCiphers,
+                          changeTab: () {
+                            _tabController.index = 0;
+                          },
+                          openCipher: (int cipherId, int versionId) {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => CipherViewer(
+                                  cipherId: cipherId,
+                                  versionId: versionId,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: kToolbarHeight,
+                    child: SearchAppBar(
+                      searchController: _searchController,
+                      onSearchChanged: (value) {
+                        _tabController.index == 0
+                            ? cipherProvider.searchLocalCiphers(value)
+                            : cipherProvider.searchCachedCloudCiphers(value);
+                      },
+                      hint: 'Procure Cifras...',
+                      title: widget.selectionMode
+                          ? 'Adicionar à Playlist'
+                          : null,
+                    ),
+                  ),
+                  AnimatedBuilder(
+                    animation: _tabController,
+                    builder: (context, child) {
+                      return _tabController.index == 1
+                          ? Positioned(
+                              right: 0,
+                              top: 3,
+                              child: IconButton(
+                                icon: Icon(
+                                  Icons.cloud_download,
+                                  color: Theme.of(context).colorScheme.primary,
+                                  size: kToolbarHeight / 1.5,
+                                ),
+                                tooltip: 'Procurar na Nuvem',
+                                onPressed: _searchCloudCiphers,
+                              ),
+                            )
+                          : const SizedBox.shrink();
+                    },
+                  ),
+                ],
+              ),
+            );
+          },
     );
   }
 

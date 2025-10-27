@@ -172,7 +172,13 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                       delay: const Duration(milliseconds: 200),
                       key: Key('${item.type}_${item.id}'),
                       index: index,
-                      child: _buildItemWidget(context, item, playlistProvider),
+                      child: _buildItemWidget(
+                        context,
+                        item,
+                        playlistProvider,
+                        userProvider,
+                        authProvider,
+                      ),
                     );
                   },
                 ),
@@ -306,6 +312,8 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
     BuildContext context,
     PlaylistItem item,
     PlaylistProvider playlistProvider,
+    UserProvider userProvider,
+    AuthProvider authProvider,
   ) {
     switch (item.type) {
       case 'cipher_version':
@@ -317,6 +325,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
           onCopy: () => playlistProvider.duplicateVersion(
             widget.playlistId,
             item.contentId!,
+            userProvider.getLocalIdByFirebaseId(authProvider.id!)!,
           ),
         );
       case 'text_section':

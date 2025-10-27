@@ -175,11 +175,12 @@ class PlaylistRepository {
   // ===== VERSION MANAGEMENT =====
   Future<void> addVersionToPlaylist(
     int playlistId,
-    int cipherMapId, {
+    int cipherMapId,
+    int currentUserId, {
     int? includerId,
   }) async {
     final db = await _databaseHelper.database;
-    final effectiveIncluderId = includerId;
+    final effectiveIncluderId = includerId ?? currentUserId;
 
     await db.transaction((txn) async {
       // Get current max position

@@ -290,8 +290,16 @@ class PlaylistProvider extends ChangeNotifier {
   }
 
   // Update a Playlist with a version
-  Future<void> addVersionToPlaylist(int playlistId, int versionId) async {
-    await _playlistRepository.addVersionToPlaylist(playlistId, versionId);
+  Future<void> addVersionToPlaylist(
+    int playlistId,
+    int versionId,
+    int currentUserId,
+  ) async {
+    await _playlistRepository.addVersionToPlaylist(
+      playlistId,
+      versionId,
+      currentUserId,
+    );
 
     // Track added version
     trackChange('versions', playlistId: playlistId);
@@ -367,8 +375,16 @@ class PlaylistProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> duplicateVersion(int playlistId, int versionId) async {
-    await _playlistRepository.addVersionToPlaylist(playlistId, versionId);
+  Future<void> duplicateVersion(
+    int playlistId,
+    int versionId,
+    int currentUserId,
+  ) async {
+    await _playlistRepository.addVersionToPlaylist(
+      playlistId,
+      versionId,
+      currentUserId,
+    );
     await loadPlaylist(playlistId);
   }
 

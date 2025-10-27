@@ -28,21 +28,13 @@ typedef SyncPlaylistFunction = Future<void> Function(PlaylistDto playlistDto);
 
 class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
     with WidgetsBindingObserver {
-  @override
+  bool isSyncing = false;
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         context.read<PlaylistProvider>().loadLocalPlaylists();
-        _syncPlaylists(
-          context.read<PlaylistProvider>(),
-          context.read<CipherProvider>(),
-          context.read<UserProvider>(),
-          context.read<VersionProvider>(),
-          context.read<AuthProvider>(),
-          context.read<CollaboratorProvider>(),
-        );
       }
     });
   }
@@ -76,7 +68,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                     return const Center(child: CircularProgressIndicator());
                   }
                   // Handle cloud loading state
-                  if (playlistProvider.isCloudLoading) {
+                  if (isSyncing) {
                     return Center(
                       child: const Column(
                         spacing: 8,
@@ -94,7 +86,17 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                     return ErrorStateWidget(
                       title: 'Erro ao carregar playlists',
                       message: playlistProvider.error!,
-                      onRetry: () => playlistProvider.loadLocalPlaylists(),
+                      onRetry: () async {
+                        await playlistProvider.loadLocalPlaylists();
+                        await _syncPlaylists(
+                          playlistProvider,
+                          cipherProvider,
+                          userProvider,
+                          versionProvider,
+                          authProvider,
+                          collaboratorProvider,
+                        );
+                      },
                     );
                   }
                   // Handle empty state
@@ -172,6 +174,9 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
     CollaboratorProvider collaboratorProvider,
   ) async {
     try {
+      setState(() {
+        isSyncing = true;
+      });
       await playlistProvider.loadCloudPlaylists(authProvider.id!);
 
       // Copy the list to avoid concurrent modification issues
@@ -215,6 +220,10 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
       }
       // Don't clear cloud playlists if there was a general failure
       rethrow; // Let the UI handle the error
+    } finally {
+      setState(() {
+        isSyncing = false;
+      });
     }
   }
 

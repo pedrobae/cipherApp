@@ -112,7 +112,7 @@ class CipherProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _cloudCiphers = await _cloudCipherRepository.getPopularCiphers();
+      _cloudCiphers = await _cloudCipherRepository.getCipherIndex();
       _lastCloudLoad = now;
       await _cloudCache.saveCloudCiphers(_cloudCiphers);
       await _cloudCache.saveLastCloudLoad(now);
@@ -310,47 +310,6 @@ class CipherProvider extends ChangeNotifier {
     }
   }
 
-  /// Creates a new cipher in the cloud
-  Future<void> createCipherInCloud() async {
-    if (_isSavingToCloud) return;
-
-    _isSavingToCloud = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      final firebaseId = await _cloudCipherRepository.publishCipher(
-        currentCipher,
-      );
-
-      List<Version> updatedVersions = [];
-      for (var ver in currentCipher.versions) {
-        final version = ver.copyWith(firebaseCipherId: firebaseId);
-        await _cloudCipherRepository.createVersionForCipher(version);
-        updatedVersions.add(version);
-      }
-      _currentCipher = _currentCipher.copyWith(
-        firebaseId: firebaseId,
-        versions: updatedVersions,
-      );
-      updateCurrentCipherInList();
-
-      if (kDebugMode) {
-        print('Created cipher in cloud with ID: $firebaseId');
-      }
-
-      await _cipherRepository.updateCipher(_currentCipher);
-    } catch (e) {
-      _error = 'Creating cipher in cloud: ${e.toString()}';
-      if (kDebugMode) {
-        print('Error creating cipher in cloud: $e');
-      }
-    } finally {
-      _isSavingToCloud = false;
-      notifyListeners();
-    }
-  }
-
   /// Downloads cipher from cloud and inserts into local database
   Future<void> downloadFullCipher(CipherDto cipherDTO) async {
     if (_isSaving) {
@@ -394,47 +353,6 @@ class CipherProvider extends ChangeNotifier {
       _isSaving = false;
       notifyListeners();
     }
-  }
-
-  /// Downloads only cipher metadata from cloud and inserts into local database
-  Future<int?> downloadCipherMetadata(String cipherId) async {
-    if (_isSaving) {
-      _error = 'Já está salvando uma cifra, aguarde...';
-      if (kDebugMode) {
-        print('Already saving a cipher, aborting download.');
-      }
-      return null;
-    }
-
-    _isSaving = true;
-    _error = null;
-    int? result;
-    notifyListeners();
-
-    try {
-      final cipherDto = await _cloudCipherRepository.getCipherById(cipherId);
-
-      result = await _cipherRepository.insertPrunedCipher(
-        cipherDto.toDomain([]),
-      );
-
-      // Load the new ID into the cache
-      await loadCipher(result);
-      updateCurrentCipherInList();
-      if (kDebugMode) {
-        print('Downloaded and inserted cipher metadata with local ID: $result');
-      }
-    } catch (e) {
-      _error = 'Downloading and inserting cipher metadata: ${e.toString()}';
-      if (kDebugMode) {
-        result = null;
-        print('Error downloading and inserting cipher metadata: $e');
-      }
-    } finally {
-      _isSaving = false;
-      notifyListeners();
-    }
-    return result;
   }
 
   /// ===== UPDATE =====
@@ -576,19 +494,6 @@ class CipherProvider extends ChangeNotifier {
       _localCiphers.add(_currentCipher);
     }
     _filterCiphers();
-  }
-
-  /// Identify if the cipher exists in the cloud (return wether the cipher isNew on cloud)
-  Future<bool> mergeCipherInCloud() async {
-    if (currentCipher.firebaseId == null) {
-      if (kDebugMode) {
-        print("Cipher doesn't exist in cloud, creating new entry.");
-      }
-      await createCipherInCloud();
-      return true;
-    }
-    await saveCipherInCloud();
-    return false;
   }
 
   /// ===== CIPHER CACHING =====

@@ -333,19 +333,29 @@ class CipherProvider extends ChangeNotifier {
 
     try {
       // Check if cipher exists on the cache
-      final cipherExists = _localCiphers.any(
-        (cachedCipher) => cachedCipher.firebaseId == cipher.firebaseId,
-      );
+      final existingId = _localCiphers
+          .firstWhere(
+            (cachedCipher) => cachedCipher.firebaseId == cipher.firebaseId,
+            orElse: () => Cipher.empty(),
+          )
+          .id;
 
       int cipherId;
-      if (cipherExists) {
-        await _cipherRepository.updateCipher(cipher);
-        cipherId = cipher.id!;
+      if (existingId != null) {
+        await _cipherRepository.updateCipher(cipher.copyWith(id: existingId));
+        cipherId = existingId;
       } else {
         cipherId = await _cipherRepository.insertPrunedCipher(cipher);
       }
+
+      if (kDebugMode) {
+        print(
+          'Upserted cipher with Firebase ID ${cipher.firebaseId} - Existing Cipher ID: $existingId',
+        );
+      }
+
       // Load the upserted cipher into the cache
-      loadCipher(cipherId);
+      await loadCipher(cipherId);
     } catch (e) {
       _error = e.toString();
       if (kDebugMode) {

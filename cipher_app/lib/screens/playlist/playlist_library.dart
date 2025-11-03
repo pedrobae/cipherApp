@@ -147,11 +147,29 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                   );
                 },
               ),
-              floatingActionButton: FloatingActionButton(
-                heroTag: 'add_playlist_fab',
-                onPressed: () =>
-                    _showAddPlaylistActions(context, (test) async {}),
-                child: const Icon(Icons.add),
+              floatingActionButton: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                spacing: 8,
+                children: [
+                  FloatingActionButton(
+                    heroTag: 'syncPlaylists',
+                    onPressed: () => _syncPlaylists(
+                      playlistProvider,
+                      cipherProvider,
+                      userProvider,
+                      versionProvider,
+                      authProvider,
+                      collaboratorProvider,
+                    ),
+                    child: const Icon(Icons.cloud_sync),
+                  ),
+                  FloatingActionButton(
+                    heroTag: 'add_playlist_fab',
+                    onPressed: () =>
+                        _showAddPlaylistActions(context, (test) async {}),
+                    child: const Icon(Icons.add),
+                  ),
+                ],
               ),
             );
           },

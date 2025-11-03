@@ -251,41 +251,21 @@ class LocalCipherRepository {
     return sections;
   }
 
-  Future<int> insertSection(
-    int mapId,
-    String contentType,
-    String contentCode,
-    String contentText,
-    String hexColor,
-  ) async {
+  Future<int> insertSection(Section section) async {
     final db = await _databaseHelper.database;
-    return await db.insert('section', {
-      'version_id': mapId,
-      'content_type': contentType,
-      'content_code': contentCode,
-      'content_text': contentText,
-      'content_color': hexColor,
-    });
+    return await db.insert(
+      'section',
+      section.toSqLite()..['version_id'] = section.versionId,
+    );
   }
 
-  Future<void> updateSection(
-    int mapId,
-    String contentType,
-    String contentCode,
-    String contentText,
-    String hexColor,
-  ) async {
+  Future<void> updateSection(Section section) async {
     final db = await _databaseHelper.database;
     await db.update(
       'section',
-      {
-        'content_type': contentType,
-        'content_code': contentCode,
-        'content_text': contentText,
-        'content_color': hexColor,
-      },
+      section.toSqLite(),
       where: 'version_id = ? AND content_code = ?',
-      whereArgs: [mapId, contentCode],
+      whereArgs: [section.versionId, section.contentCode],
     );
   }
 

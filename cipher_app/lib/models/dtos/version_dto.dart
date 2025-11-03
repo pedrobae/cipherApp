@@ -29,7 +29,7 @@ class VersionDto {
   }) {
     return VersionDto(
       firebaseId: id ?? map['id'] as String? ?? '',
-      firebaseCipherId: cipherId ?? '',
+      firebaseCipherId: cipherId ?? map['cipherId'] as String? ?? '',
       versionName: map['versionName'] as String? ?? '',
       transposedKey: map['transposedKey'] as String? ?? '',
       songStructure:

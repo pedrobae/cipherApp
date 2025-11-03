@@ -53,14 +53,18 @@ class PlaylistDto {
         json['collaborators'] ?? [],
       ),
       shareCode: json['shareCode'] as String,
-      itemOrder: json['itemOrder'] as List<String>? ?? [],
-      textSections: (json['textSections'] as List<Map<String, dynamic>>)
+      itemOrder:
+          (json['itemOrder'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          [],
+      textSections: (json['textSections'] as List<dynamic>)
           .map((section) => TextSectionDto.fromFirestore(section))
           .toList(),
-      versions: (json['versions'] as List<Map<String, dynamic>>)
+      versions: (json['versions'] as List<dynamic>)
           .map((version) => VersionDto.fromFirestore(version))
           .toList(),
-      ciphers: (json['versions'] as List<Map<String, dynamic>>)
+      ciphers: (json['versions'] as List<dynamic>)
           .map((version) => CipherDto.fromFirestore(version))
           .toList(),
     );

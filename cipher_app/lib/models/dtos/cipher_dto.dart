@@ -97,6 +97,7 @@ class CipherDto {
       tags: tags,
       isLocal: false,
       versions: versions,
+      updatedAt: FirestoreTimestampHelper.toDateTime(updatedAt),
     );
   }
 

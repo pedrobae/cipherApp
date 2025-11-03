@@ -218,6 +218,11 @@ class VersionProvider extends ChangeNotifier {
         await _cipherRepository.updateVersion(
           version.copyWith(id: existingVersionId),
         );
+        for (final section in version.sections!.values) {
+          await _cipherRepository.updateSection(
+            section.copyWith(versionId: existingVersionId),
+          );
+        }
         if (kDebugMode) {
           print('Updated existing version with id: $existingVersionId');
         }
@@ -226,6 +231,11 @@ class VersionProvider extends ChangeNotifier {
         final newVersionId = await _cipherRepository.insertVersionToCipher(
           version,
         );
+        for (final section in version.sections!.values) {
+          await _cipherRepository.insertSection(
+            section.copyWith(versionId: newVersionId),
+          );
+        }
         if (kDebugMode) {
           print('Inserted new version with id: $newVersionId');
         }
@@ -530,14 +540,7 @@ class VersionProvider extends ChangeNotifier {
       // Insert new content
       for (final entry in sections.entries) {
         if (entry.key.isNotEmpty) {
-          final sectionJson = entry.value.toSqLite();
-          await _cipherRepository.insertSection(
-            versionId,
-            sectionJson['content_type'],
-            sectionJson['content_code'],
-            sectionJson['content_text'],
-            sectionJson['color'],
-          );
+          await _cipherRepository.insertSection(entry.value);
         }
       }
     }

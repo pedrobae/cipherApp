@@ -228,7 +228,6 @@ class PlaylistRepository {
       await txn.insert('playlist_version', {
         'version_id': cipherMapId,
         'playlist_id': playlistId,
-        'includer_id': includerId,
         'position': position,
         'included_at': DateTime.now().toIso8601String(),
       });

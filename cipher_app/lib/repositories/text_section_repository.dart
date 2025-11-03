@@ -22,10 +22,8 @@ class TextSectionRepository {
     String title,
     String content,
     int position,
-    int? includerId,
   ) async {
     final db = await _databaseHelper.database;
-    final effectiveIncluderId = includerId ?? _currentUserId ?? 1;
 
     return await db.insert('playlist_text', {
       'playlist_id': playlistId,
@@ -33,7 +31,6 @@ class TextSectionRepository {
       'title': title,
       'content': content,
       'position': position,
-      'added_by': effectiveIncluderId,
     });
   }
 

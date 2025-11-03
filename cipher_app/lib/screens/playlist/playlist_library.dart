@@ -260,11 +260,11 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
         playlistDto.toDomain([], ownerId!),
       );
 
-      /// Upsert relationship tables (TextSections, PlaylistVersions)
+      /// Upsert relationship tables (TextSections, PlaylistVersions, collaborators)
       for (int index = 0; index < playlistDto.itemOrder.length; index++) {
         final typeId = playlistDto.itemOrder[index].split(':');
 
-        if (typeId[0] == 'textSection') {
+        if (typeId[0] == 't') {
           // Upsert TextSection and build PlaylistItem
           final textSectionDto = playlistDto.textSections.firstWhere(
             (section) => section.firebaseId == typeId[1],
@@ -279,11 +279,10 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                 title: textSectionDto.title,
                 firebaseId: textSectionDto.firebaseId!,
                 id: -1, // Temporary ID, will be set in upsert
-                includerId: ownerId,
               ),
             );
           }
-        } else if (typeId[0] == 'version') {
+        } else if (typeId[0] == 'v') {
           // Link Version to Playlist
           final versionId = await versionProvider.getLocalIdByFirebaseId(
             typeId[1],

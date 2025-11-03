@@ -132,7 +132,6 @@ class TextSectionProvider extends ChangeNotifier {
         textSection.title,
         textSection.contentText,
         textSection.position,
-        textSection.includerId,
       );
       await loadTextSection(id, forceReload: true);
 
@@ -167,7 +166,6 @@ class TextSectionProvider extends ChangeNotifier {
           textSection.title,
           textSection.contentText,
           textSection.position,
-          textSection.includerId,
         );
       } else {
         // Update existing

@@ -28,6 +28,8 @@ dependencies:
   firebase_analytics: ^12.0.2
   google_sign_in: ^6.2.1
   cloud_functions: ^6.0.3
+  file_picker: ^8.1.4        # Seleção de arquivos
+  pdf_text: ^0.3.0           # Extração de texto de PDF
 
 dev_dependencies:
   flutter_test:

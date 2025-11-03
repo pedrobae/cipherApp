@@ -1,5 +1,6 @@
 import 'package:cipher_app/models/domain/playlist/playlist.dart';
 import 'package:cipher_app/models/domain/playlist/playlist_item.dart';
+import 'package:cipher_app/models/dtos/cipher_dto.dart';
 import 'package:cipher_app/models/dtos/version_dto.dart';
 import 'package:cipher_app/models/dtos/text_section_dto.dart';
 import 'package:cipher_app/helpers/firestore_timestamp_helper.dart';
@@ -18,6 +19,7 @@ class PlaylistDto {
   final List<String> itemOrder;
   final List<TextSectionDto> textSections;
   final List<VersionDto> versions;
+  final List<CipherDto> ciphers;
 
   const PlaylistDto({
     this.firebaseId,
@@ -32,6 +34,7 @@ class PlaylistDto {
     this.itemOrder = const [],
     this.textSections = const [],
     this.versions = const [],
+    this.ciphers = const [],
   });
 
   factory PlaylistDto.fromFirestore(Map<String, dynamic> json, String id) {
@@ -56,6 +59,9 @@ class PlaylistDto {
           .toList(),
       versions: (json['versions'] as List<Map<String, dynamic>>)
           .map((version) => VersionDto.fromFirestore(version))
+          .toList(),
+      ciphers: (json['versions'] as List<Map<String, dynamic>>)
+          .map((version) => CipherDto.fromFirestore(version))
           .toList(),
     );
   }

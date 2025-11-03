@@ -33,8 +33,10 @@ class CloudCipherRepository {
     List<CipherDto> ciphers =
         ((snapshot!.data() as Map<String, dynamic>)['ciphers'] as List)
             .map<CipherDto>(
-              (map) =>
-                  CipherDto.fromFirestore(map, map['firebaseId'] as String),
+              (map) => CipherDto.fromFirestore(
+                map,
+                documentId: map['firebaseId'] as String,
+              ),
             )
             .toList();
 

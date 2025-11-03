@@ -27,12 +27,18 @@ class CipherDto {
     this.downloadCount,
   });
 
-  factory CipherDto.fromFirestore(Map<String, dynamic> map, String documentId) {
+  factory CipherDto.fromFirestore(
+    Map<String, dynamic> map, {
+    String?
+    documentId, // Optional, when not provided, the map comes from the a version nested on a playlist
+  }) {
     return CipherDto(
-      firebaseId: documentId,
+      firebaseId: documentId ?? map['cipherId'] as String?,
       title: map['title'] as String? ?? '',
       author: map['author'] as String? ?? '',
-      musicKey: map['musicKey'] as String? ?? '',
+      musicKey: documentId == null
+          ? map['musicKey'] as String? ?? ''
+          : map['originalKey'] as String? ?? '',
       tempo: map['tempo'] as String? ?? '',
       language: map['language'] as String? ?? '',
       tags: (map['tags'] is String)
@@ -42,7 +48,6 @@ class CipherDto {
                 .toList()
           : (map['tags'] as List?)?.cast<String>() ?? [],
       updatedAt: FirestoreTimestampHelper.toDateTime(map['updatedAt']),
-      downloadCount: map['downloadCount'] as int?,
     );
   }
 

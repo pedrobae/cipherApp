@@ -216,7 +216,9 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
       );
 
       /// Upsert Ciphers
-      await cipherProvider.upsertCiphers(playlistDto);
+      for (final cipherDto in playlistDto.ciphers) {
+        await cipherProvider.upsertCipher(cipherDto.toDomain([]));
+      }
 
       /// Upsert Versions
 

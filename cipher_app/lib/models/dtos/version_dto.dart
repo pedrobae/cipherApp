@@ -61,7 +61,7 @@ class VersionDto {
     };
   }
 
-  Version toDomain() {
+  Version toDomain({int? cipherId}) {
     return Version(
       firebaseId: firebaseId,
       firebaseCipherId: firebaseCipherId,
@@ -73,7 +73,7 @@ class VersionDto {
         (sectionsCode, section) =>
             MapEntry(sectionsCode, Section.fromFirestore(section)),
       ),
-      cipherId: 0,
+      cipherId: cipherId ?? 0,
     );
   }
 }

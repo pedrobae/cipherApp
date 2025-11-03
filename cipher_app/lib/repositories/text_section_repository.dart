@@ -118,6 +118,21 @@ class TextSectionRepository {
     return null;
   }
 
+  Future<TextSection?> getTextSectionByFirebaseId(String firebaseId) async {
+    final db = await _databaseHelper.database;
+
+    final results = await db.query(
+      'playlist_text',
+      where: 'firebase_id = ?',
+      whereArgs: [firebaseId],
+    );
+
+    if (results.isNotEmpty) {
+      return TextSection.fromJson(results.first);
+    }
+    return null;
+  }
+
   Future<Map<int, TextSection>> getTextSections(List<int> ids) async {
     final db = await _databaseHelper.database;
     Map<int, TextSection> textSections = {};

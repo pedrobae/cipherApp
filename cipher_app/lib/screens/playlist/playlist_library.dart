@@ -1,19 +1,21 @@
-import 'package:cipher_app/models/dtos/playlist_dto.dart';
-import 'package:cipher_app/providers/collaborator_provider.dart';
-import 'package:cipher_app/widgets/playlist/join_playlist_dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cipher_app/models/domain/playlist/playlist.dart';
+import 'package:cipher_app/models/domain/playlist/playlist_text_section.dart';
+import 'package:cipher_app/models/dtos/playlist_dto.dart';
+import 'package:cipher_app/providers/collaborator_provider.dart';
+import 'package:cipher_app/providers/text_section_provider.dart';
 import 'package:cipher_app/providers/cipher_provider.dart';
 import 'package:cipher_app/providers/user_provider.dart';
 import 'package:cipher_app/providers/version_provider.dart';
 import 'package:cipher_app/providers/playlist_provider.dart';
 import 'package:cipher_app/providers/auth_provider.dart';
 import 'package:cipher_app/screens/playlist/playlist_viewer.dart';
-import 'package:cipher_app/models/domain/playlist/playlist.dart';
 import 'package:cipher_app/widgets/dialogs/create_playlist_dialog.dart';
 import 'package:cipher_app/widgets/dialogs/delete_playlist_dialog.dart';
 import 'package:cipher_app/widgets/playlist/playlist_card.dart';
+import 'package:cipher_app/widgets/playlist/join_playlist_dialog.dart';
 import 'package:cipher_app/widgets/states/error_state_widget.dart';
 import 'package:cipher_app/widgets/states/empty_state_widget.dart';
 
@@ -171,7 +173,15 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
       final playlistsToSync = playlistProvider.cloudPlaylists.toList();
 
       for (final playlistDto in playlistsToSync) {
-        // TODO SYNC PLAYLIST - NOW WITH NESTED VERSIONS
+        await _syncPlaylist(
+          playlistDto,
+          playlistProvider,
+          cipherProvider,
+          userProvider,
+          versionProvider,
+          authProvider,
+          collaboratorProvider,
+        );
       }
 
       // Clear cloud playlists only after successful processing
@@ -187,10 +197,6 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
       }
       // Don't clear cloud playlists if there was a general failure
       rethrow; // Let the UI handle the error
-    } finally {
-      setState(() {
-        isSyncing = false;
-      });
     }
   }
 
@@ -214,6 +220,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
             .map((collaborator) => collaborator['id'] as String)
             .toList(),
       );
+      final ownerId = userProvider.getLocalIdByFirebaseId(playlistDto.ownerId);
 
       /// Upsert Ciphers
       for (final cipherDto in playlistDto.ciphers) {
@@ -221,10 +228,57 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
       }
 
       /// Upsert Versions
+      for (final versionDto in playlistDto.versions) {
+        final existingCipherId = cipherProvider.getCachedCipherIdByFirebaseId(
+          versionDto.firebaseCipherId!,
+        );
+        await versionProvider.upsertVersion(
+          versionDto.toDomain(cipherId: existingCipherId),
+        );
+      }
 
-      /// Upsert TextSections
+      /// Upsert Playlist
+      final playlistId = await playlistProvider.upsertPlaylist(
+        playlistDto.toDomain([], ownerId!),
+      );
 
-      /// Build PlaylistItem list (for relationship tables) and Upsert Playlist
+      /// Upsert relationship tables (TextSections, PlaylistVersions)
+      for (int index = 0; index < playlistDto.itemOrder.length; index++) {
+        final typeId = playlistDto.itemOrder[index].split(':');
+
+        if (typeId[0] == 'textSection') {
+          // Upsert TextSection and build PlaylistItem
+          final textSectionDto = playlistDto.textSections.firstWhere(
+            (section) => section.firebaseId == typeId[1],
+          );
+
+          if (mounted) {
+            context.read<TextSectionProvider>().upsertTextSection(
+              TextSection(
+                contentText: textSectionDto.content,
+                playlistId: playlistId,
+                position: index,
+                title: textSectionDto.title,
+                firebaseId: textSectionDto.firebaseId!,
+                id: -1, // Temporary ID, will be set in upsert
+                includerId: ownerId,
+              ),
+            );
+          }
+        } else if (typeId[0] == 'version') {
+          // Link Version to Playlist
+          final versionId = await versionProvider.getLocalIdByFirebaseId(
+            typeId[1],
+          );
+
+          playlistProvider.upsertVersionOnPlaylist(
+            playlistId,
+            versionId!,
+            index,
+            null,
+          );
+        }
+      }
     } catch (e) {
       if (kDebugMode) {
         print('Error syncing playlist: $e');

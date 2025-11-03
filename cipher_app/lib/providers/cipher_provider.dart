@@ -57,6 +57,15 @@ class CipherProvider extends ChangeNotifier {
 
   String? get error => _error;
 
+  int? getCachedCipherIdByFirebaseId(String firebaseId) {
+    return _localCiphers
+        .firstWhere(
+          (cipher) => cipher.firebaseId == firebaseId,
+          orElse: () => Cipher.empty(),
+        )
+        .id;
+  }
+
   /// ===== READ =====
   // Load all ciphers (local and cloud)
   Future<void> loadCiphers({bool forceReload = false}) async {

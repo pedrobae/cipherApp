@@ -198,8 +198,50 @@ class VersionProvider extends ChangeNotifier {
     }
   }
 
-  /// ===== UPDATE - update cipher version =====
+  // ===== UPSERT =====
+  /// Upsert a version into local db (add or update)
+  Future<void> upsertVersion(Version version) async {
+    if (_isSaving) return;
 
+    _isSaving = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      // Check if version exists by its firebaseId
+      final existingVersionId = await getLocalIdByFirebaseId(
+        version.firebaseId!,
+      );
+
+      if (existingVersionId != null) {
+        // Update existing version
+        await _cipherRepository.updateVersion(
+          version.copyWith(id: existingVersionId),
+        );
+        if (kDebugMode) {
+          print('Updated existing version with id: $existingVersionId');
+        }
+      } else {
+        // Insert new version
+        final newVersionId = await _cipherRepository.insertVersionToCipher(
+          version,
+        );
+        if (kDebugMode) {
+          print('Inserted new version with id: $newVersionId');
+        }
+      }
+    } catch (e) {
+      _error = e.toString();
+      if (kDebugMode) {
+        print('Error upserting cipher version: $e');
+      }
+    } finally {
+      _isSaving = false;
+      notifyListeners();
+    }
+  }
+
+  // ===== UPDATE - update cipher version =====
   /// Updates a version in the local database (nothing to do with cache)
   Future<void> updateVersion(Version version) async {
     if (_isSaving) return;

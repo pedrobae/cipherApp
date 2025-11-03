@@ -86,6 +86,20 @@ class TextSectionProvider extends ChangeNotifier {
     return textSection?.firebaseId;
   }
 
+  Future<int?> getLocalIdByFirebaseId(String firebaseId) async {
+    // Check cache first
+    for (final entry in _textSections.entries) {
+      if (entry.value.firebaseId == firebaseId) {
+        return entry.key;
+      }
+    }
+    // Not in cache, query repository
+    final textSection = await _textSectionRepo.getTextSectionByFirebaseId(
+      firebaseId,
+    );
+    return textSection?.id;
+  }
+
   Future<TextSection?> getTextSectionById(int id) async {
     // Check cache first
     if (_textSections.containsKey(id)) {
@@ -124,6 +138,48 @@ class TextSectionProvider extends ChangeNotifier {
 
       // Notify that playlist needs refresh due to item adjustments
       onPlaylistRefreshNeeded?.call();
+    } catch (e) {
+      _error = e.toString();
+      rethrow;
+    } finally {
+      _isSaving = false;
+      notifyListeners();
+    }
+  }
+
+  /// Upserts a Text Section (create or update)
+  Future<void> upsertTextSection(TextSection textSection) async {
+    if (_isSaving) return;
+
+    _isSaving = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      // Check if exists
+      final localId = await getLocalIdByFirebaseId(textSection.firebaseId!);
+
+      if (localId == null) {
+        // Create new
+        await _textSectionRepo.createPlaylistText(
+          textSection.playlistId,
+          textSection.firebaseId,
+          textSection.title,
+          textSection.contentText,
+          textSection.position,
+          textSection.includerId,
+        );
+      } else {
+        // Update existing
+        await _textSectionRepo.updatePlaylistText(
+          localId,
+          title: textSection.title,
+          content: textSection.contentText,
+          position: textSection.position,
+        );
+      }
+
+      await loadTextSection(textSection.id!, forceReload: true);
     } catch (e) {
       _error = e.toString();
       rethrow;

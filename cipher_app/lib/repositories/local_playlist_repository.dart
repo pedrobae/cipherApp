@@ -117,7 +117,7 @@ class PlaylistRepository {
     );
   }
 
-  // Upsert playlist - Universal compatibility (works on all Android/iOS versions)
+  // Upsert playlist
   Future<int> upsertPlaylist(Playlist playlist) async {
     final db = await _databaseHelper.database;
 

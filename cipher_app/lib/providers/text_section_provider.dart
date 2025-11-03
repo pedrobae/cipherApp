@@ -1,5 +1,5 @@
 import 'package:cipher_app/models/domain/playlist/playlist_text_section.dart';
-import 'package:cipher_app/models/dtos/playlist_item_dto.dart';
+import 'package:cipher_app/models/dtos/text_section_dto.dart';
 import 'package:cipher_app/repositories/text_section_repository.dart';
 import 'package:cipher_app/repositories/cloud_playlist_repository.dart';
 import 'package:flutter/foundation.dart';
@@ -130,21 +130,6 @@ class TextSectionProvider extends ChangeNotifier {
     } finally {
       _isSaving = false;
       notifyListeners();
-    }
-  }
-
-  Future<String?> publishTextSection(TextSectionDto textSectionDto) async {
-    try {
-      final firebaseId = await _cloudPlaylistRepository.publishTextSection(
-        textSectionDto,
-      );
-      return firebaseId;
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error publishing text section: $e');
-      }
-      _error = e.toString();
-      return null;
     }
   }
 

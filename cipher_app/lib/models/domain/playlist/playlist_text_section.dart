@@ -1,4 +1,4 @@
-import 'package:cipher_app/models/dtos/playlist_item_dto.dart';
+import 'package:cipher_app/models/dtos/text_section_dto.dart';
 
 class TextSection {
   final int? id;

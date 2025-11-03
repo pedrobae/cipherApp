@@ -15,7 +15,6 @@ class VersionProvider extends ChangeNotifier {
   List<Version> _versions = [];
   Version _currentVersion = Version.empty();
   bool _isLoading = false;
-  bool _isLoadingCloud = false;
   bool _isSaving = false;
   String? _error;
 
@@ -24,7 +23,6 @@ class VersionProvider extends ChangeNotifier {
   List<Version> get versions => _versions;
   Version get currentVersion => _currentVersion;
   bool get isLoading => _isLoading;
-  bool get isLoadingCloud => _isLoadingCloud;
   bool get isSaving => _isSaving;
   String? get error => _error;
 
@@ -50,22 +48,6 @@ class VersionProvider extends ChangeNotifier {
     // Not in cache, query repository
     final version = await _cipherRepository.getVersionWithId(localId);
     return '${version?.firebaseCipherId}:${version?.firebaseId}';
-  }
-
-  /// Downloads a version from Firebase by its Firebase ID - CHANGE 20/10 doesn't save locally anymore
-  Future<Version?> downloadVersion(
-    String cipherCloudId,
-    String versionCloudId,
-  ) async {
-    final versionDto = await _cloudCipherRepository.getVersionById(
-      cipherCloudId,
-      versionCloudId,
-    );
-    if (versionDto != null) {
-      final version = versionDto.toDomain();
-      return version;
-    }
-    return null;
   }
 
   /// ===== CREATE - new version to an existing cipher =====

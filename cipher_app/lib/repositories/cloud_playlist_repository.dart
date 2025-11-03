@@ -1,6 +1,6 @@
 import 'package:cipher_app/helpers/guard.dart';
 import 'package:cipher_app/models/dtos/playlist_dto.dart';
-import 'package:cipher_app/models/dtos/playlist_item_dto.dart';
+import 'package:cipher_app/models/dtos/text_section_dto.dart';
 import 'package:cipher_app/services/firestore_service.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
@@ -43,25 +43,6 @@ class CloudPlaylistRepository {
     });
   }
 
-  /// Publish a new text section to Firestore
-  Future<String> publishTextSection(TextSectionDto textSectionDto) async {
-    return await _withErrorHandling('publish text section', () async {
-      await _guardHelper.requireAuth();
-
-      final docId = await _firestoreService.createDocument(
-        collectionPath: 'textSections',
-        data: textSectionDto.toFirestore()..remove('firebaseId'),
-      );
-
-      await FirebaseAnalytics.instance.logEvent(
-        name: 'created_text_section',
-        parameters: {'textSectionId': docId},
-      );
-
-      return docId;
-    });
-  }
-
   // ===== READ =====
   /// Fetch playlists of a specific user ID
   Future<List<PlaylistDto>> fetchPlaylistsByUserId(String userId) async {
@@ -97,24 +78,6 @@ class CloudPlaylistRepository {
       }
 
       return PlaylistDto.fromFirestore(
-        docSnapshot.data() as Map<String, dynamic>,
-        docSnapshot.id,
-      );
-    });
-  }
-
-  Future<TextSectionDto?> fetchTextSectionById(String firebaseTextId) async {
-    return await _withErrorHandling('fetch text section by ID', () async {
-      final docSnapshot = await _firestoreService.fetchDocumentById(
-        collectionPath: 'textSections',
-        documentId: firebaseTextId,
-      );
-
-      if (docSnapshot == null || !docSnapshot.exists) {
-        return null;
-      }
-
-      return TextSectionDto.fromFirestore(
         docSnapshot.data() as Map<String, dynamic>,
         docSnapshot.id,
       );

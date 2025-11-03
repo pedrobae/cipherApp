@@ -120,7 +120,7 @@ class CipherProvider extends ChangeNotifier {
 
       if (kDebugMode) {
         print(
-          'LOADED ${_cloudCiphers.length} POPULAR CIPHERS FROM FIRESTORE - $_lastCloudLoad',
+          'LOADED ${_cloudCiphers.length} PUBLIC CIPHERS FROM FIRESTORE - $_lastCloudLoad',
         );
       }
     } catch (e) {
@@ -190,48 +190,6 @@ class CipherProvider extends ChangeNotifier {
     _searchTerm = term.toLowerCase();
     _filterCloudCiphers();
     notifyListeners();
-  }
-
-  Future<void> searchCloudCiphers(String term) async {
-    if (term == '') {
-      _filteredCloudCiphers = List.from(cloudCiphers);
-      notifyListeners();
-      return;
-    }
-
-    if (_isLoadingCloud) return;
-
-    _isLoadingCloud = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      final queriedCiphers =
-          (await _cloudCipherRepository.searchCiphers(term)) ?? [];
-
-      for (var cipher in queriedCiphers) {
-        if (!_cloudCiphers.any((c) => c.firebaseId == cipher.firebaseId)) {
-          _cloudCiphers.add(cipher);
-        }
-      }
-      _filterCloudCiphers();
-
-      if (kDebugMode) {
-        print('QUERIED CLOUD CIPHERS FOR "$term" - ${queriedCiphers.length}');
-      }
-
-      if (queriedCiphers.isEmpty) {
-        _error = 'Nenhuma cifra encontrada na nuvem para "$term"';
-      }
-    } catch (e) {
-      _error = e.toString();
-      if (kDebugMode) {
-        print('Error searching cloud ciphers: $e');
-      }
-    } finally {
-      _isLoadingCloud = false;
-      notifyListeners();
-    }
   }
 
   void _filterCiphers() {

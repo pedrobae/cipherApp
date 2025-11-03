@@ -197,7 +197,7 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen>
   }
 
   void _searchCloudCiphers() {
-    _cipherProvider.searchCloudCiphers(_searchController.text);
+    _cipherProvider.searchCachedCloudCiphers(_searchController.text);
   }
 
   void onTapCipherVersion(

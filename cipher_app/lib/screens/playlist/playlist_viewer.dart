@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:cipher_app/models/dtos/playlist_item_dto.dart';
+import 'package:cipher_app/models/dtos/text_section_dto.dart';
+import 'package:cipher_app/models/dtos/version_dto.dart';
 import 'package:cipher_app/providers/text_section_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -451,69 +452,42 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
 
     List<Map<String, dynamic>> collaborators = [];
     for (final fullCollab in fullCollaborators) {
-      collaborators.add({'id': ownerFirebaseId, 'role': fullCollab.role});
+      collaborators.add({
+        'id': userProvider.getFirebaseIdByLocalId(fullCollab.userId),
+        'role': fullCollab.role,
+      });
     }
 
-    List<PlaylistItemDto> items = [];
+    List<VersionDto> versions = [];
+    List<TextSectionDto> textSections = [];
     for (final item in playlist.items) {
-      if (item.firebaseContentId == null) {
-        // Gets the Firebase Ids of the items
-        if (item.type == 'cipher_version') {
-          final itemContentFirebaseId = await versionProvider
-              .getFirebaseIdByLocalId(item.contentId!);
-
-          if (itemContentFirebaseId == null) {
-            // The version does not exist remotely yet, cannot publish
-            if (kDebugMode) {
-              print(
-                'Cannot publish playlist because version ${item.contentId} does not exist remotely.',
-              );
-            }
-            // Show error message and abort
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Não é possível publicar a playlist porque a versão ${item.contentId} não existe remotamente.',
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onError,
-                    ),
-                  ),
-                  backgroundColor: Colors.red,
-                ),
-              );
-            }
-          } else {
-            item.firebaseContentId = itemContentFirebaseId;
+      switch (item.type) {
+        case 'cipher_version':
+          final version = versionProvider.getCachedVersion(item.contentId!);
+          if (version != null) {
+            versions.add(version.toDto());
           }
-        } else if (item.type == 'text_section') {
-          // Create the text section in Firestore and get its Firebase ID
-          String? textSectionFirebaseId = await textSectionProvider
-              .getFirebaseIdByLocalId(item.contentId!);
-
-          if (textSectionFirebaseId == null) {
-            // The text section does not exist remotely yet, create it
-            final textSection = await textSectionProvider.getTextSectionById(
-              item.contentId!,
-            );
-            if (textSection != null) {
-              final newFirebaseId = await textSectionProvider
-                  .publishTextSection(textSection.toDto());
-              textSectionFirebaseId = newFirebaseId;
-            }
+          break;
+        case 'text_section':
+          final textSection = await textSectionProvider.getTextSectionById(
+            item.contentId!,
+          );
+          if (textSection != null) {
+            textSections.add(textSection.toDto());
           }
-          item.firebaseContentId = textSectionFirebaseId;
-        } else {
-          if (kDebugMode) {
-            print('Unknown item type: ${item.type}');
-          }
-          continue;
-        }
+          break;
+        default:
+          // Unknown type, skip
+          break;
       }
-      items.add(item.toDto(ownerFirebaseId));
     }
 
-    final playlistDto = playlist.toDto(ownerFirebaseId, collaborators, items);
+    final playlistDto = playlist.toDto(
+      ownerFirebaseId,
+      collaborators,
+      versions,
+      textSections,
+    );
 
     if (playlist.firebaseId == null) {
       if (kDebugMode) {

@@ -1,9 +1,10 @@
 // ignore_for_file: avoid_print
 
 import 'package:cipher_app/models/dtos/playlist_dto.dart';
-import 'package:cipher_app/models/dtos/playlist_item_dto.dart';
+import 'package:cipher_app/models/dtos/text_section_dto.dart';
 import 'package:cipher_app/helpers/codes.dart';
 import 'package:cipher_app/helpers/datetime.dart';
+import 'package:cipher_app/models/dtos/version_dto.dart';
 import 'playlist_item.dart';
 
 class Playlist {
@@ -93,7 +94,8 @@ class Playlist {
   PlaylistDto toDto(
     String ownerFirebaseId,
     List<Map<String, dynamic>> collaborators,
-    List<PlaylistItemDto> items,
+    List<VersionDto> versions,
+    List<TextSectionDto> textSections,
   ) {
     return PlaylistDto(
       firebaseId: firebaseId,
@@ -105,7 +107,13 @@ class Playlist {
       createdAt: createdAt ?? DateTime.now(),
       collaborators: collaborators,
       shareCode: shareCode!,
-      items: items,
+      itemOrder: items
+          .map(
+            (item) => '${item.type == 'cipher_version' ? 'v' : 't'}:${item.id}',
+          )
+          .toList(),
+      versions: versions,
+      textSections: textSections,
     );
   }
 

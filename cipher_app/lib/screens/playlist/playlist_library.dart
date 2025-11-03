@@ -29,6 +29,7 @@ typedef SyncPlaylistFunction = Future<void> Function(PlaylistDto playlistDto);
 class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
     with WidgetsBindingObserver {
   bool isSyncing = false;
+
   @override
   void initState() {
     super.initState();
@@ -186,6 +187,46 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
       }
       // Don't clear cloud playlists if there was a general failure
       rethrow; // Let the UI handle the error
+    } finally {
+      setState(() {
+        isSyncing = false;
+      });
+    }
+  }
+
+  Future<void> _syncPlaylist(
+    PlaylistDto playlistDto,
+    PlaylistProvider playlistProvider,
+    CipherProvider cipherProvider,
+    UserProvider userProvider,
+    VersionProvider versionProvider,
+    AuthProvider authProvider,
+    CollaboratorProvider collaboratorProvider,
+  ) async {
+    try {
+      setState(() {
+        isSyncing = true;
+      });
+
+      /// Ensure User Exists (download if necessary)
+      await userProvider.ensureUsersExist(
+        playlistDto.collaborators
+            .map((collaborator) => collaborator['id'] as String)
+            .toList(),
+      );
+
+      /// Upsert Ciphers
+      await cipherProvider.upsertCiphers(playlistDto);
+
+      /// Upsert Versions
+
+      /// Upsert TextSections
+
+      /// Build PlaylistItem list (for relationship tables) and Upsert Playlist
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error syncing playlist: $e');
+      }
     } finally {
       setState(() {
         isSyncing = false;

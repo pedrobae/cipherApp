@@ -48,6 +48,7 @@ class LocalCipherRepository {
     return results.first['id'] as int?;
   }
 
+  /// Insert a pruned cipher (without versions, with tags)
   Future<int> insertPrunedCipher(Cipher cipher) async {
     final db = await _databaseHelper.database;
 
@@ -65,6 +66,7 @@ class LocalCipherRepository {
     });
   }
 
+  /// Inserts a whole cipher with versions and sections
   Future<int> insertWholeCipher(Cipher cipher) async {
     final db = await _databaseHelper.database;
 

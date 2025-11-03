@@ -313,6 +313,43 @@ class CipherProvider extends ChangeNotifier {
     }
   }
 
+  // ===== UPSERT =====
+  /// Upsert a cipher into the database used when syncing a playlist
+  Future<void> upsertCipher(Cipher cipher) async {
+    if (_isSaving) return;
+
+    _isSaving = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      // Check if cipher exists on the cache
+      final cipherExists = _localCiphers.any(
+        (cachedCipher) => cachedCipher.firebaseId == cipher.firebaseId,
+      );
+
+      int cipherId;
+      if (cipherExists) {
+        await _cipherRepository.updateCipher(cipher);
+        cipherId = cipher.id!;
+      } else {
+        cipherId = await _cipherRepository.insertPrunedCipher(cipher);
+      }
+      // Load the upserted cipher into the cache
+      loadCipher(cipherId);
+    } catch (e) {
+      _error = e.toString();
+      if (kDebugMode) {
+        print('Error upserting cipher: $e');
+      }
+    } finally {
+      _isSaving = false;
+      // Reload manually to ensure UI reflects all changes
+      updateCurrentCipherInList();
+      notifyListeners();
+    }
+  }
+
   /// ===== UPDATE =====
   // Save current cipher changes to database
   Future<void> saveCipher() async {

@@ -37,13 +37,13 @@
   - Campos: `suggestedCode`, `suggestedType`, `chordProContent`, `suggestedColor`
 
 ### 1.3 Adicionar Dependências
-- [ ] **Adicionar** ao `pubspec.yaml`:
+- [x] **Adicionar** ao `pubspec.yaml`:
   ```yaml
   dependencies:
-    file_picker: ^8.1.4        # Seleção de arquivos
-    pdf_text: ^0.3.0           # Extração de texto de PDF
-    image_picker: ^1.1.2       # Seleção de imagens (Fase 3)
-    google_mlkit_text_recognition: ^0.13.1  # OCR (Fase 3)
+    file_picker: ^8.1.4                  # Seleção de arquivos
+    syncfusion_flutter_pdf: ^28.1.33     # Extração de texto de PDF (null-safe)
+    image_picker: ^1.1.2                 # Seleção de imagens (Fase 5)
+    google_mlkit_text_recognition: ^0.13.1  # OCR (Fase 5)
   ```
 - [ ] **Executar** `flutter pub get`
 
@@ -192,12 +192,21 @@ Usuario revisa/edita seções no editor normal
 ### 4.1 Implementar PDFImportService
 - [ ] **Implementar** `PDFImportService.importFromPDF()`
   - Usa `file_picker` para seleção de arquivo
-  - Usa `pdf_text` para extração de texto
+  - Usa `syncfusion_flutter_pdf` para extração de texto:
+    ```dart
+    import 'package:syncfusion_flutter_pdf/pdf.dart';
+    
+    Future<String> extractTextFromPDF(String filePath) async {
+      final PdfDocument document = PdfDocument(inputBytes: File(filePath).readAsBytesSync());
+      final String text = PdfTextExtractor(document).extractText();
+      document.dispose();
+      return text;
+    }
+    ```
   - Retorna `ImportResult` com texto extraído
-- [ ] **Criar** `lib/screens/cipher/import_pdf_screen.dart`
-  - Botão "Selecionar PDF"
-  - Preview do PDF (opcional)
-  - Botão "Processar PDF" → chama parser → navegação para preview
+- [ ] **Criar** dialog ou método inline para seleção de PDF
+  - Integra com `ImportMethodDialog`
+  - Extrai texto e passa para parser
 
 ### 4.2 Lidar com Formatação de PDF
 - [ ] **Implementar** limpeza de texto de PDF

@@ -117,7 +117,7 @@ class PlaylistRepository {
     );
   }
 
-  // Upsert playlist - Universal compatibility (works on all Android/iOS versions)
+  // Upsert playlist
   Future<int> upsertPlaylist(Playlist playlist) async {
     final db = await _databaseHelper.database;
 
@@ -228,7 +228,6 @@ class PlaylistRepository {
       await txn.insert('playlist_version', {
         'version_id': cipherMapId,
         'playlist_id': playlistId,
-        'includer_id': includerId,
         'position': position,
         'included_at': DateTime.now().toIso8601String(),
       });

@@ -1,3 +1,4 @@
+import 'package:cipher_app/providers/text_section_provider.dart';
 import 'package:cipher_app/providers/user_provider.dart';
 import 'package:cipher_app/providers/version_provider.dart';
 import 'package:cipher_app/utils/app_theme.dart';
@@ -280,6 +281,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context.read<InfoProvider>().clearCache();
       context.read<VersionProvider>().clearCache();
       context.read<UserProvider>().clearCache();
+      context.read<TextSectionProvider>().clearCache();
 
       // Force reload all providers from database
       await Future.wait([

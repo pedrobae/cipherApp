@@ -1,4 +1,4 @@
-import 'package:cipher_app/models/dtos/playlist_item_dto.dart';
+import 'package:cipher_app/models/dtos/text_section_dto.dart';
 
 class TextSection {
   final int? id;
@@ -7,7 +7,6 @@ class TextSection {
   final String title;
   String contentText;
   final int position;
-  final int? includerId;
 
   TextSection({
     this.id,
@@ -16,7 +15,6 @@ class TextSection {
     required this.title,
     required this.contentText,
     required this.position,
-    this.includerId,
   });
 
   factory TextSection.fromJson(Map<String, dynamic> json) {
@@ -27,7 +25,6 @@ class TextSection {
       title: json['title'],
       contentText: json['content'],
       position: json['position'] ?? 0,
-      includerId: json['added_by'],
     );
   }
 
@@ -39,7 +36,6 @@ class TextSection {
       'title': title,
       'content': contentText,
       'position': position,
-      'added_by': includerId,
     };
   }
 

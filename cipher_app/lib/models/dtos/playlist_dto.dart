@@ -1,6 +1,8 @@
 import 'package:cipher_app/models/domain/playlist/playlist.dart';
 import 'package:cipher_app/models/domain/playlist/playlist_item.dart';
-import 'package:cipher_app/models/dtos/playlist_item_dto.dart';
+import 'package:cipher_app/models/dtos/cipher_dto.dart';
+import 'package:cipher_app/models/dtos/version_dto.dart';
+import 'package:cipher_app/models/dtos/text_section_dto.dart';
 import 'package:cipher_app/helpers/firestore_timestamp_helper.dart';
 
 class PlaylistDto {
@@ -14,8 +16,10 @@ class PlaylistDto {
   final List<Map<String, dynamic>>
   collaborators; // {'id': String, 'role': String}
   final String shareCode;
-  final List<PlaylistItemDto>
-  items; // Array whose order matters (order of items)
+  final List<String> itemOrder;
+  final List<TextSectionDto> textSections;
+  final List<VersionDto> versions;
+  final List<CipherDto> ciphers;
 
   const PlaylistDto({
     this.firebaseId,
@@ -27,7 +31,10 @@ class PlaylistDto {
     required this.createdAt,
     this.collaborators = const [],
     required this.shareCode,
-    this.items = const [],
+    this.itemOrder = const [],
+    this.textSections = const [],
+    this.versions = const [],
+    this.ciphers = const [],
   });
 
   factory PlaylistDto.fromFirestore(Map<String, dynamic> json, String id) {
@@ -36,7 +43,6 @@ class PlaylistDto {
       name: json['name'] as String? ?? '',
       description: json['description'] as String? ?? '',
       ownerId: json['ownerId'] as String? ?? '',
-      isPublic: json['isPublic'] as bool? ?? false,
       updatedAt:
           FirestoreTimestampHelper.toDateTime(json['updatedAt']) ??
           DateTime.now(),
@@ -47,14 +53,20 @@ class PlaylistDto {
         json['collaborators'] ?? [],
       ),
       shareCode: json['shareCode'] as String,
-      items:
-          (json['items'] as List<dynamic>?)
-              ?.map(
-                (item) =>
-                    PlaylistItemDto.fromFirestore(item as Map<String, dynamic>),
-              )
+      itemOrder:
+          (json['itemOrder'] as List<dynamic>?)
+              ?.map((e) => e as String)
               .toList() ??
           [],
+      textSections: (json['textSections'] as List<dynamic>)
+          .map((section) => TextSectionDto.fromFirestore(section))
+          .toList(),
+      versions: (json['versions'] as List<dynamic>)
+          .map((version) => VersionDto.fromFirestore(version))
+          .toList(),
+      ciphers: (json['versions'] as List<dynamic>)
+          .map((version) => CipherDto.fromFirestore(version))
+          .toList(),
     );
   }
 
@@ -63,15 +75,22 @@ class PlaylistDto {
       'name': name,
       'description': description,
       'ownerId': ownerId,
-      'isPublic': isPublic,
       'updatedAt': FirestoreTimestampHelper.fromDateTime(updatedAt),
       'createdAt': FirestoreTimestampHelper.fromDateTime(createdAt),
       'collaborators': collaborators,
+      'collaboratorIds': collaborators
+          .map((collaborator) => collaborator['id'] as String)
+          .toList(),
       'shareCode': shareCode,
-      'items': items.map((item) => item.toFirestore()).toList(),
+      'itemOrder': itemOrder,
+      'textSections': textSections
+          .map((section) => section.toFirestore())
+          .toList(),
+      'versions': versions.map((version) => version.toFirestore()).toList(),
     };
   }
 
+  /// Method to convert PlaylistDto to Playlist domain model items must be inserted first
   Playlist toDomain(List<PlaylistItem> items, int ownerLocalId) {
     return Playlist(
       id: -1, // ID local será atribuído pelo banco de dados local

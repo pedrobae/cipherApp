@@ -15,7 +15,6 @@ class VersionProvider extends ChangeNotifier {
   List<Version> _versions = [];
   Version _currentVersion = Version.empty();
   bool _isLoading = false;
-  bool _isLoadingCloud = false;
   bool _isSaving = false;
   String? _error;
 
@@ -24,7 +23,6 @@ class VersionProvider extends ChangeNotifier {
   List<Version> get versions => _versions;
   Version get currentVersion => _currentVersion;
   bool get isLoading => _isLoading;
-  bool get isLoadingCloud => _isLoadingCloud;
   bool get isSaving => _isSaving;
   String? get error => _error;
 
@@ -50,22 +48,6 @@ class VersionProvider extends ChangeNotifier {
     // Not in cache, query repository
     final version = await _cipherRepository.getVersionWithId(localId);
     return '${version?.firebaseCipherId}:${version?.firebaseId}';
-  }
-
-  /// Downloads a version from Firebase by its Firebase ID - CHANGE 20/10 doesn't save locally anymore
-  Future<Version?> downloadVersion(
-    String cipherCloudId,
-    String versionCloudId,
-  ) async {
-    final versionDto = await _cloudCipherRepository.getVersionById(
-      cipherCloudId,
-      versionCloudId,
-    );
-    if (versionDto != null) {
-      final version = versionDto.toDomain();
-      return version;
-    }
-    return null;
   }
 
   /// ===== CREATE - new version to an existing cipher =====
@@ -131,37 +113,6 @@ class VersionProvider extends ChangeNotifier {
       notifyListeners();
     }
     return versionId;
-  }
-
-  Future<String> createVersionInCloud() async {
-    if (_isLoadingCloud) return 'Already saving';
-
-    _isLoadingCloud = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      // Create version with the correct cipher ID
-      final versionId = await _cloudCipherRepository.createVersionForCipher(
-        _currentVersion,
-      );
-      // Load the new ID into the version cache
-      _currentVersion = _currentVersion.copyWith(firebaseId: versionId);
-
-      if (kDebugMode) {
-        print('Created a new cloud version with id $versionId');
-      }
-      return versionId;
-    } catch (e) {
-      _error = e.toString();
-      if (kDebugMode) {
-        print('Error creating cloud cipher version: $e');
-      }
-      return 'Error: $e';
-    } finally {
-      _isSaving = false;
-      notifyListeners();
-    }
   }
 
   /// ===== READ - Load version from versionId =====
@@ -247,8 +198,60 @@ class VersionProvider extends ChangeNotifier {
     }
   }
 
-  /// ===== UPDATE - update cipher version =====
+  // ===== UPSERT =====
+  /// Upsert a version into local db (add or update)
+  Future<void> upsertVersion(Version version) async {
+    if (_isSaving) return;
 
+    _isSaving = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      // Check if version exists by its firebaseId
+      final existingVersionId = await getLocalIdByFirebaseId(
+        version.firebaseId!,
+      );
+
+      if (existingVersionId != null) {
+        // Update existing version
+        await _cipherRepository.updateVersion(
+          version.copyWith(id: existingVersionId),
+        );
+        for (final section in version.sections!.values) {
+          await _cipherRepository.updateSection(
+            section.copyWith(versionId: existingVersionId),
+          );
+        }
+        if (kDebugMode) {
+          print('Updated existing version with id: $existingVersionId');
+        }
+      } else {
+        // Insert new version
+        final newVersionId = await _cipherRepository.insertVersionToCipher(
+          version,
+        );
+        for (final section in version.sections!.values) {
+          await _cipherRepository.insertSection(
+            section.copyWith(versionId: newVersionId),
+          );
+        }
+        if (kDebugMode) {
+          print('Inserted new version with id: $newVersionId');
+        }
+      }
+    } catch (e) {
+      _error = e.toString();
+      if (kDebugMode) {
+        print('Error upserting cipher version: $e');
+      }
+    } finally {
+      _isSaving = false;
+      notifyListeners();
+    }
+  }
+
+  // ===== UPDATE - update cipher version =====
   /// Updates a version in the local database (nothing to do with cache)
   Future<void> updateVersion(Version version) async {
     if (_isSaving) return;
@@ -439,17 +442,6 @@ class VersionProvider extends ChangeNotifier {
     _versions = [];
   }
 
-  /// Identify if the version exists in the cloud and creates or saves (return wether the version isNew on cloud)
-  Future<bool> upsertVersionInCloud() async {
-    if (_currentVersion.firebaseId == null) {
-      await _cloudCipherRepository.createVersionForCipher(_currentVersion);
-      return true;
-    } else {
-      await _cloudCipherRepository.updateVersionOfCipher(_currentVersion);
-      return false;
-    }
-  }
-
   /// ===== PLAYLIST SUPPORT =====
   // Load versions for playlist using PlaylistItems
   Future<void> loadVersionsForPlaylist(List<PlaylistItem> playlistItems) async {
@@ -548,14 +540,7 @@ class VersionProvider extends ChangeNotifier {
       // Insert new content
       for (final entry in sections.entries) {
         if (entry.key.isNotEmpty) {
-          final sectionJson = entry.value.toSqLite();
-          await _cipherRepository.insertSection(
-            versionId,
-            sectionJson['content_type'],
-            sectionJson['content_code'],
-            sectionJson['content_text'],
-            sectionJson['color'],
-          );
+          await _cipherRepository.insertSection(entry.value);
         }
       }
     }

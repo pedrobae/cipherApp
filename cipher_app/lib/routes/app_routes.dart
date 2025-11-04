@@ -4,7 +4,6 @@ import 'package:cipher_app/screens/admin/user_management_screen.dart';
 import 'package:cipher_app/screens/login_screen.dart';
 import 'package:cipher_app/screens/signup_screen.dart';
 import 'package:cipher_app/screens/main_screen.dart';
-import 'package:cipher_app/screens/admin/bulk_import_screen.dart';
 import 'package:flutter/material.dart';
 import '../screens/home_screen.dart';
 import '../screens/cipher/cipher_library.dart';
@@ -27,7 +26,6 @@ class AppRoutes {
     login: (context) => const LoginScreen(),
     signUp: (context) => const SignUpScreen(),
     admin: (context) => const AdminScreen(),
-    adminBulkImport: (context) => const BulkImportScreen(),
     adminUserManagement: (context) => const UserManagementScreen(),
   };
 
@@ -43,7 +41,6 @@ class AppRoutes {
 
   static Map<String, Widget> adminRoutes() {
     return {
-      NavigationProvider.bulkImportRoute: const BulkImportScreen(),
       NavigationProvider.userManagementRoute: const UserManagementScreen(),
     };
   }

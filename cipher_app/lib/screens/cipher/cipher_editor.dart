@@ -1,4 +1,3 @@
-import 'package:cipher_app/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/providers/cipher_provider.dart';
@@ -221,26 +220,6 @@ class _EditCipherState extends State<EditCipher>
             ),
             icon: Icon(Icons.save, color: colorScheme.onPrimary),
           ),
-          if (context.read<AuthProvider>().isAdmin)
-            FloatingActionButton.extended(
-              heroTag: 'cloud',
-              onPressed: () {
-                if (_tabController.index == 0) {
-                  _mergeCipherInCloud();
-                } else {
-                  _mergeVersionInCloud();
-                }
-              },
-              backgroundColor: colorScheme.secondary,
-              label: Text(
-                'Nuvem',
-                style: theme.textTheme.labelLarge!.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.onSecondary,
-                ),
-              ),
-              icon: Icon(Icons.cloud_upload, color: colorScheme.onSecondary),
-            ),
         ],
       ),
     );
@@ -323,60 +302,6 @@ class _EditCipherState extends State<EditCipher>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Erro ao salvar: ${e.toString()}'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
-      }
-    }
-  }
-
-  void _mergeCipherInCloud() async {
-    try {
-      final isNew = await context.read<CipherProvider>().mergeCipherInCloud();
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              isNew
-                  ? 'Nova cifra criada na nuvem!'
-                  : 'Cifra atualizada na nuvem!',
-            ),
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erro ao atualizar: ${e.toString()}'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
-      }
-    }
-  }
-
-  void _mergeVersionInCloud() async {
-    try {
-      final isNew = await context
-          .read<VersionProvider>()
-          .upsertVersionInCloud();
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              isNew
-                  ? 'Nova versão criada na nuvem!'
-                  : 'Versão atualizada na nuvem!',
-            ),
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erro ao atualizar: ${e.toString()}'),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );

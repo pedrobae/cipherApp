@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cipher_app/providers/auth_provider.dart';
+import 'package:cipher_app/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -35,7 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _navigateToHome() {
-    // Remove listener to avoid memory leaks
+    context.read<UserProvider>().ensureUsersExist([_authProvider.id!]);
     _authProvider.removeListener(_authListener);
     Navigator.of(context).pushNamedAndRemoveUntil(
       '/',

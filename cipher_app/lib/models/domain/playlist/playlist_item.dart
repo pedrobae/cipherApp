@@ -1,5 +1,3 @@
-import 'package:cipher_app/models/dtos/playlist_item_dto.dart';
-
 /// Represents a content item in a playlist (cipher version or text section)
 class PlaylistItem {
   final String type; // 'cipher_version' or 'text_section'
@@ -36,14 +34,6 @@ class PlaylistItem {
       'order_index': position,
       'firebase_id': firebaseContentId,
     };
-  }
-
-  PlaylistItemDto toDto(String ownerFirebaseId) {
-    return PlaylistItemDto(
-      type: type,
-      firebaseContentId: firebaseContentId,
-      addedBy: ownerFirebaseId,
-    );
   }
 
   // Helper constructors

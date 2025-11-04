@@ -23,13 +23,13 @@ class VersionDto {
   });
 
   factory VersionDto.fromFirestore(
-    Map<String, dynamic> map,
-    String documentId,
-    String cipherDocumentId,
-  ) {
+    Map<String, dynamic> map, {
+    String? id,
+    String? cipherId,
+  }) {
     return VersionDto(
-      firebaseId: documentId,
-      firebaseCipherId: cipherDocumentId,
+      firebaseId: id ?? map['id'] as String? ?? '',
+      firebaseCipherId: cipherId ?? map['cipherId'] as String? ?? '',
       versionName: map['versionName'] as String? ?? '',
       transposedKey: map['transposedKey'] as String? ?? '',
       songStructure:
@@ -61,7 +61,7 @@ class VersionDto {
     };
   }
 
-  Version toDomain() {
+  Version toDomain({int? cipherId}) {
     return Version(
       firebaseId: firebaseId,
       firebaseCipherId: firebaseCipherId,
@@ -73,7 +73,7 @@ class VersionDto {
         (sectionsCode, section) =>
             MapEntry(sectionsCode, Section.fromFirestore(section)),
       ),
-      cipherId: 0,
+      cipherId: cipherId ?? 0,
     );
   }
 }

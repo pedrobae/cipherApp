@@ -73,7 +73,7 @@ class _EditPlaylistFormState extends State<EditPlaylistForm> {
 
     final description = _descriptionController.text.trim();
 
-    context.read<PlaylistProvider>().updatePlaylistInfo(
+    context.read<PlaylistProvider>().updateMetadata(
       widget.playlist.id,
       name,
       description,

@@ -6,107 +6,24 @@ import 'package:cipher_app/models/dtos/version_dto.dart';
 import 'package:cipher_app/services/firestore_service.dart';
 import 'package:cipher_app/services/auth_service.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:flutter/foundation.dart';
 
 class CloudCipherRepository {
   final FirestoreService _firestoreService = FirestoreService();
   final AuthService _authService = AuthService();
   final GuardHelper _guardHelper = GuardHelper();
 
-  // For now the user has no access to full CRUD operations in the cloud. (Read-only)
-  // ===== CREATE =====
-  /// Creates a new public cipher (admin only - not exposed to users)
-  Future<String> publishCipher(Cipher cipher) async {
-    await _guardHelper.ensureCanPublishCiphers();
-
-    final cipherId = await _firestoreService.createDocument(
-      collectionPath: 'publicCiphers',
-      data: cipher.toDto().toFirestore(),
-    );
-
-    FirebaseAnalytics.instance.logEvent(
-      name: 'cipher_created',
-      parameters: {
-        'cipher_id': cipherId,
-        'user_id': _authService.currentUser!.uid,
-        'timestamp': DateTime.now().millisecondsSinceEpoch,
-      },
-    );
-    return cipherId;
-  }
-
-  /// Creates a new version for an existing public cipher (admin only)
-  Future<String> createVersionForCipher(Version version) async {
-    await _guardHelper.requireAdmin();
-
-    final versionId = await _firestoreService.createSubCollectionDocument(
-      parentCollectionPath: 'publicCiphers',
-      parentDocumentId: version.firebaseCipherId!,
-      subCollectionPath: 'versions',
-      data: version.toDto().toFirestore(),
-    );
-
-    FirebaseAnalytics.instance.logEvent(
-      name: 'cipher_version_created',
-      parameters: {
-        'cipher_id': version.firebaseCipherId!,
-        'version_id': versionId,
-        'timestamp': DateTime.now().millisecondsSinceEpoch,
-      },
-    );
-    return versionId;
-  }
-
-  /// Create public cipher directly from JSON (admin only)(for bulk import)
-  Future<String> createPublicCipherFromJson(Map<String, dynamic> json) async {
-    final versions = json.remove('versions');
-    final cipherId = await _firestoreService.createDocument(
-      collectionPath: 'publicCiphers',
-      data: json,
-    );
-
-    FirebaseAnalytics.instance.logEvent(
-      name: 'cipher_created',
-      parameters: {
-        'cipher_id': cipherId,
-        'user_id': _authService.currentUser!.uid,
-        'timestamp': DateTime.now().millisecondsSinceEpoch,
-      },
-    );
-
-    // Create initial versions in sub-collection
-    for (var version in versions) {
-      final versionId = await _firestoreService.createSubCollectionDocument(
-        parentCollectionPath: 'publicCiphers',
-        parentDocumentId: cipherId,
-        subCollectionPath: 'versions',
-        data: version as Map<String, dynamic>,
-      );
-
-      FirebaseAnalytics.instance.logEvent(
-        name: 'cipher_version_created',
-        parameters: {
-          'cipher_id': cipherId,
-          'version_id': versionId,
-          'timestamp': DateTime.now().millisecondsSinceEpoch,
-        },
-      );
-    }
-    return cipherId;
-  }
-
   // ===== READ =====
   /// Fetch popular ciphers from Firestore (requires authentication)
-  Future<List<CipherDto>> getPopularCiphers() async {
+  Future<List<CipherDto>> getCipherIndex() async {
     await _guardHelper.requireAuth();
 
     final snapshot = await _firestoreService.fetchDocumentById(
-      collectionPath: 'stats/',
-      documentId: 'popularCiphers',
+      collectionPath: 'indexes/',
+      documentId: 'publicCiphers',
     );
 
     FirebaseAnalytics.instance.logEvent(
-      name: 'fetched_popular_ciphers',
+      name: 'fetched_cipher_index',
       parameters: {
         'user_id': _authService.currentUser!.uid,
         'timestamp': DateTime.now().millisecondsSinceEpoch,
@@ -116,40 +33,14 @@ class CloudCipherRepository {
     List<CipherDto> ciphers =
         ((snapshot!.data() as Map<String, dynamic>)['ciphers'] as List)
             .map<CipherDto>(
-              (map) =>
-                  CipherDto.fromFirestore(map, map['firebaseId'] as String),
+              (map) => CipherDto.fromFirestore(
+                map,
+                documentId: map['firebaseId'] as String,
+              ),
             )
             .toList();
 
     return ciphers;
-  }
-
-  /// Fetch a public cipher by its ID (requires authentication)
-  Future<CipherDto> getCipherById(String cipherId) async {
-    await _guardHelper.requireAuth();
-
-    final docSnapshot = await _firestoreService.fetchDocumentById(
-      collectionPath: 'publicCiphers',
-      documentId: cipherId,
-    );
-
-    if (docSnapshot == null || !docSnapshot.exists) {
-      throw Exception('Cifra não encontrada');
-    }
-
-    FirebaseAnalytics.instance.logEvent(
-      name: 'fetched_cipher_by_id',
-      parameters: {
-        'cipher_id': cipherId,
-        'user_id': _authService.currentUser!.uid,
-        'timestamp': DateTime.now().millisecondsSinceEpoch,
-      },
-    );
-
-    return CipherDto.fromFirestore(
-      docSnapshot.data() as Map<String, dynamic>,
-      docSnapshot.id,
-    );
   }
 
   /// Fetch versions of a specific cipher (requires authentication)
@@ -176,157 +67,11 @@ class CloudCipherRepository {
         .map(
           (version) => VersionDto.fromFirestore(
             version.data() as Map<String, dynamic>,
-            version.id,
-            cipherId,
+            id: version.id,
+            cipherId: cipherId,
           ),
         )
         .toList();
-  }
-
-  Future<VersionDto?> getVersionById(String cipherId, String versionId) async {
-    final docSnapshot = await _firestoreService.fetchSubCollectionDocumentById(
-      parentCollectionPath: 'publicCiphers',
-      parentDocumentId: cipherId,
-      subCollectionPath: 'versions',
-      documentId: versionId,
-    );
-
-    if (docSnapshot == null || !docSnapshot.exists) {
-      return null;
-    }
-
-    return VersionDto.fromFirestore(
-      docSnapshot.data() as Map<String, dynamic>,
-      docSnapshot.id,
-      cipherId,
-    );
-  }
-
-  /// Multi field search (requires authentication)
-  Future<List<CipherDto>?> searchCiphers(String query) async {
-    await _guardHelper.requireAuth();
-
-    try {
-      // Single query approach - search in combined searchText field
-      final results = await _firestoreService.fetchDocumentsMultiFieldSearch(
-        collectionPath: 'publicCiphers',
-        searchTerm: query,
-      );
-
-      FirebaseAnalytics.instance.logEvent(
-        name: 'searched_ciphers',
-        parameters: {
-          'query': query,
-          'result_count': results.length,
-          'user_id': _authService.currentUser!.uid,
-          'timestamp': DateTime.now().millisecondsSinceEpoch,
-        },
-      );
-
-      return results.map((doc) {
-        final map = doc.data() as Map<String, dynamic>;
-        return CipherDto.fromFirestore(map, doc.id);
-      }).toList();
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error searching ciphers: $e');
-      }
-      return null;
-    }
-  }
-
-  /// Cost-optimized search with cascading fallback
-  Future<List<CipherDto>?> searchCiphersCascading(String query) async {
-    try {
-      final lowerQuery = query.toLowerCase().trim();
-      List<CipherDto> results = [];
-
-      // 1. Search in title first
-      final titleResults = await _firestoreService.fetchDocuments(
-        collectionPath: 'publicCiphers',
-        filters: {'titleLower': lowerQuery},
-        limit: 25,
-      );
-
-      results.addAll(
-        titleResults
-            .map(
-              (doc) => CipherDto.fromFirestore(
-                doc.data() as Map<String, dynamic>,
-                doc.id,
-              ),
-            )
-            .toList(),
-      );
-
-      // 2. If we have enough results from title, return early
-      if (results.length >= 15) {
-        return results.take(25).toList();
-      }
-
-      // 3. Search in author only if needed
-      final authorResults = await _firestoreService.fetchDocuments(
-        collectionPath: 'publicCiphers',
-        filters: {'authorLower': lowerQuery},
-        limit: 25 - results.length,
-      );
-
-      // Add unique results (using document ID from Firestore)
-      final existingIds = titleResults.map((doc) => doc.id).toSet();
-      results.addAll(
-        authorResults
-            .where((doc) => !existingIds.contains(doc.id))
-            .map(
-              (doc) => CipherDto.fromFirestore(
-                doc.data() as Map<String, dynamic>,
-                doc.id,
-              ),
-            )
-            .toList(),
-      );
-
-      // 4. Search tags only if still need more results (3rd read - rare)
-      if (results.length < 10) {
-        final tagResults = await _firestoreService.fetchDocuments(
-          collectionPath: 'publicCiphers',
-          filters: {'primaryTag': lowerQuery}, // Single tag field
-          limit: 25 - results.length,
-        );
-
-        final allExistingIds = [
-          ...titleResults,
-          ...authorResults,
-        ].map((doc) => doc.id).toSet();
-        results.addAll(
-          tagResults
-              .where((doc) => !allExistingIds.contains(doc.id))
-              .map(
-                (doc) => CipherDto.fromFirestore(
-                  doc.data() as Map<String, dynamic>,
-                  doc.id,
-                ),
-              )
-              .toList(),
-        );
-      }
-
-      FirebaseAnalytics.instance.logEvent(
-        name: 'searched_ciphers_cascading',
-        parameters: {
-          'query': query,
-          'result_count': results.length,
-          'user_id': _authService.currentUser!.uid,
-          'timestamp': DateTime.now().millisecondsSinceEpoch,
-        },
-      );
-
-      return results.take(25).toList();
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error searching ciphers: $e');
-      }
-      return null;
-    }
   }
 
   // ===== UPDATE =====

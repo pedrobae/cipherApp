@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:cipher_app/models/dtos/playlist_item_dto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cipher_app/models/domain/playlist/playlist.dart';
 import 'package:cipher_app/models/domain/playlist/playlist_item.dart';
@@ -40,6 +39,7 @@ class PlaylistProvider extends ChangeNotifier {
   bool get isCloudSaving => _isCloudSaving;
   bool get isDeleting => _isDeleting;
   String? get error => _error;
+
   Playlist? getPlaylistByFirebaseId(String firebaseId) {
     for (var p in _playlists) {
       if (p.firebaseId == firebaseId) {
@@ -174,22 +174,6 @@ class PlaylistProvider extends ChangeNotifier {
     }
   }
 
-  Future<TextSectionDto> downloadTextItemByFirebaseId(
-    String firebaseTextId,
-  ) async {
-    try {
-      final textItemDto = await _cloudPlaylistRepository.fetchTextSectionById(
-        firebaseTextId,
-      );
-      if (textItemDto == null) {
-        throw Exception('Item de texto não encontrado');
-      }
-      return textItemDto;
-    } catch (e) {
-      throw Exception('Erro ao buscar item de texto: $e');
-    }
-  }
-
   // ===== CREATE =====
   // Create a new playlist from scratch
   Future<void> createPlaylist(Playlist playlist) async {
@@ -234,11 +218,7 @@ class PlaylistProvider extends ChangeNotifier {
 
   // ===== UPDATE =====
   // Update a Playlist with new data (name/description)
-  Future<void> updatePlaylistInfo(
-    int id,
-    String? name,
-    String? description,
-  ) async {
+  Future<void> updateMetadata(int id, String? name, String? description) async {
     await _playlistRepository.updatePlaylist(id, {
       'name': name,
       'description': description,
@@ -500,7 +480,11 @@ class PlaylistProvider extends ChangeNotifier {
   // ===== UTILITY =====
   // Sync playlist from cloud with existing local playlist
   // Assumes users and versions have already been synced/loaded beforehand
-  Future<void> syncPlaylist(PlaylistDto cloudDto, int ownerLocalId) async {
+  Future<void> syncPlaylist(
+    PlaylistDto cloudDto,
+    int ownerLocalId, {
+    List<PlaylistItem>? items,
+  }) async {
     // Merge cloud playlists with local ones, avoiding duplicates
     final existingIndex = _playlists.indexWhere(
       (p) => p.firebaseId == cloudDto.firebaseId,
@@ -535,14 +519,8 @@ class PlaylistProvider extends ChangeNotifier {
         rethrow;
       }
     } else {
-      // Save new cloud playlist locally
-      List<PlaylistItem> items = [];
-      for (var index = 0; index < cloudDto.items.length; index++) {
-        items.add(cloudDto.items[index].toDomain(index));
-      }
-
       await _playlistRepository.createPlaylist(
-        cloudDto.toDomain(items, ownerLocalId),
+        cloudDto.toDomain(items!, ownerLocalId),
       );
     }
   }
@@ -660,12 +638,23 @@ class PlaylistProvider extends ChangeNotifier {
       }
 
       // Add items if reordered or changed versions or text sections
-      if (changes.containsKey('itemsReordered') ||
-          changes.containsKey('versions') ||
-          changes.containsKey('textSections')) {
-        // Get current playlist items and convert to DTOs
-        updatePayload['items'] = [
-          for (final item in playlistDto.items) ...[item.toFirestore()],
+      if (changes.containsKey('itemsReordered')) {
+        updatePayload['itemOrder'] = playlistDto.itemOrder;
+      }
+
+      if (changes.containsKey('versions')) {
+        updatePayload['versions'] = [
+          for (final version in playlistDto.versions) ...[
+            version.toFirestore(),
+          ],
+        ];
+      }
+
+      if (changes.containsKey('textSections')) {
+        updatePayload['textSections'] = [
+          for (final textSection in playlistDto.textSections) ...[
+            textSection.toFirestore(),
+          ],
         ];
       }
 

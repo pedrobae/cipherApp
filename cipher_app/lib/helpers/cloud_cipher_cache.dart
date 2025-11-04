@@ -19,7 +19,12 @@ class CloudCipherCache {
       if (jsonString == null) return [];
       final List<dynamic> jsonList = json.decode(jsonString);
       return jsonList
-          .map((j) => CipherDto.fromFirestore(j, j['firebaseId'] as String))
+          .map(
+            (j) => CipherDto.fromFirestore(
+              j,
+              documentId: j['firebaseId'] as String,
+            ),
+          )
           .toList();
     } catch (e) {
       // If there's an error (e.g., corrupted data), return empty list

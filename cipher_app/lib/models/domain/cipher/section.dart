@@ -32,23 +32,19 @@ class Section {
   factory Section.fromFirestore(Map<String, dynamic> map) {
     return Section(
       versionId: 0, // Will be set later
-      contentType: map['contentType'] as String? ?? '',
-      contentCode: map['contentCode'] as String? ?? '',
-      contentText: map['contentText'] as String? ?? '',
-      contentColor: c.colorFromHex(
-        map['contentColor'] as String? ?? '#FFFFFFFF',
-      ),
+      contentType: map['type'] as String? ?? '',
+      contentCode: map['code'] as String? ?? '',
+      contentText: map['text'] as String? ?? '',
+      contentColor: c.colorFromHex(map['color'] as String? ?? '#FFFFFFFF'),
     );
   }
 
   Map<String, dynamic> toSqLite() {
     return {
-      'id': id,
-      'version_id': versionId,
       'content_type': contentType,
       'content_code': contentCode,
       'content_text': contentText,
-      'color': c.colorToHex(contentColor),
+      'content_color': c.colorToHex(contentColor),
     };
   }
 
@@ -59,5 +55,23 @@ class Section {
       'contentText': contentText,
       'contentColor': c.colorToHex(contentColor),
     };
+  }
+
+  Section copyWith({
+    int? id,
+    int? versionId,
+    String? contentType,
+    String? contentCode,
+    String? contentText,
+    Color? contentColor,
+  }) {
+    return Section(
+      id: id ?? this.id,
+      versionId: versionId ?? this.versionId,
+      contentType: contentType ?? this.contentType,
+      contentCode: contentCode ?? this.contentCode,
+      contentText: contentText ?? this.contentText,
+      contentColor: contentColor ?? this.contentColor,
+    );
   }
 }

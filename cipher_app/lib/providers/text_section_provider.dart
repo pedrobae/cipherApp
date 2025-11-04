@@ -1,5 +1,5 @@
 import 'package:cipher_app/models/domain/playlist/playlist_text_section.dart';
-import 'package:cipher_app/models/dtos/playlist_item_dto.dart';
+import 'package:cipher_app/models/dtos/text_section_dto.dart';
 import 'package:cipher_app/repositories/text_section_repository.dart';
 import 'package:cipher_app/repositories/cloud_playlist_repository.dart';
 import 'package:flutter/foundation.dart';
@@ -86,6 +86,20 @@ class TextSectionProvider extends ChangeNotifier {
     return textSection?.firebaseId;
   }
 
+  Future<int?> getLocalIdByFirebaseId(String firebaseId) async {
+    // Check cache first
+    for (final entry in _textSections.entries) {
+      if (entry.value.firebaseId == firebaseId) {
+        return entry.key;
+      }
+    }
+    // Not in cache, query repository
+    final textSection = await _textSectionRepo.getTextSectionByFirebaseId(
+      firebaseId,
+    );
+    return textSection?.id;
+  }
+
   Future<TextSection?> getTextSectionById(int id) async {
     // Check cache first
     if (_textSections.containsKey(id)) {
@@ -118,7 +132,6 @@ class TextSectionProvider extends ChangeNotifier {
         textSection.title,
         textSection.contentText,
         textSection.position,
-        textSection.includerId,
       );
       await loadTextSection(id, forceReload: true);
 
@@ -133,18 +146,44 @@ class TextSectionProvider extends ChangeNotifier {
     }
   }
 
-  Future<String?> publishTextSection(TextSectionDto textSectionDto) async {
+  /// Upserts a Text Section (create or update)
+  Future<void> upsertTextSection(TextSection textSection) async {
+    if (_isSaving) return;
+
+    _isSaving = true;
+    _error = null;
+    notifyListeners();
+
     try {
-      final firebaseId = await _cloudPlaylistRepository.publishTextSection(
-        textSectionDto,
-      );
-      return firebaseId;
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error publishing text section: $e');
+      // Check if exists
+      final localId = await getLocalIdByFirebaseId(textSection.firebaseId!);
+
+      if (localId == null) {
+        // Create new
+        await _textSectionRepo.createPlaylistText(
+          textSection.playlistId,
+          textSection.firebaseId,
+          textSection.title,
+          textSection.contentText,
+          textSection.position,
+        );
+      } else {
+        // Update existing
+        await _textSectionRepo.updatePlaylistText(
+          localId,
+          title: textSection.title,
+          content: textSection.contentText,
+          position: textSection.position,
+        );
       }
+
+      await loadTextSection(textSection.id!, forceReload: true);
+    } catch (e) {
       _error = e.toString();
-      return null;
+      rethrow;
+    } finally {
+      _isSaving = false;
+      notifyListeners();
     }
   }
 

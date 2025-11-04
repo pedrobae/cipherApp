@@ -152,13 +152,11 @@ class DatabaseHelper {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         version_id INTEGER NOT NULL,
         playlist_id INTEGER NOT NULL,
-        includer_id INTEGER NOT NULL,
         firebase_content_id TEXT,
         position INTEGER NOT NULL,
         included_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (version_id) REFERENCES version (id) ON DELETE CASCADE,
         FOREIGN KEY (playlist_id) REFERENCES playlist (id) ON DELETE CASCADE,
-        FOREIGN KEY (includer_id) REFERENCES user (id) ON DELETE CASCADE,
         UNIQUE(playlist_id, position)
       )
     ''');
@@ -189,9 +187,7 @@ class DatabaseHelper {
         firebase_id TEXT,
         position INTEGER NOT NULL DEFAULT 0,
         added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        added_by INTEGER NOT NULL,
-        FOREIGN KEY (playlist_id) REFERENCES playlist (id) ON DELETE CASCADE,
-        FOREIGN KEY (added_by) REFERENCES user (id) ON DELETE CASCADE
+        FOREIGN KEY (playlist_id) REFERENCES playlist (id) ON DELETE CASCADE
       )
     ''');
 
@@ -284,68 +280,6 @@ class DatabaseHelper {
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     // Handle migrations between database versions
-
-    if (oldVersion < 4) {
-      // Migration from version 3 to 4: Add firebase_id column to cipher table
-      await db.execute('ALTER TABLE cipher ADD COLUMN firebase_id TEXT');
-      await db.execute(
-        'CREATE UNIQUE INDEX idx_cipher_firebase_id ON cipher(firebase_id)',
-      );
-      await db.execute(
-        'ALTER TABLE version ADD COLUMN firebase_cipher_id TEXT',
-      );
-      await db.execute('ALTER TABLE version ADD COLUMN firebase_id TEXT');
-      await db.execute(
-        'CREATE UNIQUE INDEX idx_version_firebase_id ON version(firebase_id)',
-      );
-      await db.execute(
-        'CREATE INDEX idx_version_firebase_cipher_id ON version(firebase_cipher_id)',
-      );
-    }
-
-    if (oldVersion < 5) {
-      // Migration from version 4 to 5: Remove unique constraint on playlist_version position
-      // SQLite doesn't support DROP CONSTRAINT, so we need to recreate the table
-
-      // 1. Create new table without the constraint
-      await db.execute('''
-        CREATE TABLE playlist_version_new (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          version_id INTEGER NOT NULL,
-          playlist_id INTEGER NOT NULL,
-          includer_id INTEGER NOT NULL,
-          position INTEGER NOT NULL,
-          included_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          FOREIGN KEY (version_id) REFERENCES version (id) ON DELETE CASCADE,
-          FOREIGN KEY (playlist_id) REFERENCES playlist (id) ON DELETE CASCADE,
-          FOREIGN KEY (includer_id) REFERENCES user (id) ON DELETE CASCADE,
-          UNIQUE(position, playlist_id)
-        )
-      ''');
-
-      // 2. Copy data from old table to new table
-      await db.execute('''
-        INSERT INTO playlist_version_new (id, version_id, playlist_id, includer_id, position, included_at)
-        SELECT id, version_id, playlist_id, includer_id, position, included_at
-        FROM playlist_version
-      ''');
-
-      // 3. Drop old table
-      await db.execute('DROP TABLE playlist_version');
-
-      // 4. Rename new table to original name
-      await db.execute(
-        'ALTER TABLE playlist_version_new RENAME TO playlist_version',
-      );
-
-      // 5. Recreate indexes
-      await db.execute(
-        'CREATE INDEX idx_playlist_version_playlist_id ON playlist_version(playlist_id)',
-      );
-      await db.execute(
-        'CREATE INDEX idx_playlist_version_version_id ON playlist_version(version_id)',
-      );
-    }
     if (oldVersion < 6) {
       // Add firebase_id columns for cloud sync
       await db.execute('ALTER TABLE user ADD COLUMN firebase_id TEXT');

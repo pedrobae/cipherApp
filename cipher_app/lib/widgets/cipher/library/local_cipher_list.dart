@@ -5,6 +5,7 @@ import 'package:cipher_app/providers/selection_provider.dart';
 import 'package:cipher_app/providers/user_provider.dart';
 import 'package:cipher_app/screens/cipher/cipher_editor.dart';
 import 'package:cipher_app/widgets/cipher/library/expandible_cipher_card.dart';
+import 'package:cipher_app/widgets/cipher/library/import_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -109,17 +110,32 @@ class _LocalCipherListState extends State<LocalCipherList> {
               Positioned(
                 bottom: MediaQuery.of(context).viewInsets.bottom + 8,
                 right: MediaQuery.of(context).viewInsets.right + 8,
-                child: FloatingActionButton.extended(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const EditCipher(),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.add),
-                  label: const Text('Nova Cifra'),
-                  heroTag: 'library_fab',
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  spacing: 8,
+                  children: [
+                    FloatingActionButton.extended(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const EditCipher(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.add),
+                      label: const Text('Nova Cifra'),
+                      heroTag: 'library_fab',
+                    ),
+                    FloatingActionButton.extended(
+                      onPressed: () {
+                        _showImportBottomSheet(isNewCipher: true);
+                      },
+                      icon: const Icon(Icons.import_export),
+                      label: const Text('Importar'),
+                      heroTag: 'library_import_fab',
+                    ),
+                  ],
                 ),
               ),
             ] else if (selectionProvider.isSelectionMode) ...[
@@ -227,6 +243,16 @@ class _LocalCipherListState extends State<LocalCipherList> {
               )
             : const SizedBox.shrink(key: ValueKey('empty_space')),
       ),
+    );
+  }
+
+  void _showImportBottomSheet({required bool isNewCipher}) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return ImportBottomSheet(isNewCipher: isNewCipher);
+      },
     );
   }
 }

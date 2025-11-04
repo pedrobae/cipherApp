@@ -5,30 +5,7 @@
 
 ## 📋 FASE 1: ARQUITETURA & ESTRUTURA BASE
 
-### 1.1 Criar Estrutura de Serviços de Importação
-- [ ] **Criar** `lib/services/import/` directory
-- [ ] **Criar** `lib/services/import/import_service_base.dart`
-  - Interface abstrata para todos os métodos de importação
-  - Retorna `ImportResult` com texto bruto e metadata
-- [ ] **Criar** `lib/services/import/text_import_service.dart`
-  - Serviço para importação de texto colado
-- [ ] **Criar** `lib/services/import/pdf_import_service.dart`
-  - Serviço para importação de PDF (Fase 2)
-- [ ] **Criar** `lib/services/import/image_import_service.dart`
-  - Serviço para OCR de imagens (Fase 3)
-
 ### 1.2 Criar Estrutura de Parsing
-- [ ] **Criar** `lib/services/parsing/` directory
-- [ ] **Criar** `lib/services/parsing/chord_line_parser.dart`
-  - Detecta linhas de cifras vs. letras
-  - Algoritmo heurístico baseado em padrões de acordes
-- [ ] **Criar** `lib/services/parsing/chordpro_converter.dart`
-  - Converte texto bruto para formato ChordPro `[chord]lyric`
-  - Mapeia posições de acordes para posições nas letras
-- [ ] **Criar** `lib/services/parsing/section_detector.dart`
-  - Detecta blocos de seções (usando linhas vazias)
-  - Reconhece padrões: "Verso 1", "Refrão", "V1", "C", etc.
-  - Sugere `content_code` e `content_type` para cada seção
 - [ ] **Criar** `lib/models/dtos/import_result.dart`
   - DTO para resultado de importação
   - Campos: `rawText`, `source` (pdf/image/text), `metadata`
@@ -36,30 +13,9 @@
   - DTO para seção parseada
   - Campos: `suggestedCode`, `suggestedType`, `chordProContent`, `suggestedColor`
 
-### 1.3 Adicionar Dependências
-- [x] **Adicionar** ao `pubspec.yaml`:
-  ```yaml
-  dependencies:
-    file_picker: ^8.1.4                  # Seleção de arquivos
-    syncfusion_flutter_pdf: ^28.1.33     # Extração de texto de PDF (null-safe)
-    image_picker: ^1.1.2                 # Seleção de imagens (Fase 5)
-    google_mlkit_text_recognition: ^0.13.1  # OCR (Fase 5)
-  ```
-- [ ] **Executar** `flutter pub get`
-
 ---
 
 ## 📱 FASE 2: UI DE IMPORTAÇÃO
-
-### 2.1 Criar Dialog de Seleção de Método
-- [ ] **Criar** `lib/widgets/dialogs/import_method_dialog.dart`
-  - Acessado por botão "Importar" no `EditCipher` (nova versão/cifra)
-  - 3 opções em `ModalBottomSheet`: Texto, PDF, Imagem
-  - Cada opção executa método de importação e parseia inline
-- [ ] **Criar** `lib/widgets/import/import_method_option.dart`
-  - Widget reutilizável para opções de método
-  - Props: `icon`, `title`, `description`, `onTap`
-
 ### 2.2 Criar Dialog de Importação de Texto
 - [ ] **Criar** `lib/widgets/dialogs/import_text_dialog.dart`
   - `TextFormField` grande (maxLines: 20) para colar texto

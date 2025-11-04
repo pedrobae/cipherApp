@@ -8,4 +8,8 @@ class ImportServiceBase {
   final ImageImportService imageImportService = ImageImportService();
 
   // TODO implementation for coordinating different import services
+
+  Future<void> importCipherFromText(String text) async {
+    await textImportService.importFromText(text);
+  }
 }

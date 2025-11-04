@@ -38,7 +38,7 @@ class DatabaseHelper {
         final count = cipherCount.first['count'] as int;
 
         if (count == 0) {
-          await seedDatabase(db);
+          await seedInfoDatabase(db);
         }
       }
 

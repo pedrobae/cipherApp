@@ -1,7 +1,7 @@
 class TextImportService {
   // TODO implementation for text import
   // Handles importing text-based chord sheets
-  void importText(String text) {
-    // Implementation goes here
+  Future<void> importFromText(String text) async {
+    // Implementation for parsing and importing from text
   }
 }

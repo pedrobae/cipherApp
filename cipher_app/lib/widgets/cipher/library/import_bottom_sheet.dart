@@ -29,10 +29,7 @@ class ImportBottomSheet extends StatelessWidget {
                 onTap: () {
                   Navigator.of(context).pop();
                   Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          ImportTextScreen(isNewCipher: isNewCipher),
-                    ),
+                    MaterialPageRoute(builder: (context) => ImportTextScreen()),
                   );
                 },
               ),

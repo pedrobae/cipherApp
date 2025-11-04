@@ -40,7 +40,6 @@ Future<Map<String, int>> insertPlaylists(
   await txn.insert('playlist_version', {
     'version_id': versionIds['amazing1'],
     'playlist_id': worshipPlaylistId,
-    'includer_id': testUserId,
     'position': 1, // After opening text
     'included_at': now,
   });
@@ -48,7 +47,6 @@ Future<Map<String, int>> insertPlaylists(
   await txn.insert('playlist_version', {
     'version_id': versionIds['howgreat1'],
     'playlist_id': worshipPlaylistId,
-    'includer_id': testUserId,
     'position': 3, // After prayer text
     'included_at': now,
   });
@@ -57,7 +55,6 @@ Future<Map<String, int>> insertPlaylists(
   await txn.insert('playlist_version', {
     'version_id': versionIds['howgreat1'],
     'playlist_id': eveningPlaylistId,
-    'includer_id': testUserId,
     'position': 0,
     'included_at': now,
   });
@@ -66,7 +63,6 @@ Future<Map<String, int>> insertPlaylists(
   await txn.insert('playlist_version', {
     'version_id': versionIds['amazing1'],
     'playlist_id': mariaPlaylistId,
-    'includer_id': userIds['maria']!,
     'position': 0,
     'included_at': now,
   });

@@ -1,4 +1,4 @@
-import 'package:cipher_app/screens/cipher/import/cipher_parsing.dart';
+import 'package:cipher_app/screens/cipher/cipher_parsing.dart';
 import 'package:flutter/material.dart';
 import 'package:cipher_app/providers/import_provider.dart';
 import 'package:provider/provider.dart';
@@ -92,8 +92,7 @@ class _ImportTextScreenState extends State<ImportTextScreen> {
                         // Navigate to parsing screen
                         navigator.push(
                           MaterialPageRoute(
-                            builder: (context) =>
-                                CipherParsing(source: ImportType.text),
+                            builder: (context) => CipherParsing(),
                           ),
                         );
                       }

@@ -24,6 +24,20 @@ class ImportProvider extends ChangeNotifier {
     _importType = type;
   }
 
+  /// Gets a string representation of the import type.
+  String getImportType() {
+    switch (_importType) {
+      case ImportType.text:
+        return 'Text';
+      case ImportType.pdf:
+        return 'PDF';
+      case ImportType.image:
+        return 'Image';
+      default:
+        return 'Error';
+    }
+  }
+
   /// Imports text based on the selected import type.
   Future<void> importText({String? data}) async {
     if (_isImporting) return;

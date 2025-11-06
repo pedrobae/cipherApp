@@ -1,6 +1,6 @@
 import 'package:cipher_app/providers/collaborator_provider.dart';
 import 'package:cipher_app/providers/import_provider.dart';
-import 'package:cipher_app/providers/parsing_provider.dart';
+import 'package:cipher_app/providers/parser_provider.dart';
 import 'package:cipher_app/providers/selection_provider.dart';
 import 'package:cipher_app/services/firebase_service.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +50,7 @@ class MyApp extends StatelessWidget {
           create: (_) => LayoutSettingsProvider()..loadSettings(),
         ),
         ChangeNotifierProvider(create: (_) => NavigationProvider()),
-        ChangeNotifierProvider(create: (_) => ParsingProvider()),
+        ChangeNotifierProvider(create: (_) => ParserProvider()),
         ChangeNotifierProvider(create: (_) => PlaylistProvider()),
         ChangeNotifierProvider(create: (_) => SelectionProvider()),
         ChangeNotifierProvider(

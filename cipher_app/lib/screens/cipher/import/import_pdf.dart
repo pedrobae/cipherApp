@@ -1,4 +1,4 @@
-import 'package:cipher_app/screens/cipher/import/cipher_parsing.dart';
+import 'package:cipher_app/screens/cipher/cipher_parsing.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/providers/import_provider.dart';
@@ -25,7 +25,7 @@ class _ImportPdfScreenState extends State<ImportPdfScreen> {
     try {
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
-        allowedExtensions: ['pdf'],
+        allowedExtensions: ['pdf', 'doc', 'docx'],
         allowMultiple: false,
       );
 
@@ -191,8 +191,7 @@ class _ImportPdfScreenState extends State<ImportPdfScreen> {
                           await importProvider.importText();
                           navigator.push(
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  CipherParsing(source: ImportType.pdf),
+                              builder: (context) => CipherParsing(),
                             ),
                           );
                         }

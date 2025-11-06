@@ -1,5 +1,18 @@
+import 'package:cipher_app/models/domain/parsing_cipher.dart';
+
 class MetadataParser {
-  // TODO implementation for parsing metadata from imported text
-  // Extracts title, artist, album, key, tempo, etc. from the text,
-  // Separating musical content from metadata
+  Future<void> parseMetadata(ParsingCipher cipher) async {
+    final rawText = cipher.rawText;
+    await Future.delayed(
+      const Duration(seconds: 1),
+    ); // Delay for UI testing purposes
+    // TODO: Implement metadata parsing logic
+
+    //
+    cipher.metadata = {
+      'title': 'Sample Title',
+      'artist': 'Sample Artist',
+      'album': 'Sample Album',
+    };
+  }
 }

@@ -15,6 +15,13 @@ class _ImportTextScreenState extends State<ImportTextScreen> {
   final TextEditingController _importTextController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+
+    context.read<ImportProvider>().setImportType(ImportType.text);
+  }
+
+  @override
   void dispose() {
     _importTextController.dispose();
     super.dispose();
@@ -79,7 +86,7 @@ class _ImportTextScreenState extends State<ImportTextScreen> {
                     onPressed: () async {
                       final text = _importTextController.text;
                       if (text.isNotEmpty) {
-                        await importProvider.importFromText(text);
+                        await importProvider.importText(text);
                       }
                     },
                     icon: const Icon(Icons.import_export),

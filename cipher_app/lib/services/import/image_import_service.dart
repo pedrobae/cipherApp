@@ -1,3 +1,48 @@
-class ImageImportService {
-  // TODO implementation for image import and text extraction
+import 'dart:io';
+import 'package:cipher_app/services/import/import_service_base.dart';
+// TODO: Uncomment when implementing OCR
+// import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+
+/// Service for extracting text from images using OCR (Optical Character Recognition)
+class ImageImportService extends ImportService {
+  // TODO: Initialize text recognizer when implementing
+  // final textRecognizer = TextRecognizer();
+
+  /// Extracts text from an image using OCR
+  ///
+  /// [path] - Absolute file path to the image
+  /// Returns extracted text as a String
+  /// Throws [FileSystemException] if file doesn't exist
+  /// Throws [Exception] if OCR fails
+  @override
+  Future<String> extractText(String path) async {
+    // TODO: Implement OCR extraction
+    //
+    // final inputImage = InputImage.fromFilePath(path);
+    // final recognizedText = await textRecognizer.processImage(inputImage);
+    // return recognizedText.text;
+
+    throw UnimplementedError('Image OCR will be implemented in Phase 5');
+  }
+
+  /// Validates that the image file exists and has valid image extension
+  @override
+  Future<bool> validate(String path) async {
+    final validExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp'];
+    final extension = path.toLowerCase().substring(path.lastIndexOf('.'));
+
+    if (!validExtensions.contains(extension)) {
+      return false;
+    }
+
+    final file = File(path);
+    return await file.exists();
+  }
+
+  /// Clean up text recognizer resources
+  @override
+  Future<void> dispose() async {
+    // TODO: Uncomment when implementing
+    // await textRecognizer.close();
+  }
 }

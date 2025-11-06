@@ -1,46 +1,58 @@
 import 'package:flutter/material.dart';
-import 'package:cipher_app/services/import/import_service_base.dart';
+import 'package:cipher_app/services/import/image_import_service.dart';
+import 'package:cipher_app/services/import/pdf_import_service.dart';
+
+enum ImportType { text, pdf, image }
 
 class ImportProvider extends ChangeNotifier {
-  final ImportServiceBase _importService = ImportServiceBase();
+  final PDFImportService _pdfService = PDFImportService();
+  final ImageImportService _imageService = ImageImportService();
 
-  String? _importText;
+  String? _importedText;
   bool _isImporting = false;
   String? _error;
+  ImportType? _importType;
 
-  String? get importText => _importText;
+  String? get importedText => _importedText;
   bool get isImporting => _isImporting;
   String? get error => _error;
 
-  /// Initiates the import process from the provided text.
-  Future<void> importFromText(String text) async {
-    if (text.isEmpty) {
-      _error = 'Texto de importação vazio';
-      notifyListeners();
-      return;
-    }
+  /// Sets the import type (text, pdf, image).
+  void setImportType(ImportType type) {
+    _importType = type;
+  }
 
-    if (isImporting) {
-      _error = 'Já está em processo de importação';
-      notifyListeners();
-      return;
-    }
+  /// Imports text based on the selected import type.
+  Future<void> importText(String data) async {
+    if (_isImporting) return;
 
     _isImporting = true;
     _error = null;
     notifyListeners();
 
     try {
-      await _importService.importCipherFromText(text);
+      switch (_importType) {
+        case ImportType.text:
+          _importedText = data;
+          break;
+        case ImportType.pdf:
+          _importedText = await _pdfService.extractText(data);
+          break;
+        case ImportType.image:
+          _importedText = await _imageService.extractText(data);
+          break;
+        default:
+          throw Exception('Import type not set');
+      }
     } catch (e) {
-      _error = 'Falha ao importar: $e';
+      _error = e.toString();
     } finally {
       _isImporting = false;
       notifyListeners();
     }
   }
 
-  /// Clears the import error.
+  /// Clears any existing error.
   void clearError() {
     _error = null;
     notifyListeners();

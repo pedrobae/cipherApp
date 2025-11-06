@@ -1,15 +1,15 @@
-import 'package:cipher_app/services/import/image_import_service.dart';
-import 'package:cipher_app/services/import/pdf_import_service.dart';
-import 'package:cipher_app/services/import/text_import_service.dart';
+abstract class ImportService {
+  /// Extracts raw text from the import source.
+  ///
+  /// [path] - File path or identifier for the source
+  /// Returns the extracted text as a String
+  /// Throws exception if extraction fails
+  Future<String> extractText(String path);
 
-class ImportServiceBase {
-  final TextImportService textImportService = TextImportService();
-  final PDFImportService pdfImportService = PDFImportService();
-  final ImageImportService imageImportService = ImageImportService();
-
-  // TODO implementation for coordinating different import services
-
-  Future<void> importCipherFromText(String text) async {
-    await textImportService.importFromText(text);
+  /// Validates if the file/source is accessible and valid
+  Future<bool> validate(String path) async {
+    return path.isNotEmpty;
   }
+
+  Future<void> dispose() async {}
 }

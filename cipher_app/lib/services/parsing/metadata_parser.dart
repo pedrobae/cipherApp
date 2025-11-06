@@ -2,7 +2,6 @@ import 'package:cipher_app/models/domain/parsing_cipher.dart';
 
 class MetadataParser {
   Future<void> parseMetadata(ParsingCipher cipher) async {
-    final rawText = cipher.rawText;
     await Future.delayed(
       const Duration(seconds: 1),
     ); // Delay for UI testing purposes

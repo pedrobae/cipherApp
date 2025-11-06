@@ -21,6 +21,7 @@ dependencies:
   flutter_colorpicker: ^1.0.3
   shared_preferences: ^2.2.2
   flutter_speed_dial: ^7.0.0
+  path_provider: ^2.1.1
   firebase_core: ^4.1.1
   cloud_firestore: ^6.0.2
   firebase_auth: ^6.1.0

@@ -1,12 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:cipher_app/services/import/image_import_service.dart';
 import 'package:cipher_app/services/import/pdf_import_service.dart';
+import 'package:cipher_app/services/import/import_debug_service.dart';
 
 enum ImportType { text, pdf, image }
 
 class ImportProvider extends ChangeNotifier {
   final PDFImportService _pdfService = PDFImportService();
   final ImageImportService _imageService = ImageImportService();
+  final ImportDebugService _debugService = ImportDebugService();
 
   String? _importedText;
   bool _isImporting = false;
@@ -59,6 +61,15 @@ class ImportProvider extends ChangeNotifier {
           break;
         default:
           throw Exception('Import type not set');
+      }
+
+      // 🔍 DEBUG: Save imported text for parser development analysis
+      if (_importedText != null && _importedText!.isNotEmpty) {
+        await _debugService.saveImportSample(
+          text: _importedText!,
+          importType: getImportType().toLowerCase(),
+          sourceFileName: _selectedFile,
+        );
       }
     } catch (e) {
       _error = e.toString();

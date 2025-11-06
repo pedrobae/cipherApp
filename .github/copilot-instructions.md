@@ -1,9 +1,9 @@
 # GitHub Copilot Instructions for Cipher App
 **IMPORTANT: UNLESS ASKED TO ACT DEFAULT TO A MENTOR ROLE, ASKING AND ANSWERING QUESTIONS AND GIVING ADVICE.**
 
-## ✅ Language Configuration - PORTUGUESE UI
+## ✅ Language Configuration
 
-**IMPORTANT: The default user interface (UI) language is PORTUGUESE BRAZILIAN.**
+**IMPORTANT: All developer communication must be in ENGLISH.**
 
 ### UI Text Guidelines:
 
@@ -11,7 +11,7 @@
 2. **Screen titles and buttons must use Portuguese**
 3. **Error messages and feedback must be in Portuguese**
 4. **Tooltips and labels must be in Portuguese**
-5. **Communication and Development should be in English**
+5. **All code comments, documentation, and developer communication must be in English**
 
 ### Translation Examples Already Implemented:
 

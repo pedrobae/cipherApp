@@ -10,7 +10,7 @@ class ImportDebugService {
 
   /// Saves imported text to a debug file for analysis.
   ///
-  /// Files are saved in app's documents directory: debug_imports/
+  /// Files are saved in app's support directory: debug_imports/
   /// Format: import_YYYYMMDD_HHMMSS_[type]_[source].txt
   Future<void> saveImportSample({
     required String text,
@@ -28,14 +28,11 @@ class ImportDebugService {
           '${_pad(now.hour)}${_pad(now.minute)}${_pad(now.second)}';
 
       // Build filename
-      final sourcePart = sourceFileName != null
-          ? '_${_sanitizeFilename(sourceFileName)}'
-          : '';
-      final filename = 'import_${timestamp}_$importType$sourcePart.txt';
+      final filename = 'import_${timestamp}_$importType.txt';
 
-      // Get app documents directory (works on all platforms)
-      final appDocDir = await getApplicationDocumentsDirectory();
-      final debugDir = path.join(appDocDir.path, 'debug_imports');
+      // Get app support directory (more reliable on Android)
+      final appSupportDir = await getApplicationSupportDirectory();
+      final debugDir = path.join(appSupportDir.path, 'debug_imports');
 
       // Ensure directory exists
       final dir = Directory(debugDir);
@@ -64,6 +61,7 @@ Lines: ${'\n'.allMatches(text).length + 1}
       await file.writeAsString(header + text);
 
       debugPrint('✅ Import sample saved: $filename');
+      debugPrint('📂 Location: $filePath');
     } catch (e) {
       debugPrint('⚠️ Failed to save import sample: $e');
       // Don't throw - this is just debug functionality
@@ -73,21 +71,13 @@ Lines: ${'\n'.allMatches(text).length + 1}
   /// Pads single digit numbers with leading zero.
   String _pad(int number) => number.toString().padLeft(2, '0');
 
-  /// Sanitizes filename by removing invalid characters.
-  String _sanitizeFilename(String filename) {
-    return filename
-        .replaceAll(RegExp(r'[<>:"/\\|?*]'), '_')
-        .replaceAll(' ', '_')
-        .toLowerCase();
-  }
-
   /// Lists all saved import samples (useful for analysis).
   Future<List<FileSystemEntity>> listSavedSamples() async {
     if (kIsWeb) return [];
 
     try {
-      final appDocDir = await getApplicationDocumentsDirectory();
-      final debugDir = path.join(appDocDir.path, 'debug_imports');
+      final appSupportDir = await getApplicationSupportDirectory();
+      final debugDir = path.join(appSupportDir.path, 'debug_imports');
       final dir = Directory(debugDir);
 
       if (!await dir.exists()) return [];
@@ -107,8 +97,8 @@ Lines: ${'\n'.allMatches(text).length + 1}
     if (kIsWeb) return;
 
     try {
-      final appDocDir = await getApplicationDocumentsDirectory();
-      final debugDir = path.join(appDocDir.path, 'debug_imports');
+      final appSupportDir = await getApplicationSupportDirectory();
+      final debugDir = path.join(appSupportDir.path, 'debug_imports');
       final dir = Directory(debugDir);
 
       if (!await dir.exists()) return;

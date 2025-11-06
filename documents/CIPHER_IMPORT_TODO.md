@@ -16,28 +16,7 @@
 ---
 
 ## 📱 FASE 2: UI DE IMPORTAÇÃO
-### 2.2 Criar Dialog de Importação de Texto
-- [ ] **Criar** `lib/widgets/dialogs/import_text_dialog.dart`
-  - `TextFormField` grande (maxLines: 20) para colar texto
-  - Botão "Processar e Importar"
-  - Executa parsing → popula provider → fecha dialog
-  - Usuário volta para `EditCipher` com seções já carregadas
-
-### 2.3 Refatorar EditCipher para Suportar Modo "Pós-Importação"
-- [ ] **Modificar** `lib/screens/cipher/cipher_editor.dart`
-  - Adicionar botão "Importar" no AppBar quando `_isNewVersion || _isNewCipher`
-  - Botão abre `ImportMethodDialog`
-  - **ESTRATÉGIA**: Não criar tela de preview separada, usar editor existente
-- [ ] **Modificar** `lib/providers/version_provider.dart`
-  - Adicionar método `loadImportedSections(List<ParsedSection> sections)`
-  - Popula `currentVersion.sections` e `songStructure`
-  - Mantém flag `_isImported` para indicar origem dos dados
-  - Chama `notifyListeners()` para atualizar UI
-- [ ] **Adicionar** banner informativo no VersionForm (opcional mas recomendado)
-  - Se `_isImported == true`, mostrar `MaterialBanner` no topo:
-  - "✨ Cifra importada! Revise as seções e edite conforme necessário."
-  - Botão "Entendi" remove banner (seta flag para false)
-  - Cor diferenciada para destacar
+### 2.3 Parser Screen
 
 ### 2.4 Fluxo de Importação Simplificado
 **Fluxo Completo**:
@@ -69,17 +48,6 @@ Usuario revisa/edita seções no editor normal
       ↓
 [Botão Salvar] → Persiste no DB (confirmação implícita)
 ```
-
-**Benefícios desta Abordagem**:
-- ✅ Reutiliza 100% da UI de edição existente
-- ✅ Usuário pode editar imediatamente após importação
-- ✅ Botão "Salvar" serve como confirmação natural
-- ✅ Não precisa de tela de preview separada (menos código)
-- ✅ Menos navegação entre telas = UX mais fluida
-- ✅ Aproveita validação e features do editor existente
-- ✅ Consistência: mesma experiência para criar manualmente ou importar
-
----
 
 ## 🎯 FASE 3: PARSING INTELIGENTE
 

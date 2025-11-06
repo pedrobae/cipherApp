@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import 'package:cipher_app/helpers/chords/chord_song.dart';
 import 'package:cipher_app/helpers/chords/chord_transposer.dart';
 import 'package:cipher_app/providers/layout_settings_provider.dart';
@@ -37,32 +36,37 @@ class LineView extends StatelessWidget {
         double endOfChord = 0.0;
 
         return Stack(
+          clipBehavior: Clip.none,
           children: [
-            Text(line, style: lyricStyle),
-            Positioned.fill(
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: chords.map((chord) {
-                  final String chordToShow = settings.transposeAmount != 0
-                      ? transposer.transpose(chord.name)
-                      : chord.name;
-                  (xOffset, yOffset, carryOver, endOfChord) = chord
-                      .calculateOffsetForChord(
-                        lyricStyle,
-                        constraints.maxWidth,
-                        previousCarryOver,
-                        endOfPreviousChord,
-                      );
-                  previousCarryOver = carryOver;
-                  endOfPreviousChord = endOfChord;
-                  return Positioned(
-                    left: xOffset,
-                    top: yOffset,
-                    child: Text(chordToShow, style: chordStyle),
-                  );
-                }).toList(),
+            Positioned(
+              child: Text(
+                line,
+                style: lyricStyle,
+                textHeightBehavior: TextHeightBehavior(
+                  applyHeightToFirstAscent: true,
+                  applyHeightToLastDescent: false,
+                ),
               ),
             ),
+            ...chords.map((chord) {
+              final String chordToShow = settings.transposeAmount != 0
+                  ? transposer.transpose(chord.name)
+                  : chord.name;
+              (xOffset, yOffset, carryOver, endOfChord) = chord
+                  .calculateOffsetForChord(
+                    lyricStyle,
+                    constraints.maxWidth,
+                    previousCarryOver,
+                    endOfPreviousChord,
+                  );
+              previousCarryOver = carryOver;
+              endOfPreviousChord = endOfChord;
+              return Positioned(
+                left: xOffset,
+                top: yOffset,
+                child: Text(chordToShow, style: chordStyle),
+              );
+            }),
           ],
         );
       },

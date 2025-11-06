@@ -29,17 +29,25 @@ class ChordProView extends StatelessWidget {
     // CHECKS FILTERS - chords and lyrics
     if (ls.showChords && ls.showLyrics) {
       for (int i = 0; i < parsedSong.linesMap.length; i++) {
-        sectionChildren.add(
-          LineView(
-            chords: parsedSong.chordsMap[i] ?? [],
-            line: parsedSong.linesMap[i] ?? '',
-            chordStyle: ls.chordTextStyle,
-            lyricStyle: ls.lyricTextStyle,
-          ),
-        );
-        sectionChildren.add(
-          SizedBox(height: ls.lyricTextStyle.fontSize! * 0.8),
-        ); // Spacing between broken lines
+        if (parsedSong.linesMap[i] == null ||
+            parsedSong.linesMap[i]!.trim().isEmpty) {
+          List<Text> rowChildren = [];
+          for (int i = 0; i < parsedSong.chordsMap.length; i++) {
+            for (var chord in parsedSong.chordsMap[i]!) {
+              rowChildren.add(Text(chord.name, style: ls.chordTextStyle));
+            }
+          }
+          sectionChildren.add(Row(spacing: 5, children: rowChildren));
+        } else {
+          sectionChildren.add(
+            LineView(
+              chords: parsedSong.chordsMap[i] ?? [],
+              line: parsedSong.linesMap[i] ?? '',
+              chordStyle: ls.chordTextStyle,
+              lyricStyle: ls.lyricTextStyle,
+            ),
+          );
+        }
       }
     } else if (ls.showLyrics) {
       for (int i = 0; i < parsedSong.linesMap.length; i++) {
@@ -57,10 +65,11 @@ class ChordProView extends StatelessWidget {
           rowChildren.add(Text(chord.name, style: ls.chordTextStyle));
         }
       }
-      return Row(spacing: 5, children: rowChildren);
+      sectionChildren.add(Row(spacing: 5, children: rowChildren));
     }
 
     return Column(
+      spacing: ls.lyricTextStyle.fontSize! * 0.8,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: sectionChildren,
     );

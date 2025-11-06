@@ -1,3 +1,4 @@
+import 'package:cipher_app/screens/cipher/import/cipher_parsing.dart';
 import 'package:flutter/material.dart';
 import 'package:cipher_app/providers/import_provider.dart';
 import 'package:provider/provider.dart';
@@ -86,7 +87,15 @@ class _ImportTextScreenState extends State<ImportTextScreen> {
                     onPressed: () async {
                       final text = _importTextController.text;
                       if (text.isNotEmpty) {
-                        await importProvider.importText(text);
+                        final navigator = Navigator.of(context);
+                        await importProvider.importText(data: text);
+                        // Navigate to parsing screen
+                        navigator.push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                CipherParsing(source: ImportType.text),
+                          ),
+                        );
                       }
                     },
                     icon: const Icon(Icons.import_export),

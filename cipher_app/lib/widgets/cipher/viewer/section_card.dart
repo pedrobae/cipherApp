@@ -23,6 +23,7 @@ class CipherSectionCard extends StatelessWidget {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 8,
       children: [
         Row(
           children: [
@@ -55,7 +56,6 @@ class CipherSectionCard extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 8),
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(12),
@@ -69,7 +69,6 @@ class CipherSectionCard extends StatelessWidget {
           ),
           child: ChordProView(song: sectionText, maxWidth: double.infinity),
         ),
-        const SizedBox(height: 4),
       ],
     );
   }

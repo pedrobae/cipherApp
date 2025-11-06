@@ -53,11 +53,6 @@ class AdminScreen extends StatelessWidget {
                       ),
                       onTap: () {
                         switch (items[index].title) {
-                          case 'Importação em Massa':
-                            Navigator.of(
-                              context,
-                            ).pushNamed(AppRoutes.adminBulkImport);
-                            break;
                           case 'Gerenciamento de Usuários':
                             Navigator.of(
                               context,

@@ -17,7 +17,6 @@ class AppRoutes {
   static const String login = '/login';
   static const String signUp = '/signup';
   static const String admin = '/admin';
-  static const String adminBulkImport = '/admin/bulk-import';
   static const String adminUserManagement = '/admin/user-management';
 
   static Map<String, WidgetBuilder> routes = {

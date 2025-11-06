@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
 
 class Song {
@@ -47,7 +48,7 @@ class Chord {
 
         if (previousPiece.width > lineWidth) {
           // Word doesn't fit, start new line
-          sameLineLyricsBefore = wordBefore;
+          sameLineLyricsBefore = '$wordBefore$character';
           lineNumber++;
         } else {
           sameLineLyricsBefore = '$sameLineLyricsBefore$character';
@@ -135,6 +136,12 @@ class Chord {
 
     double yOffset = lineHeight * (lineNumber + offset);
     double endOfChord = chordPainter.width + xOffset;
+    if (kDebugMode) {
+      // Debug print to trace offsets
+      print(
+        '''Chord: $name\txOffset: ${xOffset.truncate()}\tcarryOver: ${carryOver.truncate()}\tLyrics: "$lyricsBefore"''',
+      );
+    }
 
     return (xOffset, yOffset, carryOver, endOfChord);
   }

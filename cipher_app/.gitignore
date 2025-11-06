@@ -12,6 +12,7 @@
 .swiftpm/
 migrate_working_dir/
 .lib/test
+.debug_imports_local/
 
 # IntelliJ related
 *.iml

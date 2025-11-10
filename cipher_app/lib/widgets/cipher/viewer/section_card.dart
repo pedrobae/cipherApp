@@ -21,6 +21,9 @@ class CipherSectionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final ls = context.watch<LayoutSettingsProvider>();
 
+    if (sectionText.trim().isEmpty) {
+      return SizedBox.shrink();
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 8,
@@ -34,6 +37,7 @@ class CipherSectionCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Row(
+                spacing: 8,
                 children: [
                   Text(
                     sectionCode,
@@ -43,7 +47,6 @@ class CipherSectionCard extends StatelessWidget {
                       fontSize: ls.fontSize,
                     ),
                   ),
-                  SizedBox(width: 8),
                   Text(
                     sectionType,
                     style: TextStyle(

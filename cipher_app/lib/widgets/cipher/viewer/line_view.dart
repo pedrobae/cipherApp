@@ -30,10 +30,8 @@ class LineView extends StatelessWidget {
       builder: (context, constraints) {
         double xOffset;
         double yOffset;
-        double carryOver = 0.0;
-        double previousCarryOver = 0.0;
-        double endOfPreviousChord = 0.0;
         double endOfChord = 0.0;
+        int lineNumber = 0;
 
         return Stack(
           clipBehavior: Clip.none,
@@ -52,15 +50,14 @@ class LineView extends StatelessWidget {
               final String chordToShow = settings.transposeAmount != 0
                   ? transposer.transpose(chord.name)
                   : chord.name;
-              (xOffset, yOffset, carryOver, endOfChord) = chord
+              (xOffset, yOffset, endOfChord, lineNumber) = chord
                   .calculateOffsetForChord(
                     lyricStyle,
+                    chordStyle,
+                    lineNumber,
                     constraints.maxWidth,
-                    previousCarryOver,
-                    endOfPreviousChord,
+                    endOfChord,
                   );
-              previousCarryOver = carryOver;
-              endOfPreviousChord = endOfChord;
               return Positioned(
                 left: xOffset,
                 top: yOffset,

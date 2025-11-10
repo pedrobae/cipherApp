@@ -26,12 +26,18 @@ class Chord {
     this.carryOver = 0.0,
   ]);
 
-  (double, double, double, double) calculateOffsetForChord(
+  (double, double, double, int) calculateOffsetForChord(
     TextStyle textStyle,
+    TextStyle chordStyle,
+    int previousLine,
     double lineWidth,
-    double previousCarryOver,
     double endOfPreviousChord,
   ) {
+    if (name == 'G/A') {
+      // Debug breakpoint for specific chord
+      debugPrint('Calculating offset for G/A chord');
+    }
+
     /// GOES THROUGH EACH CHARACTER CHECKING THE LAST WORD FOR LINE BREAKS
     /// SAVES THE SAME LINE LYRICS BEFORE
     String sameLineLyricsBefore = '';
@@ -93,7 +99,7 @@ class Chord {
 
     /// TEXT PAINTER FOR THE CHORD
     final chordPainter = TextPainter(
-      text: TextSpan(text: name, style: textStyle),
+      text: TextSpan(text: name, style: chordStyle),
       textDirection: TextDirection.ltr,
       maxLines: 1,
     )..layout(maxWidth: double.infinity, minWidth: 0);
@@ -107,11 +113,14 @@ class Chord {
 
     double xOffset = sameLineTextPainter.width;
 
-    /// CHECK IF CARRYOVER IS LARGER THAN THE DIFFERENCE OF xOFFSETs
-    if ((previousCarryOver + endOfPreviousChord) > (xOffset)) {
-      xOffset += previousCarryOver;
-      carryOver += previousCarryOver;
+    /// CHECK IF endOfPreviousChord IS LARGER THAN THE xOFFSET plus a minimum GAP
+    int minimumGap = 4;
+    if (endOfPreviousChord + minimumGap > xOffset &&
+        lineNumber == previousLine) {
+      xOffset = endOfPreviousChord + minimumGap;
     }
+
+    xOffset = xOffset % lineWidth;
 
     // /// CHECK IF CHORD LINE BREAKS
     // if (chordPainter.width > lineWidth - xOffset) {
@@ -129,11 +138,6 @@ class Chord {
       }
     }
 
-    /// CHECK IF CHORD IS LARGER THAN THE NEXT WORD TO PUSH THE NEXT CHORD RIGHT
-    if (nextWordPainter.width < chordPainter.width) {
-      carryOver += chordPainter.width - nextWordPainter.width + 4;
-    }
-
     double yOffset = lineHeight * (lineNumber + offset);
     double endOfChord = chordPainter.width + xOffset;
     if (kDebugMode) {
@@ -143,6 +147,6 @@ class Chord {
       );
     }
 
-    return (xOffset, yOffset, carryOver, endOfChord);
+    return (xOffset, yOffset, endOfChord, lineNumber);
   }
 }

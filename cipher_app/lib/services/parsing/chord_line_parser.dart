@@ -59,8 +59,10 @@ class ChordLineParser {
       }
       // Add corresponding lyric character if available
       if (lyricIndex < lyricLine.length) {
-        mergedLine.write(lyricLine[lyricIndex]);
-        lyricIndex++;
+        while (lyricIndex <= i && lyricIndex < lyricLine.length) {
+          mergedLine.write(lyricLine[lyricIndex]);
+          lyricIndex++;
+        }
       }
     }
     // Append any remaining lyrics
@@ -108,7 +110,7 @@ class ChordLineParser {
     }
 
     // Additional heuristic: low average word length and few words
-    if (line['avgWordLength'] < 3.0 &&
+    if (line['avgWordLength'] < 2.0 &&
         line['wordCount'] > 0 &&
         line['wordCount'] <= 6) {
       return true;

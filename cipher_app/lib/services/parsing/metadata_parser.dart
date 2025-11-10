@@ -5,7 +5,8 @@ class MetadataParser {
     await Future.delayed(
       const Duration(seconds: 1),
     ); // Delay for UI testing purposes
-    // TODO: Implement metadata parsing logic
+
+    // TODO: Implement metadata parsing
 
     //
     cipher.metadata = {

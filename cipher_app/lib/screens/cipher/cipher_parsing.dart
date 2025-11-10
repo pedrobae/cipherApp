@@ -15,8 +15,8 @@ class _CipherParsingState extends State<CipherParsing> {
   void initState() {
     // Start parsing when the screen is initialized
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final text = context.read<ImportProvider>().importedText;
-      context.read<ParserProvider>().parseCipher(text!);
+      final cipher = context.read<ImportProvider>().importedCipher;
+      context.read<ParserProvider>().parseCipher(cipher!);
     });
     super.initState();
   }

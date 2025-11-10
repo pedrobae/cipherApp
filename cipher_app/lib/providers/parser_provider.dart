@@ -39,10 +39,10 @@ class ParserProvider extends ChangeNotifier {
     return 'Not parsing';
   }
 
-  Future<void> parseCipher(String text) async {
+  Future<void> parseCipher(ParsingCipher cipher) async {
     if (_isParsing) return;
 
-    _cipher = ParsingCipher(rawText: text);
+    _cipher = cipher;
     _isParsing = true;
     _hasParsedMetadata = false;
     _hasParsedSections = false;
@@ -51,6 +51,9 @@ class ParserProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      // Calculate lines
+      _parsingService.calculateLines(_cipher!);
+      _parsingService.debugPrintCalcs(_cipher!);
       // Parse metadata
       await _parseMetadata();
 

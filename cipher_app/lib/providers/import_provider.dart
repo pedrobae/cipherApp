@@ -1,3 +1,4 @@
+import 'package:cipher_app/models/domain/parsing_cipher.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cipher_app/services/import/image_import_service.dart';
 import 'package:cipher_app/services/import/pdf_import_service.dart';
@@ -10,13 +11,13 @@ class ImportProvider extends ChangeNotifier {
   final ImageImportService _imageService = ImageImportService();
   final ImportDebugService _debugService = ImportDebugService();
 
-  String? _importedText;
+  ParsingCipher? _importedCipher;
   bool _isImporting = false;
   String? _selectedFile;
   String? _error;
   ImportType? _importType;
 
-  String? get importedText => _importedText;
+  ParsingCipher? get importedCipher => _importedCipher;
   String? get selectedFile => _selectedFile;
   bool get isImporting => _isImporting;
   String? get error => _error;
@@ -51,22 +52,25 @@ class ImportProvider extends ChangeNotifier {
     try {
       switch (_importType) {
         case ImportType.text:
-          _importedText = data;
+          _importedCipher = ParsingCipher(rawText: data ?? '');
           break;
         case ImportType.pdf:
-          _importedText = await _pdfService.extractText(selectedFile!);
+          final pdfLines = await _pdfService.extractTextWithFormatting(
+            selectedFile!,
+          );
+
+          _importedCipher = ParsingCipher.fromPdfLines(pdfLines);
           break;
         case ImportType.image:
-          _importedText = await _imageService.extractText(selectedFile!);
+          // Image import not yet implemented
           break;
         default:
           throw Exception('Import type not set');
       }
 
-      // 🔍 DEBUG: Save imported text for parser development analysis
-      if (_importedText != null && _importedText!.isNotEmpty) {
+      if (_importedCipher != null && _importedCipher!.rawText.isNotEmpty) {
         await _debugService.saveImportSample(
-          text: _importedText!,
+          text: _importedCipher!.rawText,
           importType: getImportType().toLowerCase(),
           sourceFileName: _selectedFile,
         );

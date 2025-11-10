@@ -56,7 +56,7 @@ class ParserProvider extends ChangeNotifier {
         _parsingService.separateLines(_cipher!);
       }
       // Calculate lines
-      _parsingService.calculateLines(_cipher!);
+      _parsingService.calculateLines(_cipher!.lines);
       _parsingService.debugPrintCalcs(_cipher!);
 
       // Parse sections

@@ -10,9 +10,16 @@ class ChordLineParser {
     // Iterates through each section of the cipher creating Section objects
     List<Section> parsedSections = [];
     List<String> songStructure = [];
+    int incrementalDefaultCode = 0;
     for (var section in cipher.sections) {
-      String code = getCodeFromLabel(section['label'] as String) ?? '';
+      if (section['suggestedTitle'] == 'Metadata') continue;
 
+      String? code = getCodeFromLabel(section['suggestedTitle']);
+      if (code == null) {
+        // Assign a default code if none is found
+        code = incrementalDefaultCode.toString();
+        incrementalDefaultCode++;
+      }
       // Keep track of song structure
       songStructure.add(code);
 
@@ -24,7 +31,7 @@ class ChordLineParser {
         versionId: -1 /* ID will be set on database insertion */,
         contentCode: code,
         contentColor: defaultSectionColors[code] ?? Colors.grey,
-        contentType: section['label'] as String,
+        contentType: section['suggestedTitle'] as String,
         contentText: _buildContent(section),
       );
 
@@ -96,7 +103,7 @@ class ChordLineParser {
     List<RegExpMatch> matches = chordRegex.allMatches(line['text']).toList();
 
     // Heuristic: compare word count and match count
-    if (matches.length >= line['wordCount'] / 2) {
+    if (matches.length >= (line['wordCount'] / 2)) {
       return true;
     }
 
@@ -113,6 +120,7 @@ class ChordLineParser {
   String _buildContent(Map<String, dynamic> section) {
     String content = '';
     // Iterate through lines in the section, creating the content
+
     for (int index = 0; index < section['lines'].length; index++) {
       var line = section['lines'][index];
       var nextLine = (index + 1 < section['lines'].length)

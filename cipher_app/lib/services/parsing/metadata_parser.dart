@@ -13,14 +13,15 @@ class MetadataParser {
       if (_checkForHyphens(cipher, section)) foundMetadata = true;
 
       // Mark section as metadata if any metadata found
-      if (foundMetadata) section['suggestedLabel'] = 'metadata';
+      if (foundMetadata) section['suggestedLabel'] = 'Metadata';
     }
 
     // If title is missing, checks the first couple lines looking at the number of words and average word length
     if (cipher.metadata['title'] == null || cipher.metadata['title']!.isEmpty) {
       for (var line in cipher.lines.take(5)) {
         if (line['wordCount'] <= 7 && line['avgWordLength'] >= 3.0) {
-          cipher.metadata['title'] = line;
+          cipher.metadata['title'] = line['text'];
+          cipher.sections[0]['suggestedLabel'] = 'Metadata';
           break;
         }
       }

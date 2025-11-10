@@ -15,13 +15,17 @@ class ParsingServiceBase {
 
   Future<void> parseSections(ParsingCipher cipher) async {
     await sectionParser.parseSections(cipher);
+    separateSectionLines(cipher);
+    for (var section in cipher.sections) {
+      calculateLines(section['lines']);
+    }
   }
 
   Future<void> parseChords(ParsingCipher cipher) async {
     await chordLineParser.parseChords(cipher);
   }
 
-  void separateLines(ParsingCipher cipher) {
+  void separateSectionLines(ParsingCipher cipher) {
     for (var section in cipher.sections) {
       List<Map<String, dynamic>> lines = [];
       section['content']
@@ -32,21 +36,29 @@ class ParsingServiceBase {
     }
   }
 
-  void calculateLines(ParsingCipher cipher) {
-    for (var section in cipher.sections) {
-      for (var line in section['lines']) {
-        // Split line text into words using whitespace as delimiter
-        List<String> words = line['text'].split(RegExp(r'\s+')).toList();
+  void separateLines(ParsingCipher cipher) {
+    List<Map<String, dynamic>> lines = [];
+    int lineNumber = 0;
+    cipher.rawText
+        .split('\n')
+        .map((line) => lines.add({'text': line, 'lineNumber': lineNumber++}))
+        .toList();
+    cipher.lines = lines;
+  }
 
-        line['wordCount'] = words.length;
+  void calculateLines(List<Map<String, dynamic>> lines) {
+    for (var line in lines) {
+      // Split line text into words using whitespace as delimiter
+      List<String> words = line['text'].split(RegExp(r'\s+')).toList();
 
-        // Calculate average word length
-        double avgWordLength = words.isNotEmpty
-            ? words.map((w) => w.length).reduce((a, b) => a + b) / words.length
-            : 0.0;
+      line['wordCount'] = words.length;
 
-        line['avgWordLength'] = avgWordLength;
-      }
+      // Calculate average word length
+      double avgWordLength = words.isNotEmpty
+          ? words.map((w) => w.length).reduce((a, b) => a + b) / words.length
+          : 0.0;
+
+      line['avgWordLength'] = avgWordLength;
     }
   }
 
@@ -55,12 +67,10 @@ class ParsingServiceBase {
       print(
         '--- Line Calculations ---\n\tLine Number\tWord Count\tAvg Word Length',
       );
-      for (var section in cipher.sections) {
-        for (var line in section['lines']) {
-          print(
-            '\t${line['lineNumber']}\t\t${line['wordCount']}\t\t${line['avgWordLength'].toStringAsFixed(2)}',
-          );
-        }
+      for (var line in cipher.lines) {
+        print(
+          '\t${line['lineNumber']}\t\t${line['wordCount']}\t\t${line['avgWordLength'].toStringAsFixed(2)}',
+        );
       }
     }
   }

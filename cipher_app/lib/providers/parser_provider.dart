@@ -1,4 +1,5 @@
 import 'package:cipher_app/models/domain/parsing_cipher.dart';
+import 'package:cipher_app/providers/import_provider.dart';
 import 'package:cipher_app/services/parsing/parsing_service_base.dart';
 import 'package:flutter/material.dart';
 
@@ -51,14 +52,18 @@ class ParserProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      if (_cipher!.importType == ImportType.text) {
+        _parsingService.separateLines(_cipher!);
+      }
       // Calculate lines
       _parsingService.calculateLines(_cipher!);
       _parsingService.debugPrintCalcs(_cipher!);
-      // Parse metadata
-      await _parseMetadata();
 
       // Parse sections
       await _parseSections();
+
+      // Parse metadata
+      await _parseMetadata();
 
       // Parse chords
       await _parseChords();

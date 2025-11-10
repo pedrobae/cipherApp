@@ -19,6 +19,7 @@ const List<Color> availableColors = [
 /// Predefined section types with Portuguese display names
 const Map<String, String> predefinedSectionTypes = {
   'I': 'Intro',
+  'V': 'Verso',
   'V1': 'Verso 1',
   'V2': 'Verso 2',
   'V3': 'Verso 3',
@@ -40,6 +41,7 @@ const Map<String, String> predefinedSectionTypes = {
 /// Default colors for predefined sections
 const Map<String, Color> defaultSectionColors = {
   'I': Colors.purple,
+  'V': Colors.blue,
   'V1': Colors.blue,
   'V2': Colors.blue,
   'V3': Colors.blue,
@@ -57,3 +59,16 @@ const Map<String, Color> defaultSectionColors = {
   'N': Colors.grey,
   'T': Colors.teal,
 };
+
+String? getCodeFromLabel(String label) {
+  String? code;
+
+  for (var entry in predefinedSectionTypes.entries) {
+    if (entry.value.toLowerCase() == label.toLowerCase()) {
+      code = entry.key;
+      break;
+    }
+  }
+
+  return code;
+}

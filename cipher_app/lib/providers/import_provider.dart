@@ -52,7 +52,10 @@ class ImportProvider extends ChangeNotifier {
     try {
       switch (_importType) {
         case ImportType.text:
-          _importedCipher = ParsingCipher(rawText: data ?? '');
+          _importedCipher = ParsingCipher(
+            rawText: data ?? '',
+            importType: ImportType.text,
+          );
           break;
         case ImportType.pdf:
           final pdfLines = await _pdfService.extractTextWithFormatting(

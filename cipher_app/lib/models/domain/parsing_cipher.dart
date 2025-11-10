@@ -1,23 +1,28 @@
 import 'package:cipher_app/helpers/chords/chord_song.dart';
+import 'package:cipher_app/models/domain/cipher/section.dart';
 import 'package:cipher_app/models/domain/pdf_text_line.dart';
+import 'package:cipher_app/providers/import_provider.dart';
 
 class ParsingCipher {
   final String rawText;
+  final ImportType importType;
   Map<String, dynamic> metadata;
   List<Map<String, dynamic>>
   lines; // {'lineNumber': int, 'text': String, 'avgWordLength': double,}
   List<Map<String, dynamic>>
-  sections; // {'suggestedTitle': String, 'content': String}
+  sections; // {'suggestedTitle': String, 'content': String, 'index': int, 'isDuplicate': bool}
   List<Chord> chords;
-  String chordProText;
+  List<Section> parsedSections = [];
+  List<String> songStructure = [];
 
   ParsingCipher({
     required this.rawText,
+    required this.importType,
     this.metadata = const {},
     this.lines = const [],
     this.chords = const [],
     this.sections = const [],
-    this.chordProText = '',
+    this.parsedSections = const [],
   });
 
   factory ParsingCipher.fromPdfLines(List<PdfTextLine> pdfLines) {
@@ -34,6 +39,10 @@ class ParsingCipher {
       });
     }
 
-    return ParsingCipher(rawText: buffer.toString(), lines: lines);
+    return ParsingCipher(
+      rawText: buffer.toString(),
+      lines: lines,
+      importType: ImportType.pdf,
+    );
   }
 }

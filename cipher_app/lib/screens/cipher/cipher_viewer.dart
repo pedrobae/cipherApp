@@ -41,7 +41,7 @@ class _CipherViewerState extends State<CipherViewer>
     final versionProvider = context.read<VersionProvider>();
 
     await cipherProvider.loadCipher(widget.cipherId);
-    await versionProvider.setCurrentVersion(widget.versionId);
+    await versionProvider.loadCurrentVersion(widget.versionId);
   }
 
   void _addNewVersion() {
@@ -71,7 +71,7 @@ class _CipherViewerState extends State<CipherViewer>
   void _selectVersion(int versionId) {
     if (!mounted) return;
     final versionProvider = context.read<VersionProvider>();
-    versionProvider.setCurrentVersion(versionId);
+    versionProvider.loadCurrentVersion(versionId);
   }
 
   void _showVersionSelector() {

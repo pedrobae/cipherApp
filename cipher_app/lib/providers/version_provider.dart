@@ -67,12 +67,12 @@ class VersionProvider extends ChangeNotifier {
       // Load the new ID into the version cache
       _currentVersion = versionWithCipherId.copyWith(id: versionId);
 
+      if (kDebugMode) {
+        print('Created a new version with id $versionId, for cipher $cipherId');
+      }
+
       // Insert content for this map
       await _saveSections(_currentVersion.id!, _currentVersion.sections!);
-
-      if (kDebugMode) {
-        print('Created a new version with id $versionId');
-      }
     } catch (e) {
       _error = e.toString();
       if (kDebugMode) {
@@ -116,7 +116,7 @@ class VersionProvider extends ChangeNotifier {
   }
 
   /// ===== READ - Load version from versionId =====
-  Future<void> setCurrentVersion(int versionId) async {
+  Future<void> loadCurrentVersion(int versionId) async {
     if (_isLoading) return;
 
     _isLoading = true;
@@ -480,6 +480,11 @@ class VersionProvider extends ChangeNotifier {
     }
   }
 
+  void setCurrentVersion(Version version) {
+    _currentVersion = version;
+    notifyListeners();
+  }
+
   // Get cached version by ID (returns null if not in cache)
   Version? getCachedVersion(int versionId) {
     for (var version in _versions) {
@@ -540,7 +545,15 @@ class VersionProvider extends ChangeNotifier {
       // Insert new content
       for (final entry in sections.entries) {
         if (entry.key.isNotEmpty) {
-          await _cipherRepository.insertSection(entry.value);
+          final sectionId = await _cipherRepository.insertSection(
+            entry.value.copyWith(versionId: versionId),
+          );
+
+          if (kDebugMode) {
+            print(
+              'Inserted section with code ${entry.key} and id $sectionId for version $versionId',
+            );
+          }
         }
       }
     }

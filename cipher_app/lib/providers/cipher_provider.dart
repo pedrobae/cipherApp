@@ -248,22 +248,24 @@ class CipherProvider extends ChangeNotifier {
   }
 
   /// ===== CREATE =====
-  Future<void> createCipher() async {
-    if (_isSaving) return;
+  Future<int?> createCipher() async {
+    if (_isSaving) return null;
 
     _isSaving = true;
     _error = null;
     notifyListeners();
+    int? cipherId;
 
     try {
       // Insert basic cipher info and tags
-      final cipherId = await _cipherRepository.insertPrunedCipher(
-        currentCipher,
-      );
+      cipherId = await _cipherRepository.insertPrunedCipher(currentCipher);
 
       // Load the new ID into the cache
       _currentCipher = _currentCipher.copyWith(id: cipherId);
       updateCurrentCipherInList();
+      if (kDebugMode) {
+        print('Created a new cipher with id $cipherId');
+      }
     } catch (e) {
       _error = e.toString();
       if (kDebugMode) {
@@ -275,6 +277,7 @@ class CipherProvider extends ChangeNotifier {
       await loadLocalCiphers(forceReload: true);
       notifyListeners();
     }
+    return cipherId;
   }
 
   /// Downloads cipher from cloud and inserts into local database
@@ -536,6 +539,11 @@ class CipherProvider extends ChangeNotifier {
       );
     }
     return result;
+  }
+
+  void setCurrentCipher(Cipher cipher) {
+    _currentCipher = cipher;
+    notifyListeners();
   }
 
   @override

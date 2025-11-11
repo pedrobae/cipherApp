@@ -7,7 +7,7 @@ class ChordLineParser {
   /// Parses sections from the given [ParsingCipher] and creates the finished section objects.
   Future<void> parseChords(ParsingCipher cipher) async {
     // Iterates through each section of the cipher creating Section objects
-    List<Section> parsedSections = [];
+    Map<String, Section> parsedSections = {};
     List<String> songStructure = [];
     int incrementalDefaultCode = 0;
     for (var section in cipher.sections) {
@@ -34,7 +34,7 @@ class ChordLineParser {
         contentText: _buildContent(section),
       );
 
-      parsedSections.add(parsedSection);
+      parsedSections[code] = parsedSection;
     }
 
     cipher.parsedSections = parsedSections;

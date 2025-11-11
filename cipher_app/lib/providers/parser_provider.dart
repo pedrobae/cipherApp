@@ -1,3 +1,5 @@
+import 'package:cipher_app/models/domain/cipher/cipher.dart';
+import 'package:cipher_app/models/domain/cipher/version.dart';
 import 'package:cipher_app/models/domain/parsing_cipher.dart';
 import 'package:cipher_app/providers/import_provider.dart';
 import 'package:cipher_app/services/parsing/parsing_service_base.dart';
@@ -8,6 +10,8 @@ class ParserProvider extends ChangeNotifier {
 
   ParsingCipher? _cipher;
   ParsingCipher? get cipher => _cipher;
+  Cipher? _cipherObject;
+  Cipher? get parsedCipher => _cipherObject;
 
   bool _isParsing = false;
   bool _isParsingMetadata = false;
@@ -68,6 +72,8 @@ class ParserProvider extends ChangeNotifier {
       // Parse chords
       await _parseChords();
 
+      _cipherObject = _buildCipherObject(_cipher!);
+
       _isParsing = false;
       notifyListeners();
     } catch (e) {
@@ -127,5 +133,30 @@ class ParserProvider extends ChangeNotifier {
       _isParsingChords = false;
       notifyListeners();
     }
+  }
+
+  Cipher _buildCipherObject(ParsingCipher cipher) {
+    return Cipher(
+      id: -1, // Temporary ID, to be set when saving to DB
+      title: cipher.metadata['title'] ?? 'Untitled',
+      author: cipher.metadata['author'] ?? 'Unknown Artist',
+      musicKey: cipher.metadata['key'] ?? '-',
+      tempo: cipher.metadata['tempo'] ?? '-',
+      language: cipher.metadata['language'] ?? 'Unknown',
+      isLocal: false, // Will be set when saving to DB
+      versions: _buildVersionObjects(cipher),
+    );
+  }
+
+  List<Version> _buildVersionObjects(ParsingCipher cipher) {
+    Version version = Version(
+      id: -1, // Temporary ID
+      cipherId: -1, // Temporary cipher ID
+      sections: cipher.parsedSections,
+      songStructure: cipher.songStructure,
+      versionName: 'imported',
+    );
+
+    return [version];
   }
 }

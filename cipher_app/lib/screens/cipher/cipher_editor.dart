@@ -1,3 +1,4 @@
+import 'package:cipher_app/providers/parser_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/providers/cipher_provider.dart';
@@ -9,12 +10,14 @@ class EditCipher extends StatefulWidget {
   final int? cipherId; // Null for new cipher, populated for edit
   final int? versionId; // Null for new version, populated for edit
   final bool editCipher;
+  final bool importedCipher;
 
   const EditCipher({
     super.key,
     this.cipherId,
     this.versionId,
     this.editCipher = false,
+    this.importedCipher = false,
   });
 
   @override
@@ -24,8 +27,6 @@ class EditCipher extends StatefulWidget {
 class _EditCipherState extends State<EditCipher>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  bool _isLoading = true; // To render the loading screen
-  String? _loadError;
 
   // Basic info controllers
   bool get _isNewCipher => widget.cipherId == null;
@@ -34,7 +35,7 @@ class _EditCipherState extends State<EditCipher>
   @override
   void initState() {
     super.initState();
-    if (_isNewCipher) {
+    if (_isNewCipher && !widget.importedCipher) {
       _tabController = TabController(length: 1, vsync: this);
     } else {
       _tabController = TabController(length: 2, vsync: this);
@@ -47,36 +48,35 @@ class _EditCipherState extends State<EditCipher>
   }
 
   Future<void> _loadData() async {
-    try {
-      final cipherProvider = context.read<CipherProvider>();
-      final versionProvider = context.read<VersionProvider>();
+    final cipherProvider = context.read<CipherProvider>();
+    final versionProvider = context.read<VersionProvider>();
+    final parserProvider = context.read<ParserProvider>();
 
-      if (_isNewCipher) {
-        // For new cipher, clear any existing data
-        cipherProvider.clearCurrentCipher();
-      } else {
-        // Load the cipher
-        await cipherProvider.loadCipher(widget.cipherId!);
-        if (_isNewVersion) {
-          // For new version, clear any existing data
-          versionProvider.clearCache();
-        } else {
-          // Load the version
-          await versionProvider.setCurrentVersion(widget.versionId!);
+    if (_isNewCipher) {
+      // For new cipher, clear any existing data
+      cipherProvider.clearCurrentCipher();
+      versionProvider.clearCache();
+
+      if (widget.importedCipher) {
+        // Load imported cipher data
+        final cipher = parserProvider.parsedCipher;
+        if (cipher != null) {
+          cipherProvider.setCurrentCipher(cipher);
         }
-      }
 
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
+        // Load imported version data
+        final version = cipher!.versions.first;
+        versionProvider.setCurrentVersion(version);
       }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _loadError = e.toString();
-        });
+    } else {
+      // Load the cipher
+      await cipherProvider.loadCipher(widget.cipherId!);
+      if (_isNewVersion) {
+        // For new version, clear any existing data
+        versionProvider.clearCache();
+      } else {
+        // Load the version
+        await versionProvider.loadCurrentVersion(widget.versionId!);
       }
     }
   }
@@ -110,42 +110,6 @@ class _EditCipherState extends State<EditCipher>
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    // Handle loading state
-    if (_isLoading) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text(_getAppBarTitle()),
-          backgroundColor: colorScheme.surface,
-          foregroundColor: colorScheme.onSurface,
-        ),
-        body: const Center(child: CircularProgressIndicator()),
-      );
-    }
-    // Handle error state
-    if (_loadError != null) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text(_getAppBarTitle()),
-          backgroundColor: colorScheme.surface,
-          foregroundColor: colorScheme.onSurface,
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.error_outline, size: 64, color: colorScheme.error),
-              const SizedBox(height: 16),
-              Text('Erro ao carregar dados: $_loadError'),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Voltar'),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
     _navigateStartTab();
     return Scaffold(
       appBar: AppBar(
@@ -156,7 +120,7 @@ class _EditCipherState extends State<EditCipher>
           controller: _tabController,
           tabs: [
             const Tab(text: 'Cifra', icon: Icon(Icons.info_outline)),
-            if (!_isNewCipher) ...[
+            if (!_isNewCipher || widget.importedCipher) ...[
               const Tab(text: 'Versão', icon: Icon(Icons.music_note)),
             ],
           ],
@@ -175,7 +139,7 @@ class _EditCipherState extends State<EditCipher>
               ],
             ),
           ),
-          if (!_isNewCipher) ...[
+          if (!_isNewCipher || widget.importedCipher) ...[
             // Content Tab
             SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
@@ -197,8 +161,11 @@ class _EditCipherState extends State<EditCipher>
             ),
           FloatingActionButton.extended(
             heroTag: 'save',
-            onPressed: () {
-              if (_isNewCipher) {
+            onPressed: () async {
+              if (widget.importedCipher) {
+                final cipherId = await _createCipher();
+                _createVersion(cipherId!);
+              } else if (_isNewCipher) {
                 _createCipher();
               } else if (_isNewVersion) {
                 _createVersion(widget.cipherId!);
@@ -225,9 +192,10 @@ class _EditCipherState extends State<EditCipher>
     );
   }
 
-  void _createCipher() async {
+  Future<int?> _createCipher() async {
+    int? cipherId;
     try {
-      await context.read<CipherProvider>().createCipher();
+      cipherId = await context.read<CipherProvider>().createCipher();
       if (mounted) {
         Navigator.pop(context, true); // Close screen
         ScaffoldMessenger.of(context).showSnackBar(
@@ -244,6 +212,7 @@ class _EditCipherState extends State<EditCipher>
         );
       }
     }
+    return cipherId;
   }
 
   void _createVersion(int cipherId) async {

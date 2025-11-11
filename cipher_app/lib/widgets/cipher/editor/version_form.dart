@@ -29,6 +29,12 @@ class _VersionFormState extends State<VersionForm> {
     _syncWithProviderData();
   }
 
+  @override
+  void initState() {
+    super.initState();
+    _syncWithProviderData();
+  }
+
   void _syncWithProviderData() {
     final versionProvider = Provider.of<VersionProvider>(
       context,

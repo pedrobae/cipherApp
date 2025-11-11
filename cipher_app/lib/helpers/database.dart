@@ -31,10 +31,10 @@ class DatabaseHelper {
 
       // Only seed if database existed but is empty (edge case)
       if (!isNewDatabase) {
-        final cipherCount = await db.rawQuery(
-          'SELECT COUNT(*) as count FROM cipher',
+        final infoCount = await db.rawQuery(
+          'SELECT COUNT(*) as count FROM app_info',
         );
-        final count = cipherCount.first['count'] as int;
+        final count = infoCount.first['count'] as int;
 
         if (count == 0) {
           await seedInfoDatabase(db);

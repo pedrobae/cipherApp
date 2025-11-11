@@ -68,9 +68,9 @@ class Cipher {
   }
 
   // To JSON for database
-  Map<String, dynamic> toSqLite() {
+  Map<String, dynamic> toSqLite({bool isNew = false}) {
     return {
-      'id': id,
+      'id': isNew ? null : id,
       'firebase_id': firebaseId,
       'title': title,
       'author': author,

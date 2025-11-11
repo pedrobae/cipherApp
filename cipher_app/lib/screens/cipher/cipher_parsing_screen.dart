@@ -1,8 +1,9 @@
-import 'package:cipher_app/providers/import_provider.dart';
-import 'package:cipher_app/providers/parser_provider.dart';
-import 'package:cipher_app/widgets/cipher/viewer/section_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cipher_app/providers/import_provider.dart';
+import 'package:cipher_app/providers/parser_provider.dart';
+import 'package:cipher_app/screens/cipher/cipher_editor.dart';
+import 'package:cipher_app/widgets/cipher/viewer/section_card.dart';
 
 class CipherParsingScreen extends StatefulWidget {
   const CipherParsingScreen({super.key});
@@ -29,7 +30,14 @@ class _CipherParsingScreenState extends State<CipherParsingScreen> {
       floatingActionButton: FloatingActionButton.extended(
         label: Text('Confirmar'),
         onPressed: () {
-          // Add your action here
+          // Confirm parsing and navigate back
+          Navigator.of(context).pop(); // Close the parsing screen
+          Navigator.of(context).pop(); // Close the import screen
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => EditCipher(importedCipher: true),
+            ),
+          ); // Open the cipher editor screen
         },
         icon: Icon(Icons.refresh),
       ),
@@ -104,12 +112,14 @@ class _CipherParsingScreenState extends State<CipherParsingScreen> {
 
                   if (parserProvider.hasParsedChords)
                     // --> SECTION CARDS
-                    ...parserProvider.cipher!.parsedSections.map((section) {
+                    ...parserProvider.cipher!.parsedSections.entries.map((
+                      entry,
+                    ) {
                       return CipherSectionCard(
-                        sectionCode: section.contentCode,
-                        sectionType: section.contentType,
-                        sectionText: section.contentText,
-                        sectionColor: section.contentColor,
+                        sectionCode: entry.value.contentCode,
+                        sectionType: entry.value.contentType,
+                        sectionText: entry.value.contentText,
+                        sectionColor: entry.value.contentColor,
                       );
                     }),
                 ],

@@ -54,7 +54,7 @@ class LocalCipherRepository {
 
     return await db.transaction((txn) async {
       // Insert the cipher
-      final cipherId = await txn.insert('cipher', cipher.toSqLite());
+      final cipherId = await txn.insert('cipher', cipher.toSqLite(isNew: true));
 
       // Insert tags if any
       if (cipher.tags.isNotEmpty) {

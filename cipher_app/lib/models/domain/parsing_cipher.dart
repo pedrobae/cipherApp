@@ -10,7 +10,7 @@ class ParsingCipher {
   lines; // {'lineNumber': int, 'text': String, 'avgWordLength': double,}
   List<Map<String, dynamic>>
   sections; // {'suggestedTitle': String, 'content': String, 'index': int, 'isDuplicate': bool}
-  List<Section> parsedSections = [];
+  Map<String, Section> parsedSections = {};
   List<String> songStructure = [];
 
   ParsingCipher({
@@ -18,7 +18,7 @@ class ParsingCipher {
     required this.importType,
     this.lines = const [],
     this.sections = const [],
-    this.parsedSections = const [],
+    this.parsedSections = const {},
     this.songStructure = const [],
   });
 

@@ -33,54 +33,15 @@ class Chord {
     double lineWidth,
     double endOfPreviousChord,
   ) {
-    if (name == 'G/A') {
-      // Debug breakpoint for specific chord
-      debugPrint('Calculating offset for G/A chord');
-    }
+    final String sameLineLyricsBefore;
+    final String wordBefore;
+    int lineNumber;
 
-    /// GOES THROUGH EACH CHARACTER CHECKING THE LAST WORD FOR LINE BREAKS
-    /// SAVES THE SAME LINE LYRICS BEFORE
-    String sameLineLyricsBefore = '';
-    String wordBefore = '';
-    int lineNumber = 0;
-    for (int i = 0; i < lyricsBefore.length; i++) {
-      String character = lyricsBefore[i];
-      if (character == ' ') {
-        final previousPiece = TextPainter(
-          text: TextSpan(text: sameLineLyricsBefore, style: textStyle),
-          textDirection: TextDirection.ltr,
-          maxLines: 1,
-        )..layout(maxWidth: double.infinity, minWidth: 0);
-
-        if (previousPiece.width > lineWidth) {
-          // Word doesn't fit, start new line
-          sameLineLyricsBefore = '$wordBefore$character';
-          lineNumber++;
-        } else {
-          sameLineLyricsBefore = '$sameLineLyricsBefore$character';
-        }
-        wordBefore = '';
-      } else {
-        wordBefore = '$wordBefore$character';
-        sameLineLyricsBefore = '$sameLineLyricsBefore$character';
-      }
-    }
-
-    // Handle the last word if there's no trailing space
-    if (wordBefore.isNotEmpty) {
-      final testWithLastWord = TextPainter(
-        text: TextSpan(text: sameLineLyricsBefore, style: textStyle),
-        textDirection: TextDirection.ltr,
-        maxLines: 1,
-      )..layout(maxWidth: double.infinity, minWidth: 0);
-
-      if (testWithLastWord.width > lineWidth) {
-        // Last word doesn't fit, start new line
-        sameLineLyricsBefore = wordBefore;
-        lineNumber++;
-      }
-      // If it fits, sameLineLyricsBefore already contains the last word
-    }
+    // Parse the lyrics before to determine line breaks
+    (sameLineLyricsBefore, wordBefore, lineNumber) = _parseLine(
+      textStyle,
+      lineWidth,
+    );
 
     /// TEXT PAINTER FOR THE SAME LINE LYRICS BEFORE
     final sameLineTextPainter = TextPainter(
@@ -111,22 +72,32 @@ class Chord {
       maxLines: 1,
     )..layout(maxWidth: double.infinity, minWidth: 0);
 
+    /// INITIAL X OFFSET BASED ON SAME LINE LYRICS BEFORE
     double xOffset = sameLineTextPainter.width;
 
-    /// CHECK IF endOfPreviousChord IS LARGER THAN THE xOFFSET plus a minimum GAP
+    /// TEST EDGECASE - (previous chord caused line break, and the current chord didnt)
+    /// CHECK IF PREVIOUS CHORD IS ON THE NEXT LINE
+    if (previousLine > lineNumber) {
+      // Previous chord caused a line break, adjust line number
+      lineNumber = previousLine;
+      xOffset = 0.0;
+    }
+
+    /// CHECK IF CHORD OVERLAPS PREVIOUS CHORD AND ADJUST
     int minimumGap = 4;
     if (endOfPreviousChord + minimumGap > xOffset &&
         lineNumber == previousLine) {
       xOffset = endOfPreviousChord + minimumGap;
     }
 
-    xOffset = xOffset % lineWidth;
+    /// CHECK IF CHORD LINE BREAKS
+    if (chordPainter.width > lineWidth - xOffset) {
+      xOffset = 0;
+      lineNumber++;
+    }
 
-    // /// CHECK IF CHORD LINE BREAKS
-    // if (chordPainter.width > lineWidth - xOffset) {
-    //   xOffset = 0;
-    //   lineNumber++;
-    // }
+    /// GET REMAINDER OFFSET IF CHORD OVERFLOWS
+    xOffset = xOffset % lineWidth;
 
     /// CHECK IF NEXT WORD LINE BREAKS
     if (nextWordPainter.width > lineWidth - sameLineTextPainter.width) {
@@ -140,6 +111,7 @@ class Chord {
 
     double yOffset = lineHeight * (lineNumber + offset);
     double endOfChord = chordPainter.width + xOffset;
+
     if (kDebugMode) {
       // Debug print to trace offsets
       print(
@@ -148,5 +120,50 @@ class Chord {
     }
 
     return (xOffset, yOffset, endOfChord, lineNumber);
+  }
+
+  /// GOES THROUGH EACH CHARACTER CHECKING THE LAST WORD FOR LINE BREAKS
+  (String, String, int) _parseLine(TextStyle textStyle, double lineWidth) {
+    String sameLineLyricsBefore = '';
+    String wordBefore = '';
+    int lineNumber = 0;
+    for (int i = 0; i < lyricsBefore.length; i++) {
+      String character = lyricsBefore[i];
+      if (character == ' ') {
+        final previousPiece = TextPainter(
+          text: TextSpan(text: sameLineLyricsBefore, style: textStyle),
+          textDirection: TextDirection.ltr,
+          maxLines: 1,
+        )..layout(maxWidth: double.infinity, minWidth: 0);
+
+        if (previousPiece.width > lineWidth) {
+          // Word doesn't fit, start new line
+          sameLineLyricsBefore = '$wordBefore$character';
+          lineNumber++;
+        } else {
+          sameLineLyricsBefore = '$sameLineLyricsBefore$character';
+        }
+        wordBefore = '';
+      } else {
+        wordBefore = '$wordBefore$character';
+        sameLineLyricsBefore = '$sameLineLyricsBefore$character';
+      }
+    }
+    // CHECK IF THE LAST WORD FITS IN THE LINE IF THERE IS A WORD BEFORE
+    if (wordBefore.isNotEmpty) {
+      final testWithLastWord = TextPainter(
+        text: TextSpan(text: sameLineLyricsBefore, style: textStyle),
+        textDirection: TextDirection.ltr,
+        maxLines: 1,
+      )..layout(maxWidth: double.infinity, minWidth: 0);
+
+      if (testWithLastWord.width > lineWidth) {
+        // Last word doesn't fit, start new line
+        sameLineLyricsBefore = wordBefore;
+        lineNumber++;
+      }
+      // If it fits, sameLineLyricsBefore already contains the last word do nothing
+    }
+    return (sameLineLyricsBefore, wordBefore, lineNumber);
   }
 }

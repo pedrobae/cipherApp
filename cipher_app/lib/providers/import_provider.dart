@@ -65,7 +65,8 @@ class ImportProvider extends ChangeNotifier {
           _importedCipher = ParsingCipher.fromPdfLines(pdfLines);
           break;
         case ImportType.image:
-          // Image import not yet implemented
+          // TODO: Implement image import logic
+          await _imageService.extractText(selectedFile!);
           break;
         default:
           throw Exception('Import type not set');

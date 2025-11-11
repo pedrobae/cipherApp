@@ -4,9 +4,8 @@ import 'package:cipher_app/utils/section_constants.dart';
 import 'package:flutter/material.dart';
 
 class ChordLineParser {
+  /// Parses sections from the given [ParsingCipher] and creates the finished section objects.
   Future<void> parseChords(ParsingCipher cipher) async {
-    // Identifies chords from text lines and associates them with lyrics,
-
     // Iterates through each section of the cipher creating Section objects
     List<Section> parsedSections = [];
     List<String> songStructure = [];
@@ -40,6 +39,48 @@ class ChordLineParser {
 
     cipher.parsedSections = parsedSections;
     cipher.songStructure = songStructure;
+  }
+
+  String _buildContent(Map<String, dynamic> section) {
+    String content = '';
+
+    // Iterate through lines in the section, creating the content
+    for (int index = 0; index < section['lines'].length; index++) {
+      var line = section['lines'][index];
+      var nextLine = (index + 1 < section['lines'].length)
+          ? section['lines'][index + 1]
+          : null;
+
+      if (_isChordLine(line) == true) {
+        if (_isChordLine(nextLine) == false) {
+          // This line is a chord line followed by a lyric line
+          // Merge chords with the next line, associating chord positions
+          String chordProLine = _mergeLines(line['text'], nextLine!['text']);
+          content = '$content$chordProLine\n';
+        } else if (_isChordLine(nextLine) == true) {
+          // This line is a chord line followed by another chord line
+          // Format as chord-only line
+          content = '$content${_formatChordOnlyLine(line['text'])}\n';
+        } else {
+          // This line is a chord line followed by no line
+          // Format as chord-only line with no line break
+          content = '$content${_formatChordOnlyLine(line['text'])}';
+        }
+      } else if (_isChordLine(line) == false) {
+        // This line is a lyric line
+        // Lyric lines are handled by previous line (except if it is the first line)
+        if (_isChordLine(nextLine) == false) {
+          // This line is a lyric line followed by another lyric line
+          // If it's the first line, add it as-is
+          if (index == 0) {
+            content = '$content${line['text']}\n';
+          }
+          // Add the next line as-is
+          content = '$content${nextLine!['text']}\n';
+        }
+      }
+    }
+    return content;
   }
 
   String _mergeLines(String chordLine, String lyricLine) {
@@ -117,43 +158,5 @@ class ChordLineParser {
     } else {
       return false;
     }
-  }
-
-  String _buildContent(Map<String, dynamic> section) {
-    String content = '';
-    // Iterate through lines in the section, creating the content
-
-    for (int index = 0; index < section['lines'].length; index++) {
-      var line = section['lines'][index];
-      var nextLine = (index + 1 < section['lines'].length)
-          ? section['lines'][index + 1]
-          : null;
-
-      if (_isChordLine(line) == true) {
-        if (_isChordLine(nextLine) == false) {
-          // This line is a chord line followed by a lyric line
-          // Merge chords with the next line, associating chord positions
-          String chordProLine = _mergeLines(line['text'], nextLine!['text']);
-          content = '$content$chordProLine\n';
-        } else {
-          // This line is a chord line not followed by a lyric line
-          // Format as chord-only line
-          content = '$content${_formatChordOnlyLine(line['text'])}\n';
-        }
-      } else if (_isChordLine(line) == false) {
-        // This line is a lyric line
-        // Lyric lines are handled by previous line (except if it is the first line)
-        if (_isChordLine(nextLine) == false) {
-          // This line is a lyric line followed by another lyric line
-          // If it's the first line, add it as-is
-          if (index == 0) {
-            content = '$content${line['text']}\n';
-          }
-          // Add the next line as-is
-          content = '$content${nextLine!['text']}\n';
-        }
-      }
-    }
-    return content;
   }
 }

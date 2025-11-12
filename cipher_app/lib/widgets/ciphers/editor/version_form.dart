@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'package:cipher_app/providers/cipher_provider.dart';
+import 'package:cipher_app/widgets/ciphers/editor/sections/custom_section_dialog.dart';
+import 'package:cipher_app/widgets/ciphers/editor/sections/edit_section_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/models/domain/cipher/section.dart';
 import 'package:cipher_app/models/domain/cipher/version.dart';
 import 'package:cipher_app/providers/version_provider.dart';
-import 'package:cipher_app/widgets/cipher/editor/reorderable_structure_chips.dart';
+import 'package:cipher_app/widgets/ciphers/editor/reorderable_structure_chips.dart';
 import 'package:cipher_app/utils/section_constants.dart';
 
 class VersionForm extends StatefulWidget {
@@ -80,7 +82,10 @@ class _VersionFormState extends State<VersionForm> {
     final controller = _sectionControllers[sectionCode];
     final contentText = controller?.text ?? '';
 
-    versionProvider.cacheUpdatedSection(sectionCode, contentText);
+    versionProvider.cacheUpdatedSection(
+      sectionCode,
+      newContentText: contentText,
+    );
   }
 
   void _addSection(
@@ -140,13 +145,37 @@ class _VersionFormState extends State<VersionForm> {
   void _showCustomSectionDialog(VersionProvider versionProvider) {
     showDialog(
       context: context,
-      builder: (context) => _CustomSectionDialog(
+      builder: (context) => CustomSectionDialog(
         onAdd: (sectionKey, name, color) => _addSection(
           sectionKey,
           versionProvider,
           sectionType: name,
           customColor: color,
         ),
+      ),
+    );
+  }
+
+  void _openEditSectionDialog(
+    Section section,
+    VersionProvider versionProvider,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) => EditSectionDialog(
+        section: section,
+        onSave: (code, name, color) {
+          // Update the section with new values
+          versionProvider.cacheUpdatedSection(
+            section.contentCode,
+            newContentType: name,
+            newColor: color,
+            newContentCode: code,
+          );
+        },
+        onDelete: () {
+          versionProvider.cacheDeleteSection(section.contentCode);
+        },
       ),
     );
   }
@@ -322,33 +351,50 @@ class _VersionFormState extends State<VersionForm> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 4,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: section?.contentColor ?? Colors.grey,
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  child: Text(
-                                    sectionCode,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
+                            Expanded(
+                              child: Row(
+                                spacing: 8,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color:
+                                          section?.contentColor ?? Colors.grey,
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Text(
+                                      sectionCode,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  section?.contentType ?? sectionCode,
-                                  style: Theme.of(context).textTheme.titleSmall
-                                      ?.copyWith(fontWeight: FontWeight.w600),
-                                ),
-                              ],
+                                  Expanded(
+                                    child: Text(
+                                      section?.contentType ?? sectionCode,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                    ),
+                                  ),
+                                  IconButton(
+                                    onPressed: () => _openEditSectionDialog(
+                                      section!,
+                                      versionProvider,
+                                    ),
+                                    icon: const Icon(Icons.edit),
+                                    tooltip: 'Editar seção',
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
@@ -423,106 +469,5 @@ class _PresetSectionsDialog extends StatelessWidget {
         ),
       ],
     );
-  }
-}
-
-class _CustomSectionDialog extends StatefulWidget {
-  final Function(String, String, Color) onAdd;
-
-  const _CustomSectionDialog({required this.onAdd});
-
-  @override
-  State<_CustomSectionDialog> createState() => _CustomSectionDialogState();
-}
-
-class _CustomSectionDialogState extends State<_CustomSectionDialog> {
-  final _keyController = TextEditingController();
-  final _nameController = TextEditingController();
-  Color _selectedColor = Colors.blue;
-
-  @override
-  void dispose() {
-    _keyController.dispose();
-    _nameController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Criar Seção Personalizada'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextFormField(
-            controller: _keyController,
-            decoration: const InputDecoration(
-              labelText: 'Código da seção',
-              hintText: 'Ex: S1, INT, OUTRO',
-              border: OutlineInputBorder(),
-            ),
-            textCapitalization: TextCapitalization.characters,
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            controller: _nameController,
-            decoration: const InputDecoration(
-              labelText: 'Nome da seção',
-              hintText: 'Ex: Solo 1, Introdução, Outro',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('Cor da seção:'),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                children: availableColors.map((color) {
-                  final isSelected = color == _selectedColor;
-                  return GestureDetector(
-                    onTap: () => setState(() => _selectedColor = color),
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: color,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: isSelected ? Colors.black : Colors.transparent,
-                          width: 3,
-                        ),
-                      ),
-                      child: isSelected
-                          ? const Icon(Icons.check, color: Colors.white)
-                          : null,
-                    ),
-                  );
-                }).toList(),
-              ),
-            ],
-          ),
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancelar'),
-        ),
-        FilledButton(onPressed: _addSection, child: const Text('Adicionar')),
-      ],
-    );
-  }
-
-  void _addSection() {
-    final key = _keyController.text.trim().toUpperCase();
-    final name = _nameController.text.trim();
-
-    if (key.isNotEmpty && name.isNotEmpty) {
-      widget.onAdd(key, name, _selectedColor);
-      Navigator.pop(context);
-    }
   }
 }

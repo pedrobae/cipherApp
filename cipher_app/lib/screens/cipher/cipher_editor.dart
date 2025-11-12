@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/providers/cipher_provider.dart';
 import 'package:cipher_app/providers/version_provider.dart';
-import 'package:cipher_app/widgets/cipher/editor/cipher_form.dart';
-import 'package:cipher_app/widgets/cipher/editor/version_form.dart';
+import 'package:cipher_app/widgets/ciphers/editor/cipher_form.dart';
+import 'package:cipher_app/widgets/ciphers/editor/version_form.dart';
 
 class EditCipher extends StatefulWidget {
   final int? cipherId; // Null for new cipher, populated for edit

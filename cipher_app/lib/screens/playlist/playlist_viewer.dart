@@ -18,7 +18,7 @@ import 'package:cipher_app/screens/cipher/cipher_library.dart';
 import 'package:cipher_app/screens/playlist/playlist_presentation.dart';
 import 'package:cipher_app/widgets/playlist/cipher_version_card.dart';
 import 'package:cipher_app/widgets/playlist/text_section_card.dart';
-import 'package:cipher_app/widgets/cipher/editor/custom_reorderable_delayed.dart';
+import 'package:cipher_app/widgets/ciphers/editor/custom_reorderable_delayed.dart';
 import 'package:cipher_app/widgets/playlist/collaborators/bottom_sheet.dart';
 import 'package:cipher_app/widgets/dialogs/edit_playlist_dialog.dart';
 import 'package:cipher_app/widgets/dialogs/new_text_section_dialog.dart';

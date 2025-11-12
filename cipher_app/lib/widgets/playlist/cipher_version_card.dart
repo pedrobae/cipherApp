@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:cipher_app/screens/cipher/cipher_viewer.dart';
 import 'package:cipher_app/providers/cipher_provider.dart';
 import 'package:cipher_app/providers/version_provider.dart';
-import 'package:cipher_app/widgets/cipher/editor/custom_reorderable_delayed.dart';
+import 'package:cipher_app/widgets/ciphers/editor/custom_reorderable_delayed.dart';
 
 class CipherVersionCard extends StatefulWidget {
   final int cipherVersionId;

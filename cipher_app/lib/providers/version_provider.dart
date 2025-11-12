@@ -3,6 +3,7 @@ import 'package:cipher_app/models/domain/cipher/version.dart';
 import 'package:cipher_app/models/domain/playlist/playlist_item.dart';
 import 'package:cipher_app/repositories/cloud_cipher_repository.dart';
 import 'package:cipher_app/repositories/local_cipher_repository.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
 class VersionProvider extends ChangeNotifier {
@@ -515,8 +516,28 @@ class VersionProvider extends ChangeNotifier {
 
   /// ===== UPDATE =====
   // Modify a section (content_text)
-  void cacheUpdatedSection(String contentCode, String newContentText) {
-    _currentVersion.sections![contentCode]!.contentText = newContentText;
+  void cacheUpdatedSection(
+    String contentCode, {
+    String? newContentText,
+    String? newContentType,
+    Color? newColor,
+    String? newContentCode,
+  }) {
+    final newSection = Section(
+      versionId: _currentVersion.id!,
+      contentCode:
+          newContentCode ?? _currentVersion.sections![contentCode]!.contentCode,
+      contentColor:
+          newColor ?? _currentVersion.sections![contentCode]!.contentColor,
+      contentType:
+          newContentType ?? _currentVersion.sections![contentCode]!.contentType,
+      contentText:
+          newContentText ?? _currentVersion.sections![contentCode]!.contentText,
+    );
+
+    // Update the section in the sections map
+    _currentVersion.sections![contentCode] = newSection;
+
     notifyListeners();
   }
 
@@ -528,6 +549,13 @@ class VersionProvider extends ChangeNotifier {
     if (!_currentVersion.songStructure.contains(sectionCode)) {
       _currentVersion.sections!.remove(sectionCode);
     }
+    notifyListeners();
+  }
+
+  // Remove all sections by its code
+  void cacheDeleteSection(String sectionCode) {
+    _currentVersion.sections!.remove(sectionCode);
+    _currentVersion.songStructure.removeWhere((code) => code == sectionCode);
     notifyListeners();
   }
 

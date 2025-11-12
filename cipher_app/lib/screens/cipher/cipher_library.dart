@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/providers/cipher_provider.dart';
 import 'package:cipher_app/providers/playlist_provider.dart';
-import 'package:cipher_app/widgets/cipher/library/local_cipher_list.dart';
-import 'package:cipher_app/widgets/cipher/library/cloud_cipher_list.dart';
+import 'package:cipher_app/widgets/ciphers/library/local_cipher_list.dart';
+import 'package:cipher_app/widgets/ciphers/library/cloud_cipher_list.dart';
 import 'package:cipher_app/screens/cipher/cipher_viewer.dart';
 
 class CipherLibraryScreen extends StatefulWidget {

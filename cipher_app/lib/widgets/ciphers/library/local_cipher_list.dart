@@ -4,8 +4,8 @@ import 'package:cipher_app/providers/playlist_provider.dart';
 import 'package:cipher_app/providers/selection_provider.dart';
 import 'package:cipher_app/providers/user_provider.dart';
 import 'package:cipher_app/screens/cipher/cipher_editor.dart';
-import 'package:cipher_app/widgets/cipher/library/expandible_cipher_card.dart';
-import 'package:cipher_app/widgets/cipher/library/import_bottom_sheet.dart';
+import 'package:cipher_app/widgets/ciphers/library/expandible_cipher_card.dart';
+import 'package:cipher_app/widgets/ciphers/library/import_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

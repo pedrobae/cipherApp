@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/models/dtos/cipher_dto.dart';
 import 'package:cipher_app/providers/selection_provider.dart';
-import 'package:cipher_app/widgets/cipher/tag_chip.dart';
+import 'package:cipher_app/widgets/ciphers/tag_chip.dart';
 
 class CloudCipherCard extends StatelessWidget {
   final CipherDto cipher;

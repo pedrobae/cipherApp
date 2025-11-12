@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/providers/layout_settings_provider.dart';
 import 'package:cipher_app/widgets/settings/section_modules.dart';
-import 'package:cipher_app/widgets/cipher/transposer.dart';
+import 'package:cipher_app/widgets/ciphers/transposer.dart';
 
 class LayoutSettings extends StatelessWidget {
   final bool includeTransposer;

@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:cipher_app/providers/import_provider.dart';
 import 'package:cipher_app/providers/parser_provider.dart';
 import 'package:cipher_app/screens/cipher/cipher_editor.dart';
-import 'package:cipher_app/widgets/cipher/viewer/section_card.dart';
+import 'package:cipher_app/widgets/ciphers/viewer/section_card.dart';
 
 class CipherParsingScreen extends StatefulWidget {
   const CipherParsingScreen({super.key});

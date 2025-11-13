@@ -85,129 +85,50 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
     _notifyContentChanged();
   }
 
-  Widget _buildToken(ContentToken token, int index) {
+  Widget _buildChordTarget(int index) {
+    return DragTarget<String>(
+      onAcceptWithDetails: (details) => addChord(details.data, index),
+      builder: (context, candidateData, rejectedData) {
+        return SizedBox();
+      },
+    );
+  }
+
+  Widget _buildTokenWidget(ContentToken token, int index) {
     switch (token.type) {
       case TokenType.chord:
-        // DRAGGABLE CHORD - Can be moved
-        return DragTarget<String>(
-          onAcceptWithDetails: (details) => addChord(details.data, index),
-          builder: (context, candidateData, rejectedData) {
-            return LongPressDraggable<String>(
-              data: token.text,
-              feedback: Material(
-                elevation: 4,
-                borderRadius: BorderRadius.circular(8),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: widget.sectionColor,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    token.text,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-              ),
-              childWhenDragging: Opacity(
-                opacity: 0.3,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: widget.sectionColor.withValues(alpha: 0.5),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    token.text,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-              ),
-              onDragStarted: () {
-                // Remove chord from current position when drag starts
-                removeToken(index);
-              },
-              child: ChordToken(
-                token: token,
-                candidateData: candidateData,
-                sectionColor: widget.sectionColor,
-              ),
-            );
+        // Draggable chord token
+        return LongPressDraggable<String>(
+          data: token.text,
+          feedback: SizedBox(),
+          childWhenDragging: Opacity(
+            opacity: 0.3,
+            child: ChordToken(token: token, sectionColor: widget.sectionColor),
+          ),
+          onDragStarted: () {
+            removeToken(index);
           },
+          child: ChordToken(token: token, sectionColor: widget.sectionColor),
         );
-
       case TokenType.lyric:
-        // STATIC CHARACTER - Drop target only
-        return DragTarget<String>(
-          onAcceptWithDetails: (details) => addChord(details.data, index),
-          builder: (context, candidateData, rejectedData) {
-            return Container(
-              padding: EdgeInsets.symmetric(
-                vertical: candidateData.isNotEmpty ? 4 : 0,
-              ),
-              decoration: candidateData.isNotEmpty
-                  ? BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: widget.sectionColor,
-                          width: 2,
-                        ),
-                      ),
-                    )
-                  : null,
-              child: Text(token.text, style: const TextStyle(fontSize: 14)),
-            );
-          },
-        );
-
       case TokenType.space:
-        // STATIC SPACE - Drop target only
-        return DragTarget<String>(
-          onAcceptWithDetails: (details) => addChord(details.data, index),
-          builder: (context, candidateData, rejectedData) {
-            return Container(
-              width: 4, // Smaller width for character-level precision
-              height: 16,
-              color: candidateData.isNotEmpty
-                  ? widget.sectionColor.withValues(alpha: 0.3)
-                  : Colors.transparent,
-            );
-          },
-        );
-
       case TokenType.newline:
-        // LINE BREAK - Drop target for placing chords at line start
-        return DragTarget<String>(
-          onAcceptWithDetails: (details) => addChord(details.data, index),
-          builder: (context, candidateData, rejectedData) {
-            return Container(
-              width: double.infinity,
-              height: candidateData.isNotEmpty ? 24 : 8,
-              color: candidateData.isNotEmpty
-                  ? widget.sectionColor.withValues(alpha: 0.2)
-                  : Colors.transparent,
-            );
-          },
-        );
+        // Lyric text
+        return Text(token.text, style: const TextStyle(fontSize: 14));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final tokenWidgets = <Widget>[];
+    for (var i = 0; i <= _tokens.length; i++) {
+      // Add chord target before each token widget
+      tokenWidgets.add(_buildChordTarget(i));
+      tokenWidgets.add(_buildTokenWidget(_tokens[i], i));
+    }
+    // Add chord target at the end
+    tokenWidgets.add(_buildChordTarget(_tokens.length));
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -219,9 +140,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
         runSpacing: 0,
         alignment: WrapAlignment.start,
         crossAxisAlignment: WrapCrossAlignment.end,
-        children: _tokens.asMap().entries.map((entry) {
-          return _buildToken(entry.value, entry.key);
-        }).toList(),
+        children: tokenWidgets,
       ),
     );
   }

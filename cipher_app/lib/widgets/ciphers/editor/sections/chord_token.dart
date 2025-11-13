@@ -4,13 +4,11 @@ import 'package:flutter/material.dart';
 class ChordToken extends StatelessWidget {
   final ContentToken token;
   final Color sectionColor;
-  final List<String?> candidateData;
 
   const ChordToken({
     super.key,
     required this.token,
     required this.sectionColor,
-    required this.candidateData,
   });
 
   @override

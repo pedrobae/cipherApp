@@ -1,3 +1,4 @@
+import 'package:cipher_app/providers/section_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/providers/cipher_provider.dart';
@@ -39,9 +40,11 @@ class _CipherViewerState extends State<CipherViewer>
     if (!mounted) return;
     final cipherProvider = context.read<CipherProvider>();
     final versionProvider = context.read<VersionProvider>();
+    final sectionProvider = context.read<SectionProvider>();
 
     await cipherProvider.loadCipher(widget.cipherId);
     await versionProvider.loadCurrentVersion(widget.versionId);
+    await sectionProvider.loadSections(widget.versionId);
   }
 
   void _addNewVersion() {
@@ -68,10 +71,12 @@ class _CipherViewerState extends State<CipherViewer>
     );
   }
 
-  void _selectVersion(int versionId) {
+  void _selectVersion(int versionId) async {
     if (!mounted) return;
     final versionProvider = context.read<VersionProvider>();
-    versionProvider.loadCurrentVersion(versionId);
+    final sectionProvider = context.read<SectionProvider>();
+    await versionProvider.loadCurrentVersion(versionId);
+    await sectionProvider.loadSections(versionId);
   }
 
   void _showVersionSelector() {

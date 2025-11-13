@@ -1,9 +1,7 @@
-import 'package:cipher_app/models/domain/cipher/section.dart';
 import 'package:cipher_app/models/domain/cipher/version.dart';
 import 'package:cipher_app/models/domain/playlist/playlist_item.dart';
 import 'package:cipher_app/repositories/cloud_cipher_repository.dart';
 import 'package:cipher_app/repositories/local_cipher_repository.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
 class VersionProvider extends ChangeNotifier {
@@ -52,17 +50,18 @@ class VersionProvider extends ChangeNotifier {
   }
 
   /// ===== CREATE - new version to an existing cipher =====
-  Future<void> createVersion(int cipherId) async {
-    if (_isSaving) return;
+  Future<int?> createVersion(int cipherId) async {
+    if (_isSaving) return null;
 
     _isSaving = true;
     _error = null;
     notifyListeners();
 
+    int? versionId;
     try {
       // Create version with the correct cipher ID
       final versionWithCipherId = _currentVersion.copyWith(cipherId: cipherId);
-      final versionId = await _cipherRepository.insertVersionToCipher(
+      versionId = await _cipherRepository.insertVersionToCipher(
         versionWithCipherId,
       );
       // Load the new ID into the version cache
@@ -71,9 +70,6 @@ class VersionProvider extends ChangeNotifier {
       if (kDebugMode) {
         print('Created a new version with id $versionId, for cipher $cipherId');
       }
-
-      // Insert content for this map
-      await _saveSections(_currentVersion.id!, _currentVersion.sections!);
     } catch (e) {
       _error = e.toString();
       if (kDebugMode) {
@@ -83,10 +79,11 @@ class VersionProvider extends ChangeNotifier {
       _isSaving = false;
       notifyListeners();
     }
+    return versionId;
   }
 
   /// Create version from version domaing object - used when importing from cloud
-  Future<int?> createVersionFromDomain(Version version) async {
+  Future<int?> creatVersionFromDomain(Version version) async {
     if (_isSaving) return null;
 
     _isSaving = true;
@@ -101,8 +98,6 @@ class VersionProvider extends ChangeNotifier {
       if (kDebugMode) {
         print('Created a new version with id $versionId from domain object');
       }
-
-      await _saveSections(versionId, version.sections!);
     } catch (e) {
       _error = e.toString();
       if (kDebugMode) {
@@ -382,8 +377,6 @@ class VersionProvider extends ChangeNotifier {
 
     try {
       await _cipherRepository.updateVersion(currentVersion);
-      // Insert content for this map
-      await _saveSections(_currentVersion.id!, _currentVersion.sections!);
 
       // Check if the version exists in the versions list, if so update it
       final index = _versions.indexWhere(
@@ -501,89 +494,23 @@ class VersionProvider extends ChangeNotifier {
     return _versions.any((version) => version.id == versionId);
   }
 
-  /// ===== SECTION MANAGEMENT =====
+  /// ===== SONG STRUCTURE =====
   /// ===== CREATE =====
   // Add a new section
-  void cacheAddSection(Section newSection, bool isNewSection) {
-    if (isNewSection) {
-      _currentVersion.sections![newSection.contentCode] = newSection;
-    }
-
-    _currentVersion.songStructure.add(newSection.contentCode);
-
-    notifyListeners();
-  }
-
-  /// ===== UPDATE =====
-  // Modify a section (content_text)
-  void cacheUpdatedSection(
-    String contentCode, {
-    String? newContentText,
-    String? newContentType,
-    Color? newColor,
-    String? newContentCode,
-  }) {
-    final newSection = Section(
-      versionId: _currentVersion.id!,
-      contentCode:
-          newContentCode ?? _currentVersion.sections![contentCode]!.contentCode,
-      contentColor:
-          newColor ?? _currentVersion.sections![contentCode]!.contentColor,
-      contentType:
-          newContentType ?? _currentVersion.sections![contentCode]!.contentType,
-      contentText:
-          newContentText ?? _currentVersion.sections![contentCode]!.contentText,
-    );
-
-    // Update the section in the sections map
-    _currentVersion.sections![contentCode] = newSection;
-
+  void addSectionToStruct(String contentCode) {
+    _currentVersion.songStructure.add(contentCode);
     notifyListeners();
   }
 
   /// ===== DELETE =====
   // Remove a section from cache
-  void cacheRemoveSection(int index) {
-    final sectionCode = _currentVersion.songStructure.removeAt(index);
-
-    if (!_currentVersion.songStructure.contains(sectionCode)) {
-      _currentVersion.sections!.remove(sectionCode);
-    }
+  void removeSectionFromStruct(int index) {
+    _currentVersion.songStructure.removeAt(index);
     notifyListeners();
   }
 
-  // Remove all sections by its code
-  void cacheDeleteSection(String sectionCode) {
-    _currentVersion.sections!.remove(sectionCode);
-    _currentVersion.songStructure.removeWhere((code) => code == sectionCode);
+  void removeSectionFromStructByCode(String contentCode) {
+    _currentVersion.songStructure.removeWhere((code) => code == contentCode);
     notifyListeners();
-  }
-
-  /// ===== SAVE =====
-  // Persist the data to the database
-  Future<void> _saveSections(
-    int versionId,
-    Map<String, Section> sections,
-  ) async {
-    if (sections.isNotEmpty) {
-      // For simplicity, delete all existing content and recreate
-      // This could be optimized later to only update changed content
-      await _cipherRepository.deleteAllVersionSections(versionId);
-
-      // Insert new content
-      for (final entry in sections.entries) {
-        if (entry.key.isNotEmpty) {
-          final sectionId = await _cipherRepository.insertSection(
-            entry.value.copyWith(versionId: versionId),
-          );
-
-          if (kDebugMode) {
-            print(
-              'Inserted section with code ${entry.key} and id $sectionId for version $versionId',
-            );
-          }
-        }
-      }
-    }
   }
 }

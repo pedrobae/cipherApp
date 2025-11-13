@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cipher_app/providers/cipher_provider.dart';
+import 'package:cipher_app/providers/section_provider.dart';
 import 'package:cipher_app/widgets/ciphers/editor/sections/custom_section_dialog.dart';
 import 'package:cipher_app/widgets/ciphers/editor/sections/edit_section_dialog.dart';
 import 'package:flutter/material.dart';
@@ -78,11 +79,11 @@ class _VersionFormState extends State<VersionForm> {
     super.dispose();
   }
 
-  void _changeSection(String sectionCode, VersionProvider versionProvider) {
+  void _changeSection(String sectionCode, SectionProvider sectionProvider) {
     final controller = _sectionControllers[sectionCode];
     final contentText = controller?.text ?? '';
 
-    versionProvider.cacheUpdatedSection(
+    sectionProvider.cacheUpdatedSection(
       sectionCode,
       newContentText: contentText,
     );
@@ -90,64 +91,71 @@ class _VersionFormState extends State<VersionForm> {
 
   void _addSection(
     String sectionCode,
+    SectionProvider sectionProvider,
     VersionProvider versionProvider, {
     String? sectionType,
     Color? customColor,
   }) {
     bool isNewSection = false;
-    // Create text controller for this section
+    // Create text controller for this section if needed
     if (!_sectionControllers.containsKey(sectionCode)) {
       _sectionControllers[sectionCode] = TextEditingController();
       isNewSection = true;
     }
 
-    // Create the section - either custom or use predefined values
-    Section newSection;
-    if (sectionType != null && customColor != null) {
-      // This is a custom section created by user
-      newSection = Section(
-        versionId: 0, // Will be set when saving
-        contentType: sectionType,
-        contentCode: sectionCode,
-        contentText: '',
-        contentColor: customColor,
-      );
-    } else {
-      // This is a preset section
-      final displayName = predefinedSectionTypes[sectionCode];
-      final color = defaultSectionColors[sectionCode];
+    // Add section to song structure
+    versionProvider.addSectionToStruct(sectionCode);
 
-      newSection = Section(
-        versionId: 0,
-        contentType: displayName!,
-        contentCode: sectionCode,
-        contentText: '',
-        contentColor: color ?? Colors.grey,
+    // Add section to sections map if it's new
+    if (isNewSection) {
+      sectionProvider.cacheAddSection(
+        sectionCode,
+        sectionType: sectionType,
+        color: customColor,
       );
-      versionProvider.cacheAddSection(newSection, isNewSection);
     }
   }
 
-  void _removeSection(int index, VersionProvider versionProvider) {
-    versionProvider.cacheRemoveSection(index);
+  void _removeSection(
+    int index,
+    VersionProvider versionProvider,
+    SectionProvider sectionProvider,
+  ) {
+    versionProvider.removeSectionFromStruct(index);
+    if (versionProvider.currentVersion.songStructure.contains(
+      versionProvider.currentVersion.songStructure[index],
+    )) {
+      return;
+    }
+    sectionProvider.cacheDeleteSection(
+      versionProvider.currentVersion.songStructure[index],
+    );
   }
 
-  void _showPresetSectionsDialog(VersionProvider versionProvider) {
+  void _showPresetSectionsDialog(
+    VersionProvider versionProvider,
+    SectionProvider sectionProvider,
+  ) {
     showDialog(
       context: context,
       builder: (context) => _PresetSectionsDialog(
         sectionTypes: predefinedSectionTypes,
-        onAdd: (sectionKey) => _addSection(sectionKey, versionProvider),
+        onAdd: (sectionKey) =>
+            _addSection(sectionKey, sectionProvider, versionProvider),
       ),
     );
   }
 
-  void _showCustomSectionDialog(VersionProvider versionProvider) {
+  void _showCustomSectionDialog(
+    VersionProvider versionProvider,
+    SectionProvider sectionProvider,
+  ) {
     showDialog(
       context: context,
       builder: (context) => CustomSectionDialog(
         onAdd: (sectionKey, name, color) => _addSection(
           sectionKey,
+          sectionProvider,
           versionProvider,
           sectionType: name,
           customColor: color,
@@ -158,6 +166,7 @@ class _VersionFormState extends State<VersionForm> {
 
   void _openEditSectionDialog(
     Section section,
+    SectionProvider sectionProvider,
     VersionProvider versionProvider,
   ) {
     showDialog(
@@ -166,7 +175,7 @@ class _VersionFormState extends State<VersionForm> {
         section: section,
         onSave: (code, name, color) {
           // Update the section with new values
-          versionProvider.cacheUpdatedSection(
+          sectionProvider.cacheUpdatedSection(
             section.contentCode,
             newContentType: name,
             newColor: color,
@@ -174,7 +183,8 @@ class _VersionFormState extends State<VersionForm> {
           );
         },
         onDelete: () {
-          versionProvider.cacheDeleteSection(section.contentCode);
+          sectionProvider.cacheDeleteSection(section.contentCode);
+          versionProvider.removeSectionFromStructByCode(section.contentCode);
         },
       ),
     );
@@ -183,8 +193,8 @@ class _VersionFormState extends State<VersionForm> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    return Consumer2<VersionProvider, CipherProvider>(
-      builder: (context, versionProvider, cipherProvider, child) {
+    return Consumer3<SectionProvider, VersionProvider, CipherProvider>(
+      builder: (context, sectionProvider, versionProvider, cipherProvider, child) {
         // Trigger sync after the current build if needed
         WidgetsBinding.instance.addPostFrameCallback((_) {
           _syncWithProviderData();
@@ -272,8 +282,10 @@ class _VersionFormState extends State<VersionForm> {
                       children: [
                         Expanded(
                           child: OutlinedButton.icon(
-                            onPressed: () =>
-                                _showPresetSectionsDialog(versionProvider),
+                            onPressed: () => _showPresetSectionsDialog(
+                              versionProvider,
+                              sectionProvider,
+                            ),
                             icon: const Icon(Icons.library_music),
                             label: const Text('Seções Predefinidas'),
                             style: OutlinedButton.styleFrom(
@@ -289,8 +301,10 @@ class _VersionFormState extends State<VersionForm> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: FilledButton.icon(
-                            onPressed: () =>
-                                _showCustomSectionDialog(versionProvider),
+                            onPressed: () => _showCustomSectionDialog(
+                              versionProvider,
+                              sectionProvider,
+                            ),
                             icon: const Icon(Icons.add),
                             label: const Text('Seção Personalizada'),
                             style: FilledButton.styleFrom(
@@ -317,7 +331,7 @@ class _VersionFormState extends State<VersionForm> {
                         );
                       },
                       onRemoveSection: (int index) {
-                        _removeSection(index, versionProvider);
+                        _removeSection(index, versionProvider, sectionProvider);
                       },
                     ),
                   ],
@@ -388,6 +402,7 @@ class _VersionFormState extends State<VersionForm> {
                                   IconButton(
                                     onPressed: () => _openEditSectionDialog(
                                       section!,
+                                      sectionProvider,
                                       versionProvider,
                                     ),
                                     icon: const Icon(Icons.edit),
@@ -413,7 +428,7 @@ class _VersionFormState extends State<VersionForm> {
                             _debounceTimer = Timer(
                               const Duration(milliseconds: 300),
                               () {
-                                _changeSection(sectionCode, versionProvider);
+                                _changeSection(sectionCode, sectionProvider);
                               },
                             );
                           },

@@ -319,7 +319,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
     switch (item.type) {
       case 'cipher_version':
         return CipherVersionCard(
-          cipherVersionId: item.contentId!,
+          versionId: item.contentId!,
           index: item.position,
           onDelete: () =>
               _handleDeleteVersion(context, item.id!, widget.playlistId),

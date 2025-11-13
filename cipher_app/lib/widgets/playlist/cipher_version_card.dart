@@ -1,4 +1,5 @@
 import 'package:cipher_app/providers/playlist_provider.dart';
+import 'package:cipher_app/providers/section_provider.dart';
 import 'package:cipher_app/screens/playlist/playlist_presentation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -8,7 +9,7 @@ import 'package:cipher_app/providers/version_provider.dart';
 import 'package:cipher_app/widgets/ciphers/editor/custom_reorderable_delayed.dart';
 
 class CipherVersionCard extends StatefulWidget {
-  final int cipherVersionId;
+  final int versionId;
   final int index;
   final VoidCallback onDelete;
   final VoidCallback onCopy;
@@ -16,7 +17,7 @@ class CipherVersionCard extends StatefulWidget {
   const CipherVersionCard({
     super.key,
     required this.index,
-    required this.cipherVersionId,
+    required this.versionId,
     required this.onDelete,
     required this.onCopy,
   });
@@ -30,16 +31,18 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
   void initState() {
     super.initState();
     // Pre-load cipher data if not already loaded
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       final cipherProvider = context.read<CipherProvider>();
       final versionProvider = context.read<VersionProvider>();
+      final sectionProvider = context.read<SectionProvider>();
 
       // Ensure the cipher is loaded (loads all ciphers if not already loaded)
       cipherProvider.loadCiphers();
 
       // Ensure the specific version is loaded
-      if (!versionProvider.isVersionCached(widget.cipherVersionId)) {
-        versionProvider.loadVersionById(widget.cipherVersionId);
+      if (!versionProvider.isVersionCached(widget.versionId)) {
+        await versionProvider.loadVersionById(widget.versionId);
+        await sectionProvider.loadSections(widget.versionId);
       }
     });
   }
@@ -59,7 +62,7 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
     // Persist to database
     final versionProvider = context.read<VersionProvider>();
     versionProvider.saveUpdatedSongStructure(
-      widget.cipherVersionId,
+      widget.versionId,
       updatedStructure,
     );
   }
@@ -68,9 +71,7 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
   Widget build(BuildContext context) {
     return Consumer<VersionProvider>(
       builder: (context, versionProvider, child) {
-        final version = versionProvider.getCachedVersion(
-          widget.cipherVersionId,
-        );
+        final version = versionProvider.getCachedVersion(widget.versionId);
 
         // If version is not cached yet, show loading indicator
         if (version == null) {
@@ -170,7 +171,7 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
                                   return CustomReorderableDelayed(
                                     delay: Duration(milliseconds: 100),
                                     key: ValueKey(
-                                      'cipher_${widget.cipherVersionId}_section_${sectionCode}_occurrence_$occurrenceCount',
+                                      'cipher_${widget.versionId}_section_${sectionCode}_occurrence_$occurrenceCount',
                                     ),
                                     index: index,
                                     child: SizedBox(

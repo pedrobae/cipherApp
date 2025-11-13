@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/providers/cipher_provider.dart';
 import 'package:cipher_app/providers/version_provider.dart';
+import 'package:cipher_app/providers/section_provider.dart';
 import 'package:cipher_app/widgets/ciphers/editor/cipher_form.dart';
 import 'package:cipher_app/widgets/ciphers/editor/version_form.dart';
 
@@ -51,11 +52,13 @@ class _EditCipherState extends State<EditCipher>
     final cipherProvider = context.read<CipherProvider>();
     final versionProvider = context.read<VersionProvider>();
     final parserProvider = context.read<ParserProvider>();
+    final sectionProvider = context.read<SectionProvider>();
 
     if (_isNewCipher) {
       // For new cipher, clear any existing data
       cipherProvider.clearCurrentCipher();
       versionProvider.clearCache();
+      sectionProvider.clearCache();
 
       if (widget.importedCipher) {
         // Load imported cipher data
@@ -67,6 +70,9 @@ class _EditCipherState extends State<EditCipher>
         // Load imported version data
         final version = cipher!.versions.first;
         versionProvider.setCurrentVersion(version);
+
+        // Load sections
+        sectionProvider.setSections(version.sections!);
       }
     } else {
       // Load the cipher
@@ -77,6 +83,8 @@ class _EditCipherState extends State<EditCipher>
       } else {
         // Load the version
         await versionProvider.loadCurrentVersion(widget.versionId!);
+        // Load sections
+        await sectionProvider.loadSections(widget.versionId!);
       }
     }
   }
@@ -164,16 +172,25 @@ class _EditCipherState extends State<EditCipher>
             onPressed: () async {
               if (widget.importedCipher) {
                 final cipherId = await _createCipher();
-                _createVersion(cipherId!);
+                if (cipherId != null) {
+                  final versionId = await _createVersion(cipherId);
+                  if (versionId != null) {
+                    await _createSections(versionId);
+                  }
+                }
               } else if (_isNewCipher) {
                 _createCipher();
               } else if (_isNewVersion) {
-                _createVersion(widget.cipherId!);
+                final versionId = await _createVersion(widget.cipherId!);
+                if (versionId != null) {
+                  await _createSections(versionId);
+                }
               } else {
                 if (_tabController.index == 0) {
                   _saveCipher();
                 } else {
                   _saveVersion();
+                  _saveSections();
                 }
               }
             },
@@ -215,13 +232,37 @@ class _EditCipherState extends State<EditCipher>
     return cipherId;
   }
 
-  void _createVersion(int cipherId) async {
+  Future<int?> _createVersion(int cipherId) async {
+    int? versionId;
     try {
-      await context.read<VersionProvider>().createVersion(cipherId);
+      versionId = await context.read<VersionProvider>().createVersion(cipherId);
       if (mounted) {
         Navigator.pop(context, true); // Close screen
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Versão criada com sucesso!')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao criar: ${e.toString()}'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
+    return versionId;
+  }
+
+  Future<void> _createSections(int versionId) async {
+    try {
+      context.read<SectionProvider>().setCurrentVersionId(versionId);
+      await context.read<SectionProvider>().saveSections();
+      if (mounted) {
+        Navigator.pop(context, true); // Close screen
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Seções criadas com sucesso!')),
         );
       }
     } catch (e) {
@@ -264,6 +305,27 @@ class _EditCipherState extends State<EditCipher>
         Navigator.pop(context, true); // Close screen
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Cifra salva com sucesso!')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao salvar: ${e.toString()}'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
+  }
+
+  void _saveSections() async {
+    try {
+      await context.read<SectionProvider>().saveSections();
+      if (mounted) {
+        Navigator.pop(context, true); // Close screen
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Seções salvas com sucesso!')),
         );
       }
     } catch (e) {

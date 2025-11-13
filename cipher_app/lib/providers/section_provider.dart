@@ -82,7 +82,7 @@ class SectionProvider extends ChangeNotifier {
     String? newContentCode,
   }) {
     final newSection = Section(
-      versionId: _currentVersionId!,
+      versionId: _currentVersionId ?? _sections[contentCode]!.versionId,
       contentCode: newContentCode ?? _sections[contentCode]!.contentCode,
       contentColor: newColor ?? _sections[contentCode]!.contentColor,
       contentType: newContentType ?? _sections[contentCode]!.contentType,

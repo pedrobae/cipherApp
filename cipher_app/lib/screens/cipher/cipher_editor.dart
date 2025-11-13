@@ -259,12 +259,6 @@ class _EditCipherState extends State<EditCipher>
     try {
       context.read<SectionProvider>().setCurrentVersionId(versionId);
       await context.read<SectionProvider>().saveSections();
-      if (mounted) {
-        Navigator.pop(context, true); // Close screen
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Seções criadas com sucesso!')),
-        );
-      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

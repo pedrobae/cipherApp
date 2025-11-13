@@ -150,6 +150,7 @@ class ParserProvider extends ChangeNotifier {
 
   List<Version> _buildVersionObjects(ParsingCipher cipher) {
     Version version = Version(
+      transposedKey: cipher.metadata['key'],
       id: -1, // Temporary ID
       cipherId: -1, // Temporary cipher ID
       sections: cipher.parsedSections,

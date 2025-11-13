@@ -5,7 +5,7 @@ class MetadataParser {
     // Iterates through sections
     for (var section in cipher.sections) {
       // Simple heuristic: if the section is labeled it doesn't contain metadata
-      if (section['suggestedLabel'] != 'Unlabeled Section') break;
+      if (section['suggestedTitle'] != 'Unlabeled Section') break;
 
       bool foundMetadata = false;
       // Look for colon-separated key-value pairs
@@ -13,7 +13,7 @@ class MetadataParser {
       if (_checkForHyphens(cipher, section)) foundMetadata = true;
 
       // Mark section as metadata if any metadata found
-      if (foundMetadata) section['suggestedLabel'] = 'Metadata';
+      if (foundMetadata) section['suggestedTitle'] = 'Metadata';
     }
 
     // If title is missing, checks the first couple lines looking at the number of words and average word length
@@ -21,7 +21,7 @@ class MetadataParser {
       for (var line in cipher.lines.take(5)) {
         if (line['wordCount'] <= 7 && line['avgWordLength'] >= 3.0) {
           cipher.metadata['title'] = line['text'];
-          cipher.sections[0]['suggestedLabel'] = 'Metadata';
+          cipher.sections[0]['suggestedTitle'] = 'Metadata';
           break;
         }
       }
@@ -29,7 +29,7 @@ class MetadataParser {
   }
 
   bool _checkForColons(ParsingCipher cipher, Map<String, dynamic> section) {
-    final lines = section['text'].split('\n');
+    final lines = section['content'].split('\n');
 
     bool foundMetadata = false;
     for (var line in lines) {
@@ -49,7 +49,7 @@ class MetadataParser {
   }
 
   bool _checkForHyphens(ParsingCipher cipher, Map<String, dynamic> section) {
-    final lines = section['text'].split('\n');
+    final lines = section['content'].split('\n');
 
     bool foundMetadata = false;
     for (var line in lines) {

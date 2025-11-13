@@ -107,37 +107,34 @@ class SectionParser {
 
   void _checkDuplicates(ParsingCipher cipher) {
     // Check for duplicate content and mark them
-    Set<String> seenContents = {};
+    Map<String, int> seenContentIndex = {};
     for (var section in cipher.sections) {
       String content = section['content'];
-      if (seenContents.contains(content)) {
-        section['isDuplicate'] = true;
+
+      if (seenContentIndex.containsKey(content)) {
+        section['duplicatedSectionIndex'] =
+            seenContentIndex[content]; // Mark as duplicate, with a reference
       } else {
-        section['isDuplicate'] = false;
-        seenContents.add(content);
+        seenContentIndex[content] = section['index'];
       }
     }
 
     // Check for duplicate titles and mark them, except 'verse' and 'unlabeled section'
+    Map<String, int> seenTitleIndex = {};
     for (var section in cipher.sections) {
-      bool isDuplicate = false;
       String title = section['suggestedTitle'].toString().toLowerCase();
 
       if (section['suggestedTitle'] == 'Unlabeled Section' ||
           section['suggestedTitle'] == 'Verse') {
-        section['isDuplicate'] = false;
         continue;
       }
 
-      for (var otherSection in cipher.sections) {
-        if (section == otherSection) continue;
-        if (title == otherSection['suggestedTitle'].toString().toLowerCase()) {
-          isDuplicate = true;
-          break;
-        }
+      if (seenTitleIndex.containsKey(title)) {
+        section['duplicatedSectionIndex'] =
+            seenTitleIndex[title]; // Mark as duplicate, with a reference
+      } else {
+        seenTitleIndex[title] = section['index'];
       }
-
-      section['isDuplicate'] = isDuplicate;
     }
   }
 

@@ -19,11 +19,20 @@ class ChordLineParser {
         code = incrementalDefaultCode.toString();
         incrementalDefaultCode++;
       }
-      // Keep track of song structure
-      songStructure.add(code);
 
       // If the section is marked as duplicate, skip creating a new Section object
-      if (section['isDuplicate'] == true) continue;
+      if (section['duplicatedSectionIndex'] != null) {
+        // Add the code of the original section to the song structure
+        songStructure.add(
+          cipher.sections[section['duplicatedSectionIndex']]['code'],
+        );
+        // Skip to the next section
+        continue;
+      }
+
+      // Keep track of song structure
+      songStructure.add(code);
+      section['code'] = code;
 
       // Build the Section object
       Section parsedSection = Section(

@@ -46,16 +46,16 @@ class ReorderableStructureChips extends StatelessWidget {
               itemCount: songStructure.length,
               onReorder: onReorder,
               itemBuilder: (context, index) {
-                final section = songStructure[index];
-                final sectionInfo = _getSectionInfo(section);
+                final sectionCode = songStructure[index];
+                final sectionInfo = _getSectionInfo(sectionCode);
                 final color = sectionInfo.$2;
 
                 return CustomReorderableDelayed(
                   delay: Duration(milliseconds: 100),
-                  key: ValueKey('$section-$index'),
+                  key: ValueKey('$sectionCode-$index'),
                   index: index,
                   child: Container(
-                    key: ValueKey('$section-$index'),
+                    key: ValueKey('$sectionCode-$index'),
                     child: Stack(
                       children: [
                         Container(
@@ -76,7 +76,7 @@ class ReorderableStructureChips extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                section,
+                                sectionCode,
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,

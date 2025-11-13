@@ -88,11 +88,66 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
   Widget _buildToken(ContentToken token, int index) {
     switch (token.type) {
       case TokenType.chord:
-        return ChordToken(
-          token: token,
-          addChord: addChord,
-          removeChord: removeToken,
-          index: index,
+        // DRAGGABLE CHORD - Can be moved
+        return DragTarget<String>(
+          onAcceptWithDetails: (details) => addChord(details.data, index),
+          builder: (context, candidateData, rejectedData) {
+            return LongPressDraggable<String>(
+              data: token.text,
+              feedback: Material(
+                elevation: 4,
+                borderRadius: BorderRadius.circular(8),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: widget.sectionColor,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    token.text,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              ),
+              childWhenDragging: Opacity(
+                opacity: 0.3,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: widget.sectionColor.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    token.text,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ),
+              onDragStarted: () {
+                // Remove chord from current position when drag starts
+                removeToken(index);
+              },
+              child: ChordToken(
+                token: token,
+                candidateData: candidateData,
+                sectionColor: widget.sectionColor,
+              ),
+            );
+          },
         );
 
       case TokenType.lyric:
@@ -160,8 +215,10 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Wrap(
-        spacing: 0, // No spacing for character-level precision
+        spacing: 0,
         runSpacing: 0,
+        alignment: WrapAlignment.start,
+        crossAxisAlignment: WrapCrossAlignment.end,
         children: _tokens.asMap().entries.map((entry) {
           return _buildToken(entry.value, entry.key);
         }).toList(),

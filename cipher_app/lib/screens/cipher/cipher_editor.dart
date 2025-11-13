@@ -298,7 +298,7 @@ class _EditCipherState extends State<EditCipher>
       if (mounted) {
         Navigator.pop(context, true); // Close screen
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Cifra salva com sucesso!')),
+          const SnackBar(content: Text('Versão salva com sucesso!')),
         );
       }
     } catch (e) {
@@ -317,7 +317,6 @@ class _EditCipherState extends State<EditCipher>
     try {
       await context.read<SectionProvider>().saveSections();
       if (mounted) {
-        Navigator.pop(context, true); // Close screen
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Seções salvas com sucesso!')),
         );

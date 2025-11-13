@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:cipher_app/models/ui/content_token.dart';
 import 'package:cipher_app/services/tokenization_service.dart';
 
+final double CHORDTOKENHEIGHT = 34;
+
 class TokenContentEditor extends StatefulWidget {
   final String sectionCode;
   final String initialContent;
@@ -85,49 +87,123 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
     _notifyContentChanged();
   }
 
-  Widget _buildChordTarget(int index) {
-    return DragTarget<String>(
-      onAcceptWithDetails: (details) => addChord(details.data, index),
-      builder: (context, candidateData, rejectedData) {
-        return SizedBox();
-      },
+  double _measureTextWidth(String text, TextStyle style) {
+    final textPainter = TextPainter(
+      text: TextSpan(text: text, style: style),
+      textDirection: TextDirection.ltr,
     );
+    textPainter.layout();
+    return textPainter.width;
   }
 
   Widget _buildTokenWidget(ContentToken token, int index) {
+    const textStyle = TextStyle(fontSize: 14);
     switch (token.type) {
       case TokenType.chord:
-        // Draggable chord token
-        return LongPressDraggable<String>(
-          data: token.text,
-          feedback: SizedBox(),
-          childWhenDragging: Opacity(
-            opacity: 0.3,
-            child: ChordToken(token: token, sectionColor: widget.sectionColor),
-          ),
-          onDragStarted: () {
-            removeToken(index);
+        return DragTarget<String>(
+          onAcceptWithDetails: (details) {
+            addChord(details.data, index);
           },
-          child: ChordToken(token: token, sectionColor: widget.sectionColor),
+          builder: (context, candidateData, rejectedData) {
+            // Draggable chord token
+            return candidateData.isNotEmpty
+                ? Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      ChordToken(
+                        token: ContentToken(
+                          text: candidateData.first!,
+                          type: TokenType.chord,
+                        ),
+                        sectionColor: widget.sectionColor,
+                      ),
+                      Text(token.text, style: textStyle),
+                    ],
+                  )
+                : LongPressDraggable<String>(
+                    data: token.text,
+                    feedback: SizedBox(),
+                    onDragStarted: () {
+                      removeToken(index);
+                    },
+                    hitTestBehavior: HitTestBehavior.translucent,
+                    child: ChordToken(
+                      token: token,
+                      sectionColor: widget.sectionColor,
+                    ),
+                  );
+          },
         );
       case TokenType.lyric:
       case TokenType.space:
+        final textWidth = _measureTextWidth(token.text, textStyle);
+
+        return DragTarget<String>(
+          onAcceptWithDetails: (details) {
+            addChord(details.data, index);
+          },
+          builder: (context, candidateData, rejectedData) {
+            return candidateData.isNotEmpty
+                ? Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      ChordToken(
+                        token: ContentToken(
+                          text: candidateData.first!,
+                          type: TokenType.chord,
+                        ),
+                        sectionColor: widget.sectionColor,
+                      ),
+                      Text(token.text, style: textStyle),
+                    ],
+                  )
+                : SizedBox(
+                    height: CHORDTOKENHEIGHT,
+                    width: textWidth,
+                    child: Align(
+                      alignment: Alignment.bottomLeft,
+                      child: Text(token.text, style: textStyle),
+                    ),
+                  );
+          },
+        );
       case TokenType.newline:
-        // Lyric text
-        return Text(token.text, style: const TextStyle(fontSize: 14));
+        return DragTarget<String>(
+          onAcceptWithDetails: (details) {
+            addChord(details.data, index);
+          },
+          builder: (context, candidateData, rejectedData) {
+            return candidateData.isNotEmpty
+                ? Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      ChordToken(
+                        token: ContentToken(
+                          text: candidateData.first!,
+                          type: TokenType.chord,
+                        ),
+                        sectionColor: widget.sectionColor,
+                      ),
+                      Text(token.text, style: textStyle),
+                    ],
+                  )
+                :
+                  // Forces wrap to next line by taking all remaining space
+                  SizedBox(width: double.infinity);
+          },
+        );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final tokenWidgets = <Widget>[];
-    for (var i = 0; i <= _tokens.length; i++) {
-      // Add chord target before each token widget
-      tokenWidgets.add(_buildChordTarget(i));
+    for (var i = 0; i < _tokens.length; i++) {
       tokenWidgets.add(_buildTokenWidget(_tokens[i], i));
     }
-    // Add chord target at the end
-    tokenWidgets.add(_buildChordTarget(_tokens.length));
 
     return Container(
       padding: const EdgeInsets.all(16),

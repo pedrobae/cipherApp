@@ -13,35 +13,37 @@ class ChordToken extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Stack(
+      clipBehavior: Clip.none,
       children: [
         // Chord text above
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-          decoration: BoxDecoration(
-            color: sectionColor,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(4),
-              topRight: Radius.circular(4),
-              bottomLeft: Radius.circular(0),
-              bottomRight: Radius.circular(4),
+        Positioned(
+          top: -16,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+            decoration: BoxDecoration(
+              color: sectionColor,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(4),
+                topRight: Radius.circular(4),
+                bottomLeft: Radius.circular(0),
+                bottomRight: Radius.circular(4),
+              ),
             ),
-          ),
-          child: Text(
-            token.text,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 10,
+            child: Text(
+              token.text,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 10,
+              ),
             ),
           ),
         ),
         // Vertical flag line
         Container(
           width: 2,
-          height: 16, // Adjust height to reach lyrics line
+          height: 20, // Adjust height to reach lyrics line
           color: sectionColor,
         ),
       ],

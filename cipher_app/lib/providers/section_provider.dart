@@ -13,10 +13,12 @@ class SectionProvider extends ChangeNotifier {
   int? _currentVersionId;
   bool _isLoading = false;
   bool _isSaving = false;
+  String? _error;
 
   Map<String, Section> get sections => _sections;
   bool get isLoading => _isLoading;
   bool get isSaving => _isSaving;
+  String? get error => _error;
 
   // Set the current version ID (used when creating a new version / importing)
   void setCurrentVersionId(int versionId) {
@@ -60,6 +62,7 @@ class SectionProvider extends ChangeNotifier {
 
       _currentVersionId = versionId;
     } catch (e) {
+      _error = e.toString();
       if (kDebugMode) {
         print('⚠️ Failed to load sections: $e');
       }
@@ -87,8 +90,8 @@ class SectionProvider extends ChangeNotifier {
     );
 
     // Update the section in the sections map
-    _sections[contentCode] = newSection;
-
+    _sections.remove(contentCode);
+    _sections[newSection.contentCode] = newSection;
     notifyListeners();
   }
 
@@ -133,6 +136,7 @@ class SectionProvider extends ChangeNotifier {
         }
       }
     } catch (e) {
+      _error = e.toString();
       if (kDebugMode) {
         print('⚠️ Failed to save sections: $e');
       }

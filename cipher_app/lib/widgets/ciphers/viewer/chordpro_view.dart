@@ -32,7 +32,7 @@ class ChordProView extends StatelessWidget {
         if (parsedSong.linesMap[i] == null ||
             parsedSong.linesMap[i]!.trim().isEmpty) {
           List<Text> rowChildren = [];
-          for (var chord in parsedSong.chordsMap[i]!) {
+          for (var chord in parsedSong.chordsMap[i] ?? []) {
             rowChildren.add(Text(chord.name, style: ls.chordTextStyle));
           }
           sectionChildren.add(Row(spacing: 5, children: rowChildren));

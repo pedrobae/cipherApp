@@ -4,20 +4,20 @@ import 'package:cipher_app/widgets/ciphers/editor/custom_reorderable_delayed.dar
 
 class ReorderableStructureChips extends StatelessWidget {
   final List<String> songStructure;
-  final Map<String, Section> customSections;
+  final Map<String, Section> sections;
   final Function(int oldIndex, int newIndex) onReorder;
   final Function(int index) onRemoveSection;
 
   const ReorderableStructureChips({
     super.key,
     required this.songStructure,
-    required this.customSections,
+    required this.sections,
     required this.onReorder,
     required this.onRemoveSection,
   });
 
   (String, Color) _getSectionInfo(String key) {
-    final section = customSections[key]!;
+    final section = sections[key]!;
     return (section.contentType, section.contentColor);
   }
 

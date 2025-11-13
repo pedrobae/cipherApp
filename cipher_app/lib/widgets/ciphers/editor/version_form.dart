@@ -6,7 +6,6 @@ import 'package:cipher_app/widgets/ciphers/editor/sections/edit_section_dialog.d
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/models/domain/cipher/section.dart';
-import 'package:cipher_app/models/domain/cipher/version.dart';
 import 'package:cipher_app/providers/version_provider.dart';
 import 'package:cipher_app/widgets/ciphers/editor/reorderable_structure_chips.dart';
 import 'package:cipher_app/utils/section_constants.dart';
@@ -22,52 +21,30 @@ class _VersionFormState extends State<VersionForm> {
   final Map<String, TextEditingController> _sectionControllers = {};
   Timer? _debounceTimer;
 
-  // Track last synced data to avoid unnecessary rebuilds
-  Version? _lastSyncedVersion;
-  bool _hasInitialized = false;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _syncWithProviderData();
-  }
-
   @override
   void initState() {
-    super.initState();
-    _syncWithProviderData();
-  }
+    final sectionProvider = context.read<SectionProvider>();
 
-  void _syncWithProviderData() {
-    final versionProvider = Provider.of<VersionProvider>(
-      context,
-      listen: false,
-    );
-    final version = versionProvider.currentVersion;
-
-    if (version.sections != null) {
-      if (!_hasInitialized || _lastSyncedVersion?.id != version.id) {
-        // Update controllers for existing sections
-        version.sections!.forEach((key, section) {
-          if (!_sectionControllers.containsKey(key)) {
-            _sectionControllers[key] = TextEditingController();
-          }
-          _sectionControllers[key]!.text = section.contentText;
-        });
-
-        // Remove controllers for sections that no longer exist
-        final keysToRemove = _sectionControllers.keys
-            .where((key) => !version.sections!.containsKey(key))
-            .toList();
-        for (final key in keysToRemove) {
-          _sectionControllers[key]?.dispose();
-          _sectionControllers.remove(key);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Update controllers for existing sections
+      sectionProvider.sections.forEach((key, section) {
+        if (!_sectionControllers.containsKey(key)) {
+          _sectionControllers[key] = TextEditingController();
         }
+        _sectionControllers[key]!.text = section.contentText;
+      });
 
-        _hasInitialized = true;
-        _lastSyncedVersion = version;
+      // Remove controllers for sections that no longer exist
+      final keysToRemove = _sectionControllers.keys
+          .where((key) => !sectionProvider.sections.containsKey(key))
+          .toList();
+      for (final key in keysToRemove) {
+        _sectionControllers[key]?.dispose();
+        _sectionControllers.remove(key);
       }
-    }
+    });
+
+    super.initState();
   }
 
   @override
@@ -195,11 +172,6 @@ class _VersionFormState extends State<VersionForm> {
     final colorScheme = Theme.of(context).colorScheme;
     return Consumer3<SectionProvider, VersionProvider, CipherProvider>(
       builder: (context, sectionProvider, versionProvider, cipherProvider, child) {
-        // Trigger sync after the current build if needed
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _syncWithProviderData();
-        });
-
         final version = versionProvider.currentVersion;
 
         final uniqueSections = version.songStructure.toSet().toList();
@@ -323,7 +295,7 @@ class _VersionFormState extends State<VersionForm> {
                     // Draggable Section Chips
                     ReorderableStructureChips(
                       songStructure: version.songStructure,
-                      customSections: version.sections!,
+                      sections: sectionProvider.sections,
                       onReorder: (int oldIndex, int newIndex) {
                         versionProvider.cacheReorderedStructure(
                           oldIndex,
@@ -338,9 +310,6 @@ class _VersionFormState extends State<VersionForm> {
                 ),
               ),
             ),
-
-            const SizedBox(height: 16),
-
             // Content Section
             if (uniqueSections.isEmpty)
               const Padding(
@@ -353,7 +322,7 @@ class _VersionFormState extends State<VersionForm> {
               )
             else
               ...uniqueSections.map((sectionCode) {
-                final section = version.sections![sectionCode];
+                final section = sectionProvider.sections[sectionCode];
                 return Card(
                   color: colorScheme.surfaceContainerHigh,
                   margin: const EdgeInsets.only(bottom: 16),

@@ -121,130 +121,133 @@ class _CipherViewerState extends State<CipherViewer>
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Consumer3<CipherProvider, VersionProvider, LayoutSettingsProvider>(
-      builder: (context, cipherProvider, versionProvider, settings, child) {
-        // Handle loading states
-        if (cipherProvider.isLoading || versionProvider.isLoading) {
-          return Scaffold(
-            appBar: AppBar(title: const Text('Carregando...')),
-            body: const Center(child: CircularProgressIndicator()),
-          );
-        }
+    return Consumer4<
+      CipherProvider,
+      VersionProvider,
+      SectionProvider,
+      LayoutSettingsProvider
+    >(
+      builder:
+          (
+            context,
+            cipherProvider,
+            versionProvider,
+            sectionProvider,
+            settings,
+            child,
+          ) {
+            // Handle loading states
+            if (cipherProvider.isLoading || versionProvider.isLoading) {
+              return Scaffold(
+                appBar: AppBar(title: const Text('Carregando...')),
+                body: const Center(child: CircularProgressIndicator()),
+              );
+            }
 
-        // Handle error states
-        if (cipherProvider.error != null || versionProvider.error != null) {
-          return Scaffold(
-            appBar: AppBar(title: const Text('Erro')),
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.error_outline, size: 64, color: colorScheme.error),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Erro: ${cipherProvider.error ?? versionProvider.error}',
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: _loadData,
-                    child: const Text('Tentar Novamente'),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }
-
-        final currentCipher = cipherProvider.currentCipher;
-        final currentVersion = versionProvider.currentVersion;
-
-        // Safety check for data integrity
-        if (currentCipher.id == null || currentVersion.id == null) {
-          return Scaffold(
-            appBar: AppBar(title: const Text('Carregando...')),
-            body: const Center(child: CircularProgressIndicator()),
-          );
-        }
-
-        final hasVersions = currentCipher.versions.isNotEmpty;
-
-        // Set original key for transposer
-        if (!_hasSetOriginalKey && currentCipher.musicKey.isNotEmpty) {
-          _hasSetOriginalKey = true;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            settings.setOriginalKey(currentCipher.musicKey);
-          });
-        }
-
-        return Scaffold(
-          appBar: AppBar(
-            title: Column(
-              children: [
-                Text(
-                  currentCipher.title,
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  'por ${currentCipher.author}',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleMedium?.copyWith(color: Colors.grey[600]),
-                ),
-              ],
-            ),
-            centerTitle: true,
-            actions: [
-              if (hasVersions && currentVersion.id != null) ...[
-                IconButton(
-                  onPressed: _showLayoutSettings,
-                  icon: const Icon(Icons.remove_red_eye),
-                  tooltip: 'Layout Settings',
-                ),
-                IconButton(
-                  icon: const Icon(Icons.library_music),
-                  tooltip: 'Versões',
-                  onPressed: _showVersionSelector,
-                ),
-                IconButton(
-                  icon: const Icon(Icons.edit),
-                  tooltip: 'Edit',
-                  onPressed: _editCurrentVersion,
-                ),
-              ] else
-                IconButton(
-                  icon: const Icon(Icons.add),
-                  tooltip: 'Criar primeira versão',
-                  onPressed: _addNewVersion,
-                ),
-            ],
-          ),
-          body: hasVersions && currentVersion.id != null
-              ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(0),
-                      child: CipherVersionHeader(
-                        currentVersion: currentVersion,
+            // Handle error states
+            if (cipherProvider.error != null ||
+                versionProvider.error != null ||
+                sectionProvider.error != null) {
+              return Scaffold(
+                appBar: AppBar(title: const Text('Erro')),
+                body: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.error_outline,
+                        size: 64,
+                        color: colorScheme.error,
                       ),
-                    ),
-                    // Cipher content section
-                    if (currentVersion.songStructure.isNotEmpty) ...[
-                      Expanded(
-                        child: CipherContentSection(
-                          cipher: currentCipher,
-                          currentVersion: currentVersion,
-                          columnCount: settings.columnCount,
-                        ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Erro: ${cipherProvider.error ?? versionProvider.error ?? sectionProvider.error}',
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: _loadData,
+                        child: const Text('Tentar Novamente'),
                       ),
                     ],
+                  ),
+                ),
+              );
+            }
+
+            final currentCipher = cipherProvider.currentCipher;
+            final currentVersion = versionProvider.currentVersion;
+            final hasVersions = currentCipher.versions.isNotEmpty;
+
+            // Set original key for transposer
+            if (!_hasSetOriginalKey && currentCipher.musicKey.isNotEmpty) {
+              _hasSetOriginalKey = true;
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                settings.setOriginalKey(currentCipher.musicKey);
+              });
+            }
+
+            return Scaffold(
+              appBar: AppBar(
+                title: Column(
+                  children: [
+                    Text(
+                      currentCipher.title,
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      'por ${currentCipher.author}',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Colors.grey[600],
+                      ),
+                    ),
                   ],
-                )
-              : _buildEmptyState(),
-        );
-      },
+                ),
+                centerTitle: true,
+                actions: [
+                  if (hasVersions && currentVersion.id != null) ...[
+                    IconButton(
+                      onPressed: _showLayoutSettings,
+                      icon: const Icon(Icons.remove_red_eye),
+                      tooltip: 'Layout Settings',
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.library_music),
+                      tooltip: 'Versões',
+                      onPressed: _showVersionSelector,
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.edit),
+                      tooltip: 'Edit',
+                      onPressed: _editCurrentVersion,
+                    ),
+                  ] else
+                    IconButton(
+                      icon: const Icon(Icons.add),
+                      tooltip: 'Criar primeira versão',
+                      onPressed: _addNewVersion,
+                    ),
+                ],
+              ),
+              body: hasVersions && currentVersion.id != null
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(0),
+                          child: CipherVersionHeader(
+                            currentVersion: currentVersion,
+                          ),
+                        ),
+                        // Cipher content section
+                        if (currentVersion.songStructure.isNotEmpty) ...[
+                          Expanded(child: CipherContentSection()),
+                        ],
+                      ],
+                    )
+                  : _buildEmptyState(),
+            );
+          },
     );
   }
 

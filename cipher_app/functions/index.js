@@ -23,195 +23,33 @@ setGlobalOptions({maxInstances: 5});
 const functions = require("firebase-functions");
 const {onSchedule} = require("firebase-functions/v2/scheduler");
 const admin = require("firebase-admin");
-const {BigQuery} = require("@google-cloud/bigquery");
 
 admin.initializeApp();
 
-/**
- * Updates the popular ciphers list in Firestore stats collection
- */
-async function updatePopularCiphers() {
-  try {
-    const ciphersRef = admin.firestore().collection("publicCiphers");
-    const snapshot = await ciphersRef
-        .orderBy("downloadCount", "desc")
-        .limit(20)
-        .get();
-
-    const popularCiphers = snapshot.docs.map((doc) => ({
-      firebaseId: doc.id,
-      ...doc.data(),
-    }));
-    console.log("Fetched popular ciphers:", popularCiphers);
-
-    await admin.firestore().doc("stats/popularCiphers").set({
-      ciphers: popularCiphers,
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
-  } catch (error) {
-    console.error("Error updating popular ciphers:", error);
-    throw error;
-  }
-}
-
-
-/**
- * Parses period specification for BigQuery date filtering
- * @param {string} period - Period specification
- * @return {Object} Object containing whereClause for BigQuery
- */
-function parsePeriodForBigQuery(period) {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  switch (period) {
-    case "yesterday": {
-      const yesterday = new Date(today);
-      yesterday.setDate(yesterday.getDate() - 1);
-      const dateString = yesterday.toISOString().slice(0, 10)
-          .replace(/-/g, "");
-      return {
-        whereClause: `_TABLE_SUFFIX = '${dateString}'`,
-      };
-    }
-
-    case "last_7_days": {
-      const endDate = new Date(today);
-      endDate.setDate(endDate.getDate() - 1); // Yesterday
-      const startDate = new Date(endDate);
-      startDate.setDate(startDate.getDate() - 6); // 7 days total
-
-      const startString = startDate.toISOString().slice(0, 10)
-          .replace(/-/g, "");
-      const endString = endDate.toISOString().slice(0, 10)
-          .replace(/-/g, "");
-
-      return {
-        whereClause: `_TABLE_SUFFIX BETWEEN '${startString}' ` +
-          `AND '${endString}'`,
-      };
-    }
-
-    case "last_30_days": {
-      const endDate = new Date(today);
-      endDate.setDate(endDate.getDate() - 1); // Yesterday
-      const startDate = new Date(endDate);
-      startDate.setDate(startDate.getDate() - 29); // 30 days total
-
-      const startString = startDate.toISOString().slice(0, 10)
-          .replace(/-/g, "");
-      const endString = endDate.toISOString().slice(0, 10)
-          .replace(/-/g, "");
-
-      return {
-        whereClause: `_TABLE_SUFFIX BETWEEN '${startString}' ` +
-          `AND '${endString}'`,
-      };
-    }
-
-    default: {
-      // Handle custom date range: 'YYYY-MM-DD,YYYY-MM-DD'
-      if (period.includes(",")) {
-        const [startDateStr, endDateStr] = period.split(",");
-        const startString = startDateStr.replace(/-/g, "");
-        const endString = endDateStr.replace(/-/g, "");
-
-        return {
-          whereClause: `_TABLE_SUFFIX BETWEEN '${startString}' ` +
-            `AND '${endString}'`,
-        };
-      }
-
-      // Default to yesterday if period is unrecognized
-      console.warn(`Period not recognized: ${period}.`);
-      return parsePeriodForBigQuery("yesterday");
-    }
-  }
-}
-
-/**
- * Fetches Firebase Analytics event data via BigQuery for a variable period
- * @param {string} eventName - The Analytics event name to query
- * @param {string} period - Period specification: 'yesterday', etc.
- * @return {Promise<Array>} Array of objects with cipher_id and download_count
- */
-async function getAnalyticsData(eventName, period) {
-  try {
-    const bigquery = new BigQuery();
-
-    // Get project ID from environment
-    const projectId = process.env.GCLOUD_PROJECT;
-
-    const analyticsPropertyId = "507276556"; // Android app property ID
-
-    const {whereClause} = parsePeriodForBigQuery(period);
-
-    const query = `
-      SELECT 
-        (SELECT value.string_value 
-         FROM UNNEST(event_params) 
-         WHERE key = 'cipher_id') as cipher_id,
-        COUNT(*) as download_count
-      FROM \`${projectId}.analytics_${analyticsPropertyId}.events_*\`
-      WHERE event_name = @eventName
-        AND ${whereClause}
-        AND (SELECT value.string_value 
-             FROM UNNEST(event_params) 
-             WHERE key = 'cipher_id') IS NOT NULL
-      GROUP BY cipher_id
-      HAVING download_count > 0
-      ORDER BY download_count DESC
-    `;
-
-    const options = {
-      query: query,
-      params: {eventName: eventName},
-    };
-
-    const [rows] = await bigquery.query(options);
-
-    console.log(`BigQuery returned ${rows.length} rows for event ` +
-      `${eventName} over period ${period}.`);
-    return rows.map((row) => ({
-      cipherId: row.cipher_id,
-      downloadCount: parseInt(row.download_count),
-    }));
-  } catch (error) {
-    console.error("Error querying BigQuery:", error);
-    return [];
-  }
-}
-
-exports.aggregateCipherDownloads = onSchedule({
+exports.indexPublicCiphers = onSchedule({
   schedule: "0 0 * * 1",
   memory: "256MB",
-  timeoutSeconds: 60,
+  timeoutSeconds: 360,
   maxInstances: 1,
 }, async (event) => {
   try {
-    const data = await getAnalyticsData("fetched_cipher_versions",
-        "last_7_days");
+    console.log("Starting scheduled indexing of public ciphers.");
+    const ciphersRef = admin.firestore().collection("publicCiphers");
+    const snapshot = await ciphersRef
+        .orderBy("title", "desc")
+        .get();
 
-    const batch = admin.firestore().batch();
-    data.forEach(({cipherId, downloadCount}) => {
-      const cipherRef = admin.firestore().collection("publicCiphers")
-          .doc(cipherId);
-      batch.update(cipherRef, {
-        downloadCount: admin.firestore.FieldValue.increment(downloadCount),
-      });
+    const publicCiphers = snapshot.docs.map((doc) => ({
+      firebaseId: doc.id,
+      ...doc.data(),
+    }));
+    console.log("Fetched public ciphers:", publicCiphers);
+    await admin.firestore().doc("indexes/publicCiphers").set({
+      ciphers: publicCiphers,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
-    await batch.commit();
-    console.log(`Updated download counts for ${data.length} ciphers.`);
-
-    await updatePopularCiphers();
-
-    return {
-      success: true,
-      processedCiphers: data ? data.length : 0,
-      timestamp: new Date().toISOString(),
-    };
   } catch (error) {
-    console.error("Error aggregating cipher downloads:", error);
+    console.error("Error updating public ciphers:", error);
     throw error;
   }
 });
@@ -239,6 +77,8 @@ exports.grantAdminRole = onCall(async (request) => {
   }
 
   try {
+    // Find user by email
+    const userRecord = await admin.auth().getUserByEmail(email);
 
     // Set custom claims using the UID
     await admin.auth().setCustomUserClaims(userRecord.uid, {admin: true});

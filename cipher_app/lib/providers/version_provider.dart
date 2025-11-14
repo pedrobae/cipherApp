@@ -502,6 +502,20 @@ class VersionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // ===== UPDATE =====
+  /// Update a section code in the song structure
+  void updateSectionCodeInStruct({
+    required String oldCode,
+    required String newCode,
+  }) {
+    for (int i = 0; i < _currentVersion.songStructure.length; i++) {
+      if (_currentVersion.songStructure[i] == oldCode) {
+        _currentVersion.songStructure[i] = newCode;
+      }
+    }
+    notifyListeners();
+  }
+
   /// ===== DELETE =====
   // Remove a section from cache
   void removeSectionFromStruct(int index) {

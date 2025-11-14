@@ -127,7 +127,13 @@ class _EditSectionDialogState extends State<EditSectionDialog> {
           ),
           TextFormField(
             controller: contentTextController,
-            decoration: InputDecoration(labelText: 'Content'),
+            minLines: 4,
+            decoration: InputDecoration(
+              hintText: 'Conteúdo da seção',
+              border: const OutlineInputBorder(),
+            ),
+            maxLines: null,
+            keyboardType: TextInputType.multiline,
           ),
         ],
       ),

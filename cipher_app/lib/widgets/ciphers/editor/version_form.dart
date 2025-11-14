@@ -110,6 +110,13 @@ class _VersionFormState extends State<VersionForm> {
             newContentText: text,
             newColor: color,
           );
+          // If the content code has changed, update the song structure accordingly
+          if (code != null && code != section.contentCode) {
+            versionProvider.updateSectionCodeInStruct(
+              oldCode: section.contentCode,
+              newCode: code,
+            );
+          }
         },
         onDelete: () {
           sectionProvider.cacheDeleteSection(section.contentCode);
@@ -341,7 +348,6 @@ class _VersionFormState extends State<VersionForm> {
                               ],
                             ),
                             const SizedBox(height: 12),
-                            // In version_form.dart, replace TextFormField with:
                             TokenContentEditor(
                               sectionCode: sectionCode,
                               initialContent: section?.contentText ?? '',

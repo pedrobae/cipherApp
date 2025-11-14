@@ -76,10 +76,10 @@ class SectionProvider extends ChangeNotifier {
   // Modify a section (content_text)
   void cacheUpdatedSection(
     String contentCode, {
-    String? newContentText,
-    String? newContentType,
-    Color? newColor,
     String? newContentCode,
+    String? newContentType,
+    String? newContentText,
+    Color? newColor,
   }) {
     final newSection = Section(
       versionId: _currentVersionId ?? _sections[contentCode]!.versionId,

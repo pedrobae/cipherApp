@@ -8,6 +8,7 @@ import 'package:cipher_app/providers/section_provider.dart';
 import 'package:cipher_app/providers/version_provider.dart';
 import 'package:cipher_app/widgets/ciphers/editor/sections/custom_section_dialog.dart';
 import 'package:cipher_app/widgets/ciphers/editor/sections/edit_section_dialog.dart';
+import 'package:cipher_app/widgets/ciphers/editor/sections/preset_section_dialog.dart';
 import 'package:cipher_app/widgets/ciphers/editor/reorderable_structure_chips.dart';
 import 'package:cipher_app/utils/section_constants.dart';
 
@@ -19,53 +20,7 @@ class VersionForm extends StatefulWidget {
 }
 
 class _VersionFormState extends State<VersionForm> {
-  final Map<String, TextEditingController> _sectionControllers = {};
   Timer? _debounceTimer;
-
-  @override
-  void initState() {
-    final sectionProvider = context.read<SectionProvider>();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Update controllers for existing sections
-      sectionProvider.sections.forEach((key, section) {
-        if (!_sectionControllers.containsKey(key)) {
-          _sectionControllers[key] = TextEditingController();
-        }
-        _sectionControllers[key]!.text = section.contentText;
-      });
-
-      // Remove controllers for sections that no longer exist
-      final keysToRemove = _sectionControllers.keys
-          .where((key) => !sectionProvider.sections.containsKey(key))
-          .toList();
-      for (final key in keysToRemove) {
-        _sectionControllers[key]?.dispose();
-        _sectionControllers.remove(key);
-      }
-    });
-
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _debounceTimer?.cancel();
-    for (var controller in _sectionControllers.values) {
-      controller.dispose();
-    }
-    super.dispose();
-  }
-
-  void _changeSection(String sectionCode, SectionProvider sectionProvider) {
-    final controller = _sectionControllers[sectionCode];
-    final contentText = controller?.text ?? '';
-
-    sectionProvider.cacheUpdatedSection(
-      sectionCode,
-      newContentText: contentText,
-    );
-  }
 
   void _addSection(
     String sectionCode,
@@ -74,12 +29,7 @@ class _VersionFormState extends State<VersionForm> {
     String? sectionType,
     Color? customColor,
   }) {
-    bool isNewSection = false;
-    // Create text controller for this section if needed
-    if (!_sectionControllers.containsKey(sectionCode)) {
-      _sectionControllers[sectionCode] = TextEditingController();
-      isNewSection = true;
-    }
+    final isNewSection = !sectionProvider.sections.containsKey(sectionCode);
 
     // Add section to song structure
     versionProvider.addSectionToStruct(sectionCode);
@@ -116,7 +66,7 @@ class _VersionFormState extends State<VersionForm> {
   ) {
     showDialog(
       context: context,
-      builder: (context) => _PresetSectionsDialog(
+      builder: (context) => PresetSectionsDialog(
         sectionTypes: predefinedSectionTypes,
         onAdd: (sectionKey) =>
             _addSection(sectionKey, sectionProvider, versionProvider),
@@ -151,13 +101,14 @@ class _VersionFormState extends State<VersionForm> {
       context: context,
       builder: (context) => EditSectionDialog(
         section: section,
-        onSave: (code, name, color) {
+        onSave: (code, type, text, color) {
           // Update the section with new values
           sectionProvider.cacheUpdatedSection(
             section.contentCode,
-            newContentType: name,
-            newColor: color,
             newContentCode: code,
+            newContentType: type,
+            newContentText: text,
+            newColor: color,
           );
         },
         onDelete: () {
@@ -417,48 +368,6 @@ class _VersionFormState extends State<VersionForm> {
               ],
             );
           },
-    );
-  }
-}
-
-class _PresetSectionsDialog extends StatelessWidget {
-  final Map<String, String> sectionTypes;
-  final Function(String) onAdd;
-
-  const _PresetSectionsDialog({
-    required this.sectionTypes,
-    required this.onAdd,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Adicionar Seção'),
-      content: SizedBox(
-        width: double.maxFinite,
-        child: Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: sectionTypes.entries.map((entry) {
-            return ActionChip(
-              label: Text('${entry.key} - ${entry.value}'),
-              backgroundColor: (defaultSectionColors[entry.key] ?? Colors.grey)
-                  .withValues(alpha: .8),
-              labelStyle: const TextStyle(color: Colors.white),
-              onPressed: () {
-                onAdd(entry.key);
-                Navigator.pop(context);
-              },
-            );
-          }).toList(),
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancelar'),
-        ),
-      ],
     );
   }
 }

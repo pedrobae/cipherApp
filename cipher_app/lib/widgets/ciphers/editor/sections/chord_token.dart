@@ -4,49 +4,27 @@ import 'package:flutter/material.dart';
 class ChordToken extends StatelessWidget {
   final ContentToken token;
   final Color sectionColor;
+  final TextStyle textStyle;
 
   const ChordToken({
     super.key,
     required this.token,
     required this.sectionColor,
+    required this.textStyle,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        // Chord text above
-        Positioned(
-          top: -16,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-            decoration: BoxDecoration(
-              color: sectionColor,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(4),
-                topRight: Radius.circular(4),
-                bottomLeft: Radius.circular(0),
-                bottomRight: Radius.circular(4),
-              ),
-            ),
-            child: Text(
-              token.text,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 10,
-              ),
-            ),
-          ),
-        ),
-        // Vertical flag line
-        Container(
-          width: 2,
-          height: 20, // Adjust height to reach lyrics line
-          color: sectionColor,
-        ),
-      ],
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      decoration: BoxDecoration(
+        color: sectionColor,
+        borderRadius: BorderRadius.all(Radius.circular(4)),
+      ),
+      child: Text(
+        token.text,
+        style: textStyle.copyWith(fontSize: textStyle.fontSize! * 0.8),
+      ),
     );
   }
 }

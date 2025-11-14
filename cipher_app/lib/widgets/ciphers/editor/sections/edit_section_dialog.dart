@@ -4,7 +4,7 @@ import 'package:cipher_app/utils/section_constants.dart';
 
 class EditSectionDialog extends StatefulWidget {
   final Section section;
-  final void Function(String?, String?, Color?) onSave;
+  final void Function(String?, String?, String?, Color?) onSave;
   final VoidCallback onDelete;
 
   const EditSectionDialog({
@@ -21,6 +21,7 @@ class EditSectionDialog extends StatefulWidget {
 class _EditSectionDialogState extends State<EditSectionDialog> {
   late TextEditingController contentCodeController;
   late TextEditingController contentTypeController;
+  late TextEditingController contentTextController;
   late Color contentColor;
   Map<String, Color> availableColors = {};
 
@@ -34,13 +35,17 @@ class _EditSectionDialogState extends State<EditSectionDialog> {
       text: widget.section.contentType,
     );
 
+    contentTextController = TextEditingController(
+      text: widget.section.contentText,
+    );
+
     contentColor = widget.section.contentColor;
 
-    List<Color> presentColors = [];
+    List<Color> presetColors = [];
     for (var entry in defaultSectionColors.entries) {
-      if (!presentColors.contains(entry.value)) {
+      if (!presetColors.contains(entry.value)) {
         availableColors[predefinedSectionTypes[entry.key]!] = entry.value;
-        presentColors.add(entry.value);
+        presetColors.add(entry.value);
       }
     }
 
@@ -120,6 +125,10 @@ class _EditSectionDialogState extends State<EditSectionDialog> {
               });
             },
           ),
+          TextFormField(
+            controller: contentTextController,
+            decoration: InputDecoration(labelText: 'Content'),
+          ),
         ],
       ),
       actions: [
@@ -135,6 +144,7 @@ class _EditSectionDialogState extends State<EditSectionDialog> {
             widget.onSave(
               contentCodeController.text,
               contentTypeController.text,
+              contentTextController.text,
               contentColor,
             );
             Navigator.of(context).pop();

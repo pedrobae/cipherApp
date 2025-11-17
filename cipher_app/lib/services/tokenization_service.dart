@@ -46,6 +46,9 @@ class TokenizationService {
         );
       }
     }
+    if (tokens.last.type == TokenType.newline) {
+      tokens.removeLast();
+    }
     return tokens;
   }
 

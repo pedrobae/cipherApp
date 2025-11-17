@@ -54,3 +54,45 @@ Song parseChordPro(String? chordProText) {
 
   return Song(linesMap, chordsMap);
 }
+
+String generateLyricsFromSong(Song song) {
+  StringBuffer lyricsBuffer = StringBuffer();
+
+  for (int i = 0; i < song.linesMap.length; i++) {
+    String line = song.linesMap[i] ?? '';
+    lyricsBuffer.writeln(line);
+  }
+
+  return lyricsBuffer.toString().trim();
+}
+
+String generateChordProFromSong(Song song) {
+  StringBuffer chordProBuffer = StringBuffer();
+
+  int length = song.linesMap.length;
+  if (song.chordsMap.length > length) {
+    length = song.chordsMap.length;
+  }
+
+  for (int i = 0; i < length; i++) {
+    String line = song.linesMap[i] ?? '';
+    List<Chord> chords = song.chordsMap[i] ?? [];
+
+    // Insert chords into the line
+    int offset = 0;
+    for (final chord in chords) {
+      int insertPosition = chord.lyricsBefore.length + offset;
+      if (insertPosition > line.length) {
+        insertPosition = line.length;
+      }
+      line =
+          '${line.substring(0, insertPosition)}[${chord.name}]${line.substring(insertPosition)}';
+
+      offset += chord.name.length + 2;
+    }
+
+    chordProBuffer.writeln(line);
+  }
+
+  return chordProBuffer.toString().trim();
+}

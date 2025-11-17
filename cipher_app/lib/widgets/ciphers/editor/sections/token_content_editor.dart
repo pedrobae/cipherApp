@@ -46,10 +46,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
 
   @override
   Widget build(BuildContext context) {
-    final tokenWidgets = <Widget>[];
-    for (var i = 0; i < _tokens.length; i++) {
-      tokenWidgets.add(_buildTokenWidget(_tokens[i]));
-    }
+    final tokenWidgets = _buildTokenWidgets(_tokens);
 
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
@@ -139,6 +136,39 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
     );
   }
 
+  List<Widget> _buildTokenWidgets(List<ContentToken> tokens) {
+    /// CREATE TOKEN WIDGETS
+    final tokenWidgets = <Widget>[];
+
+    // If there is no chord preceding line, add a dragtarget at the start
+    if (!_spaceBeforeLyric(0, tokens)) {
+      tokenWidgets.add(_buildPrecedingChordDragTarget());
+    }
+
+    // Build the widgets for each token
+    for (var i = 0; i < _tokens.length; i++) {
+      tokenWidgets.add(_buildTokenWidget(_tokens[i]));
+      if (_tokens[i].type == TokenType.newline) {
+        tokenWidgets.add(const SizedBox(width: double.infinity));
+        if (!_spaceBeforeLyric(i, tokens)) {
+          tokenWidgets.add(_buildPrecedingChordDragTarget());
+        }
+      }
+    }
+
+    // Add a final newline token to create a dragtarget at the end
+    tokenWidgets.add(
+      _buildTokenWidget(
+        ContentToken(
+          text: '\n',
+          type: TokenType.newline,
+          position: _tokens.length,
+        ),
+      ),
+    );
+    return tokenWidgets;
+  }
+
   Widget _buildTokenWidget(ContentToken token) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
@@ -177,7 +207,6 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
             if (candidateData.isNotEmpty) {
               return Stack(
                 clipBehavior: Clip.none,
-                key: _tokenKeys[token.position],
                 children: [
                   Text(
                     token.text,
@@ -218,23 +247,27 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
             _addChord(details.data, token.position!);
           },
           builder: (context, candidateData, rejectedData) {
-            if (candidateData.isNotEmpty) {
-              return Wrap(
-                key: _tokenKeys[token.position],
-                children: [
-                  ChordToken(
+            return candidateData.isNotEmpty
+                ? ChordToken(
                     token: candidateData.first!,
                     sectionColor: widget.section.contentColor,
                     textStyle: TextStyle(
                       fontSize: _fontSize,
                       color: Colors.white,
                     ),
-                  ),
-                  SizedBox(width: double.infinity),
-                ],
-              );
-            }
-            return SizedBox(width: double.infinity, height: _fontSize);
+                  )
+                : Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      border: BorderDirectional(
+                        bottom: BorderSide(
+                          color: Colors.grey.shade400,
+                          width: 2,
+                        ),
+                      ),
+                    ),
+                  );
           },
         );
     }
@@ -254,7 +287,9 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
   }
 
   void _notifyContentChanged() {
-    final newContent = _tokenizer.reconstructContent(_tokens);
+    final newContent = _tokenizer.reconstructContent(
+      _tokens, // Exclude the last newline token
+    );
     widget.onContentChanged(newContent);
   }
 
@@ -283,10 +318,82 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
     _notifyContentChanged();
   }
 
+  void _addPrecedingChord(ContentToken token) {
+    final emptySpaceToken = ContentToken(
+      text: ' ',
+      type: TokenType.space,
+      position: 1,
+    );
+    final newToken = ContentToken(
+      text: token.text,
+      type: token.type,
+      position: 0,
+    );
+
+    setState(() {
+      _tokens.insert(0, emptySpaceToken);
+      _tokens.insert(0, newToken);
+    });
+
+    // Check if the token was moved
+    if (token.position != null) {
+      // Remove token
+      _tokens.removeAt(token.position! + 1); // +1 because we inserted at start
+    }
+
+    _notifyContentChanged();
+  }
+
   void _removeChord(ContentToken token) {
     setState(() {
       _tokens.removeAt(token.position!);
     });
     _notifyContentChanged();
+  }
+
+  DragTarget<ContentToken> _buildPrecedingChordDragTarget() =>
+      DragTarget<ContentToken>(
+        onAcceptWithDetails: (details) {
+          _addPrecedingChord(details.data);
+        },
+        builder: (context, candidateData, rejectedData) {
+          return candidateData.isNotEmpty
+              ? ChordToken(
+                  token: candidateData.first!,
+                  sectionColor: widget.section.contentColor,
+                  textStyle: TextStyle(
+                    fontSize: _fontSize,
+                    color: Colors.white,
+                  ),
+                )
+              : Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    border: BorderDirectional(
+                      bottom: BorderSide(color: Colors.grey.shade400, width: 2),
+                    ),
+                  ),
+                );
+        },
+      );
+
+  bool _spaceBeforeLyric(int position, List<ContentToken> tokens) {
+    // Check if there is a preceding chord (space before lyrics)
+    List<ContentToken> start = [];
+
+    for (
+      int i = position;
+      (i >= tokens.length || tokens[i].type != TokenType.lyric);
+      i++
+    ) {
+      start.add(tokens[i]);
+    }
+
+    bool hasPrecedingChord = start.any(
+      (token) => token.type == TokenType.space,
+    );
+
+    return hasPrecedingChord;
   }
 }

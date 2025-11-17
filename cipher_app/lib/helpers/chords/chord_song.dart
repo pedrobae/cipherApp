@@ -5,6 +5,13 @@ class Song {
   final Map<int, List<Chord>> chordsMap; // Line number -> List of Chords
 
   Song(this.linesMap, this.chordsMap);
+
+  Song copyWith({
+    Map<int, String>? linesMap,
+    Map<int, List<Chord>>? chordsMap,
+  }) {
+    return Song(linesMap ?? this.linesMap, chordsMap ?? this.chordsMap);
+  }
 }
 
 class Chord {

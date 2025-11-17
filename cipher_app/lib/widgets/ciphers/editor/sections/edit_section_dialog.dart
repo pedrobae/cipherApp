@@ -1,3 +1,5 @@
+import 'package:cipher_app/helpers/chords/chord_parser.dart';
+import 'package:cipher_app/helpers/chords/chord_song.dart';
 import 'package:cipher_app/models/domain/cipher/section.dart';
 import 'package:cipher_app/providers/section_provider.dart';
 import 'package:cipher_app/providers/version_provider.dart';
@@ -19,10 +21,13 @@ class _EditSectionDialogState extends State<EditSectionDialog> {
   late TextEditingController contentTypeController;
   late TextEditingController contentTextController;
   late Color contentColor;
+  late Song _song;
   Map<String, Color> availableColors = {};
 
   @override
   void initState() {
+    _song = parseChordPro(widget.section.contentText);
+
     contentCodeController = TextEditingController(
       text: widget.section.contentCode,
     );
@@ -32,7 +37,7 @@ class _EditSectionDialogState extends State<EditSectionDialog> {
     );
 
     contentTextController = TextEditingController(
-      text: widget.section.contentText,
+      text: generateLyricsFromSong(_song),
     );
 
     contentColor = widget.section.contentColor;
@@ -158,12 +163,18 @@ class _EditSectionDialogState extends State<EditSectionDialog> {
   }
 
   void _updateSection(String? code, String? type, String? text, Color? color) {
+    final List<String> lines = text != null ? text.split('\n') : [];
+
+    for (int index = 0; index < lines.length; index++) {
+      _song.linesMap[index] = lines[index];
+    }
+
     // Update the section with new values
     context.read<SectionProvider>().cacheUpdatedSection(
       widget.section.contentCode,
       newContentCode: code,
       newContentType: type,
-      newContentText: text,
+      newContentText: generateChordProFromSong(_song),
       newColor: color,
     );
     // If the content code has changed, update the song structure accordingly

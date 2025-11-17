@@ -1,4 +1,6 @@
+import 'package:cipher_app/models/domain/cipher/section.dart';
 import 'package:cipher_app/widgets/ciphers/editor/sections/chord_token.dart';
+import 'package:cipher_app/widgets/ciphers/editor/sections/edit_section_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:cipher_app/models/ui/content_token.dart';
 import 'package:cipher_app/services/tokenization_service.dart';
@@ -6,17 +8,13 @@ import 'package:cipher_app/services/tokenization_service.dart';
 final double _fontSize = 18;
 
 class TokenContentEditor extends StatefulWidget {
-  final String sectionCode;
-  final String initialContent;
+  final Section section;
   final Function(String) onContentChanged;
-  final Color sectionColor;
 
   const TokenContentEditor({
     super.key,
-    required this.sectionCode,
-    required this.initialContent,
     required this.onContentChanged,
-    required this.sectionColor,
+    required this.section,
   });
 
   @override
@@ -26,6 +24,7 @@ class TokenContentEditor extends StatefulWidget {
 class _TokenContentEditorState extends State<TokenContentEditor> {
   final TokenizationService _tokenizer = TokenizationService();
   List<ContentToken> _tokens = [];
+  bool _isDragging = false;
 
   // Store GlobalKeys for each token to track positions
   final Map<int, GlobalKey> _tokenKeys = {};
@@ -33,46 +32,16 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
   @override
   void initState() {
     super.initState();
-    _tokens = _tokenizer.tokenize(widget.initialContent);
+    _tokens = _tokenizer.tokenize(widget.section.contentText);
   }
 
   @override
   void didUpdateWidget(TokenContentEditor oldWidget) {
     super.didUpdateWidget(oldWidget);
     // Re-tokenize if content changed externally
-    if (oldWidget.initialContent != widget.initialContent) {
-      _tokens = _tokenizer.tokenize(widget.initialContent);
+    if (oldWidget.section.contentText != widget.section.contentText) {
+      _tokens = _tokenizer.tokenize(widget.section.contentText);
     }
-  }
-
-  void _notifyContentChanged() {
-    final newContent = _tokenizer.reconstructContent(_tokens);
-    widget.onContentChanged(newContent);
-  }
-
-  void _addChord(ContentToken token, int position) {
-    final newToken = ContentToken(
-      text: token.text,
-      type: token.type,
-      position: position,
-    );
-
-    setState(() {
-      _tokens.insert(position, newToken);
-    });
-
-    // Check if the token was moved
-    if (token.position != null) {
-      // Remove token
-      int index = token.position!;
-
-      if (index > position) {
-        index++;
-      }
-      _tokens.removeAt(index);
-    }
-
-    _notifyContentChanged();
   }
 
   @override
@@ -82,19 +51,90 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
       tokenWidgets.add(_buildTokenWidget(_tokens[i]));
     }
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Wrap(
-        spacing: 0,
-        runSpacing: 0,
-        alignment: WrapAlignment.start,
-        crossAxisAlignment: WrapCrossAlignment.start,
-        verticalDirection: VerticalDirection.down,
-        children: tokenWidgets,
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Card(
+      color: colorScheme.surfaceContainerHigh,
+      margin: const EdgeInsets.only(bottom: 16),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Row(
+                    spacing: 8,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: widget.section.contentColor,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          widget.section.contentCode,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          widget.section.contentType,
+                          style: Theme.of(context).textTheme.titleSmall
+                              ?.copyWith(fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                      _isDragging
+                          ? DragTarget<ContentToken>(
+                              onAcceptWithDetails: (details) => {
+                                _removeChord(details.data),
+                              },
+                              builder: (context, candidateData, rejectedData) {
+                                if (candidateData.isNotEmpty) {
+                                  return Icon(Icons.delete, color: Colors.red);
+                                }
+                                return Icon(Icons.delete, color: Colors.grey);
+                              },
+                            )
+                          : const SizedBox.shrink(),
+                      IconButton(
+                        onPressed: () => _openEditSectionDialog(widget.section),
+                        icon: const Icon(Icons.edit),
+                        tooltip: 'Editar seção',
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey.shade300),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Wrap(
+                spacing: 0,
+                runSpacing: 0,
+                alignment: WrapAlignment.start,
+                crossAxisAlignment: WrapCrossAlignment.start,
+                verticalDirection: VerticalDirection.down,
+                children: tokenWidgets,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -109,18 +149,20 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
         // GestureDetector to handle long press to drag transition
         return Draggable<ContentToken>(
           data: token,
+          onDragStarted: _toggleDrag,
+          onDragEnd: (details) => _toggleDrag(),
           feedback: Material(
             color: Colors.transparent,
             child: ChordToken(
               token: token,
-              sectionColor: widget.sectionColor.withValues(alpha: .5),
+              sectionColor: widget.section.contentColor.withValues(alpha: .5),
               textStyle: TextStyle(fontSize: _fontSize, color: Colors.white),
             ),
           ),
           childWhenDragging: SizedBox.shrink(),
           child: ChordToken(
             token: token,
-            sectionColor: widget.sectionColor,
+            sectionColor: widget.section.contentColor,
             textStyle: TextStyle(fontSize: _fontSize, color: Colors.white),
           ),
         );
@@ -148,7 +190,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
                     top: -_fontSize,
                     child: ChordToken(
                       token: candidateData.first!,
-                      sectionColor: widget.sectionColor,
+                      sectionColor: widget.section.contentColor,
                       textStyle: TextStyle(
                         fontSize: _fontSize,
                         color: Colors.white,
@@ -182,7 +224,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
                 children: [
                   ChordToken(
                     token: candidateData.first!,
-                    sectionColor: widget.sectionColor,
+                    sectionColor: widget.section.contentColor,
                     textStyle: TextStyle(
                       fontSize: _fontSize,
                       color: Colors.white,
@@ -196,5 +238,55 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
           },
         );
     }
+  }
+
+  void _openEditSectionDialog(Section section) {
+    showDialog(
+      context: context,
+      builder: (context) => EditSectionDialog(section: section),
+    );
+  }
+
+  void _toggleDrag() {
+    setState(() {
+      _isDragging = !_isDragging;
+    });
+  }
+
+  void _notifyContentChanged() {
+    final newContent = _tokenizer.reconstructContent(_tokens);
+    widget.onContentChanged(newContent);
+  }
+
+  void _addChord(ContentToken token, int position) {
+    final newToken = ContentToken(
+      text: token.text,
+      type: token.type,
+      position: position,
+    );
+
+    setState(() {
+      _tokens.insert(position, newToken);
+    });
+
+    // Check if the token was moved
+    if (token.position != null) {
+      // Remove token
+      int index = token.position!;
+
+      if (index > position) {
+        index++;
+      }
+      _tokens.removeAt(index);
+    }
+
+    _notifyContentChanged();
+  }
+
+  void _removeChord(ContentToken token) {
+    setState(() {
+      _tokens.removeAt(token.position!);
+    });
+    _notifyContentChanged();
   }
 }

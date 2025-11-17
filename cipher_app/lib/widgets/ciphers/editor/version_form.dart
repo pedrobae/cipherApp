@@ -1,15 +1,13 @@
 import 'dart:async';
-import 'package:cipher_app/widgets/ciphers/editor/sections/token_content_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cipher_app/models/domain/cipher/section.dart';
 import 'package:cipher_app/providers/cipher_provider.dart';
 import 'package:cipher_app/providers/section_provider.dart';
 import 'package:cipher_app/providers/version_provider.dart';
 import 'package:cipher_app/widgets/ciphers/editor/sections/custom_section_dialog.dart';
-import 'package:cipher_app/widgets/ciphers/editor/sections/edit_section_dialog.dart';
 import 'package:cipher_app/widgets/ciphers/editor/sections/preset_section_dialog.dart';
 import 'package:cipher_app/widgets/ciphers/editor/reorderable_structure_chips.dart';
+import 'package:cipher_app/widgets/ciphers/editor/sections/token_content_editor.dart';
 import 'package:cipher_app/utils/section_constants.dart';
 
 class VersionForm extends StatefulWidget {
@@ -88,40 +86,6 @@ class _VersionFormState extends State<VersionForm> {
           sectionType: name,
           customColor: color,
         ),
-      ),
-    );
-  }
-
-  void _openEditSectionDialog(
-    Section section,
-    SectionProvider sectionProvider,
-    VersionProvider versionProvider,
-  ) {
-    showDialog(
-      context: context,
-      builder: (context) => EditSectionDialog(
-        section: section,
-        onSave: (code, type, text, color) {
-          // Update the section with new values
-          sectionProvider.cacheUpdatedSection(
-            section.contentCode,
-            newContentCode: code,
-            newContentType: type,
-            newContentText: text,
-            newColor: color,
-          );
-          // If the content code has changed, update the song structure accordingly
-          if (code != null && code != section.contentCode) {
-            versionProvider.updateSectionCodeInStruct(
-              oldCode: section.contentCode,
-              newCode: code,
-            );
-          }
-        },
-        onDelete: () {
-          sectionProvider.cacheDeleteSection(section.contentCode);
-          versionProvider.removeSectionFromStructByCode(section.contentCode);
-        },
       ),
     );
   }
@@ -285,90 +249,20 @@ class _VersionFormState extends State<VersionForm> {
                 else
                   ...uniqueSections.map((sectionCode) {
                     final section = sectionProvider.sections[sectionCode];
-                    return Card(
-                      color: colorScheme.surfaceContainerHigh,
-                      margin: const EdgeInsets.only(bottom: 16),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Row(
-                                    spacing: 8,
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 8,
-                                          vertical: 4,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color:
-                                              section?.contentColor ??
-                                              Colors.grey,
-                                          borderRadius: BorderRadius.circular(
-                                            6,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          sectionCode,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Text(
-                                          section?.contentType ?? sectionCode,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleSmall
-                                              ?.copyWith(
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                        ),
-                                      ),
-                                      IconButton(
-                                        onPressed: () => _openEditSectionDialog(
-                                          section!,
-                                          sectionProvider,
-                                          versionProvider,
-                                        ),
-                                        icon: const Icon(Icons.edit),
-                                        tooltip: 'Editar seção',
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 12),
-                            TokenContentEditor(
-                              sectionCode: sectionCode,
-                              initialContent: section?.contentText ?? '',
-                              sectionColor:
-                                  section?.contentColor ?? Colors.grey,
-                              onContentChanged: (newContent) {
-                                _debounceTimer?.cancel();
-                                _debounceTimer = Timer(
-                                  const Duration(milliseconds: 300),
-                                  () {
-                                    sectionProvider.cacheUpdatedSection(
-                                      sectionCode,
-                                      newContentText: newContent,
-                                    );
-                                  },
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
+                    return TokenContentEditor(
+                      section: section!,
+                      onContentChanged: (newContent) {
+                        _debounceTimer?.cancel();
+                        _debounceTimer = Timer(
+                          const Duration(milliseconds: 300),
+                          () {
+                            sectionProvider.cacheUpdatedSection(
+                              sectionCode,
+                              newContentText: newContent,
+                            );
+                          },
+                        );
+                      },
                     );
                   }),
               ],

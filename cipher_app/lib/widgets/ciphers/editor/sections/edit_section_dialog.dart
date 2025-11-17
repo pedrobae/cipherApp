@@ -1,18 +1,14 @@
 import 'package:cipher_app/models/domain/cipher/section.dart';
+import 'package:cipher_app/providers/section_provider.dart';
+import 'package:cipher_app/providers/version_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:cipher_app/utils/section_constants.dart';
+import 'package:provider/provider.dart';
 
 class EditSectionDialog extends StatefulWidget {
   final Section section;
-  final void Function(String?, String?, String?, Color?) onSave;
-  final VoidCallback onDelete;
 
-  const EditSectionDialog({
-    super.key,
-    required this.section,
-    required this.onSave,
-    required this.onDelete,
-  });
+  const EditSectionDialog({super.key, required this.section});
 
   @override
   State<EditSectionDialog> createState() => _EditSectionDialogState();
@@ -140,14 +136,14 @@ class _EditSectionDialogState extends State<EditSectionDialog> {
       actions: [
         TextButton(
           onPressed: () {
-            widget.onDelete();
+            _deleteSection();
             Navigator.of(context).pop();
           },
           child: Text('Delete'),
         ),
         TextButton(
           onPressed: () {
-            widget.onSave(
+            _updateSection(
               contentCodeController.text,
               contentTypeController.text,
               contentTextController.text,
@@ -158,6 +154,33 @@ class _EditSectionDialogState extends State<EditSectionDialog> {
           child: Text('Save'),
         ),
       ],
+    );
+  }
+
+  void _updateSection(String? code, String? type, String? text, Color? color) {
+    // Update the section with new values
+    context.read<SectionProvider>().cacheUpdatedSection(
+      widget.section.contentCode,
+      newContentCode: code,
+      newContentType: type,
+      newContentText: text,
+      newColor: color,
+    );
+    // If the content code has changed, update the song structure accordingly
+    if (code != null && code != widget.section.contentCode) {
+      context.read<VersionProvider>().updateSectionCodeInStruct(
+        oldCode: widget.section.contentCode,
+        newCode: code,
+      );
+    }
+  }
+
+  void _deleteSection() {
+    context.read<SectionProvider>().cacheDeleteSection(
+      widget.section.contentCode,
+    );
+    context.read<VersionProvider>().removeSectionFromStructByCode(
+      widget.section.contentCode,
     );
   }
 }

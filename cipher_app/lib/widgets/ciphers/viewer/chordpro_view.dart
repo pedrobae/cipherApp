@@ -23,12 +23,14 @@ class ChordProView extends StatelessWidget {
   Widget build(BuildContext context) {
     final ls = context.watch<LayoutSettingsProvider>();
     Song parsedSong = parseChordPro(song);
+    parsedSong.checkForPrecedingChord(ls.chordTextStyle);
 
     List<Widget> sectionChildren = [];
 
     // CHECKS FILTERS - chords and lyrics
     if (ls.showChords && ls.showLyrics) {
       for (int i = 0; i < parsedSong.linesMap.length; i++) {
+        /// EMPTY LINES WITH CHORDS ONLY
         if (parsedSong.linesMap[i] == null ||
             parsedSong.linesMap[i]!.trim().isEmpty) {
           List<Text> rowChildren = [];
@@ -37,12 +39,15 @@ class ChordProView extends StatelessWidget {
           }
           sectionChildren.add(Row(spacing: 5, children: rowChildren));
         } else {
+          /// LINES WITH BOTH CHORDS AND LYRICS
           sectionChildren.add(
             LineView(
               chords: parsedSong.chordsMap[i] ?? [],
               line: parsedSong.linesMap[i] ?? '',
               chordStyle: ls.chordTextStyle,
               lyricStyle: ls.lyricTextStyle,
+              hasPrecedingChord: parsedSong.hasPrecedingChord,
+              precedingChordOffset: parsedSong.precedingChordOffset,
             ),
           );
         }

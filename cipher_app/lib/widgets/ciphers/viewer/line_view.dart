@@ -9,6 +9,8 @@ class LineView extends StatelessWidget {
   final String line;
   final TextStyle lyricStyle;
   final TextStyle chordStyle;
+  final bool hasPrecedingChord;
+  final double? precedingChordOffset;
 
   const LineView({
     super.key,
@@ -16,6 +18,8 @@ class LineView extends StatelessWidget {
     required this.line,
     required this.lyricStyle,
     required this.chordStyle,
+    required this.hasPrecedingChord,
+    required this.precedingChordOffset,
   });
 
   @override
@@ -32,6 +36,8 @@ class LineView extends StatelessWidget {
         double yOffset;
         double endOfChord = 0.0;
         int lineNumber = 0;
+
+        bool foundPrecedingSeparator = false;
 
         return Stack(
           clipBehavior: Clip.none,
@@ -55,9 +61,27 @@ class LineView extends StatelessWidget {
                     lyricStyle,
                     chordStyle,
                     lineNumber,
-                    constraints.maxWidth,
+                    constraints.maxWidth - (precedingChordOffset ?? 0),
                     endOfChord,
                   );
+              if (!hasPrecedingChord || foundPrecedingSeparator) {
+                return Positioned(
+                  left: xOffset + (precedingChordOffset ?? 0),
+                  top: yOffset,
+                  child: Text(chordToShow, style: chordStyle),
+                );
+              }
+
+              if (chord.lyricsBefore != '') {
+                foundPrecedingSeparator = true;
+                return Positioned(
+                  left: xOffset + (precedingChordOffset ?? 0),
+                  top: yOffset,
+                  child: Text(chordToShow, style: chordStyle),
+                );
+              }
+
+              // Preceding Chord
               return Positioned(
                 left: xOffset,
                 top: yOffset,

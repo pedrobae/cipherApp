@@ -37,6 +37,11 @@ class Chord {
     final String wordBefore;
     int lineNumber;
 
+    if (name == 'C7') {
+      // Debug breakpoint for chord "C7"
+      debugPrint('Calculating offset for chord: $name');
+    }
+
     // Parse the lyrics before to determine line breaks
     (sameLineLyricsBefore, wordBefore, lineNumber) = _parseLine(
       textStyle,
@@ -90,24 +95,19 @@ class Chord {
       xOffset = endOfPreviousChord + minimumGap;
     }
 
-    /// CHECK IF CHORD LINE BREAKS
-    if (chordPainter.width > lineWidth - xOffset) {
-      xOffset = 0;
-      lineNumber++;
-    }
+    /// CHECK FOR LINE BREAKS
+    (lineNumber, xOffset, _) = _checkLineBreaks(
+      chordWidth: chordPainter.width,
+      endOfWordWidth: nextWordPainter.width,
+      lineWidth: lineWidth,
+      sameLineTextWidth: sameLineTextPainter.width,
+      startOfWordWidth: previousWordPainter.width,
+      lineNumber: lineNumber,
+      xOffset: xOffset,
+    );
 
     /// GET REMAINDER OFFSET IF CHORD OVERFLOWS
     xOffset = xOffset % lineWidth;
-
-    /// CHECK IF NEXT WORD LINE BREAKS
-    if (nextWordPainter.width > lineWidth - sameLineTextPainter.width) {
-      lineNumber++;
-      xOffset = 0;
-      // CHECK IF THE CHORD IS AT THE START OF A WORD
-      if (previousWordPainter.width != 0) {
-        xOffset += previousWordPainter.width;
-      }
-    }
 
     double yOffset = lineHeight * (lineNumber + offset);
     double endOfChord = chordPainter.width + xOffset;
@@ -120,6 +120,33 @@ class Chord {
     }
 
     return (xOffset, yOffset, endOfChord, lineNumber);
+  }
+
+  (int, double, bool) _checkLineBreaks({
+    required double endOfWordWidth,
+    required double lineWidth,
+    required double sameLineTextWidth,
+    required double chordWidth,
+    required double startOfWordWidth,
+    required int lineNumber,
+    required double xOffset,
+  }) {
+    bool didLineBreak = false;
+
+    /// LINE BREAKING TESTS
+    /// First, checks if the next word fits in the current line
+    if (endOfWordWidth > lineWidth - sameLineTextWidth) {
+      didLineBreak = true;
+      lineNumber++;
+      xOffset = startOfWordWidth;
+
+      /// If the next word fits, check if the chord fits
+    } else if (chordWidth > lineWidth - xOffset) {
+      didLineBreak = true;
+      xOffset = 0;
+      lineNumber++;
+    }
+    return (lineNumber, xOffset, didLineBreak);
   }
 
   /// GOES THROUGH EACH CHARACTER CHECKING THE LAST WORD FOR LINE BREAKS

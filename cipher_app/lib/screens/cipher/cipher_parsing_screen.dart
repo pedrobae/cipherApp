@@ -58,6 +58,7 @@ class _CipherParsingScreenState extends State<CipherParsingScreen> {
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
+                spacing: 8,
                 children: [
                   // Header - indicating source and current status, as well as a progress indicator
                   Card(

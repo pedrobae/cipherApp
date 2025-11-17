@@ -154,6 +154,35 @@ class ChordLineParser {
     );
     List<RegExpMatch> matches = chordRegex.allMatches(line['text']).toList();
 
+    // Check if the matches are part of a word
+    List<RegExpMatch> matchesCopy = List.from(matches);
+    for (var match in matchesCopy) {
+      int start = match.start;
+      int end = match.end;
+
+      // Check character before the match
+      if (start != 0) {
+        String charBefore = line['text'][start - 1];
+        // Check if the character before the match is alphanumeric
+        if (RegExp(r'[a-zA-Z0-9]').hasMatch(charBefore)) {
+          // Match is part of a word
+          matches.remove(match);
+          continue;
+        }
+      }
+
+      // Check character after the match
+      if (end != line['text'].length) {
+        String charAfter = line['text'][end];
+        // Check if the character after the match is alphanumeric
+        if (RegExp(r'[a-zA-Z0-9]').hasMatch(charAfter)) {
+          // Match is part of a word
+          matches.remove(match);
+          continue;
+        }
+      }
+    }
+
     // Heuristic: compare word count and match count
     if (matches.length >= (line['wordCount'] / 2)) {
       return true;

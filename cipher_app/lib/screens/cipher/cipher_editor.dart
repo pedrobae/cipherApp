@@ -1,4 +1,5 @@
 import 'package:cipher_app/providers/parser_provider.dart';
+import 'package:cipher_app/widgets/ciphers/editor/delete_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/providers/cipher_provider.dart';
@@ -337,96 +338,11 @@ class _EditCipherState extends State<EditCipher>
     showDialog(
       context: context,
       builder: (context) {
-        if (_tabController.index == 0) {
-          return AlertDialog(
-            title: const Text('Excluir Cifra'),
-            content: const Text(
-              'Tem certeza que deseja excluir esta cifra? Excluir uma cifra excluirá todas as suas versões.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Cancelar'),
-              ),
-              FilledButton(
-                onPressed: _deleteCipher,
-                style: FilledButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.error,
-                ),
-                child: const Text('Excluir'),
-              ),
-            ],
-          );
-        } else {
-          return AlertDialog(
-            title: const Text('Excluir Versão'),
-            content: const Text(
-              'Tem certeza que deseja excluir esta versão? Esta ação não pode ser desfeita.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Cancelar'),
-              ),
-              FilledButton(
-                onPressed: _deleteVersion,
-                style: FilledButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.error,
-                ),
-                child: const Text('Excluir'),
-              ),
-            ],
-          );
-        }
+        return DeleteDialog(
+          cipherId: widget.cipherId,
+          versionId: widget.versionId,
+        );
       },
     );
-  }
-
-  void _deleteCipher() async {
-    try {
-      await context.read<CipherProvider>().deleteCipher(widget.cipherId!);
-      if (mounted) {
-        Navigator.pop(context); // Close dialog
-        Navigator.pop(context, true); // Close screen
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Cifra excluída com sucesso!')),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        Navigator.pop(context); // Close dialog
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erro ao excluir: ${e.toString()}'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
-      }
-    }
-  }
-
-  void _deleteVersion() async {
-    try {
-      await context.read<VersionProvider>().deleteCipherVersion(
-        widget.versionId!,
-      );
-      if (mounted) {
-        Navigator.pop(context);
-        Navigator.pop(context, true);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Versão excluída com sucesso!')));
-      }
-    } catch (e) {
-      if (mounted) {
-        Navigator.pop(context); // Close dialog
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erro ao excluir: ${e.toString()}'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
-      }
-    }
   }
 }

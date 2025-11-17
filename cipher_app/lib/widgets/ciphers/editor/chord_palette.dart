@@ -5,6 +5,8 @@ import 'package:cipher_app/models/ui/content_token.dart';
 import 'package:cipher_app/widgets/ciphers/editor/sections/chord_token.dart';
 import 'package:provider/provider.dart';
 
+double _fontSize = 20;
+
 class ChordPalette extends StatelessWidget {
   final VoidCallback onClose;
 
@@ -108,7 +110,7 @@ class ChordPalette extends StatelessWidget {
                         token: token,
                         sectionColor: colorScheme.primary.withValues(alpha: .7),
                         textStyle: TextStyle(
-                          fontSize: 16,
+                          fontSize: _fontSize,
                           color: colorScheme.onPrimary,
                         ),
                       ),
@@ -119,7 +121,7 @@ class ChordPalette extends StatelessWidget {
                         token: token,
                         sectionColor: colorScheme.primaryContainer,
                         textStyle: TextStyle(
-                          fontSize: 16,
+                          fontSize: _fontSize,
                           color: colorScheme.onPrimaryContainer,
                         ),
                       ),
@@ -128,7 +130,7 @@ class ChordPalette extends StatelessWidget {
                       token: token,
                       sectionColor: colorScheme.primary,
                       textStyle: TextStyle(
-                        fontSize: 16,
+                        fontSize: _fontSize,
                         color: colorScheme.onPrimary,
                       ),
                     ),

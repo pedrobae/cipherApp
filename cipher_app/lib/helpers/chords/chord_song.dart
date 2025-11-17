@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
 
 class Song {
@@ -36,11 +35,6 @@ class Chord {
     final String sameLineLyricsBefore;
     final String wordBefore;
     int lineNumber;
-
-    if (name == 'C7') {
-      // Debug breakpoint for chord "C7"
-      debugPrint('Calculating offset for chord: $name');
-    }
 
     // Parse the lyrics before to determine line breaks
     (sameLineLyricsBefore, wordBefore, lineNumber) = _parseLine(
@@ -111,13 +105,6 @@ class Chord {
 
     double yOffset = lineHeight * (lineNumber + offset);
     double endOfChord = chordPainter.width + xOffset;
-
-    if (kDebugMode) {
-      // Debug print to trace offsets
-      print(
-        '''Chord: $name\txOffset: ${xOffset.truncate()}\tcarryOver: ${carryOver.truncate()}\tLyrics: "$lyricsBefore"''',
-      );
-    }
 
     return (xOffset, yOffset, endOfChord, lineNumber);
   }

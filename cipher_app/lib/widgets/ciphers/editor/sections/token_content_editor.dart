@@ -1,5 +1,4 @@
 import 'package:cipher_app/widgets/ciphers/editor/sections/chord_token.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cipher_app/models/ui/content_token.dart';
 import 'package:cipher_app/services/tokenization_service.dart';
@@ -27,9 +26,6 @@ class TokenContentEditor extends StatefulWidget {
 class _TokenContentEditorState extends State<TokenContentEditor> {
   final TokenizationService _tokenizer = TokenizationService();
   List<ContentToken> _tokens = [];
-  int _draggedOverIndex = -1;
-  bool _isDragging = false;
-  ContentToken? _draggedToken;
 
   // Store GlobalKeys for each token to track positions
   final Map<int, GlobalKey> _tokenKeys = {};
@@ -54,97 +50,36 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
     widget.onContentChanged(newContent);
   }
 
-  void addChord(String chord, int position) {
+  void _addChord(ContentToken token, int position) {
+    final newToken = ContentToken(
+      text: token.text,
+      type: token.type,
+      position: position,
+    );
+
     setState(() {
-      _tokens.insert(
-        position,
-        ContentToken(text: chord, type: TokenType.chord),
-      );
+      _tokens.insert(position, newToken);
     });
 
-    _notifyContentChanged();
-  }
+    // Check if the token was moved
+    if (token.position != null) {
+      // Remove token
+      int index = token.position!;
 
-  /// Starts dragging a token by removing it from the list and setting drag state.
-  void _startDrag(ContentToken token, int index) {
-    if (kDebugMode) {
-      print('Starting drag of token "${token.text}" at index $index');
-    }
-    setState(() {
-      _isDragging = true;
-      _draggedToken = token;
-      _draggedOverIndex = index + 1;
-    });
-  }
-
-  void _handleDragEnd(LongPressEndDetails details, int index) {
-    if (kDebugMode) {
-      print('Drag ended, dropping token at index $_draggedOverIndex');
-    }
-
-    if (_draggedToken == null) return;
-
-    if (_draggedOverIndex > index) {
-      _draggedOverIndex -= 1;
-    }
-
-    setState(() {
-      // Insert the dragged token back at the last known index
+      if (index > position) {
+        index++;
+      }
       _tokens.removeAt(index);
-      _tokens.insert(
-        _draggedOverIndex >= 0 ? _draggedOverIndex : _tokens.length,
-        _draggedToken!,
-      );
-      _isDragging = false;
-      _draggedToken = null;
-      _draggedOverIndex = -1;
-    });
+    }
 
     _notifyContentChanged();
-  }
-
-  /// Handles drag updates to determine the token that is under the drag.
-  void _handleDragUpdate(LongPressMoveUpdateDetails details) {
-    if (!_isDragging || _draggedToken == null) return;
-
-    int? targetIndex;
-
-    for (var entry in _tokenKeys.entries) {
-      final key = entry.value;
-      final context = key.currentContext;
-      if (context == null) continue;
-
-      final box = context.findRenderObject() as RenderBox;
-      final position = box.localToGlobal(Offset.zero);
-      final size = box.size;
-      final rect = Rect.fromLTWH(
-        position.dx,
-        position.dy,
-        size.width,
-        size.height,
-      );
-
-      if (rect.contains(details.globalPosition)) {
-        targetIndex = entry.key;
-        break;
-      }
-    }
-
-    if (targetIndex != null && targetIndex != _draggedOverIndex) {
-      if (kDebugMode) {
-        print('Dragged over token index: $targetIndex');
-      }
-      setState(() {
-        _draggedOverIndex = targetIndex!;
-      });
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     final tokenWidgets = <Widget>[];
     for (var i = 0; i < _tokens.length; i++) {
-      tokenWidgets.add(_buildTokenWidget(_tokens[i], i));
+      tokenWidgets.add(_buildTokenWidget(_tokens[i]));
     }
 
     return Container(
@@ -164,62 +99,102 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
     );
   }
 
-  Widget _buildTokenWidget(ContentToken token, int index) {
+  Widget _buildTokenWidget(ContentToken token) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     // Ensure we have a GlobalKey for this token
-    _tokenKeys.putIfAbsent(index, () => GlobalKey());
-
+    _tokenKeys.putIfAbsent(token.position!, () => GlobalKey());
     switch (token.type) {
       case TokenType.chord:
         // GestureDetector to handle long press to drag transition
-        return GestureDetector(
-          onLongPressStart: (details) {
-            _startDrag(token, index);
-          },
-          onLongPressMoveUpdate: (details) {
-            _handleDragUpdate(details);
-          },
-          onLongPressEnd: (details) {
-            _handleDragEnd(details, index);
-          },
-          child: token == _draggedToken
-              ? SizedBox.shrink()
-              : ChordToken(
-                  token: token,
-                  sectionColor: widget.sectionColor,
-                  textStyle: TextStyle(
-                    fontSize: _fontSize,
-                    color: Colors.white,
-                  ),
-                ),
+        return Draggable<ContentToken>(
+          data: token,
+          feedback: Material(
+            color: Colors.transparent,
+            child: ChordToken(
+              token: token,
+              sectionColor: widget.sectionColor.withValues(alpha: .5),
+              textStyle: TextStyle(fontSize: _fontSize, color: Colors.white),
+            ),
+          ),
+          childWhenDragging: SizedBox.shrink(),
+          child: ChordToken(
+            token: token,
+            sectionColor: widget.sectionColor,
+            textStyle: TextStyle(fontSize: _fontSize, color: Colors.white),
+          ),
         );
       case TokenType.lyric:
       case TokenType.space:
         // Container that contains the lyrics, with a globalKey for drag detection
-        return Container(
-          key: _tokenKeys[index],
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              // If dragged over, render the draggedToken before the lyric
-              if (index == _draggedOverIndex && _draggedToken != null)
-                ChordToken(
-                  token: _draggedToken!,
-                  sectionColor: widget.sectionColor,
-                  textStyle: TextStyle(
-                    fontSize: _fontSize,
-                    color: Colors.white,
+        return DragTarget<ContentToken>(
+          onAcceptWithDetails: (details) {
+            _addChord(details.data, token.position!);
+          },
+          builder: (context, candidateData, rejectedData) {
+            if (candidateData.isNotEmpty) {
+              return Stack(
+                clipBehavior: Clip.none,
+                key: _tokenKeys[token.position],
+                children: [
+                  Text(
+                    token.text,
+                    style: TextStyle(
+                      fontSize: _fontSize,
+                      color: colorScheme.onSurface,
+                    ),
                   ),
-                ),
-              Text(
+                  Positioned(
+                    top: -_fontSize,
+                    child: ChordToken(
+                      token: candidateData.first!,
+                      sectionColor: widget.sectionColor,
+                      textStyle: TextStyle(
+                        fontSize: _fontSize,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }
+            return Container(
+              key: _tokenKeys[token.position],
+              child: Text(
                 token.text,
-                style: TextStyle(fontSize: _fontSize, color: Colors.black),
+                style: TextStyle(
+                  fontSize: _fontSize,
+                  color: colorScheme.onSurface,
+                ),
               ),
-            ],
-          ),
+            );
+          },
         );
       case TokenType.newline:
-        return SizedBox(width: double.infinity);
+        return DragTarget<ContentToken>(
+          onAcceptWithDetails: (details) {
+            _addChord(details.data, token.position!);
+          },
+          builder: (context, candidateData, rejectedData) {
+            if (candidateData.isNotEmpty) {
+              return Wrap(
+                key: _tokenKeys[token.position],
+                children: [
+                  ChordToken(
+                    token: candidateData.first!,
+                    sectionColor: widget.sectionColor,
+                    textStyle: TextStyle(
+                      fontSize: _fontSize,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(width: double.infinity),
+                ],
+              );
+            }
+            return SizedBox(width: double.infinity, height: _fontSize);
+          },
+        );
     }
   }
 }

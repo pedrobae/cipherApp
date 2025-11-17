@@ -7,9 +7,21 @@ class TokenizationService {
     for (int index = 0; index < content.length; index++) {
       final char = content[index];
       if (char == '\n') {
-        tokens.add(ContentToken(type: TokenType.newline, text: char));
+        tokens.add(
+          ContentToken(
+            type: TokenType.newline,
+            text: char,
+            position: tokens.length,
+          ),
+        );
       } else if (char == ' ' || char == '\t') {
-        tokens.add(ContentToken(type: TokenType.space, text: char));
+        tokens.add(
+          ContentToken(
+            type: TokenType.space,
+            text: char,
+            position: tokens.length,
+          ),
+        );
       } else if (char == '[') {
         index++; // Move past the '['
         String chordText = '';
@@ -17,9 +29,21 @@ class TokenizationService {
           chordText += content[index];
           index++;
         }
-        tokens.add(ContentToken(type: TokenType.chord, text: chordText));
+        tokens.add(
+          ContentToken(
+            type: TokenType.chord,
+            text: chordText,
+            position: tokens.length,
+          ),
+        );
       } else {
-        tokens.add(ContentToken(type: TokenType.lyric, text: char));
+        tokens.add(
+          ContentToken(
+            type: TokenType.lyric,
+            text: char,
+            position: tokens.length,
+          ),
+        );
       }
     }
     return tokens;

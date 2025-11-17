@@ -1,4 +1,5 @@
 import 'package:cipher_app/providers/parser_provider.dart';
+import 'package:cipher_app/widgets/ciphers/editor/chord_palette.dart';
 import 'package:cipher_app/widgets/ciphers/editor/delete_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -34,6 +35,8 @@ class _EditCipherState extends State<EditCipher>
   bool get _isNewCipher => widget.cipherId == null;
   bool get _isNewVersion => widget.versionId == null;
 
+  bool paletteIsOpen = false;
+
   @override
   void initState() {
     super.initState();
@@ -44,8 +47,16 @@ class _EditCipherState extends State<EditCipher>
     }
 
     // Load data after the widget is built
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadData();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _loadData();
+      _navigateStartTab();
+    });
+
+    _tabController.addListener(() {
+      // Setting state tp trigger rebuild
+      setState(() {
+        paletteIsOpen = false;
+      });
     });
   }
 
@@ -119,7 +130,6 @@ class _EditCipherState extends State<EditCipher>
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    _navigateStartTab();
     return Scaffold(
       appBar: AppBar(
         title: Text(_getAppBarTitle()),
@@ -157,54 +167,75 @@ class _EditCipherState extends State<EditCipher>
           ],
         ],
       ),
-      floatingActionButton: Row(
+      floatingActionButton: Column(
         spacing: 8,
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        verticalDirection: VerticalDirection.up,
         children: [
-          if (!_isNewCipher)
+          if (paletteIsOpen) ...[
+            ChordPalette(onClose: _togglePalette),
+          ] else ...[
+            Row(
+              spacing: 8,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (!_isNewCipher)
+                  FloatingActionButton(
+                    heroTag: 'delete',
+                    onPressed: _showDeleteDialog,
+                    backgroundColor: colorScheme.errorContainer,
+                    child: Icon(
+                      Icons.delete,
+                      color: colorScheme.onErrorContainer,
+                    ),
+                  ),
+                FloatingActionButton.extended(
+                  heroTag: 'save',
+                  onPressed: () async {
+                    if (widget.importedCipher) {
+                      final cipherId = await _createCipher();
+                      if (cipherId != null) {
+                        final versionId = await _createVersion(cipherId);
+                        if (versionId != null) {
+                          await _createSections(versionId);
+                        }
+                      }
+                    } else if (_isNewCipher) {
+                      _createCipher();
+                    } else if (_isNewVersion) {
+                      final versionId = await _createVersion(widget.cipherId!);
+                      if (versionId != null) {
+                        await _createSections(versionId);
+                      }
+                    } else {
+                      if (_tabController.index == 0) {
+                        _saveCipher();
+                      } else {
+                        _saveVersion();
+                        _saveSections();
+                      }
+                    }
+                  },
+                  backgroundColor: colorScheme.primary,
+                  label: Text(
+                    'Salvar',
+                    style: theme.textTheme.labelLarge!.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.onPrimary,
+                    ),
+                  ),
+                  icon: Icon(Icons.save, color: colorScheme.onPrimary),
+                ),
+              ],
+            ),
+          ],
+          // Palette FAB
+          if (_tabController.index == 1 && !_tabController.indexIsChanging) ...[
             FloatingActionButton(
-              heroTag: 'delete',
-              onPressed: _showDeleteDialog,
-              backgroundColor: colorScheme.errorContainer,
-              child: Icon(Icons.delete, color: colorScheme.onErrorContainer),
+              onPressed: _togglePalette,
+              child: Icon(Icons.palette),
             ),
-          FloatingActionButton.extended(
-            heroTag: 'save',
-            onPressed: () async {
-              if (widget.importedCipher) {
-                final cipherId = await _createCipher();
-                if (cipherId != null) {
-                  final versionId = await _createVersion(cipherId);
-                  if (versionId != null) {
-                    await _createSections(versionId);
-                  }
-                }
-              } else if (_isNewCipher) {
-                _createCipher();
-              } else if (_isNewVersion) {
-                final versionId = await _createVersion(widget.cipherId!);
-                if (versionId != null) {
-                  await _createSections(versionId);
-                }
-              } else {
-                if (_tabController.index == 0) {
-                  _saveCipher();
-                } else {
-                  _saveVersion();
-                  _saveSections();
-                }
-              }
-            },
-            backgroundColor: colorScheme.primary,
-            label: Text(
-              'Salvar',
-              style: theme.textTheme.labelLarge!.copyWith(
-                fontWeight: FontWeight.bold,
-                color: colorScheme.onPrimary,
-              ),
-            ),
-            icon: Icon(Icons.save, color: colorScheme.onPrimary),
-          ),
+          ],
         ],
       ),
     );
@@ -344,5 +375,11 @@ class _EditCipherState extends State<EditCipher>
         );
       },
     );
+  }
+
+  void _togglePalette() {
+    setState(() {
+      paletteIsOpen = !paletteIsOpen;
+    });
   }
 }

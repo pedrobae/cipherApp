@@ -31,19 +31,21 @@ class _CipherFormState extends State<CipherForm> {
   }
 
   void _syncWithProviderData() {
-    final cipherProvider = Provider.of<CipherProvider>(context, listen: false);
-    final cipher = cipherProvider.currentCipher;
+    if (mounted) {
+      final cipherProvider = context.read<CipherProvider>();
+      final cipher = cipherProvider.currentCipher;
 
-    // Only sync if cipher has changed or if we haven't initialized yet
-    if (!_hasInitialized || _lastSyncedCipher?.id != cipher.id) {
-      titleController.text = cipher.title;
-      authorController.text = cipher.author;
-      tempoController.text = cipher.tempo;
-      musicKeyController.text = cipher.musicKey;
-      languageController.text = cipher.language;
-      tagsController.text = cipher.tags.join(', ');
-      _hasInitialized = true;
-      _lastSyncedCipher = cipher;
+      // Only sync if cipher has changed or if we haven't initialized yet
+      if (!_hasInitialized || _lastSyncedCipher?.id != cipher.id) {
+        titleController.text = cipher.title;
+        authorController.text = cipher.author;
+        tempoController.text = cipher.tempo;
+        musicKeyController.text = cipher.musicKey;
+        languageController.text = cipher.language;
+        tagsController.text = cipher.tags.join(', ');
+        _hasInitialized = true;
+        _lastSyncedCipher = cipher;
+      }
     }
   }
 

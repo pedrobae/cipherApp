@@ -52,11 +52,7 @@ class PDFImportService extends ImportService {
           endPageIndex: i,
         );
 
-        for (final textLine in textLines) {
-          // Get font information from the text line
-
-          lines.add(textLine);
-        }
+        lines.addAll(textLines);
       }
 
       document.dispose();

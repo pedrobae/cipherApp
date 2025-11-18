@@ -40,6 +40,8 @@ foreach ($file in $files) {
         & $ADB_PATH shell "run-as $APP_ID cat $REMOTE_DIR/$filename" | `
             Out-File -FilePath $localPath -Encoding UTF8 -ErrorAction Stop
         
+        # Remove the file in the emulator after successful pull
+        & $ADB_PATH shell "run-as $APP_ID rm $REMOTE_DIR/$filename"
         $successCount++
     }
     catch {

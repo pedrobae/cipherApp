@@ -1,39 +1,165 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:cipher_app/helpers/chords/chords.dart';
+import 'package:cipher_app/models/ui/content_token.dart';
 import 'package:cipher_app/providers/cipher_provider.dart';
 import 'package:cipher_app/providers/version_provider.dart';
-import 'package:flutter/material.dart';
-import 'package:cipher_app/models/ui/content_token.dart';
 import 'package:cipher_app/widgets/ciphers/editor/sections/chord_token.dart';
-import 'package:provider/provider.dart';
 
 double _fontSize = 20;
 
-class ChordPalette extends StatelessWidget {
+class ChordPalette extends StatefulWidget {
   final VoidCallback onClose;
 
   const ChordPalette({super.key, required this.onClose});
 
-  /// Generate chords for the current key
-  /// Returns major scale chords (I, ii, iii, IV, V, vi, vii°)
-  List<String> _getChordsForKey(String key) {
-    // Map of major keys to their scale chords
-    final Map<String, List<String>> keyChords = {
-      'C': ['C', 'Dm', 'Em', 'F', 'G', 'Am', 'Bdim'],
-      'D': ['D', 'Em', 'F#m', 'G', 'A', 'Bm', 'C#dim'],
-      'E': ['E', 'F#m', 'G#m', 'A', 'B', 'C#m', 'D#dim'],
-      'F': ['F', 'Gm', 'Am', 'Bb', 'C', 'Dm', 'Edim'],
-      'G': ['G', 'Am', 'Bm', 'C', 'D', 'Em', 'F#dim'],
-      'A': ['A', 'Bm', 'C#m', 'D', 'E', 'F#m', 'G#dim'],
-      'B': ['B', 'C#m', 'D#m', 'E', 'F#', 'G#m', 'A#dim'],
-      // Add flat keys
-      'Bb': ['Bb', 'Cm', 'Dm', 'Eb', 'F', 'Gm', 'Adim'],
-      'Eb': ['Eb', 'Fm', 'Gm', 'Ab', 'Bb', 'Cm', 'Ddim'],
-      'Ab': ['Ab', 'Bbm', 'Cm', 'Db', 'Eb', 'Fm', 'Gdim'],
-      'Db': ['Db', 'Ebm', 'Fm', 'Gb', 'Ab', 'Bbm', 'Cdim'],
-      'Gb': ['Gb', 'Abm', 'Bbm', 'Cb', 'Db', 'Ebm', 'Fdim'],
-    };
+  @override
+  State<ChordPalette> createState() => _ChordPaletteState();
+}
 
-    // Return chords for key, or default C major if not found
-    return keyChords[key] ?? keyChords['C']!;
+class _ChordPaletteState extends State<ChordPalette> {
+  OverlayEntry? _overlayEntry;
+
+  @override
+  void dispose() {
+    _removeOverlay();
+    super.dispose();
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+  }
+
+  void _showChordVariations(
+    BuildContext context,
+    String baseChord,
+    int chordIndex,
+    LongPressStartDetails details,
+  ) {
+    _removeOverlay(); // Remove any existing overlay
+
+    final chordVariations = ChordHelper().getVariationsForChord(
+      baseChord,
+      chordIndex,
+    );
+
+    if (chordVariations.isEmpty) return;
+
+    final colorScheme = Theme.of(context).colorScheme;
+    final screenSize = MediaQuery.of(context).size;
+
+    // Estimate popup width based on number of variations
+    // Each chord token is roughly 50-60px wide + padding
+    final estimatedPopupWidth = (chordVariations.length * 60.0) + 16.0;
+
+    // Get the chord button's global position
+    final chordButtonX = details.globalPosition.dx - details.localPosition.dx;
+
+    // Calculate horizontal position (center popup above the chord button)
+    double leftPosition =
+        chordButtonX + (details.localPosition.dx) - (estimatedPopupWidth / 2);
+
+    // Prevent overflow on left edge
+    if (leftPosition < 8) {
+      leftPosition = 8;
+    }
+
+    // Prevent overflow on right edge
+    if (leftPosition + estimatedPopupWidth > screenSize.width - 8) {
+      leftPosition = screenSize.width - estimatedPopupWidth - 8;
+    }
+
+    _overlayEntry = OverlayEntry(
+      builder: (context) => Stack(
+        children: [
+          // Transparent barrier to dismiss on tap outside
+          Positioned.fill(
+            child: GestureDetector(
+              onTap: _removeOverlay,
+              behavior: HitTestBehavior.translucent,
+              child: Container(color: Colors.transparent),
+            ),
+          ),
+          // Variations popup
+          Positioned(
+            left: leftPosition,
+            top: details.globalPosition.dy - details.localPosition.dy - 40,
+            child: Material(
+              color: Colors.transparent,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                decoration: BoxDecoration(
+                  color: colorScheme.surface,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    for (final variation in chordVariations)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: GestureDetector(
+                          onTap: () {
+                            _removeOverlay();
+                            // Variation selected - could trigger insertion here if needed
+                          },
+                          child: Draggable<ContentToken>(
+                            data: ContentToken(
+                              text: variation,
+                              type: TokenType.chord,
+                              position: null,
+                            ),
+                            feedback: Material(
+                              color: Colors.transparent,
+                              child: ChordToken(
+                                token: ContentToken(
+                                  text: variation,
+                                  type: TokenType.chord,
+                                  position: null,
+                                ),
+                                sectionColor: colorScheme.primary.withValues(
+                                  alpha: .7,
+                                ),
+                                textStyle: TextStyle(
+                                  fontSize: _fontSize,
+                                  color: colorScheme.onPrimary,
+                                ),
+                              ),
+                            ),
+                            onDragStarted: _removeOverlay,
+                            child: ChordToken(
+                              token: ContentToken(
+                                text: variation,
+                                type: TokenType.chord,
+                                position: null,
+                              ),
+                              sectionColor: colorScheme.secondaryContainer,
+                              textStyle: TextStyle(
+                                fontSize: _fontSize - 2,
+                                color: colorScheme.onSecondaryContainer,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    Overlay.of(context).insert(_overlayEntry!);
   }
 
   @override
@@ -45,7 +171,7 @@ class ChordPalette extends StatelessWidget {
         final musicKey =
             versionProvider.currentVersion.transposedKey ??
             cipherProvider.currentCipher.musicKey;
-        final chords = _getChordsForKey(musicKey);
+        final chords = ChordHelper().getChordsForKey(musicKey);
 
         return Container(
           constraints: const BoxConstraints(maxWidth: 350, maxHeight: 220),
@@ -81,7 +207,7 @@ class ChordPalette extends StatelessWidget {
                   ),
                   IconButton(
                     icon: const Icon(Icons.close),
-                    onPressed: onClose,
+                    onPressed: widget.onClose,
                     color: colorScheme.onSurface,
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
@@ -95,51 +221,60 @@ class ChordPalette extends StatelessWidget {
                 alignment: WrapAlignment.center,
                 spacing: 8,
                 runSpacing: 8,
-                children: chords.asMap().entries.map((entry) {
-                  final chord = entry.value;
-                  final token = ContentToken(
-                    text: chord,
-                    type: TokenType.chord,
-                    position: null,
-                  );
-                  return Draggable<ContentToken>(
-                    data: token,
-                    feedback: Material(
-                      color: Colors.transparent,
-                      child: ChordToken(
-                        token: token,
-                        sectionColor: colorScheme.primary.withValues(alpha: .7),
-                        textStyle: TextStyle(
-                          fontSize: _fontSize,
-                          color: colorScheme.onPrimary,
-                        ),
-                      ),
+                children: [
+                  for (int i = 0; i < chords.length; i++)
+                    Builder(
+                      builder: (builder) {
+                        final chord = chords[i];
+
+                        final token = ContentToken(
+                          text: chord,
+                          type: TokenType.chord,
+                          position: null,
+                        );
+                        return GestureDetector(
+                          onLongPressStart: (details) =>
+                              _showChordVariations(context, chord, i, details),
+                          child: Draggable<ContentToken>(
+                            data: token,
+                            feedback: Material(
+                              color: Colors.transparent,
+                              child: ChordToken(
+                                token: token,
+                                sectionColor: colorScheme.primary.withValues(
+                                  alpha: .7,
+                                ),
+                                textStyle: TextStyle(
+                                  fontSize: _fontSize,
+                                  color: colorScheme.onPrimary,
+                                ),
+                              ),
+                            ),
+                            childWhenDragging: Opacity(
+                              opacity: 0.3,
+                              child: ChordToken(
+                                token: token,
+                                sectionColor: colorScheme.primaryContainer,
+                                textStyle: TextStyle(
+                                  fontSize: _fontSize,
+                                  color: colorScheme.onPrimaryContainer,
+                                ),
+                              ),
+                            ),
+                            child: ChordToken(
+                              token: token,
+                              sectionColor: colorScheme.primary,
+                              textStyle: TextStyle(
+                                fontSize: _fontSize,
+                                color: colorScheme.onPrimary,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                    childWhenDragging: Opacity(
-                      opacity: 0.3,
-                      child: ChordToken(
-                        token: token,
-                        sectionColor: colorScheme.primaryContainer,
-                        textStyle: TextStyle(
-                          fontSize: _fontSize,
-                          color: colorScheme.onPrimaryContainer,
-                        ),
-                      ),
-                    ),
-                    child: ChordToken(
-                      token: token,
-                      sectionColor: colorScheme.primary,
-                      textStyle: TextStyle(
-                        fontSize: _fontSize,
-                        color: colorScheme.onPrimary,
-                      ),
-                    ),
-                  );
-                }).toList(),
+                ],
               ),
-
-              const SizedBox(height: 8),
-
               // Instruction text
               Text(
                 'Arraste os acordes para as letras',

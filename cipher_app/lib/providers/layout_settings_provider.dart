@@ -153,6 +153,7 @@ class LayoutSettingsProvider extends ChangeNotifier {
   );
 
   TextStyle get lyricTextStyle => TextStyle(
+    color: lyricColor,
     fontFamily: fontFamily,
     fontSize: fontSize.toDouble(),
     height: 2,

@@ -29,6 +29,7 @@ class ChordProView extends StatelessWidget {
 
     // CHECKS FILTERS - chords and lyrics
     if (ls.showChords && ls.showLyrics) {
+      /// ITERATE THROUGH LYRIC LINES
       for (int i = 0; i < parsedSong.linesMap.length; i++) {
         /// EMPTY LINES WITH CHORDS ONLY
         if (parsedSong.linesMap[i] == null ||
@@ -40,19 +41,70 @@ class ChordProView extends StatelessWidget {
           sectionChildren.add(Row(spacing: 5, children: rowChildren));
         } else {
           /// LINES WITH BOTH CHORDS AND LYRICS
-          sectionChildren.add(
-            LineView(
-              chords: parsedSong.chordsMap[i] ?? [],
-              line: parsedSong.linesMap[i] ?? '',
-              chordStyle: ls.chordTextStyle,
-              lyricStyle: ls.lyricTextStyle,
-              hasPrecedingChord: parsedSong.hasPrecedingChord,
-              precedingChordOffset: parsedSong.precedingChordOffset,
-            ),
-          );
+
+          /// PRECEDING CHORD SECTION
+          if (parsedSong.hasPrecedingChord) {
+            /// SEPARATE PRECEDING CHORDS OF THE LINE
+            List<Widget> precedingChords = [];
+            int index = parsedSong.chordsMap[i]!.length;
+            for (int j = 0; j < parsedSong.chordsMap[i]!.length; j++) {
+              final chord = parsedSong.chordsMap[i]![j];
+              if (chord.lyricsBefore.isEmpty) {
+                precedingChords.add(Text(chord.name, style: ls.chordTextStyle));
+              } else {
+                index = j;
+                break;
+              }
+            }
+
+            /// ADD LINE VIEW WITH REMAINING LINE
+            sectionChildren.add(
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Stack(
+                    alignment: Alignment.topLeft,
+                    clipBehavior: Clip.none,
+                    children: [
+                      SizedBox(
+                        width: parsedSong.precedingChordOffset,
+                        height: ls.chordTextStyle.fontSize!,
+                      ),
+                      Positioned(
+                        top: -ls.lyricTextStyle.fontSize! * 0.8,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          spacing: 4,
+                          children: precedingChords,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    child: LineView(
+                      chords: parsedSong.chordsMap[i]!.sublist(index),
+                      line: parsedSong.linesMap[i] ?? '',
+                      chordStyle: ls.chordTextStyle,
+                      lyricStyle: ls.lyricTextStyle,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          } else {
+            sectionChildren.add(
+              LineView(
+                chords: parsedSong.chordsMap[i] ?? [],
+                line: parsedSong.linesMap[i] ?? '',
+                chordStyle: ls.chordTextStyle,
+                lyricStyle: ls.lyricTextStyle,
+              ),
+            );
+          }
         }
       }
     } else if (ls.showLyrics) {
+      /// ONLY LYRICS
       for (int i = 0; i < parsedSong.linesMap.length; i++) {
         sectionChildren.add(
           Text(
@@ -62,6 +114,7 @@ class ChordProView extends StatelessWidget {
         );
       }
     } else if (ls.showChords) {
+      /// ONLY CHORDS
       List<Text> rowChildren = [];
       for (int i = 0; i < parsedSong.chordsMap.length; i++) {
         for (var chord in parsedSong.chordsMap[i]!) {

@@ -22,7 +22,7 @@ class Song {
   void checkForPrecedingChord(TextStyle chordStyle) {
     double precedingOffset = 0.0;
     for (int i = 0; i < linesMap.length; i++) {
-      if (linesMap[i]![0] == ' ') {
+      if (linesMap[i]!.isNotEmpty && linesMap[i]![0] == ' ') {
         // Found a line with space at the start, indicating preceding chord
         hasPrecedingChord = true;
 
@@ -62,7 +62,7 @@ class Chord {
   double carryOver;
   final String lyricsBefore;
   final String nextWord;
-  static double offset = -0.45;
+  final double offset = -0.4;
 
   Chord(
     this.name,

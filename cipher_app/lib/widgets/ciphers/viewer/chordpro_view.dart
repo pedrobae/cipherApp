@@ -1,19 +1,18 @@
+import 'package:cipher_app/models/ui/song.dart';
 import 'package:cipher_app/providers/layout_settings_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:cipher_app/helpers/chords/chord_parser.dart';
-import 'package:cipher_app/helpers/chords/chord_song.dart';
 import 'package:provider/provider.dart';
 import 'line_view.dart';
 
 class ChordProView extends StatelessWidget {
-  final String? song;
+  final String? chordPro;
   final double maxWidth;
   final int transpose;
   final bool centerChords;
 
   const ChordProView({
     super.key,
-    this.song,
+    this.chordPro,
     required this.maxWidth,
     this.transpose = 0,
     this.centerChords = true,
@@ -22,7 +21,7 @@ class ChordProView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ls = context.watch<LayoutSettingsProvider>();
-    Song parsedSong = parseChordPro(song);
+    final parsedSong = Song.fromChordPro(chordPro);
     parsedSong.checkForPrecedingChord(ls.chordTextStyle);
 
     List<Widget> sectionChildren = [];

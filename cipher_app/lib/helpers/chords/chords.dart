@@ -52,11 +52,18 @@ class ChordHelper {
   }
 
   List<String> getVariationsForChord(String chord, int index) {
+    bool useFlats;
+    if (chord.contains('#')) {
+      useFlats = false;
+    } else {
+      useFlats = true;
+    }
+
     switch (index) {
       case 0:
         return [
-          '$chord/${getShifted(chord, 4) ?? 'error'}',
-          '$chord/${getShifted(chord, 7) ?? 'error'}',
+          '$chord/${transpose(chord, 4, useFlats)}',
+          '$chord/${transpose(chord, 7, useFlats)}',
           '${chord}maj7',
           '${chord}9',
         ];
@@ -66,18 +73,18 @@ class ChordHelper {
         return ['${chord}7', minorToMajor(chord), '${minorToMajor(chord)}7'];
       case 3:
         return [
-          '$chord/${getShifted(chord, 4) ?? 'error'}',
-          '$chord/${getShifted(chord, 7) ?? 'error'}',
+          '$chord/${transpose(chord, 4, useFlats)}',
+          '$chord/${transpose(chord, 7, useFlats)}',
           '${chord}maj7',
-          '$chord/${getShifted(chord, 2) ?? 'error'}',
+          '$chord/${transpose(chord, 2, useFlats)}',
           '${chord}9',
           '${chord}m',
         ];
       case 4:
         return [
           '${chord}7',
-          '$chord/${getShifted(chord, 4) ?? 'error'}',
-          '$chord/${getShifted(chord, 7) ?? 'error'}',
+          '$chord/${transpose(chord, 4, useFlats)}',
+          '$chord/${transpose(chord, 7, useFlats)}',
           '${chord}9',
           '${chord}m',
         ];
@@ -86,26 +93,24 @@ class ChordHelper {
           '${dimToMajor(chord)}ø',
           '${dimToMajor(chord)}m',
           dimToMajor(chord),
-          '${dimToMajor(chord)}m/${getShifted(dimToMajor(chord), 3)}',
+          '${dimToMajor(chord)}m/${transpose(dimToMajor(chord), 3, false)}',
         ];
       default:
         return [];
     }
   }
 
-  String? getShifted(String chord, int semitoneShift) {
-    List<String> notes = notesFlat;
-    if (chord.contains('#')) {
-      notes = notesSharp;
+  String transpose(String chord, int value, bool useFlats) {
+    final chromatic = useFlats ? notesFlat : notesSharp;
+    int rootIndex = chromatic.indexOf(chord);
+    if (rootIndex == -1) {
+      // Try alternate chromatic
+      rootIndex = (useFlats ? notesSharp : notesFlat).indexOf(chord);
     }
-
-    final index = notes.indexOf(chord);
-
-    if (index != -1) {
-      final newIndex = (index + semitoneShift) % notes.length;
-      return notes[newIndex];
-    }
-    return null;
+    if (rootIndex == -1) return chord;
+    int newIndex = (rootIndex + value) % chromatic.length;
+    if (newIndex < 0) newIndex += chromatic.length;
+    return chromatic[newIndex];
   }
 
   String minorToMajor(String chord) {

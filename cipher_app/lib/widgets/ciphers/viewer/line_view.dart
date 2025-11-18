@@ -1,6 +1,6 @@
+import 'package:cipher_app/models/ui/chord.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cipher_app/helpers/chords/chord_song.dart';
 import 'package:cipher_app/helpers/chords/chord_transposer.dart';
 import 'package:cipher_app/providers/layout_settings_provider.dart';
 
@@ -46,7 +46,7 @@ class LineView extends StatelessWidget {
             ),
             ...chords.map((chord) {
               final String chordToShow = settings.transposeAmount != 0
-                  ? transposer.transpose(chord.name)
+                  ? transposer.transposeChord(chord.name)
                   : chord.name;
               (xOffset, yOffset, endOfChord, lineNumber) = chord
                   .calculateOffsetForChord(

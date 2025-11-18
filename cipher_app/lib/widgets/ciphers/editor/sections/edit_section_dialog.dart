@@ -1,6 +1,5 @@
-import 'package:cipher_app/helpers/chords/chord_parser.dart';
-import 'package:cipher_app/helpers/chords/chord_song.dart';
 import 'package:cipher_app/models/domain/cipher/section.dart';
+import 'package:cipher_app/models/ui/song.dart';
 import 'package:cipher_app/providers/section_provider.dart';
 import 'package:cipher_app/providers/version_provider.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +25,7 @@ class _EditSectionDialogState extends State<EditSectionDialog> {
 
   @override
   void initState() {
-    _song = parseChordPro(widget.section.contentText);
+    _song = Song.fromChordPro(widget.section.contentText);
 
     contentCodeController = TextEditingController(
       text: widget.section.contentCode,
@@ -36,9 +35,7 @@ class _EditSectionDialogState extends State<EditSectionDialog> {
       text: widget.section.contentType,
     );
 
-    contentTextController = TextEditingController(
-      text: generateLyricsFromSong(_song),
-    );
+    contentTextController = TextEditingController(text: _song.generateLyrics());
 
     contentColor = widget.section.contentColor;
 
@@ -174,7 +171,7 @@ class _EditSectionDialogState extends State<EditSectionDialog> {
       widget.section.contentCode,
       newContentCode: code,
       newContentType: type,
-      newContentText: generateChordProFromSong(_song),
+      newContentText: _song.generateChordPro(),
       newColor: color,
     );
     // If the content code has changed, update the song structure accordingly

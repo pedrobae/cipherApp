@@ -2,59 +2,6 @@ import 'package:flutter/painting.dart';
 
 int _minimumGap = 4;
 
-class Song {
-  final Map<int, String> linesMap; // Line number -> Lyrics
-  final Map<int, List<Chord>> chordsMap; // Line number -> List of Chords
-  bool hasPrecedingChord = false;
-  double? precedingChordOffset;
-
-  Song(this.linesMap, this.chordsMap);
-
-  Song copyWith({
-    Map<int, String>? linesMap,
-    Map<int, List<Chord>>? chordsMap,
-    bool hasPrecedingChord = false,
-    double? precedingChordOffset,
-  }) {
-    return Song(linesMap ?? this.linesMap, chordsMap ?? this.chordsMap);
-  }
-
-  void checkForPrecedingChord(TextStyle chordStyle) {
-    double precedingOffset = 0.0;
-    for (int i = 0; i < linesMap.length; i++) {
-      if (linesMap[i]!.isNotEmpty && linesMap[i]![0] == ' ') {
-        // Found a line with space at the start, indicating preceding chord
-        hasPrecedingChord = true;
-
-        // Calculate offset of the preceding chords
-        double totalWidth = 0.0;
-        for (var chord in chordsMap[i]!) {
-          if (chord.lyricsBefore.isEmpty) {
-            totalWidth += (TextPainter(
-              text: TextSpan(text: chord.name, style: chordStyle),
-              textDirection: TextDirection.ltr,
-              maxLines: 1,
-            )..layout(maxWidth: double.infinity, minWidth: 0)).width;
-
-            totalWidth += _minimumGap;
-          } else {
-            break; // Stop at the first chord that has lyrics before it
-          }
-        }
-        totalWidth -= _minimumGap; // Remove last gap
-
-        if (totalWidth > precedingOffset) {
-          precedingOffset = totalWidth;
-        }
-      }
-    }
-
-    if (hasPrecedingChord) {
-      precedingChordOffset = precedingOffset;
-    }
-  }
-}
-
 class Chord {
   final String name; // e.g., "C", "Am"
   double xOffset;

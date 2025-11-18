@@ -1,32 +1,6 @@
-class ChordTransposer {
-  static const List<String> sharps = [
-    'C',
-    'C#',
-    'D',
-    'D#',
-    'E',
-    'F',
-    'F#',
-    'G',
-    'G#',
-    'A',
-    'A#',
-    'B',
-  ];
-  static const List<String> flats = [
-    'C',
-    'Db',
-    'D',
-    'Eb',
-    'E',
-    'F',
-    'Gb',
-    'G',
-    'Ab',
-    'A',
-    'Bb',
-    'B',
-  ];
+import 'package:cipher_app/helpers/chords/chords.dart';
+
+class ChordTransposer extends ChordHelper {
   static const List<String> flatKeys = [
     'F',
     'Bb',
@@ -59,7 +33,7 @@ class ChordTransposer {
 
   // Calculate the transposed key first, then determine if we should use flats
   String get transposedKey {
-    String tempKey = _transposeRoot(originalKey, transposeValue, true);
+    String tempKey = transpose(originalKey, transposeValue, true);
     String key = '';
     tempKey == 'Gb' ? key = 'F#' : key = tempKey;
     return key;
@@ -67,7 +41,7 @@ class ChordTransposer {
 
   bool get useFlats => flatKeys.contains(transposedKey);
 
-  String transpose(String chord) {
+  String transposeChord(String chord) {
     // Parse chord root first
     String? root;
     String remainingSuffix = '';
@@ -101,28 +75,14 @@ class ChordTransposer {
     }
 
     // Transpose root and bass
-    String transposedRoot = _transposeRoot(root, transposeValue, useFlats);
+    String transposedRoot = transpose(root, transposeValue, useFlats);
     String result = transposedRoot + chordSuffix;
 
     if (bass != null) {
-      String transposedBass = _transposeRoot(bass, transposeValue, useFlats);
+      String transposedBass = transpose(bass, transposeValue, useFlats);
       result += '/$transposedBass';
     }
 
     return result;
-  }
-
-  // Helper to transpose a single root
-  String _transposeRoot(String root, int value, bool useFlats) {
-    final chromatic = useFlats ? flats : sharps;
-    int rootIndex = chromatic.indexOf(root);
-    if (rootIndex == -1) {
-      // Try alternate chromatic
-      rootIndex = (useFlats ? sharps : flats).indexOf(root);
-    }
-    if (rootIndex == -1) return root;
-    int newIndex = (rootIndex + value) % chromatic.length;
-    if (newIndex < 0) newIndex += chromatic.length;
-    return chromatic[newIndex];
   }
 }

@@ -137,6 +137,10 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
   }
 
   List<Widget> _buildTokenWidgets(List<ContentToken> tokens) {
+    if (tokens.isEmpty) {
+      return [];
+    }
+
     /// CREATE TOKEN WIDGETS
     final tokenWidgets = <Widget>[];
 

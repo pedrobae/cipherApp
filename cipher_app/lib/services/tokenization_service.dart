@@ -2,6 +2,10 @@ import 'package:cipher_app/models/ui/content_token.dart';
 
 class TokenizationService {
   List<ContentToken> tokenize(String content) {
+    if (content.isEmpty) {
+      return [];
+    }
+
     final List<ContentToken> tokens = [];
 
     for (int index = 0; index < content.length; index++) {

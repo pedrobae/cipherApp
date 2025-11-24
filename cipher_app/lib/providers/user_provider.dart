@@ -25,16 +25,6 @@ class UserProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get isLoadingCloud => _isLoadingCloud;
 
-  /// Removes all known users from a list of Firebase IDs
-  /// This is used to resolve collaborator references in playlists
-  List<String> removeKnownByFirebaseId(List<String> firebaseUserIds) {
-    return firebaseUserIds
-        .where(
-          (id) => _knownCollaborators.every((user) => user.firebaseId != id),
-        )
-        .toList();
-  }
-
   /// Downloads users from Firebase if they don't exist locally
   Future<void> downloadUsersFromCloud(List<String> firebaseUserIds) async {
     if (_isLoadingCloud) return;
@@ -74,7 +64,14 @@ class UserProvider extends ChangeNotifier {
   /// Ensures that all users in the provided list of Firebase IDs exist locally
   /// Downloads any missing users from the cloud
   Future<void> ensureUsersExist(List<String> firebaseUserIds) async {
-    final missingIds = removeKnownByFirebaseId(firebaseUserIds);
+    final presentIds = await _userRepository.getUsersByFirebaseId(
+      firebaseUserIds,
+    );
+
+    final missingIds = firebaseUserIds
+        .where((id) => !presentIds.contains(id))
+        .toList();
+
     if (missingIds.isNotEmpty) {
       await downloadUsersFromCloud(missingIds);
     }

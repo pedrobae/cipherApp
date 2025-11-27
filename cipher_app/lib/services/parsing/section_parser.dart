@@ -153,40 +153,91 @@ class SectionParser {
         Iterable<RegExpMatch> matches = regex.allMatches(cipher.rawText);
 
         for (var match in matches) {
-          // Possible Label found - check if preceding and following characters are equal
-          int start = match.start;
-          int end = match.end;
-
-          if (cipher.rawText[start - 1] == cipher.rawText[end]) {
-            // Valid label - separate section
-
-            if (start > 0) {
-              // Find Last Line Break before the label
-              int precedingLineBreakIndex = rawText.lastIndexOf(
-                '\n',
-                start - 1,
+          // Possible Label found -  Validate
+          if (_validateLabel(cipher.rawText, match)['isValid']) {
+            // FOR NOW DEBUG PRINT ONLY
+            if (kDebugMode) {
+              print(
+                'Valid section label found: "${match.group(0)}" at positions ${match.start}-${match.end}',
               );
-              if (precedingLineBreakIndex == -1) continue;
-
-              // Find first Line Break after the label
-              int followingLineBreakIndex = rawText.indexOf('\n', end);
-              if (followingLineBreakIndex == -1) continue;
-
-              int sectionEndLineBreak = rawText.indexOf(
-                '\n\n',
-                followingLineBreakIndex + 1,
-              );
-              if (sectionEndLineBreak == -1) {
-                sectionEndLineBreak = rawText.length;
-              }
-
-              // Validate sectionEndLineBreak
-              // If
             }
+            // TODO: Implement section separation logic based on validated labels
           }
         }
       }
     }
+  }
+
+  /// Validates if a found label is indeed a section label,
+  /// returns true if valid, false otherwise, {'isValid': bool, ...}
+  /// and additional info for extracting the section {... , 'labelStart': int, 'labelEnd': int}, if valid
+  Map<String, dynamic> _validateLabel(String rawText, RegExpMatch match) {
+    /// Validation strategy - check surrounding characters
+    /// Examples to correctly validade:
+    /// "\nChorus\n"  -> valid
+    /// "[Chorus]"    -> valid
+    /// "(Chorus)"    -> valid
+    /// "- Chorus -"  -> valid
+    /// "Chorus:"      -> valid
+    /// "Intro: C E F" -> valid -> Correctly identify the label at the start of the line
+    /// "Verse 1"      -> valid
+    /// "[Intro] A2  B2  C#m7  G#m7(11)" -> valid
+
+    /// Invalid examples:
+    /// "Cantaremos como um coro de anjos" -> invalid
+    /// "This is the chorus of the song"   -> invalid
+    /// "Chorus is a great part"            -> invalid
+
+    int start = match.start;
+    int end = match.end;
+
+    // Extract the full line containing the match
+    String matchLine = '';
+    int lineStart = rawText.lastIndexOf('\n', start) + 1;
+    int lineEnd = rawText.indexOf('\n', end);
+    if (lineEnd == -1) {
+      // No newline was found after the match, invalid label
+      return {'isValid': false};
+    }
+    matchLine = rawText.substring(lineStart, lineEnd);
+
+    // Search for colon after the label
+    RegExp colonRegex = RegExp(r':');
+    if (colonRegex.hasMatch(matchLine)) {
+      final labelEnd = colonRegex.firstMatch(matchLine)!.end;
+      return {
+        'isValid': true,
+        'labelStart': lineStart,
+        'labelEnd': lineStart + labelEnd,
+      };
+    }
+
+    // Check preceding and following characters, examining equally spaced characters
+    if (start - lineStart > lineEnd - end) {
+      // More preceding characters than following characters ---> ASSUMING THIS ISNT A VALID LABEL
+      return {'isValid': false};
+    }
+    int j = 0;
+    for (int i = start - 1; i >= lineStart; i--, j++) {
+      String precedingChar = rawText[i];
+      String followingChar = rawText[end + j];
+
+      if (precedingChar != followingChar) {
+        // Mismatched characters, check for label suffixes, e.g. numbered verses ("Verse 1")
+        if (followingChar.trim().isEmpty && _isNumber(rawText[end + j + 1])) {
+          // The matched label is followed by a space and number,
+          // Adjust indexes and continue checking
+          i--;
+          j += 2; // Skip space and number
+          continue;
+        } else {
+          // Invalid label
+          return {'isValid': false};
+        }
+      }
+    }
+    // All preceding and following characters matched
+    return {'isValid': true, 'labelStart': lineStart, 'labelEnd': end + j};
   }
 }
 
@@ -206,4 +257,8 @@ class SectionLabels {
   String officialLabel;
 
   SectionLabels({required this.labelVariations, required this.officialLabel});
+}
+
+bool _isNumber(String char) {
+  return int.tryParse(char) != null;
 }

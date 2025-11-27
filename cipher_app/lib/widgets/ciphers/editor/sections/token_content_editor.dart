@@ -146,16 +146,16 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
 
     // If there is no chord preceding line, add a dragtarget at the start
     if (!_spaceBeforeLyric(0, tokens)) {
-      tokenWidgets.add(_buildPrecedingChordDragTarget());
+      tokenWidgets.add(_buildPrecedingChordDragTarget(0));
     }
 
     // Build the widgets for each token
     for (var i = 0; i < _tokens.length; i++) {
-      tokenWidgets.add(_buildTokenWidget(_tokens[i]));
+      tokenWidgets.add(_buildTokenWidget(_tokens[i], i));
       if (_tokens[i].type == TokenType.newline) {
         tokenWidgets.add(const SizedBox(width: double.infinity));
-        if (!_spaceBeforeLyric(i, tokens)) {
-          tokenWidgets.add(_buildPrecedingChordDragTarget());
+        if (!_spaceBeforeLyric(i + 1, tokens)) {
+          tokenWidgets.add(_buildPrecedingChordDragTarget(i + 1));
         }
       }
     }
@@ -163,23 +163,23 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
     // Add a final newline token to create a dragtarget at the end
     tokenWidgets.add(
       _buildTokenWidget(
-        ContentToken(
-          text: '\n',
-          type: TokenType.newline,
-          position: _tokens.length,
-        ),
+        ContentToken(text: '\n', type: TokenType.newline),
+        _tokens.length,
       ),
     );
     return tokenWidgets;
   }
 
-  Widget _buildTokenWidget(ContentToken token) {
+  Widget _buildTokenWidget(ContentToken token, int position) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     // Ensure we have a GlobalKey for this token
-    _tokenKeys.putIfAbsent(token.position!, () => GlobalKey());
+    _tokenKeys.putIfAbsent(position, () => GlobalKey());
     switch (token.type) {
       case TokenType.chord:
+        // Assign position to token for reference
+        token.position = position;
+
         // GestureDetector to handle long press to drag transition
         return Draggable<ContentToken>(
           data: token,
@@ -205,7 +205,14 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
         // Container that contains the lyrics, with a globalKey for drag detection
         return DragTarget<ContentToken>(
           onAcceptWithDetails: (details) {
-            _addChord(details.data, token.position!);
+            _addChord(details.data, position);
+            if (details.data.position != null) {
+              int index = details.data.position!;
+              if (index > position) {
+                index += 1;
+              }
+              _removeChordAt(index);
+            }
           },
           builder: (context, candidateData, rejectedData) {
             if (candidateData.isNotEmpty) {
@@ -234,7 +241,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
               );
             }
             return Container(
-              key: _tokenKeys[token.position],
+              key: _tokenKeys[position],
               child: Text(
                 token.text,
                 style: TextStyle(
@@ -248,7 +255,14 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
       case TokenType.newline:
         return DragTarget<ContentToken>(
           onAcceptWithDetails: (details) {
-            _addChord(details.data, token.position!);
+            _addChord(details.data, position);
+            if (details.data.position != null) {
+              int index = details.data.position!;
+              if (index > position) {
+                index += 1;
+              }
+              _removeChordAt(index);
+            }
           },
           builder: (context, candidateData, rejectedData) {
             return candidateData.isNotEmpty
@@ -298,67 +312,49 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
   }
 
   void _addChord(ContentToken token, int position) {
-    final newToken = ContentToken(
-      text: token.text,
-      type: token.type,
-      position: position,
-    );
-
     setState(() {
-      _tokens.insert(position, newToken);
+      _tokens.insert(position, token);
     });
-
-    // Check if the token was moved
-    if (token.position != null) {
-      // Remove token
-      int index = token.position!;
-
-      if (index > position) {
-        index++;
-      }
-      _tokens.removeAt(index);
-    }
-
     _notifyContentChanged();
   }
 
-  void _addPrecedingChord(ContentToken token) {
-    final emptySpaceToken = ContentToken(
-      text: ' ',
-      type: TokenType.space,
-      position: 1,
-    );
-    final newToken = ContentToken(
-      text: token.text,
-      type: token.type,
-      position: 0,
-    );
+  void _addPrecedingChord(ContentToken token, int position) {
+    final emptySpaceToken = ContentToken(text: ' ', type: TokenType.space);
+    final newToken = ContentToken(text: token.text, type: token.type);
 
     setState(() {
-      _tokens.insert(0, emptySpaceToken);
-      _tokens.insert(0, newToken);
+      _tokens.insert(position, emptySpaceToken);
+      _tokens.insert(position, newToken);
     });
-
-    // Check if the token was moved
-    if (token.position != null) {
-      // Remove token
-      _tokens.removeAt(token.position! + 1); // +1 because we inserted at start
-    }
 
     _notifyContentChanged();
   }
 
   void _removeChord(ContentToken token) {
     setState(() {
-      _tokens.removeAt(token.position!);
+      _tokens.remove(token);
     });
     _notifyContentChanged();
   }
 
-  DragTarget<ContentToken> _buildPrecedingChordDragTarget() =>
+  void _removeChordAt(int position) {
+    setState(() {
+      _tokens.removeAt(position);
+    });
+    _notifyContentChanged();
+  }
+
+  DragTarget<ContentToken> _buildPrecedingChordDragTarget(int position) =>
       DragTarget<ContentToken>(
         onAcceptWithDetails: (details) {
-          _addPrecedingChord(details.data);
+          _addPrecedingChord(details.data, position);
+          if (details.data.position != null) {
+            int index = details.data.position!;
+            if (index > position) {
+              index += 2; // Adjust for two insertions (Chord + Space)
+            }
+            _removeChordAt(index);
+          }
         },
         builder: (context, candidateData, rejectedData) {
           return candidateData.isNotEmpty
@@ -388,7 +384,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
 
     for (
       int i = position;
-      (i >= tokens.length || tokens[i].type != TokenType.lyric);
+      (i < tokens.length && tokens[i].type != TokenType.lyric);
       i++
     ) {
       start.add(tokens[i]);

@@ -268,11 +268,7 @@ class _ChordPaletteState extends State<ChordPalette> {
     Color sectionColor,
     Color textColor,
   ) {
-    final token = ContentToken(
-      text: chord,
-      type: TokenType.chord,
-      position: null,
-    );
+    final token = ContentToken(text: chord, type: TokenType.chord);
     return Draggable<ContentToken>(
       data: token,
       feedback: Material(

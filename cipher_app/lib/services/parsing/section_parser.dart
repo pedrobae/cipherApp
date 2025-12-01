@@ -19,10 +19,10 @@ class SectionParser {
     _separateByLabels(cipher);
 
     // Separate raw text by double new lines
-    _separateDoubleNewLines(cipher);
+    _separateByDoubleNewLines(cipher);
   }
 
-  void _separateDoubleNewLines(ParsingCipher cipher) {
+  void _separateByDoubleNewLines(ParsingCipher cipher) {
     List<String> rawSections = cipher.rawText.split('\n\n');
 
     cipher.doubleLineSeparatedSections = [];
@@ -37,6 +37,7 @@ class SectionParser {
         'content': sectionContent,
         'numberOfLines': '\n'.allMatches(sectionContent).length + 1,
         'isDuplicate': false,
+        'suggestedTitle': 'Unlabeled Section',
       };
 
       cipher.doubleLineSeparatedSections.add(section);
@@ -108,13 +109,13 @@ class SectionParser {
 
   void _separateByLabels(ParsingCipher cipher) {
     String rawText = cipher.rawText;
+    List<Map<String, dynamic>> validMatches = [];
     // Search common label texts
     for (var label in commonSectionLabels) {
       for (var labelVariation in label.labelVariations) {
         RegExp regex = RegExp(labelVariation, caseSensitive: false);
         Iterable<RegExpMatch> matches = regex.allMatches(cipher.rawText);
 
-        List<Map<String, dynamic>> validMatches = [];
         for (var match in matches) {
           final result = _validateLabel(cipher.rawText, match);
 
@@ -122,34 +123,40 @@ class SectionParser {
           if (result['isValid']) {
             validMatches.add({
               'label': match.group(0),
-              'start': result['labelStart'],
-              'end': result['labelEnd'],
+              'labelStart': result['labelStart'],
+              'labelEnd': result['labelEnd'],
             });
           }
         }
-        for (int i = 0; i < validMatches.length; i++) {
-          var match = validMatches[i];
-          var nextMatch = (i + 1 < validMatches.length)
-              ? validMatches[i + 1]
-              : null;
-          int sectionStart = match['end'];
-          int sectionEnd = nextMatch != null
-              ? nextMatch['start']
-              : rawText.length;
-
-          cipher.labelSeparatedSections.add({
-            'index': cipher.labelSeparatedSections.length,
-            'content': rawText.substring(sectionStart, sectionEnd).trim(),
-            'numberOfLines':
-                '\n'
-                    .allMatches(rawText.substring(sectionStart, sectionEnd))
-                    .length +
-                1,
-            'suggestedTitle': match['label'],
-            'isDuplicate': false,
-          });
-        }
       }
+    }
+    // Order valid matches by their position in the text
+    validMatches.sort((a, b) => a['labelStart'].compareTo(b['labelStart']));
+
+    for (int i = 0; i < validMatches.length; i++) {
+      var match = validMatches[i];
+      var nextMatch = (i + 1 < validMatches.length)
+          ? validMatches[i + 1]
+          : null;
+      int sectionStart = match['labelEnd'];
+      int sectionEnd = nextMatch != null
+          ? nextMatch['labelStart']
+          : rawText.length;
+
+      cipher.labelSeparatedSections.add({
+        'index': cipher.labelSeparatedSections.length,
+        'content': rawText.substring(sectionStart, sectionEnd).trim(),
+        'numberOfLines':
+            '\n'
+                .allMatches(rawText.substring(sectionStart, sectionEnd))
+                .length +
+            1,
+        'suggestedTitle': rawText.substring(
+          match['labelStart'],
+          match['labelEnd'],
+        ),
+        'isDuplicate': false,
+      });
     }
   }
 
@@ -231,7 +238,10 @@ final List<SectionLabels> commonSectionLabels = [
     labelVariations: ['verse', 'verso', r'parte\s*\d+'],
     officialLabel: 'Verse',
   ),
-  SectionLabels(labelVariations: ['chorus', 'coro'], officialLabel: 'Chorus'),
+  SectionLabels(
+    labelVariations: ['chorus', 'coro', 'refrao', 'refrão'],
+    officialLabel: 'Chorus',
+  ),
   SectionLabels(labelVariations: ['bridge', 'ponte'], officialLabel: 'Bridge'),
   SectionLabels(labelVariations: ['intro'], officialLabel: 'Intro'),
   SectionLabels(labelVariations: ['outro'], officialLabel: 'Outro'),

@@ -22,12 +22,6 @@ class ParsingCipher {
     required this.rawText,
     required this.importType,
     this.lines = const [],
-    this.labelSeparatedSections = const [],
-    this.doubleLineSeparatedSections = const [],
-    this.parsedLabelSeparatedSections = const {},
-    this.parsedDoubleLineSeparatedSections = const {},
-    this.labelSeparatedSongStructure = const [],
-    this.doubleLineSeparatedSongStructure = const [],
   });
 
   factory ParsingCipher.fromPdfLines(List<TextLine> textLines) {

@@ -162,16 +162,22 @@ class _EditSectionDialogState extends State<EditSectionDialog> {
   void _updateSection(String? code, String? type, String? text, Color? color) {
     final List<String> lines = text != null ? text.split('\n') : [];
 
-    for (int index = 0; index < lines.length; index++) {
+    for (int index = 0; index < _song.linesMap.length; index++) {
+      if (index >= lines.length) {
+        _song.linesMap.remove(index);
+        continue;
+      }
       _song.linesMap[index] = lines[index];
     }
+
+    final newContent = _song.generateChordPro();
 
     // Update the section with new values
     context.read<SectionProvider>().cacheUpdatedSection(
       widget.section.contentCode,
       newContentCode: code,
       newContentType: type,
-      newContentText: _song.generateChordPro(),
+      newContentText: newContent,
       newColor: color,
     );
     // If the content code has changed, update the song structure accordingly

@@ -10,8 +10,6 @@ class SectionParser {
 
     _separateSections(cipher);
 
-    _labelSections(cipher);
-
     _checkDuplicates(cipher);
 
     _debugPrint(cipher);
@@ -51,7 +49,7 @@ class SectionParser {
   void _separateDoubleNewLines(ParsingCipher cipher) {
     List<String> rawSections = cipher.rawText.split('\n\n');
 
-    cipher.sections = [];
+    cipher.doubleLineSeparatedSections = [];
     for (int i = 0; i < rawSections.length; i++) {
       String sectionContent = rawSections[i].trim();
       if (sectionContent.isEmpty) {
@@ -65,78 +63,64 @@ class SectionParser {
         'isDuplicate': false,
       };
 
-      cipher.sections.add(section);
-    }
-  }
-
-  void _labelSections(ParsingCipher cipher) {
-    for (var section in cipher.sections) {
-      if (section.containsKey('suggestedTitle') &&
-          section['suggestedTitle'] != 'Unlabeled Section') {
-        continue; // Already labeled
-      }
-
-      String content = section['content'].trim();
-      String suggestedTitle = 'Unlabeled Section';
-      // Simple heuristic to suggest titles based on keywords
-      for (var label in commonSectionLabels) {
-        for (var possibleLabel in label.labelVariations) {
-          RegExp regex = RegExp(
-            r'\b' + possibleLabel + r'\b',
-            caseSensitive: false,
-          );
-          if (regex.hasMatch(content)) {
-            suggestedTitle = label.officialLabel;
-            break;
-          }
-        }
-        if (suggestedTitle != 'Unlabeled Section') {
-          break;
-        }
-      }
-
-      section['suggestedTitle'] = suggestedTitle;
+      cipher.doubleLineSeparatedSections.add(section);
     }
   }
 
   void _checkDuplicates(ParsingCipher cipher) {
     // Check for duplicate content and mark them
-    Map<String, int> seenContentIndex = {};
-    for (var section in cipher.sections) {
-      String content = section['content'];
-
-      if (seenContentIndex.containsKey(content)) {
-        section['duplicatedSectionIndex'] =
-            seenContentIndex[content]; // Mark as duplicate, with a reference
+    for (int i = 0; i < 2; i++) {
+      List<Map<String, dynamic>> sections;
+      if (i == 0) {
+        sections = cipher.labelSeparatedSections;
       } else {
-        seenContentIndex[content] = section['index'];
+        sections = cipher.doubleLineSeparatedSections;
       }
-    }
+      Map<String, int> seenContentIndex = {};
+      for (var section in sections) {
+        String content = section['content'];
 
-    // Check for duplicate titles and mark them, except 'verse' and 'unlabeled section'
-    Map<String, int> seenTitleIndex = {};
-    for (var section in cipher.sections) {
-      String title = section['suggestedTitle'].toString().toLowerCase();
-
-      if (section['suggestedTitle'] == 'Unlabeled Section' ||
-          section['suggestedTitle'] == 'Verse') {
-        continue;
+        if (seenContentIndex.containsKey(content)) {
+          section['duplicatedSectionIndex'] =
+              seenContentIndex[content]; // Mark as duplicate, with a reference
+        } else {
+          seenContentIndex[content] = section['index'];
+        }
       }
 
-      if (seenTitleIndex.containsKey(title)) {
-        section['duplicatedSectionIndex'] =
-            seenTitleIndex[title]; // Mark as duplicate, with a reference
-      } else {
-        seenTitleIndex[title] = section['index'];
+      // Check for duplicate titles and mark them, except 'verse' and 'unlabeled section'
+      Map<String, int> seenTitleIndex = {};
+      for (var section in cipher.doubleLineSeparatedSections) {
+        String title = section['suggestedTitle'].toString().toLowerCase();
+
+        if (section['suggestedTitle'] == 'Unlabeled Section' ||
+            section['suggestedTitle'] == 'Verse') {
+          continue;
+        }
+
+        if (seenTitleIndex.containsKey(title)) {
+          section['duplicatedSectionIndex'] =
+              seenTitleIndex[title]; // Mark as duplicate, with a reference
+        } else {
+          seenTitleIndex[title] = section['index'];
+        }
       }
     }
   }
 
   void _debugPrint(ParsingCipher cipher) {
     if (kDebugMode) {
-      print('--- Parsed Sections ---');
+      print('--- Parsed Double Line Separated Sections ---');
       print('\tIndex\tisDuplicate\tNumLines\tTitle');
-      for (var section in cipher.sections) {
+      for (var section in cipher.doubleLineSeparatedSections) {
+        print(
+          '\t${section['index']}\t${section['isDuplicate']}\t\t${section['numberOfLines']}\t"${section['suggestedTitle']}"',
+        );
+      }
+      print('----------------------------------------------');
+      print('--- Parsed Label Separated Sections ---');
+      print('\tIndex\tisDuplicate\tNumLines\tTitle');
+      for (var section in cipher.labelSeparatedSections) {
         print(
           '\t${section['index']}\t${section['isDuplicate']}\t\t${section['numberOfLines']}\t"${section['suggestedTitle']}"',
         );
@@ -152,17 +136,40 @@ class SectionParser {
         RegExp regex = RegExp(labelVariation, caseSensitive: false);
         Iterable<RegExpMatch> matches = regex.allMatches(cipher.rawText);
 
+        List<Map<String, dynamic>> validMatches = [];
         for (var match in matches) {
+          final result = _validateLabel(cipher.rawText, match);
+
           // Possible Label found -  Validate
-          if (_validateLabel(cipher.rawText, match)['isValid']) {
-            // FOR NOW DEBUG PRINT ONLY
-            if (kDebugMode) {
-              print(
-                'Valid section label found: "${match.group(0)}" at positions ${match.start}-${match.end}',
-              );
-            }
-            // TODO: Implement section separation logic based on validated labels
+          if (result['isValid']) {
+            validMatches.add({
+              'label': match.group(0),
+              'start': result['labelStart'],
+              'end': result['labelEnd'],
+            });
           }
+        }
+        for (int i = 0; i < validMatches.length; i++) {
+          var match = validMatches[i];
+          var nextMatch = (i + 1 < validMatches.length)
+              ? validMatches[i + 1]
+              : null;
+          int sectionStart = match['end'];
+          int sectionEnd = nextMatch != null
+              ? nextMatch['start']
+              : rawText.length;
+
+          cipher.labelSeparatedSections.add({
+            'index': cipher.labelSeparatedSections.length,
+            'content': rawText.substring(sectionStart, sectionEnd).trim(),
+            'numberOfLines':
+                '\n'
+                    .allMatches(rawText.substring(sectionStart, sectionEnd))
+                    .length +
+                1,
+            'suggestedTitle': match['label'],
+            'isDuplicate': false,
+          });
         }
       }
     }

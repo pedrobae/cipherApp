@@ -153,8 +153,8 @@ class ParserProvider extends ChangeNotifier {
       transposedKey: cipher.metadata['key'],
       id: -1, // Temporary ID
       cipherId: -1, // Temporary cipher ID
-      sections: cipher.parsedSections,
-      songStructure: cipher.songStructure,
+      sections: cipher.parsedLabelSeparatedSections,
+      songStructure: cipher.labelSeparatedSongStructure,
       versionName: 'imported',
     );
 

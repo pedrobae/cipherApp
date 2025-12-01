@@ -97,8 +97,10 @@ class _CipherParsingScreenState extends State<CipherParsingScreen> {
                     ),
                   if (parserProvider.hasParsedSections &&
                       !parserProvider.hasParsedChords)
-                    // --> SECTIONS CARDS
-                    ...parserProvider.cipher!.sections.map((section) {
+                    // --> LABEL SEPARATED SECTIONS CARDS
+                    ...parserProvider.cipher!.labelSeparatedSections.map((
+                      section,
+                    ) {
                       if (section['isDuplicate'] == true) {
                         return const SizedBox.shrink();
                       }
@@ -113,16 +115,18 @@ class _CipherParsingScreenState extends State<CipherParsingScreen> {
 
                   if (parserProvider.hasParsedChords)
                     // --> SECTION CARDS
-                    ...parserProvider.cipher!.parsedSections.entries.map((
-                      entry,
-                    ) {
-                      return CipherSectionCard(
-                        sectionCode: entry.value.contentCode,
-                        sectionType: entry.value.contentType,
-                        sectionText: entry.value.contentText,
-                        sectionColor: entry.value.contentColor,
-                      );
-                    }),
+                    ...parserProvider
+                        .cipher!
+                        .parsedLabelSeparatedSections
+                        .entries
+                        .map((entry) {
+                          return CipherSectionCard(
+                            sectionCode: entry.value.contentCode,
+                            sectionType: entry.value.contentType,
+                            sectionText: entry.value.contentText,
+                            sectionColor: entry.value.contentColor,
+                          );
+                        }),
                 ],
               ),
             ),

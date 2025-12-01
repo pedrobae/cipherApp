@@ -8,18 +8,24 @@ class ParsingCipher {
   Map<String, dynamic> metadata = {};
   List<Map<String, dynamic>>
   lines; // {'lineNumber': int, 'text': String, 'avgWordLength': double,}
-  List<Map<String, dynamic>>
-  sections; // {'suggestedTitle': String, 'content': String, 'index': int, 'isDuplicate': bool}
-  Map<String, Section> parsedSections = {};
-  List<String> songStructure = [];
+  // {'suggestedTitle': String, 'content': String, 'index': int, 'isDuplicate': bool}
+  List<Map<String, dynamic>> labelSeparatedSections = [];
+  List<Map<String, dynamic>> doubleLineSeparatedSections = [];
+  Map<String, Section> parsedLabelSeparatedSections = {};
+  Map<String, Section> parsedDoubleLineSeparatedSections = {};
+  List<String> labelSeparatedSongStructure = [];
+  List<String> doubleLineSeparatedSongStructure = [];
 
   ParsingCipher({
     required this.rawText,
     required this.importType,
     this.lines = const [],
-    this.sections = const [],
-    this.parsedSections = const {},
-    this.songStructure = const [],
+    this.labelSeparatedSections = const [],
+    this.doubleLineSeparatedSections = const [],
+    this.parsedLabelSeparatedSections = const {},
+    this.parsedDoubleLineSeparatedSections = const {},
+    this.labelSeparatedSongStructure = const [],
+    this.doubleLineSeparatedSongStructure = const [],
   });
 
   factory ParsingCipher.fromPdfLines(List<TextLine> textLines) {

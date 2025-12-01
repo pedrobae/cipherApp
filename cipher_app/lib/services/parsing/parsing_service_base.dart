@@ -16,7 +16,8 @@ class ParsingServiceBase {
   Future<void> parseSections(ParsingCipher cipher) async {
     await sectionParser.parseSections(cipher);
     separateSectionLines(cipher);
-    for (var section in cipher.sections) {
+    for (var section
+        in cipher.doubleLineSeparatedSections + cipher.labelSeparatedSections) {
       calculateLines(section['lines']);
     }
   }
@@ -26,7 +27,8 @@ class ParsingServiceBase {
   }
 
   void separateSectionLines(ParsingCipher cipher) {
-    for (var section in cipher.sections) {
+    for (var section
+        in cipher.doubleLineSeparatedSections + cipher.labelSeparatedSections) {
       List<Map<String, dynamic>> lines = [];
       section['content']
           .split('\n')

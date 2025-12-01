@@ -7,14 +7,19 @@ class ChordLineParser {
   /// Parses sections from the given [ParsingCipher] and creates the finished section objects.
   Future<void> parseChords(ParsingCipher cipher) async {
     // Iterates through each section of the cipher creating Section objects
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < SeparationType.values.length; i++) {
       Map<String, Section> parsedSections = {};
       List<String> songStructure = [];
       int incrementalDefaultCode = 0;
 
-      final sections = (i == 0)
-          ? cipher.labelSeparatedSections
-          : cipher.doubleLineSeparatedSections;
+      List<Map<String, dynamic>> sections;
+      if (i == 0) {
+        sections = cipher.labelSeparatedSections;
+      } else if (i == 1) {
+        sections = cipher.doubleLineSeparatedSections;
+      } else {
+        sections = [];
+      }
 
       for (var section in sections) {
         if (section['suggestedTitle'] == 'Metadata') continue;

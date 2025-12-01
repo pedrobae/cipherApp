@@ -7,7 +7,6 @@ class SectionParser {
   Future<void> parseSections(ParsingCipher cipher) async {
     // Identifies and separates the blocks of the lyrics from the imported text
     // Label sections that are identified (e.g., Verse, Chorus, Bridge)
-
     _separateSections(cipher);
 
     _checkDuplicates(cipher);
@@ -19,31 +18,8 @@ class SectionParser {
     // Search text for section labels and separate sections accordingly
     _separateByLabels(cipher);
 
-    // Check the raw text for section separators (e.g., double newlines, brackets, parentheses, etc.)
-    int doubleNewLineCount = '\n\n'.allMatches(cipher.rawText).length;
-
-    // Prefer brackets if they exist in reasonable counts
-    SeparatorType? selectedSeparator;
-    if (doubleNewLineCount >= 2 && doubleNewLineCount <= 30) {
-      selectedSeparator = SeparatorType.doubleNewLine;
-    }
-
-    if (selectedSeparator == null) {
-      if (kDebugMode) {
-        print('No suitable section separator found in text.');
-      }
-      selectedSeparator = SeparatorType.doubleNewLine; // Default fallback
-    }
-
-    if (kDebugMode) {
-      print('Selected separator: $selectedSeparator');
-    }
-
-    switch (selectedSeparator) {
-      case SeparatorType.doubleNewLine:
-        _separateDoubleNewLines(cipher);
-      default:
-    }
+    // Separate raw text by double new lines
+    _separateDoubleNewLines(cipher);
   }
 
   void _separateDoubleNewLines(ParsingCipher cipher) {
@@ -69,12 +45,14 @@ class SectionParser {
 
   void _checkDuplicates(ParsingCipher cipher) {
     // Check for duplicate content and mark them
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < SeparationType.values.length; i++) {
       List<Map<String, dynamic>> sections;
       if (i == 0) {
         sections = cipher.labelSeparatedSections;
-      } else {
+      } else if (i == 1) {
         sections = cipher.doubleLineSeparatedSections;
+      } else {
+        sections = [];
       }
       Map<String, int> seenContentIndex = {};
       for (var section in sections) {

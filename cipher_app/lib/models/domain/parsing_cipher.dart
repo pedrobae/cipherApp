@@ -2,6 +2,8 @@ import 'package:cipher_app/models/domain/cipher/section.dart';
 import 'package:cipher_app/providers/import_provider.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
+enum SeparationType { doubleNewLine, label }
+
 class ParsingCipher {
   final String rawText;
   final ImportType importType;

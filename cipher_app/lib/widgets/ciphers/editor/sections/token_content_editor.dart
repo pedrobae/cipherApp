@@ -46,8 +46,6 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
 
   @override
   Widget build(BuildContext context) {
-    final tokenWidgets = _buildTokenWidgets(_tokens);
-
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -121,13 +119,16 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
                 border: Border.all(color: Colors.grey.shade300),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Wrap(
-                spacing: 0,
-                runSpacing: 0,
-                alignment: WrapAlignment.start,
-                crossAxisAlignment: WrapCrossAlignment.start,
-                verticalDirection: VerticalDirection.down,
-                children: tokenWidgets,
+              child: Builder(
+                builder: (context) {
+                  final tokenWidgets = _buildTokenWidgets(
+                    context,
+                    _tokens,
+                    lineSpacing: 8,
+                    letterSpacing: 4,
+                  );
+                  return Stack(children: tokenWidgets);
+                },
               ),
             ),
           ],
@@ -136,159 +137,297 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
     );
   }
 
-  List<Widget> _buildTokenWidgets(List<ContentToken> tokens) {
-    if (tokens.isEmpty) {
-      return [];
-    }
+  /// Builds the list of positioned widgets, with token widgets as draggable and drag targets
+  List<Widget> _buildTokenWidgets(
+    BuildContext context,
+    List<ContentToken> tokens, {
+    double lineSpacing = 8,
+    double letterSpacing = 4,
+  }) {
+    List<Widget> tokenWidgets = [];
+    double currentX = 0;
+    double currentY = 0;
+    double maxWidth = MediaQuery.of(context).size.width;
+    lineSpacing =
+        lineSpacing + _fontSize; // To accomodate the chords above the lyrics
 
-    /// CREATE TOKEN WIDGETS
-    final tokenWidgets = <Widget>[];
+    // Track word widgets to roll back if line break occurs
+    List<Widget> wordWidgets = [];
 
-    // If there is no chord preceding line, add a dragtarget at the start
+    // Check if we need to add a preceding chord drag target at the start
     if (!_spaceBeforeLyric(0, tokens)) {
-      tokenWidgets.add(_buildPrecedingChordDragTarget(0));
+      tokenWidgets.add(Positioned(child: _buildPrecedingChordDragTarget(0)));
+      currentX += 24; // Width of the preceding chord drag target
     }
 
     // Build the widgets for each token
-    for (var i = 0; i < _tokens.length; i++) {
-      tokenWidgets.add(_buildTokenWidget(_tokens[i], i));
-      if (_tokens[i].type == TokenType.newline) {
-        tokenWidgets.add(const SizedBox(width: double.infinity));
-        if (!_spaceBeforeLyric(i + 1, tokens)) {
-          tokenWidgets.add(_buildPrecedingChordDragTarget(i + 1));
-        }
+    for (var token in tokens) {
+      switch (token.type) {
+        case TokenType.chord:
+          // Position the chord token widget
+          wordWidgets.add(
+            Positioned(
+              left: currentX,
+              top: currentY - _fontSize, // Position above the lyrics
+              child: _buildDraggableChord(
+                token,
+                tokenWidgets.length + wordWidgets.length,
+              ),
+            ),
+          );
+          break;
+
+        case TokenType.lyric:
+          // Measure the size of the token widget
+          final textPainter = TextPainter(
+            text: TextSpan(
+              text: token.text,
+              style: TextStyle(fontSize: _fontSize),
+            ),
+            maxLines: 1,
+            textDirection: TextDirection.ltr,
+          )..layout();
+
+          final tokenWidth = textPainter.width;
+          final tokenHeight = textPainter.height;
+
+          // Check if adding this token exceeds the max width
+          if (currentX + tokenWidth > maxWidth) {
+            // Move to next line
+            currentX = 0;
+            currentY += tokenHeight + lineSpacing;
+            // Add all word widgets to the main list and clear
+            tokenWidgets.addAll(wordWidgets);
+            wordWidgets.clear();
+          }
+
+          // Position the token widget
+          wordWidgets.add(
+            Positioned(
+              left: currentX,
+              top: currentY,
+              child: _buildLyricDragTarget(
+                token,
+                tokenWidgets.length + wordWidgets.length,
+              ),
+            ),
+          );
+
+          // Update currentX for next token
+          currentX += tokenWidth + letterSpacing; // Add some horizontal spacing
+          break;
+
+        case TokenType.space:
+          // Add all word widgets to the main list and clear
+          tokenWidgets.addAll(wordWidgets);
+          wordWidgets.clear();
+
+          // Measure the size of the space token widget
+          final textPainter = TextPainter(
+            text: TextSpan(
+              text: ' ',
+              style: TextStyle(fontSize: _fontSize),
+            ),
+            maxLines: 1,
+            textDirection: TextDirection.ltr,
+          )..layout();
+
+          final tokenWidth = textPainter.width;
+
+          // Check if adding the space token exceeds the max width
+          if (currentX + tokenWidth > maxWidth) {
+            // Add space drag target at the end of the line
+            tokenWidgets.add(
+              Positioned(
+                left: currentX,
+                top: currentY,
+                child: _buildSpaceDragTarget(
+                  token,
+                  tokenWidgets.length + wordWidgets.length,
+                  maxWidth - currentX,
+                ),
+              ),
+            );
+
+            // Move to next line
+            currentX = 0;
+            currentY += textPainter.height + lineSpacing;
+          }
+
+          // Position the space token widget
+          tokenWidgets.add(
+            Positioned(
+              left: currentX,
+              top: currentY,
+              child: _buildSpaceDragTarget(
+                token,
+                tokenWidgets.length + wordWidgets.length,
+                tokenWidth,
+              ),
+            ),
+          );
+
+          // Update currentX for next token
+          currentX += tokenWidth + letterSpacing; // Add some horizontal spacing
+          break;
+
+        case TokenType.newline:
+          // Add all word widgets to the main list and clear
+          tokenWidgets.addAll(wordWidgets);
+          wordWidgets.clear();
+
+          // Add space drag target that fills the rest of the line
+          tokenWidgets.add(
+            Positioned(
+              left: currentX,
+              top: currentY,
+              child: _buildSpaceDragTarget(
+                token,
+                tokenWidgets.length + wordWidgets.length,
+                maxWidth - currentX,
+              ),
+            ),
+          );
+
+          // Move to next line
+          currentX = 0;
+          currentY += _fontSize + lineSpacing; // Add some vertical spacing
+
+          // Check if we need to add a preceding chord drag target at the start of the next verse
+          if (!_spaceBeforeLyric(
+            tokenWidgets.length +
+                wordWidgets.length +
+                1, // Next token index after newline
+            tokens,
+          )) {
+            tokenWidgets.add(
+              Positioned(
+                child: _buildPrecedingChordDragTarget(
+                  tokenWidgets.length + wordWidgets.length + 1,
+                ),
+              ),
+            );
+            currentX += 24; // Width of the preceding chord drag target
+          }
+          break;
       }
     }
-
-    // Add a final newline token to create a dragtarget at the end
-    tokenWidgets.add(
-      _buildTokenWidget(
-        ContentToken(text: '\n', type: TokenType.newline),
-        _tokens.length,
-      ),
-    );
     return tokenWidgets;
   }
 
-  Widget _buildTokenWidget(ContentToken token, int position) {
+  Widget _buildDraggableChord(ContentToken token, int position) {
+    // Assign position to token for reference
+    token.position = position;
+
+    // GestureDetector to handle long press to drag transition
+    return Draggable<ContentToken>(
+      data: token,
+      onDragStarted: _toggleDrag,
+      onDragEnd: (details) => _toggleDrag(),
+      feedback: Material(
+        color: Colors.transparent,
+        child: ChordToken(
+          token: token,
+          sectionColor: widget.section.contentColor.withValues(alpha: .5),
+          textStyle: TextStyle(fontSize: _fontSize, color: Colors.white),
+        ),
+      ),
+      childWhenDragging: SizedBox.shrink(),
+      child: ChordToken(
+        token: token,
+        sectionColor: widget.section.contentColor,
+        textStyle: TextStyle(fontSize: _fontSize, color: Colors.white),
+      ),
+    );
+  }
+
+  Widget _buildLyricDragTarget(ContentToken token, int position) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    // Ensure we have a GlobalKey for this token
-    _tokenKeys.putIfAbsent(position, () => GlobalKey());
-    switch (token.type) {
-      case TokenType.chord:
-        // Assign position to token for reference
-        token.position = position;
-
-        // GestureDetector to handle long press to drag transition
-        return Draggable<ContentToken>(
-          data: token,
-          onDragStarted: _toggleDrag,
-          onDragEnd: (details) => _toggleDrag(),
-          feedback: Material(
-            color: Colors.transparent,
-            child: ChordToken(
-              token: token,
-              sectionColor: widget.section.contentColor.withValues(alpha: .5),
-              textStyle: TextStyle(fontSize: _fontSize, color: Colors.white),
-            ),
-          ),
-          childWhenDragging: SizedBox.shrink(),
-          child: ChordToken(
-            token: token,
-            sectionColor: widget.section.contentColor,
-            textStyle: TextStyle(fontSize: _fontSize, color: Colors.white),
-          ),
-        );
-      case TokenType.lyric:
-      case TokenType.space:
-        // Container that contains the lyrics, with a globalKey for drag detection
-        return DragTarget<ContentToken>(
-          onAcceptWithDetails: (details) {
-            _addChord(details.data, position);
-            if (details.data.position != null) {
-              int index = details.data.position!;
-              if (index > position) {
-                index += 1;
-              }
-              _removeChordAt(index);
-            }
-          },
-          builder: (context, candidateData, rejectedData) {
-            if (candidateData.isNotEmpty) {
-              return Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Text(
-                    token.text,
-                    style: TextStyle(
-                      fontSize: _fontSize,
-                      color: colorScheme.onSurface,
-                    ),
-                  ),
-                  Positioned(
-                    top: -_fontSize,
-                    child: ChordToken(
-                      token: candidateData.first!,
-                      sectionColor: widget.section.contentColor,
-                      textStyle: TextStyle(
-                        fontSize: _fontSize,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            }
-            return Container(
-              key: _tokenKeys[position],
-              child: Text(
+    // Container that contains the lyrics, with a globalKey for drag detection
+    return DragTarget<ContentToken>(
+      onAcceptWithDetails: (details) {
+        _addChord(details.data, position);
+        if (details.data.position != null) {
+          int index = details.data.position!;
+          if (index > position) {
+            index += 1;
+          }
+          _removeChordAt(index);
+        }
+      },
+      builder: (context, candidateData, rejectedData) {
+        if (candidateData.isNotEmpty) {
+          return Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Text(
                 token.text,
                 style: TextStyle(
                   fontSize: _fontSize,
                   color: colorScheme.onSurface,
                 ),
               ),
-            );
-          },
+              Positioned(
+                top: -_fontSize,
+                child: ChordToken(
+                  token: candidateData.first!,
+                  sectionColor: widget.section.contentColor,
+                  textStyle: TextStyle(
+                    fontSize: _fontSize,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          );
+        }
+        return Container(
+          key: _tokenKeys[position],
+          child: Text(
+            token.text,
+            style: TextStyle(fontSize: _fontSize, color: colorScheme.onSurface),
+          ),
         );
-      case TokenType.newline:
-        return DragTarget<ContentToken>(
-          onAcceptWithDetails: (details) {
-            _addChord(details.data, position);
-            if (details.data.position != null) {
-              int index = details.data.position!;
-              if (index > position) {
-                index += 1;
-              }
-              _removeChordAt(index);
-            }
-          },
-          builder: (context, candidateData, rejectedData) {
-            return candidateData.isNotEmpty
-                ? ChordToken(
-                    token: candidateData.first!,
-                    sectionColor: widget.section.contentColor,
-                    textStyle: TextStyle(
-                      fontSize: _fontSize,
-                      color: Colors.white,
-                    ),
-                  )
-                : Container(
-                    width: 24,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      border: BorderDirectional(
-                        bottom: BorderSide(
-                          color: Colors.grey.shade400,
-                          width: 2,
-                        ),
-                      ),
-                    ),
-                  );
-          },
-        );
-    }
+      },
+    );
+  }
+
+  Widget _buildSpaceDragTarget(ContentToken token, int position, double width) {
+    // Container that is sized to the lowest between space or remainder of the line
+    return DragTarget<ContentToken>(
+      onAcceptWithDetails: (details) {
+        _addChord(details.data, position);
+        if (details.data.position != null) {
+          int index = details.data.position!;
+          if (index > position) {
+            index += 1;
+          }
+          _removeChordAt(index);
+        }
+      },
+      builder: (context, candidateData, rejectedData) {
+        if (candidateData.isNotEmpty) {
+          return Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Positioned(
+                top: -_fontSize,
+                child: ChordToken(
+                  token: candidateData.first!,
+                  sectionColor: widget.section.contentColor,
+                  textStyle: TextStyle(
+                    fontSize: _fontSize,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          );
+        }
+        return Container(key: _tokenKeys[position], width: width);
+      },
+    );
   }
 
   void _openEditSectionDialog(Section section) {

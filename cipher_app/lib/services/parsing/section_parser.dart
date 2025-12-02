@@ -214,7 +214,8 @@ class SectionParser {
       String precedingChar = rawText[i];
       String followingChar = rawText[end + j];
 
-      if (precedingChar != followingChar) {
+      if (precedingChar != followingChar &&
+          !_areMirrored(precedingChar, followingChar)) {
         // Mismatched characters, check for label suffixes, e.g. numbered verses ("Verse 1")
         if (followingChar.trim().isEmpty && _isNumber(rawText[end + j + 1])) {
           // The matched label is followed by a space and number,
@@ -230,6 +231,18 @@ class SectionParser {
     }
     // All preceding and following characters matched
     return {'isValid': true, 'labelStart': lineStart, 'labelEnd': end + j};
+  }
+
+  bool _areMirrored(String char1, String char2) {
+    const Map<String, String> mirroredPairs = {
+      '(': ')',
+      '[': ']',
+      '{': '}',
+      '<': '>',
+      '-': '-',
+    };
+
+    return mirroredPairs[char1] == char2;
   }
 }
 

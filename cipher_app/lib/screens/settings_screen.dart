@@ -35,16 +35,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const SizedBox(height: 16),
 
             _buildSettingsTile(
-              icon: Icons.notifications,
-              title: 'Notificações',
-              subtitle: 'Configurar alertas e lembretes',
-              onTap: () {
-                // TODO: Implement notifications settings
-                _showComingSoon(context);
-              },
-            ),
-
-            _buildSettingsTile(
               icon: Icons.palette,
               title: 'Tema',
               subtitle: 'Personalizar aparência do app',

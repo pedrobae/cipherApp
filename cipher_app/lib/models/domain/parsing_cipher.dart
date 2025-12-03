@@ -2,24 +2,26 @@ import 'package:cipher_app/models/domain/cipher/section.dart';
 import 'package:cipher_app/providers/import_provider.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
+enum SeparationType { doubleNewLine, label }
+
 class ParsingCipher {
   final String rawText;
   final ImportType importType;
   Map<String, dynamic> metadata = {};
   List<Map<String, dynamic>>
   lines; // {'lineNumber': int, 'text': String, 'avgWordLength': double,}
-  List<Map<String, dynamic>>
-  sections; // {'suggestedTitle': String, 'content': String, 'index': int, 'isDuplicate': bool}
-  Map<String, Section> parsedSections = {};
-  List<String> songStructure = [];
+  // {'suggestedTitle': String, 'content': String, 'index': int, 'isDuplicate': bool}
+  List<Map<String, dynamic>> labelSeparatedSections = [];
+  List<Map<String, dynamic>> doubleLineSeparatedSections = [];
+  Map<String, Section> parsedLabelSeparatedSections = {};
+  Map<String, Section> parsedDoubleLineSeparatedSections = {};
+  List<String> labelSeparatedSongStructure = [];
+  List<String> doubleLineSeparatedSongStructure = [];
 
   ParsingCipher({
     required this.rawText,
     required this.importType,
     this.lines = const [],
-    this.sections = const [],
-    this.parsedSections = const {},
-    this.songStructure = const [],
   });
 
   factory ParsingCipher.fromPdfLines(List<TextLine> textLines) {

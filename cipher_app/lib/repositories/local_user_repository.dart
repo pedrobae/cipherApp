@@ -30,21 +30,19 @@ class UserRepository {
     return null;
   }
 
-  /// Get a user by Firebase ID
-  Future<User?> getUserByFirebaseId(String firebaseId) async {
+  /// Get users by Firebase ID - to be used when ensuring users exist locally
+  Future<List<String>> getUsersByFirebaseId(List<String> firebaseIds) async {
     final db = await _databaseHelper.database;
 
     final results = await db.query(
+      columns: ['firebase_id'],
       'user',
-      where: 'firebase_id = ?',
-      whereArgs: [firebaseId],
+      where:
+          'firebase_id IN (${List.filled(firebaseIds.length, '?').join(',')})',
+      whereArgs: firebaseIds,
     );
 
-    if (results.isNotEmpty) {
-      return User.fromJson(results.first);
-    }
-
-    return null;
+    return results.map((row) => row['firebase_id'] as String).toList();
   }
 
   /// Find a user by email

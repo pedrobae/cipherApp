@@ -1,13 +1,9 @@
 class ContentToken {
   final String text;
   final TokenType type;
-  final int? position;
+  int? position;
 
-  ContentToken({
-    required this.text,
-    required this.type,
-    required this.position,
-  });
+  ContentToken({required this.text, required this.type, this.position});
 }
 
 enum TokenType {

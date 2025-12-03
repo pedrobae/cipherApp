@@ -3,7 +3,8 @@ import 'package:cipher_app/models/domain/parsing_cipher.dart';
 class MetadataParser {
   Future<void> parseMetadata(ParsingCipher cipher) async {
     // Iterates through sections
-    for (var section in cipher.sections) {
+    for (var section
+        in cipher.doubleLineSeparatedSections + cipher.labelSeparatedSections) {
       // Simple heuristic: if the section is labeled it doesn't contain metadata
       if (section['suggestedTitle'] != 'Unlabeled Section') break;
 
@@ -21,7 +22,7 @@ class MetadataParser {
       for (var line in cipher.lines.take(5)) {
         if (line['wordCount'] <= 7 && line['avgWordLength'] >= 3.0) {
           cipher.metadata['title'] = line['text'];
-          cipher.sections[0]['suggestedTitle'] = 'Metadata';
+          cipher.doubleLineSeparatedSections[0]['suggestedTitle'] = 'Metadata';
           break;
         }
       }

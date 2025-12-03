@@ -63,47 +63,44 @@ class Song {
 
     for (int i = 0; i < linesRaw.length; i++) {
       String line = linesRaw[i].trim();
+      // Extract chords and lyrics
+      final chordPattern = RegExp(r'\[([^\]]+)\]');
+      final matches = chordPattern.allMatches(line);
 
-      if (line.isNotEmpty) {
-        // Extract chords and lyrics
-        final chordPattern = RegExp(r'\[([^\]]+)\]');
-        final matches = chordPattern.allMatches(line);
+      // Adds the plain lyric to the linesMap
+      String plainLyrics = line.replaceAll(chordPattern, '');
+      linesMap[i] = plainLyrics;
 
-        // Adds the plain lyric to the linesMap
-        String plainLyrics = line.replaceAll(chordPattern, '');
-        linesMap[i] = plainLyrics;
+      List<Chord> chords = [];
+      int plainIndex = 0; // Tracks the position in plainLyrics
 
-        List<Chord> chords = [];
-        int plainIndex = 0; // Tracks the position in plainLyrics
+      for (final match in matches) {
+        String chordName = match.group(1)!; // Actual Chord
 
-        for (final match in matches) {
-          String chordName = match.group(1)!; // Actual Chord
+        // Extract the lyrics before the chord in plain text
+        String lyricsUpToMatch = line
+            .substring(0, match.start)
+            .replaceAll(chordPattern, '');
+        plainIndex = lyricsUpToMatch.length;
 
-          // Extract the lyrics before the chord in plain text
-          String lyricsUpToMatch = line
-              .substring(0, match.start)
-              .replaceAll(chordPattern, '');
-          plainIndex = lyricsUpToMatch.length;
+        String lyricsBefore = plainLyrics.substring(0, plainIndex);
 
-          String lyricsBefore = plainLyrics.substring(0, plainIndex);
-
-          // Find the next word after the chord
-          int nextWordStart = plainIndex;
-          int nextWordEnd = plainIndex;
-          while (nextWordEnd < plainLyrics.length &&
-              plainLyrics[nextWordEnd] != ' ') {
-            nextWordEnd++;
-          }
-          String wordAfter = plainLyrics.substring(nextWordStart, nextWordEnd);
-
-          // Add the chord to the list
-          chords.add(Chord(chordName, lyricsBefore, wordAfter));
+        // Find the next word after the chord
+        int nextWordStart = plainIndex;
+        int nextWordEnd = plainIndex;
+        while (nextWordEnd < plainLyrics.length &&
+            plainLyrics[nextWordEnd] != ' ') {
+          nextWordEnd++;
         }
+        String wordAfter = plainLyrics.substring(nextWordStart, nextWordEnd);
 
-        // Add the list of chords to the map
-        if (chords.isNotEmpty) {
-          chordsMap[i] = chords;
-        }
+        // Add the chord to the list
+        chords.add(Chord(chordName, lyricsBefore, wordAfter));
+      }
+
+      // Add the list of chords to the map
+      if (chords.isNotEmpty) {
+        chordsMap[i] = chords;
       }
     }
 

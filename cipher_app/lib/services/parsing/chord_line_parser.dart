@@ -7,47 +7,63 @@ class ChordLineParser {
   /// Parses sections from the given [ParsingCipher] and creates the finished section objects.
   Future<void> parseChords(ParsingCipher cipher) async {
     // Iterates through each section of the cipher creating Section objects
-    Map<String, Section> parsedSections = {};
-    List<String> songStructure = [];
-    int incrementalDefaultCode = 0;
-    for (var section in cipher.sections) {
-      if (section['suggestedTitle'] == 'Metadata') continue;
+    for (int i = 0; i < SeparationType.values.length; i++) {
+      Map<String, Section> parsedSections = {};
+      List<String> songStructure = [];
+      int incrementalDefaultCode = 0;
 
-      String? code = getCodeFromLabel(section['suggestedTitle']);
-      if (code == null) {
-        // Assign a default code if none is found
-        code = incrementalDefaultCode.toString();
-        incrementalDefaultCode++;
+      List<Map<String, dynamic>> sections;
+      if (i == 0) {
+        sections = cipher.labelSeparatedSections;
+      } else if (i == 1) {
+        sections = cipher.doubleLineSeparatedSections;
+      } else {
+        sections = [];
       }
 
-      // If the section is marked as duplicate, skip creating a new Section object
-      if (section['duplicatedSectionIndex'] != null) {
-        // Add the code of the original section to the song structure
-        songStructure.add(
-          cipher.sections[section['duplicatedSectionIndex']]['code'],
+      for (var section in sections) {
+        if (section['suggestedTitle'] == 'Metadata') continue;
+
+        String? code = getCodeFromLabel(section['suggestedTitle']);
+        if (code == null) {
+          // Assign a default code if none is found
+          code = incrementalDefaultCode.toString();
+          incrementalDefaultCode++;
+        }
+
+        // If the section is marked as duplicate, skip creating a new Section object
+        if (section['duplicatedSectionIndex'] != null) {
+          // Add the code of the original section to the song structure
+          songStructure.add(
+            sections[section['duplicatedSectionIndex']]['code'],
+          );
+          // Skip to the next section
+          continue;
+        }
+
+        // Keep track of song structure
+        songStructure.add(code);
+        section['code'] = code;
+
+        // Build the Section object
+        Section parsedSection = Section(
+          versionId: -1 /* ID will be set on database insertion */,
+          contentCode: code,
+          contentColor: defaultSectionColors[code] ?? Colors.grey,
+          contentType: section['suggestedTitle'] as String,
+          contentText: _buildContent(section),
         );
-        // Skip to the next section
-        continue;
+
+        parsedSections[code] = parsedSection;
       }
-
-      // Keep track of song structure
-      songStructure.add(code);
-      section['code'] = code;
-
-      // Build the Section object
-      Section parsedSection = Section(
-        versionId: -1 /* ID will be set on database insertion */,
-        contentCode: code,
-        contentColor: defaultSectionColors[code] ?? Colors.grey,
-        contentType: section['suggestedTitle'] as String,
-        contentText: _buildContent(section),
-      );
-
-      parsedSections[code] = parsedSection;
+      if (i == 0) {
+        cipher.parsedLabelSeparatedSections = parsedSections;
+        cipher.labelSeparatedSongStructure = songStructure;
+      } else {
+        cipher.parsedDoubleLineSeparatedSections = parsedSections;
+        cipher.doubleLineSeparatedSongStructure = songStructure;
+      }
     }
-
-    cipher.parsedSections = parsedSections;
-    cipher.songStructure = songStructure;
   }
 
   String _buildContent(Map<String, dynamic> section) {

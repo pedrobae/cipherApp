@@ -30,6 +30,23 @@ class UserRepository {
     return null;
   }
 
+  /// Get a user by Firebase ID
+  Future<User?> getUserByFirebaseId(String firebaseId) async {
+    final db = await _databaseHelper.database;
+
+    final results = await db.query(
+      'user',
+      where: 'firebase_id = ?',
+      whereArgs: [firebaseId],
+    );
+
+    if (results.isNotEmpty) {
+      return User.fromJson(results.first);
+    }
+
+    return null;
+  }
+
   /// Find a user by email
   Future<User?> getUserByEmail(String email) async {
     final db = await _databaseHelper.database;

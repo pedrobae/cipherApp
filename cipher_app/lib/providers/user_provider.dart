@@ -27,12 +27,25 @@ class UserProvider extends ChangeNotifier {
 
   /// Removes all known users from a list of Firebase IDs
   /// This is used to resolve collaborator references in playlists
-  List<String> removeKnownByFirebaseId(List<String> firebaseUserIds) {
-    return firebaseUserIds
-        .where(
-          (id) => _knownCollaborators.every((user) => user.firebaseId != id),
-        )
-        .toList();
+  Future<List<String>> removeKnownByFirebaseId(
+    List<String> userFirebaseIds,
+  ) async {
+    List<String> missingIds = [];
+
+    try {
+      for (var firebaseId in userFirebaseIds) {
+        final user = await _userRepository.getUserByFirebaseId(firebaseId);
+        if (user == null) {
+          missingIds.add(firebaseId);
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error removing known users: $e');
+      }
+      throw Exception('Error removing known users: $e');
+    }
+    return missingIds;
   }
 
   /// Downloads users from Firebase if they don't exist locally
@@ -74,7 +87,7 @@ class UserProvider extends ChangeNotifier {
   /// Ensures that all users in the provided list of Firebase IDs exist locally
   /// Downloads any missing users from the cloud
   Future<void> ensureUsersExist(List<String> firebaseUserIds) async {
-    final missingIds = removeKnownByFirebaseId(firebaseUserIds);
+    final missingIds = await removeKnownByFirebaseId(firebaseUserIds);
     if (missingIds.isNotEmpty) {
       await downloadUsersFromCloud(missingIds);
     }

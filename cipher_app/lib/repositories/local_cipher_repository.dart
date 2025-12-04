@@ -228,12 +228,12 @@ class LocalCipherRepository {
   }
 
   // === SECTION OPERATIONS ===
-  Future<Map<String, Section>> getAllSections(int mapId) async {
+  Future<Map<String, Section>> getAllSections(int versionId) async {
     final db = await _databaseHelper.database;
     final results = await db.query(
       'section',
       where: 'version_id = ?',
-      whereArgs: [mapId],
+      whereArgs: [versionId],
       orderBy: 'content_code',
     );
 
@@ -241,7 +241,7 @@ class LocalCipherRepository {
     for (var row in results) {
       sections[row['content_code'] as String] = Section.fromSqLite({
         'id': row['id'] as int,
-        'version_id': mapId,
+        'version_id': versionId,
         'content_type': row['content_type'] as String,
         'content_code': row['content_code'] as String,
         'content_text': row['content_text'] as String,

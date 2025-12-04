@@ -1,5 +1,6 @@
 import 'package:cipher_app/providers/cipher_provider.dart';
 import 'package:cipher_app/providers/selection_provider.dart';
+import 'package:cipher_app/screens/cipher/cipher_viewer.dart';
 import 'package:cipher_app/widgets/ciphers/library/cloud_cipher_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -9,7 +10,6 @@ class CloudCipherList extends StatefulWidget {
   final int? playlistId;
   final VoidCallback? searchCloudCiphers;
   final VoidCallback changeTab;
-  final Function(int cipherId, int versionId) openCipher;
 
   const CloudCipherList({
     super.key,
@@ -17,7 +17,6 @@ class CloudCipherList extends StatefulWidget {
     this.playlistId,
     this.searchCloudCiphers,
     required this.changeTab,
-    required this.openCipher,
   });
 
   @override
@@ -73,10 +72,17 @@ class _CloudCipherListState extends State<CloudCipherList> {
               onDownload: () async {
                 await cipherProvider.downloadFullCipher(cipher);
                 widget.changeTab();
-                widget.openCipher(
-                  cipherProvider.currentCipher.id!,
-                  cipherProvider.currentCipher.versions.last.id!,
-                );
+                if (mounted) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => CipherViewer(
+                        cipherId: cipherProvider.currentCipher.id!,
+                        versionId:
+                            cipherProvider.currentCipher.versions.last.id!,
+                      ),
+                    ),
+                  );
+                }
               },
             ),
           );

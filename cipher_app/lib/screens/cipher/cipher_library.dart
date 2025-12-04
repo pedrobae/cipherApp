@@ -140,16 +140,6 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen>
                           changeTab: () {
                             _tabController.index = 0;
                           },
-                          openCipher: (int cipherId, int versionId) {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => CipherViewer(
-                                  cipherId: cipherId,
-                                  versionId: versionId,
-                                ),
-                              ),
-                            );
-                          },
                         ),
                       ],
                     ),

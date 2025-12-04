@@ -4,18 +4,23 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class DeleteDialog extends StatelessWidget {
+  final bool deleteCipher;
   final int? cipherId;
   final int? versionId;
 
-  const DeleteDialog({super.key, this.cipherId, this.versionId});
+  const DeleteDialog({
+    super.key,
+    this.cipherId,
+    this.versionId,
+    required this.deleteCipher,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final bool cipherDelete = versionId == null;
     final cipherProvider = context.read<CipherProvider>();
     final versionProvider = context.read<VersionProvider>();
 
-    if (cipherDelete) {
+    if (deleteCipher) {
       return AlertDialog(
         title: const Text('Excluir Cifra'),
         content: const Text(

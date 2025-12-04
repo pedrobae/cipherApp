@@ -69,7 +69,7 @@ class SectionParser {
 
       // Check for duplicate titles and mark them, except 'verse' and 'unlabeled section'
       Map<String, int> seenTitleIndex = {};
-      for (var section in cipher.doubleLineSeparatedSections) {
+      for (var section in sections) {
         String title = section['suggestedTitle'].toString().toLowerCase();
 
         if (section['suggestedTitle'] == 'Unlabeled Section' ||

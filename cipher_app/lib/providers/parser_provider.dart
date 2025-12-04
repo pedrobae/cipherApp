@@ -10,8 +10,10 @@ class ParserProvider extends ChangeNotifier {
 
   ParsingCipher? _cipher;
   ParsingCipher? get cipher => _cipher;
-  Cipher? _cipherObject;
-  Cipher? get parsedCipher => _cipherObject;
+  Cipher? _labelCipherObject;
+  Cipher? get labelParsedCipher => _labelCipherObject;
+  Cipher? _doubleNewLineCipherObject;
+  Cipher? get doubleNewLineParsedCipher => _doubleNewLineCipherObject;
 
   bool _isParsing = false;
   bool _isParsingMetadata = false;
@@ -72,7 +74,11 @@ class ParserProvider extends ChangeNotifier {
       // Parse chords
       await _parseChords();
 
-      _cipherObject = _buildCipherObject(_cipher!);
+      _labelCipherObject = _buildCipherObject(_cipher!, SeparationType.label);
+      _doubleNewLineCipherObject = _buildCipherObject(
+        _cipher!,
+        SeparationType.doubleNewLine,
+      );
 
       _isParsing = false;
       notifyListeners();
@@ -135,7 +141,7 @@ class ParserProvider extends ChangeNotifier {
     }
   }
 
-  Cipher _buildCipherObject(ParsingCipher cipher) {
+  Cipher _buildCipherObject(ParsingCipher cipher, SeparationType type) {
     return Cipher(
       id: -1, // Temporary ID, to be set when saving to DB
       title: cipher.metadata['title'] ?? 'Untitled',
@@ -144,20 +150,39 @@ class ParserProvider extends ChangeNotifier {
       tempo: cipher.metadata['tempo'] ?? '-',
       language: cipher.metadata['language'] ?? 'Unknown',
       isLocal: false, // Will be set when saving to DB
-      versions: _buildVersionObjects(cipher),
+      versions: _buildVersionObjects(cipher, type),
     );
   }
 
-  List<Version> _buildVersionObjects(ParsingCipher cipher) {
-    Version version = Version(
-      transposedKey: cipher.metadata['key'],
-      id: -1, // Temporary ID
-      cipherId: -1, // Temporary cipher ID
-      sections: cipher.parsedLabelSeparatedSections,
-      songStructure: cipher.labelSeparatedSongStructure,
-      versionName: 'imported',
-    );
+  List<Version> _buildVersionObjects(
+    ParsingCipher cipher,
+    SeparationType type,
+  ) {
+    if (type == SeparationType.doubleNewLine) {
+      Version version = Version(
+        transposedKey: cipher.metadata['key'],
+        id: -1, // Temporary ID
+        cipherId: -1, // Temporary cipher ID
+        sections: cipher.parsedDoubleLineSeparatedSections,
+        songStructure: cipher.doubleLineSeparatedSongStructure,
+        versionName: 'imported',
+      );
 
-    return [version];
+      return [version];
+    }
+    if (type == SeparationType.label) {
+      Version version = Version(
+        transposedKey: cipher.metadata['key'],
+        id: -1, // Temporary ID
+        cipherId: -1, // Temporary cipher ID
+        sections: cipher.parsedLabelSeparatedSections,
+        songStructure: cipher.labelSeparatedSongStructure,
+        versionName: 'imported',
+      );
+
+      return [version];
+    } else {
+      return [];
+    }
   }
 }

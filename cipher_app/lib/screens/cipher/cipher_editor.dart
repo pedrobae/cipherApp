@@ -1,3 +1,5 @@
+import 'package:cipher_app/models/domain/cipher/cipher.dart';
+import 'package:cipher_app/models/domain/parsing_cipher.dart';
 import 'package:cipher_app/providers/parser_provider.dart';
 import 'package:cipher_app/widgets/ciphers/editor/chord_palette.dart';
 import 'package:cipher_app/widgets/ciphers/editor/delete_dialog.dart';
@@ -14,6 +16,7 @@ class EditCipher extends StatefulWidget {
   final int? versionId; // Null for new version, populated for edit
   final bool editCipher;
   final bool importedCipher;
+  final SeparationType? separationType;
 
   const EditCipher({
     super.key,
@@ -21,6 +24,7 @@ class EditCipher extends StatefulWidget {
     this.versionId,
     this.editCipher = false,
     this.importedCipher = false,
+    this.separationType,
   });
 
   @override
@@ -74,7 +78,19 @@ class _EditCipherState extends State<EditCipher>
 
       if (widget.importedCipher) {
         // Load imported cipher data
-        final cipher = parserProvider.parsedCipher;
+        Cipher? cipher;
+        switch (widget.separationType) {
+          case SeparationType.doubleNewLine:
+            cipher = parserProvider.doubleNewLineParsedCipher;
+            break;
+          case SeparationType.label:
+            cipher = parserProvider.labelParsedCipher;
+            break;
+          default:
+            cipher = parserProvider.labelParsedCipher;
+            break;
+        }
+
         if (cipher != null) {
           cipherProvider.setCurrentCipher(cipher);
         }
@@ -182,7 +198,13 @@ class _EditCipherState extends State<EditCipher>
                 if (!_isNewCipher)
                   FloatingActionButton(
                     heroTag: 'delete',
-                    onPressed: _showDeleteDialog,
+                    onPressed: () {
+                      if (_tabController.index == 0) {
+                        _showDeleteDialog(true);
+                      } else {
+                        _showDeleteDialog(false);
+                      }
+                    },
                     backgroundColor: colorScheme.errorContainer,
                     child: Icon(
                       Icons.delete,
@@ -365,11 +387,12 @@ class _EditCipherState extends State<EditCipher>
     }
   }
 
-  void _showDeleteDialog() {
+  void _showDeleteDialog(bool deleteCipher) {
     showDialog(
       context: context,
       builder: (context) {
         return DeleteDialog(
+          deleteCipher: deleteCipher,
           cipherId: widget.cipherId,
           versionId: widget.versionId,
         );

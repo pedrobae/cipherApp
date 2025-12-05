@@ -58,7 +58,10 @@ class _CipherParsingScreenState extends State<CipherParsingScreen>
           Navigator.of(context).pop(); // Close the import screen
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => EditCipher(importedCipher: true),
+              builder: (context) => EditCipher(
+                importedCipher: true,
+                separationType: SeparationType.values[_tabController.index],
+              ),
             ),
           ); // Open the cipher editor screen
         },

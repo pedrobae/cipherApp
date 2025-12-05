@@ -32,10 +32,12 @@ class Section {
   factory Section.fromFirestore(Map<String, dynamic> map) {
     return Section(
       versionId: 0, // Will be set later
-      contentType: map['type'] as String? ?? '',
-      contentCode: map['code'] as String? ?? '',
-      contentText: map['text'] as String? ?? '',
-      contentColor: c.colorFromHex(map['color'] as String? ?? '#FFFFFFFF'),
+      contentType: map['contentType'] as String? ?? '',
+      contentCode: map['contentCode'] as String? ?? '',
+      contentText: map['contentText'] as String? ?? '',
+      contentColor: c.colorFromHex(
+        map['contentColor'] as String? ?? '#FFFFFFFF',
+      ),
     );
   }
 

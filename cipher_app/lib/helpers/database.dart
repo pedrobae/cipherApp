@@ -21,7 +21,7 @@ class DatabaseHelper {
 
       final db = await openDatabase(
         path,
-        version: 6,
+        version: 1,
         onCreate: _onCreate,
         onUpgrade: _onUpgrade, // Handle migrations
       );
@@ -226,16 +226,6 @@ class DatabaseHelper {
     await db.execute(
       'CREATE INDEX idx_user_playlist_playlist_id ON user_playlist(playlist_id)',
     );
-    await db.execute('CREATE INDEX idx_app_info_type ON app_info(type)');
-    await db.execute(
-      'CREATE INDEX idx_app_info_published_at ON app_info(published_at)',
-    );
-    await db.execute(
-      'CREATE INDEX idx_app_info_expires_at ON app_info(expires_at)',
-    );
-    await db.execute(
-      'CREATE INDEX idx_app_info_priority ON app_info(priority)',
-    );
     // For user lookups
     await db.execute('CREATE INDEX idx_user_google_id ON user(google_id)');
     await db.execute('CREATE INDEX idx_user_mail ON user(mail)');
@@ -261,23 +251,8 @@ class DatabaseHelper {
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     // Handle migrations between database versions
-    if (oldVersion < 6) {
-      // Add firebase_id columns for cloud sync
-      await db.execute('ALTER TABLE user ADD COLUMN firebase_id TEXT');
-      await db.execute('ALTER TABLE playlist ADD COLUMN firebase_id TEXT');
-      await db.execute(
-        'ALTER TABLE playlist_version ADD COLUMN firebase_content_id TEXT',
-      );
-      await db.execute('ALTER TABLE playlist_text ADD COLUMN firebase_id TEXT');
-
-      // Add indexes for firebase_id columns
-      await db.execute(
-        'CREATE UNIQUE INDEX idx_user_firebase_id ON user(firebase_id)',
-      );
-      await db.execute(
-        'CREATE UNIQUE INDEX idx_playlist_firebase_id ON playlist(firebase_id)',
-      );
-    }
+    // if (oldVersion < 2) {
+    // }
   }
 
   Future<void> close() async {

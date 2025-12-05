@@ -158,6 +158,8 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
     List<Widget> tokenWidgets = [];
     double currentX = 0;
     double currentY = _fontSize;
+    double chordOffsetX = 0;
+    double chordY = 0;
     double maxWidth =
         MediaQuery.of(context).size.width -
         80; // Account for padding (16, 16, 8 left + 8, 16, 16 right)
@@ -225,14 +227,17 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
             currentX = 0;
             currentY += tokenHeight + lineSpacing;
             // Roll back word widgets, on the new line
-            tokenWidgets.addAll(
-              _positionWordWidgets(
-                wordWidgets,
-                currentX,
-                currentY,
-                letterSpacing,
-              ),
+            final positionedWordWidgets = _positionWordWidgets(
+              wordWidgets,
+              currentX,
+              currentY,
+              letterSpacing,
+              0, // Reset chord offset on new line
+              chordY,
             );
+            tokenWidgets.addAll(positionedWordWidgets.$1);
+            chordOffsetX = positionedWordWidgets.$2;
+            chordY = positionedWordWidgets.$3;
 
             // Calculate offset to align the next token correctly (word offset is negative)
             currentX = -_calculateWordOffset(
@@ -265,14 +270,17 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
             letterSpacing,
           );
 
-          tokenWidgets.addAll(
-            _positionWordWidgets(
-              wordWidgets,
-              wordOffsetX,
-              currentY,
-              letterSpacing,
-            ),
+          final positionedWordWidgets = _positionWordWidgets(
+            wordWidgets,
+            wordOffsetX,
+            currentY,
+            letterSpacing,
+            chordOffsetX,
+            chordY,
           );
+          tokenWidgets.addAll(positionedWordWidgets.$1);
+          chordOffsetX = positionedWordWidgets.$2;
+          chordY = positionedWordWidgets.$3;
           wordWidgets.clear();
 
           // Measure the size of the space token widget
@@ -331,14 +339,17 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
             currentX,
             letterSpacing,
           );
-          tokenWidgets.addAll(
-            _positionWordWidgets(
-              wordWidgets,
-              wordOffsetX,
-              currentY,
-              letterSpacing,
-            ),
+          final positionedWordWidgets = _positionWordWidgets(
+            wordWidgets,
+            wordOffsetX,
+            currentY,
+            letterSpacing,
+            0,
+            chordY,
           );
+          tokenWidgets.addAll(positionedWordWidgets.$1);
+          chordOffsetX = positionedWordWidgets.$2;
+          chordY = positionedWordWidgets.$3;
           wordWidgets.clear();
 
           // Add space drag target that fills the rest of the line
@@ -386,9 +397,18 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
       letterSpacing,
     );
 
-    tokenWidgets.addAll(
-      _positionWordWidgets(wordWidgets, wordOffsetX, currentY, letterSpacing),
+    final positionedWordWidgets = _positionWordWidgets(
+      wordWidgets,
+      wordOffsetX,
+      currentY,
+      letterSpacing,
+      chordOffsetX,
+      chordY,
     );
+    tokenWidgets.addAll(positionedWordWidgets.$1);
+    chordOffsetX = positionedWordWidgets.$2;
+    chordY = positionedWordWidgets.$3;
+
     wordWidgets.clear();
     return tokenWidgets;
   }
@@ -540,23 +560,37 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
     );
   }
 
-  List<Widget> _positionWordWidgets(
+  /// Positions the word widgets at the given currentX and currentY
+  /// Returns the list of positioned widgets along with last chord coords
+  (List<Widget>, double, double) _positionWordWidgets(
     List<_WidgetWithSize> wordWidgets,
     double currentX,
     double currentY,
     double letterSpacing,
+    double previousChordXOffset,
+    double previousChordY,
   ) {
     List<Widget> positionedWidgets = [];
     double xOffset = currentX;
+    double chordX = previousChordXOffset;
+    double chordY = currentY - _fontSize;
 
     for (var widgetWithSize in wordWidgets) {
       // Position chords above lyrics, lyrics at baseline
-      final yPos = widgetWithSize.type == TokenType.chord
-          ? currentY - _fontSize
-          : currentY;
+      double xPos = xOffset;
+      double yPos = currentY;
+      if (widgetWithSize.type == TokenType.chord) {
+        yPos = chordY;
+
+        // Check if there is a preceding chord to offset
+        if (xPos < chordX && previousChordY == chordY) {
+          xPos = chordX;
+        }
+        chordX = xPos + widgetWithSize.width;
+      }
 
       positionedWidgets.add(
-        Positioned(left: xOffset, top: yPos, child: widgetWithSize.widget),
+        Positioned(left: xPos, top: yPos, child: widgetWithSize.widget),
       );
 
       // Update position based on pre-calculated width
@@ -565,7 +599,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
                 0 // Chords do not take horizontal space
           : xOffset += widgetWithSize.width + letterSpacing;
     }
-    return positionedWidgets;
+    return (positionedWidgets, chordX, chordY);
   }
 
   double _calculateWordOffset(

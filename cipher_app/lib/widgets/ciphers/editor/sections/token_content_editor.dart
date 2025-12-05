@@ -20,6 +20,13 @@ class _WidgetWithSize {
   });
 }
 
+class _ContentTokenized {
+  final List<Widget> tokens;
+  final double contentHeight;
+
+  _ContentTokenized(this.tokens, this.contentHeight);
+}
+
 class TokenContentEditor extends StatefulWidget {
   final Section section;
   final Function(String) onContentChanged;
@@ -122,25 +129,25 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
                 ),
               ],
             ),
-            Container(
-              padding: const EdgeInsets.all(8),
-              width: double.infinity,
-              height: 200,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade300),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Builder(
-                builder: (context) {
-                  final tokenWidgets = _buildTokenWidgets(
-                    context,
-                    _tokens,
-                    lineSpacing: 8,
-                    letterSpacing: 0,
-                  );
-                  return Stack(children: [SizedBox(), ...tokenWidgets]);
-                },
-              ),
+            Builder(
+              builder: (context) {
+                final content = _buildTokenWidgets(
+                  context,
+                  _tokens,
+                  lineSpacing: 8,
+                  letterSpacing: 0,
+                );
+                return Container(
+                  padding: const EdgeInsets.all(8),
+                  width: double.infinity,
+                  height: content.contentHeight,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Stack(children: [SizedBox(), ...content.tokens]),
+                );
+              },
             ),
           ],
         ),
@@ -149,7 +156,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
   }
 
   /// Builds the list of positioned widgets, with token widgets as draggable and drag targets
-  List<Widget> _buildTokenWidgets(
+  _ContentTokenized _buildTokenWidgets(
     BuildContext context,
     List<ContentToken> tokens, {
     double lineSpacing = 8,
@@ -410,7 +417,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
     chordY = positionedWordWidgets.$3;
 
     wordWidgets.clear();
-    return tokenWidgets;
+    return _ContentTokenized(tokenWidgets, currentY + _fontSize + lineSpacing);
   }
 
   Widget _buildDraggableChord(ContentToken token, int position) {

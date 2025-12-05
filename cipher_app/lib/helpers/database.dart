@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:cipher_app/helpers/seed_data/info.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -20,26 +19,12 @@ class DatabaseHelper {
     try {
       String path = join(await getDatabasesPath(), 'cipher_app.db');
 
-      bool isNewDatabase = !await databaseFactory.databaseExists(path);
-
       final db = await openDatabase(
         path,
         version: 6,
-        onCreate: _onCreate, // This will seed the database
+        onCreate: _onCreate,
         onUpgrade: _onUpgrade, // Handle migrations
       );
-
-      // Only seed if database existed but is empty (edge case)
-      if (!isNewDatabase) {
-        final infoCount = await db.rawQuery(
-          'SELECT COUNT(*) as count FROM app_info',
-        );
-        final count = infoCount.first['count'] as int;
-
-        if (count == 0) {
-          await seedInfoDatabase(db);
-        }
-      }
 
       return db;
     } catch (e) {
@@ -272,9 +257,6 @@ class DatabaseHelper {
     await db.execute(
       'CREATE INDEX idx_section_content_type ON section(content_type)',
     );
-
-    // Seed the database with initial data
-    await seedInfoDatabase(db);
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {

@@ -34,8 +34,10 @@ class ParsingCipher {
       lines.add({
         'text': line.text,
         'fontSize': line.fontSize,
-        'isBold': line.fontStyle.first == PdfFontStyle.bold,
+        'fontStyle': line.fontStyle,
+        'bounds': line.bounds,
         'lineNumber': lineNumber++,
+        'words': line.wordCollection,
       });
     }
 

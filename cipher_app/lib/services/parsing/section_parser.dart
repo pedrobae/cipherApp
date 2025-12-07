@@ -1,5 +1,7 @@
 import 'package:cipher_app/models/domain/parsing_cipher.dart';
+import 'package:cipher_app/providers/import_provider.dart';
 import 'package:flutter/foundation.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 enum SeparatorType { doubleNewLine, bracket, parenthesis, hyphen }
 
@@ -20,6 +22,19 @@ class SectionParser {
 
     // Separate raw text by double new lines
     _separateByDoubleNewLines(cipher);
+
+    // USE PDF FORMATTING DATA TO PARSE SECTIONS
+    // lines.add({
+    //     'text': line.text,
+    //     'fontSize': line.fontSize,
+    //     'fontStyle': line.fontStyle,
+    //     'bounds': line.bounds,
+    //     'lineNumber': lineNumber++,
+    //     'words': words,
+    //   });
+    if (cipher.importType == ImportType.pdf) {
+      _separateByPdfFormatting(cipher);
+    }
   }
 
   void _separateByDoubleNewLines(ParsingCipher cipher) {
@@ -41,69 +56,6 @@ class SectionParser {
       };
 
       cipher.doubleLineSeparatedSections.add(section);
-    }
-  }
-
-  void _checkDuplicates(ParsingCipher cipher) {
-    // Check for duplicate content and mark them
-    for (int i = 0; i < SeparationType.values.length; i++) {
-      List<Map<String, dynamic>> sections;
-      if (i == 0) {
-        sections = cipher.labelSeparatedSections;
-      } else if (i == 1) {
-        sections = cipher.doubleLineSeparatedSections;
-      } else {
-        sections = [];
-      }
-      Map<String, int> seenContentIndex = {};
-      for (var section in sections) {
-        String content = section['content'];
-
-        if (seenContentIndex.containsKey(content)) {
-          section['duplicatedSectionIndex'] =
-              seenContentIndex[content]; // Mark as duplicate, with a reference
-        } else {
-          seenContentIndex[content] = section['index'];
-        }
-      }
-
-      // Check for duplicate titles and mark them, except 'verse' and 'unlabeled section'
-      Map<String, int> seenTitleIndex = {};
-      for (var section in sections) {
-        String title = section['suggestedTitle'].toString().toLowerCase();
-
-        if (section['suggestedTitle'] == 'Unlabeled Section' ||
-            section['suggestedTitle'] == 'Verse') {
-          continue;
-        }
-
-        if (seenTitleIndex.containsKey(title)) {
-          section['duplicatedSectionIndex'] =
-              seenTitleIndex[title]; // Mark as duplicate, with a reference
-        } else {
-          seenTitleIndex[title] = section['index'];
-        }
-      }
-    }
-  }
-
-  void _debugPrint(ParsingCipher cipher) {
-    if (kDebugMode) {
-      print('--- Parsed Double Line Separated Sections ---');
-      print('\tIndex\tisDuplicate\tNumLines\tTitle');
-      for (var section in cipher.doubleLineSeparatedSections) {
-        print(
-          '\t${section['index']}\t${section['isDuplicate']}\t\t${section['numberOfLines']}\t"${section['suggestedTitle']}"',
-        );
-      }
-      print('----------------------------------------------');
-      print('--- Parsed Label Separated Sections ---');
-      print('\tIndex\tisDuplicate\tNumLines\tTitle');
-      for (var section in cipher.labelSeparatedSections) {
-        print(
-          '\t${section['index']}\t${section['isDuplicate']}\t\t${section['numberOfLines']}\t"${section['suggestedTitle']}"',
-        );
-      }
     }
   }
 
@@ -157,6 +109,24 @@ class SectionParser {
         ),
         'isDuplicate': false,
       });
+    }
+  }
+
+  void _separateByPdfFormatting(ParsingCipher cipher) {
+    /// IDENTIFY if the PDF is simple or complex formatted
+    /// Simple - all lines have similar formatting (font size, style, alignment)
+    ///        - newLine separators
+    ///        - space characters positioning chords
+    ///
+    /// Complex - different font sizes, styles, alignments
+    ///         - positioning of words/lines differ significantly
+    ///         - USE FORMATTING DATA to identify sections
+    ///         - Columns, indentations, etc.
+    // USE the WORDS' COORDINATES to check if there are 'multi-line' lines
+
+    for (var line in cipher.lines) {
+      final words = line['words'] as List<TextWord>;
+      for (var word in words) {}
     }
   }
 
@@ -243,6 +213,69 @@ class SectionParser {
     };
 
     return mirroredPairs[char1] == char2;
+  }
+
+  void _checkDuplicates(ParsingCipher cipher) {
+    // Check for duplicate content and mark them
+    for (int i = 0; i < SeparationType.values.length; i++) {
+      List<Map<String, dynamic>> sections;
+      if (i == 0) {
+        sections = cipher.labelSeparatedSections;
+      } else if (i == 1) {
+        sections = cipher.doubleLineSeparatedSections;
+      } else {
+        sections = [];
+      }
+      Map<String, int> seenContentIndex = {};
+      for (var section in sections) {
+        String content = section['content'];
+
+        if (seenContentIndex.containsKey(content)) {
+          section['duplicatedSectionIndex'] =
+              seenContentIndex[content]; // Mark as duplicate, with a reference
+        } else {
+          seenContentIndex[content] = section['index'];
+        }
+      }
+
+      // Check for duplicate titles and mark them, except 'verse' and 'unlabeled section'
+      Map<String, int> seenTitleIndex = {};
+      for (var section in sections) {
+        String title = section['suggestedTitle'].toString().toLowerCase();
+
+        if (section['suggestedTitle'] == 'Unlabeled Section' ||
+            section['suggestedTitle'] == 'Verse') {
+          continue;
+        }
+
+        if (seenTitleIndex.containsKey(title)) {
+          section['duplicatedSectionIndex'] =
+              seenTitleIndex[title]; // Mark as duplicate, with a reference
+        } else {
+          seenTitleIndex[title] = section['index'];
+        }
+      }
+    }
+  }
+
+  void _debugPrint(ParsingCipher cipher) {
+    if (kDebugMode) {
+      print('--- Parsed Double Line Separated Sections ---');
+      print('\tIndex\tisDuplicate\tNumLines\tTitle');
+      for (var section in cipher.doubleLineSeparatedSections) {
+        print(
+          '\t${section['index']}\t${section['isDuplicate']}\t\t${section['numberOfLines']}\t"${section['suggestedTitle']}"',
+        );
+      }
+      print('----------------------------------------------');
+      print('--- Parsed Label Separated Sections ---');
+      print('\tIndex\tisDuplicate\tNumLines\tTitle');
+      for (var section in cipher.labelSeparatedSections) {
+        print(
+          '\t${section['index']}\t${section['isDuplicate']}\t\t${section['numberOfLines']}\t"${section['suggestedTitle']}"',
+        );
+      }
+    }
   }
 }
 

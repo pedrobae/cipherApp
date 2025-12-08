@@ -130,6 +130,20 @@ class SectionParser {
     }
   }
 
+  bool _isMultiLineLine(List<TextWord> words) {
+    // Check if the line contains words that are vertically misaligned
+    if (words.isEmpty) return false;
+
+    double firstWordY = words[0].bounds.top;
+    for (var word in words) {
+      if ((word.bounds.top - firstWordY).abs() > 5.0) {
+        // If the vertical difference is greater than a threshold (e.g., 5.0)
+        return true;
+      }
+    }
+    return false;
+  }
+
   /// Validates if a found label is indeed a section label,
   /// returns true if valid, false otherwise, {'isValid': bool, ...}
   /// and additional info for extracting the section {... , 'labelStart': int, 'labelEnd': int}, if valid

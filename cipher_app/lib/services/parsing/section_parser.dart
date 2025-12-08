@@ -113,35 +113,28 @@ class SectionParser {
   }
 
   void _separateByPdfFormatting(ParsingCipher cipher) {
-    /// IDENTIFY if the PDF is simple or complex formatted
-    /// Simple - all lines have similar formatting (font size, style, alignment)
-    ///        - newLine separators
-    ///        - space characters positioning chords
-    ///
-    /// Complex - different font sizes, styles, alignments
-    ///         - positioning of words/lines differ significantly
-    ///         - USE FORMATTING DATA to identify sections
-    ///         - Columns, indentations, etc.
-    // USE the WORDS' COORDINATES to check if there are 'multi-line' lines
+    /// IDENTIFY anomalies
+    /// - Single char words (lines with many single character words)
+    /// - Words with negative width
+    /// - Empty lines
+    /// - Multi-line lines (lines with words that have different vertical positions)
+    /// - Excessive spaces between words in a line
 
+    /// PRE-PROCESS ANOMALIES
+    /// - Split multi-line lines into single lines
+    /// - Remove empty lines - correctly offset the following lines
+    /// - Remove excessive spaces between words in a line - correctly offset the following words
+    /// - Handle single char words - merge with adjacent words if possible
+    /// - Handle words with negative width - remove or correct
+
+    /// IDENTIFY different patterns, e.g.,
+    /// - Chords vs Lyrics (alternating lines with different font styles/sizes)
+    /// - Section labels (lines with different formatting, e.g., bold, larger font size)
+    /// -
     for (var line in cipher.lines) {
       final words = line['words'] as List<TextWord>;
       for (var word in words) {}
     }
-  }
-
-  bool _isMultiLineLine(List<TextWord> words) {
-    // Check if the line contains words that are vertically misaligned
-    if (words.isEmpty) return false;
-
-    double firstWordY = words[0].bounds.top;
-    for (var word in words) {
-      if ((word.bounds.top - firstWordY).abs() > 5.0) {
-        // If the vertical difference is greater than a threshold (e.g., 5.0)
-        return true;
-      }
-    }
-    return false;
   }
 
   /// Validates if a found label is indeed a section label,

@@ -113,20 +113,6 @@ class SectionParser {
   }
 
   void _separateByPdfFormatting(ParsingCipher cipher) {
-    /// IDENTIFY anomalies
-    /// - Single char words (lines with many single character words)
-    /// - Words with negative width
-    /// - Empty lines
-    /// - Multi-line lines (lines with words that have different vertical positions)
-    /// - Excessive spaces between words in a line
-
-    /// PRE-PROCESS ANOMALIES
-    /// - Split multi-line lines into single lines
-    /// - Remove empty lines - correctly offset the following lines
-    /// - Remove excessive spaces between words in a line - correctly offset the following words
-    /// - Handle single char words - merge with adjacent words if possible
-    /// - Handle words with negative width - remove or correct
-
     /// IDENTIFY different patterns, e.g.,
     /// - Chords vs Lyrics (alternating lines with different font styles/sizes)
     /// - Section labels (lines with different formatting, e.g., bold, larger font size)

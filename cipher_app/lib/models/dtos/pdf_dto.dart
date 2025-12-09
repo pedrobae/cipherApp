@@ -41,7 +41,7 @@ class DocumentData {
 
       List<LineData> lines = [];
       for (var entry in lineGlyphMap.entries) {
-        if (entry.value.isNotEmpty) {
+        if (entry.value.any((g) => g.text.trim().isNotEmpty)) {
           lines.add(LineData.fromGlyphArray(entry.key, entry.value));
         }
       }

@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:cipher_app/models/dtos/pdf_dto.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
+import 'package:cipher_app/helpers/pdf_glyph_extractor.dart';
 
 void main() {
   runApp(const PdfAnalysisApp());
@@ -82,35 +84,34 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
     try {
       final bytes = await File(path).readAsBytes();
       final document = PdfDocument(inputBytes: bytes);
+      final extractor = PdfTextExtractor(document);
 
-      // Extract text from all pages
-      final textExtractor = PdfTextExtractor(document);
-      List<TextGlyph> glyphs = [];
+      // Extract glyphs per page directly from renderer glyph list
+      final Map<int, List<TextGlyph>> pageGlyphs = {};
+      final Map<int, List<TextLine>> textLines = {};
+
       for (int i = 0; i < document.pages.count; i++) {
-        final lines = textExtractor.extractTextLines(
+        pageGlyphs[i] = PdfGlyphExtractorHelper.extractPageGlyphs(document, i);
+        textLines[i] = extractor.extractTextLines(
           startPageIndex: i,
           endPageIndex: i,
         );
-
-        for (var line in lines) {
-          for (var word in line.wordCollection) {
-            glyphs.addAll(word.glyphs);
-          }
-        }
       }
 
       // Sort glyphs by their vertical position (top)
-      glyphs.sort((a, b) {
-        return a.bounds.top.compareTo(b.bounds.top);
-      });
+      for (var pageGlyphList in pageGlyphs.values) {
+        pageGlyphList.sort((a, b) {
+          return a.bounds.top.compareTo(b.bounds.top);
+        });
+      }
 
-      final DocumentData documentData = DocumentData.fromGlyphArray(glyphs);
+      final DocumentData documentData = DocumentData.fromGlyphMap(pageGlyphs);
 
       if (mounted) {
         setState(() {
           _documents.add(document);
           _documentNames.add(name);
-          _documentData[name] = documentData.lines;
+          _documentData[name] = documentData.pageLines.values.first;
           _selectedDocIndex = _documents.length - 1;
         });
       }
@@ -261,14 +262,6 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
         _buildSummaryCard(data, theme),
         const SizedBox(height: 16),
 
-        // Font size distribution chart
-        _buildChartCard(
-          'Distribuição de Tamanho de Fonte',
-          _buildFontSizeDistributionChart(data, theme),
-          theme,
-        ),
-        const SizedBox(height: 16),
-
         // Word count per line chart
         _buildChartCard(
           'Palavras por Linha',
@@ -279,7 +272,7 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
 
         // Font Size chart
         _buildChartCard(
-          'Tamanho da Fonte das Linha',
+          'Tamanho da Fonte por Linha',
           _buildFontSizeChart(data, theme),
           theme,
         ),
@@ -287,7 +280,7 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
 
         // Line height chart
         _buildChartCard(
-          'Altura das Linhas',
+          'Altura por Linha',
           _buildLineHeightChart(data, theme),
           theme,
         ),
@@ -343,9 +336,10 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
     final totalLines = data.length;
     final totalWords = data.fold<int>(0, (sum, line) => sum + line.wordCount);
     final avgWordsPerLine = totalLines > 0 ? totalWords / totalLines : 0.0;
-    final fontSizes = data.map((l) => l.fontSize).toSet().toList()..sort();
+    final fontSizes = data.map((l) => l.fontSize ?? 0.0).toSet().toList()
+      ..sort();
     final avgFontSize = totalLines > 0
-        ? data.fold<double>(0, (sum, line) => sum + (line.fontSize)) /
+        ? data.fold<double>(0, (sum, line) => sum + (line.fontSize ?? 0.0)) /
               totalLines
         : 0.0;
     final emptyLines = data.where((l) => l.text.trim().isEmpty).length;
@@ -381,7 +375,7 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
             _statRow('Tamanho de Fonte Médio:', avgFontSize.toStringAsFixed(2)),
             _statRow(
               'Tamanhos de Fonte:',
-              fontSizes.map((f) => f.toStringAsFixed(1)).join(', '),
+              fontSizes.map((f) => (f).toStringAsFixed(1)).join(', '),
             ),
           ],
         ),
@@ -422,81 +416,6 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
     );
   }
 
-  Widget _buildFontSizeDistributionChart(List<LineData> data, ThemeData theme) {
-    if (data.isEmpty) {
-      return const Center(child: Text('Dados insuficientes'));
-    }
-
-    final fontSizeFrequency = <double, int>{};
-    for (var line in data) {
-      fontSizeFrequency[line.fontSize] =
-          (fontSizeFrequency[line.fontSize] ?? 0) + 1;
-    }
-
-    final sortedEntries = fontSizeFrequency.entries.toList()
-      ..sort((a, b) => a.key.compareTo(b.key));
-
-    if (sortedEntries.isEmpty) {
-      return const Center(child: Text('Dados insuficientes'));
-    }
-
-    // Find max value safely
-    int maxValue = 0;
-    for (var entry in sortedEntries) {
-      if (entry.value > maxValue) {
-        maxValue = entry.value;
-      }
-    }
-
-    return BarChart(
-      BarChartData(
-        alignment: BarChartAlignment.spaceAround,
-        maxY: maxValue.toDouble() * 1.2,
-        barGroups: sortedEntries.asMap().entries.map((mapEntry) {
-          final fontSizeEntry = mapEntry.value;
-          return BarChartGroupData(
-            x: mapEntry.key,
-            barRods: [
-              BarChartRodData(
-                toY: fontSizeEntry.value.toDouble(),
-                color: theme.colorScheme.primary,
-                width: 20,
-              ),
-            ],
-          );
-        }).toList(),
-        titlesData: FlTitlesData(
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(showTitles: true, reservedSize: 40),
-          ),
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              getTitlesWidget: (value, meta) {
-                if (value.toInt() >= 0 &&
-                    value.toInt() < sortedEntries.length) {
-                  return Text(
-                    sortedEntries[value.toInt()].key.toStringAsFixed(1),
-                    style: const TextStyle(fontSize: 10),
-                  );
-                }
-                return const Text('');
-              },
-            ),
-          ),
-          topTitles: const AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-          rightTitles: const AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-        ),
-        borderData: FlBorderData(show: false),
-        gridData: const FlGridData(show: true),
-      ),
-    );
-  }
-
   Widget _buildWordCountChart(List<LineData> data, ThemeData theme) {
     if (data.isEmpty) {
       return const Center(child: Text('Dados insuficientes'));
@@ -505,7 +424,7 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
     final spots = data
         .asMap()
         .entries
-        .map((e) => FlSpot(e.key.toDouble(), e.value.wordCount.toDouble()))
+        .map((e) => FlSpot(e.key.toDouble() + 1, e.value.wordCount.toDouble()))
         .toList();
 
     return LineChart(
@@ -548,7 +467,12 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
     final spots = data
         .asMap()
         .entries
-        .map((e) => FlSpot(e.key.toDouble(), e.value.fontSize.toDouble()))
+        .map(
+          (e) => FlSpot(
+            e.key.toDouble() + 1,
+            (e.value.fontSize ?? 0.0).toDouble(),
+          ),
+        )
         .toList();
 
     return LineChart(
@@ -591,7 +515,7 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
     final spots = data
         .asMap()
         .entries
-        .map((e) => FlSpot(e.key.toDouble(), e.value.bounds.height))
+        .map((e) => FlSpot(e.key.toDouble() + 1, e.value.bounds.height))
         .toList();
 
     return LineChart(
@@ -634,7 +558,7 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
     final spots = data
         .asMap()
         .entries
-        .map((e) => FlSpot(e.key.toDouble(), e.value.bounds.top))
+        .map((e) => FlSpot(e.key.toDouble() + 1, e.value.bounds.top))
         .toList();
 
     return LineChart(
@@ -731,7 +655,7 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
 
     final spots = data.asMap().entries.map((entry) {
       final styleName = entry.value.fontStyle;
-      final value = styleToValue[styleName.lastOrNull] ?? 0.5;
+      final value = styleToValue[styleName?.lastOrNull] ?? 0.5;
       return FlSpot(entry.key.toDouble() + 1, value);
     }).toList();
 
@@ -756,7 +680,7 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
                     strokeColor: Colors.white,
                   );
                 }
-                final style = data[dataIndex].fontStyle.lastOrNull;
+                final style = data[dataIndex].fontStyle?.lastOrNull;
                 Color dotColor = Colors.grey;
                 if (style == PdfFontStyle.bold) {
                   dotColor = Colors.red;
@@ -872,7 +796,7 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Texto: ${line.text}', style: const TextStyle(fontSize: 11)),
-              Text('Tamanho Fonte: ${line.fontSize.toStringAsFixed(2)}'),
+              Text('Tamanho Fonte: ${line.fontSize?.toStringAsFixed(2)}'),
               Text('Estilo: ${line.fontStyle.toString().split('.').last}'),
               Text('Palavras: ${line.wordCount}'),
               Text(
@@ -978,7 +902,7 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
                             ),
                             DataCell(
                               Text(
-                                word.fontSize.toStringAsFixed(1),
+                                word.fontSize?.toStringAsFixed(1) ?? '',
                                 style: const TextStyle(fontSize: 10),
                               ),
                             ),
@@ -1024,233 +948,4 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
       ],
     );
   }
-}
-
-class DocumentData {
-  final List<LineData> lines;
-
-  DocumentData({required this.lines});
-
-  factory DocumentData.fromGlyphArray(List<TextGlyph> glyphs) {
-    int currentLineIndex = -1;
-    double lastY = -1.0;
-    double tolerance = 2.0; // Tolerance for y-position differences
-    Map<int, List<TextGlyph>> lineGlyphMap = {};
-    for (var glyph in glyphs) {
-      // Check if glyph starts a new line
-      if ((lastY - glyph.bounds.top).abs() > tolerance || lastY == -1.0) {
-        currentLineIndex++;
-        lastY = glyph.bounds.top;
-      }
-
-      // Add glyph to the current line, on the correct position (x-axis)
-      if (lineGlyphMap[currentLineIndex] == null) {
-        lineGlyphMap[currentLineIndex] = [glyph];
-      } else {
-        final lineGlyph = lineGlyphMap[currentLineIndex]!;
-        bool inserted = false;
-        for (int i = 0; i < lineGlyph.length; i++) {
-          if (glyph.bounds.left < lineGlyph[i].bounds.left) {
-            inserted = true;
-            lineGlyph.insert(i, glyph);
-            break;
-          }
-        }
-        if (!inserted) {
-          lineGlyph.add(glyph);
-        }
-      }
-    }
-
-    List<LineData> lines = [];
-    for (var entry in lineGlyphMap.entries) {
-      lines.add(LineData.fromGlyphArray(entry.key, entry.value));
-    }
-
-    return DocumentData(lines: lines);
-  }
-}
-
-class LineData {
-  final String text;
-  final double? _fontSize;
-  final Rect bounds;
-  final List<PdfFontStyle>? _fontStyle;
-  final int lineIndex;
-  final List<WordData> wordList;
-
-  LineData({
-    required this.text,
-    double? fontSize,
-    required this.bounds,
-    List<PdfFontStyle>? fontStyle,
-    required this.lineIndex,
-    required this.wordList,
-  }) : _fontStyle = fontStyle,
-       _fontSize = fontSize;
-
-  double get fontSize => _fontSize ?? _getFontSizeFromWords();
-  List<PdfFontStyle> get fontStyle => _fontStyle ?? _getFontStyleFromWords();
-  int get wordCount => wordList.length;
-
-  factory LineData.fromGlyphArray(int lineIndex, List<TextGlyph> glyphs) {
-    Map<int, List<TextGlyph>> wordGlyphMap = {};
-    int currentWordIndex = -1;
-    double lastRightBound = 0.0;
-    double spaceThreshold = 2.0; // Threshold to detect spaces between words
-    for (var glyph in glyphs) {
-      // Check if glyph is a space
-      if (glyph.text.trim().isEmpty) {
-        lastRightBound = glyph.bounds.right;
-        continue; // Trim spaces
-      }
-      if (glyph.bounds.left - lastRightBound > spaceThreshold ||
-          currentWordIndex == -1) {
-        currentWordIndex++;
-      }
-      // Add glyph to the current word
-      if (wordGlyphMap[currentWordIndex] == null) {
-        wordGlyphMap[currentWordIndex] = [glyph];
-      } else {
-        wordGlyphMap[currentWordIndex]!.add(glyph);
-      }
-      lastRightBound = glyph.bounds.right;
-    }
-
-    // Create WordData list
-    List<WordData> words = [];
-    for (var entry in wordGlyphMap.entries) {
-      words.add(WordData.fromGlyphArray(entry.key, entry.value));
-    }
-
-    return LineData(
-      lineIndex: lineIndex,
-      text: glyphs.map((g) => g.text).join(),
-      bounds: _calculateBounds(glyphs),
-      wordList: words,
-    );
-  }
-
-  double _getFontSizeFromWords() {
-    if (wordList.isEmpty) return 0.0;
-    double totalSize = 0.0;
-    for (var word in wordList) {
-      totalSize += word.fontSize;
-    }
-    return totalSize / wordList.length;
-  }
-
-  List<PdfFontStyle> _getFontStyleFromWords() {
-    final styles = <PdfFontStyle>{};
-    for (var word in wordList) {
-      styles.addAll(word.fontStyle);
-    }
-    return styles.toList();
-  }
-}
-
-class WordData {
-  final String text;
-  final double? _fontSize;
-  final Rect bounds;
-  final List<PdfFontStyle>? _fontStyle;
-  final int wordIndex;
-  final List<GlyphData> glyphList;
-
-  WordData({
-    required this.text,
-    double? fontSize,
-    required this.bounds,
-    List<PdfFontStyle>? fontStyle,
-    required this.glyphList,
-    required this.wordIndex,
-  }) : _fontStyle = fontStyle,
-       _fontSize = fontSize;
-
-  double get fontSize => _fontSize ?? _getFontSizeFromGlyphs();
-
-  List<PdfFontStyle> get fontStyle => _fontStyle ?? _getFontStyleFromGlyphs();
-
-  factory WordData.fromGlyphArray(int wordIndex, List<TextGlyph> glyphs) {
-    return WordData(
-      wordIndex: wordIndex,
-      text: glyphs.map((g) => g.text).join(),
-      bounds: _calculateBounds(glyphs),
-      glyphList: glyphs
-          .asMap()
-          .entries
-          .map((e) => GlyphData.fromGlyph(e.key, e.value))
-          .toList(),
-    );
-  }
-
-  double _getFontSizeFromGlyphs() {
-    if (glyphList.isEmpty) return 0.0;
-    double totalSize = 0.0;
-    for (var glyph in glyphList) {
-      totalSize += glyph.fontSize;
-    }
-    return totalSize / glyphList.length;
-  }
-
-  List<PdfFontStyle> _getFontStyleFromGlyphs() {
-    final styles = <PdfFontStyle>{};
-    for (var glyph in glyphList) {
-      styles.addAll(glyph.fontStyle);
-    }
-    return styles.toList();
-  }
-}
-
-class GlyphData {
-  final String text;
-  final double fontSize;
-  final Rect bounds;
-  final List<PdfFontStyle> fontStyle;
-  final int glyphIndex;
-
-  GlyphData({
-    required this.text,
-    required this.fontSize,
-    required this.bounds,
-    required this.fontStyle,
-    required this.glyphIndex,
-  });
-
-  factory GlyphData.fromGlyph(int glyphIndex, TextGlyph glyph) {
-    return GlyphData(
-      glyphIndex: glyphIndex,
-      text: glyph.text,
-      fontSize: glyph.fontSize,
-      bounds: glyph.bounds,
-      fontStyle: glyph.fontStyle,
-    );
-  }
-}
-
-Rect _calculateBounds(List<TextGlyph> glyphs) {
-  if (glyphs.isEmpty) {
-    return Rect.zero;
-  }
-  double left = glyphs.first.bounds.left;
-  double top = glyphs.first.bounds.top;
-  double right = glyphs.first.bounds.right;
-  double bottom = glyphs.first.bounds.bottom;
-
-  for (var glyph in glyphs) {
-    if (glyph.bounds.left < left) {
-      left = glyph.bounds.left;
-    }
-    if (glyph.bounds.top < top) {
-      top = glyph.bounds.top;
-    }
-    if (glyph.bounds.right > right) {
-      right = glyph.bounds.right;
-    }
-    if (glyph.bounds.bottom > bottom) {
-      bottom = glyph.bounds.bottom;
-    }
-  }
-
-  return Rect.fromLTRB(left, top, right, bottom);
 }

@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
+const double newLineThreshold = 2.0; // Tolerance for y-position differences
+const double spaceThreshold = 1.0; // Threshold to detect spaces between words
+
 class DocumentData {
   final Map<int, List<LineData>> pageLines;
 
   DocumentData({required this.pageLines});
 
   factory DocumentData.fromGlyphMap(Map<int, List<TextGlyph>> pageGlyphs) {
-    const double tolerance = 2.0; // Tolerance for y-position differences
     Map<int, List<LineData>> pages = {};
     for (var pageGlyph in pageGlyphs.entries) {
       int currentLineIndex = -1;
@@ -15,7 +17,8 @@ class DocumentData {
       Map<int, List<TextGlyph>> lineGlyphMap = {};
       for (var glyph in pageGlyph.value) {
         // Check if glyph starts a new line
-        if ((lastY - glyph.bounds.top).abs() > tolerance || lastY == -1.0) {
+        if ((lastY - glyph.bounds.top).abs() > newLineThreshold ||
+            lastY == -1.0) {
           currentLineIndex++;
           lastY = glyph.bounds.top;
         }
@@ -75,14 +78,12 @@ class LineData {
     Map<int, List<TextGlyph>> wordGlyphMap = {};
     int currentWordIndex = -1;
     double lastRightBound = 0.0;
-    double spaceThreshold = 2.0; // Threshold to detect spaces between words
     for (var glyph in glyphs) {
       // Check if glyph is a space
       if (glyph.text.trim().isEmpty) {
-        lastRightBound = glyph.bounds.right;
         continue; // Trim spaces
       }
-      if (glyph.bounds.left - lastRightBound > spaceThreshold ||
+      if ((glyph.bounds.left - lastRightBound) > spaceThreshold ||
           currentWordIndex == -1) {
         currentWordIndex++;
       }

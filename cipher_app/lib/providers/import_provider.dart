@@ -58,11 +58,13 @@ class ImportProvider extends ChangeNotifier {
           );
           break;
         case ImportType.pdf:
-          final pdfLines = await _pdfService.extractTextWithFormatting(
+          final pdfDocument = await _pdfService.extractTextWithFormatting(
             selectedFile!,
           );
 
-          _importedCipher = ParsingCipher.fromPdfLines(pdfLines);
+          _importedCipher = ParsingCipher.fromPdfLines(
+            pdfDocument.pageLines[0]!,
+          );
           break;
         case ImportType.image:
           // TODO: Implement image import logic

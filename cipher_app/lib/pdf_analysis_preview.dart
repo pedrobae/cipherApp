@@ -84,18 +84,12 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
     try {
       final bytes = await File(path).readAsBytes();
       final document = PdfDocument(inputBytes: bytes);
-      final extractor = PdfTextExtractor(document);
 
       // Extract glyphs per page directly from renderer glyph list
       final Map<int, List<TextGlyph>> pageGlyphs = {};
-      final Map<int, List<TextLine>> textLines = {};
 
       for (int i = 0; i < document.pages.count; i++) {
         pageGlyphs[i] = PdfGlyphExtractorHelper.extractPageGlyphs(document, i);
-        textLines[i] = extractor.extractTextLines(
-          startPageIndex: i,
-          endPageIndex: i,
-        );
       }
 
       // Sort glyphs by their vertical position (top)

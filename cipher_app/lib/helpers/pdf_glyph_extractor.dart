@@ -40,9 +40,9 @@ class PdfGlyphExtractorHelper {
     // Map renderer glyphs to TextGlyph for consistency with the rest of the codebase.
     return renderer.imageRenderGlyphList.map((g) {
       return TextGlyphHelper.initialize(
-        g.name,
+        (g.name == '') ? g.toUnicode : g.name,
         g.fontFamily,
-        g.fontStyle, // TODO NEED TO GET FROM THE RENDERER SOMEHOW
+        g.fontStyle,
         g.boundingRect,
         g.fontSize,
         g.isRotated,

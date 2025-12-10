@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:cipher_app/helpers/pdf_glyph_extractor.dart';
+import 'package:cipher_app/models/dtos/pdf_dto.dart';
 import 'package:cipher_app/services/import/import_service_base.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
@@ -34,30 +36,27 @@ class PDFImportService extends ImportService {
   /// Extracts text with detailed formatting information for better parsing
   ///
   /// Returns a list of text lines with font size, boldness, and position metadata
-  Future<List<TextLine>> extractTextWithFormatting(String path) async {
+  Future<DocumentData> extractTextWithFormatting(String path) async {
     try {
-      final file = File(path);
-      final bytes = await file.readAsBytes();
-      final PdfDocument document = PdfDocument(inputBytes: bytes);
+      final bytes = await File(path).readAsBytes();
+      final document = PdfDocument(inputBytes: bytes);
 
-      final List<TextLine> lines = [];
-
-      // Extract text from each page with layout information
-      final textExtractor = PdfTextExtractor(document);
+      // Extract glyphs per page directly from renderer glyph list
+      final Map<int, List<TextGlyph>> pageGlyphs = {};
 
       for (int i = 0; i < document.pages.count; i++) {
-        // Extract text with layout information for this page
-        final List<TextLine> textLines = textExtractor.extractTextLines(
-          startPageIndex: i,
-          endPageIndex: i,
-        );
-
-        lines.addAll(textLines);
+        pageGlyphs[i] = PdfGlyphExtractorHelper.extractPageGlyphs(document, i);
       }
 
-      document.dispose();
+      // Sort glyphs by their vertical position (top)
+      for (var pageGlyphList in pageGlyphs.values) {
+        pageGlyphList.sort((a, b) {
+          return a.bounds.top.compareTo(b.bounds.top);
+        });
+      }
 
-      return lines;
+      final DocumentData documentData = DocumentData.fromGlyphMap(pageGlyphs);
+      return documentData;
     } catch (e) {
       throw Exception('Failed to extract formatted text from PDF: $e');
     }

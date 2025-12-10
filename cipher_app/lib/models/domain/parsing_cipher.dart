@@ -1,6 +1,6 @@
 import 'package:cipher_app/models/domain/cipher/section.dart';
+import 'package:cipher_app/models/dtos/pdf_dto.dart';
 import 'package:cipher_app/providers/import_provider.dart';
-import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 enum SeparationType { doubleNewLine, label }
 
@@ -24,7 +24,7 @@ class ParsingCipher {
     this.lines = const [],
   });
 
-  factory ParsingCipher.fromPdfLines(List<TextLine> textLines) {
+  factory ParsingCipher.fromPdfLines(List<LineData> textLines) {
     StringBuffer buffer = StringBuffer();
     List<Map<String, dynamic>> lines = [];
 
@@ -37,7 +37,7 @@ class ParsingCipher {
         'fontStyle': line.fontStyle,
         'bounds': line.bounds,
         'lineNumber': lineNumber++,
-        'words': line.wordCollection,
+        'words': line.wordList,
       });
     }
 

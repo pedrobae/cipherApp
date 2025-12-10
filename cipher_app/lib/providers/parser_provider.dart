@@ -16,50 +16,35 @@ class ParserProvider extends ChangeNotifier {
   Cipher? get doubleNewLineParsedCipher => _doubleNewLineCipherObject;
 
   bool _isParsing = false;
-  bool _isParsingMetadata = false;
-  bool _isParsingSections = false;
-  bool _isParsingChords = false;
   bool get isParsing => _isParsing;
 
-  bool _hasParsedMetadata = false;
-  bool _hasParsedSections = false;
-  bool _hasParsedChords = false;
-  bool get hasParsedMetadata => _hasParsedMetadata;
-  bool get hasParsedSections => _hasParsedSections;
-  bool get hasParsedChords => _hasParsedChords;
+  String _parsingStatus = 'Not parsing';
+  String get parsingStatus => _parsingStatus;
 
   String _error = '';
   String get error => _error;
-
-  String getParsingStatus() {
-    if (_isParsing) {
-      if (_isParsingChords) {
-        return 'Parsing chords';
-      } else if (_isParsingSections) {
-        return 'Parsing sections';
-      } else if (_isParsingMetadata) {
-        return 'Parsing metadata';
-      } else {
-        return 'Parsing in progress';
-      }
-    }
-    return 'Not parsing';
-  }
 
   Future<void> parseCipher(ParsingCipher cipher) async {
     if (_isParsing) return;
 
     _cipher = cipher;
     _isParsing = true;
-    _hasParsedMetadata = false;
-    _hasParsedSections = false;
-    _hasParsedChords = false;
     _error = '';
     notifyListeners();
 
     try {
-      if (_cipher!.importType == ImportType.text) {
-        _parsingService.separateLines(_cipher!);
+      switch (cipher.importType) {
+        case ImportType.text:
+          // Separate lines
+          _parsingService.separateLines(_cipher!);
+          break;
+        case ImportType.pdf:
+          await _parsePdfLines();
+
+          break;
+        case ImportType.image:
+          // Image specific parsing can be added here
+          break;
       }
       // Calculate lines
       _parsingService.calculateLines(_cipher!.lines);
@@ -91,52 +76,57 @@ class ParserProvider extends ChangeNotifier {
   }
 
   Future<void> _parseMetadata() async {
-    if (_isParsingMetadata || _hasParsedMetadata) return;
-
-    _isParsingMetadata = true;
+    _parsingStatus = 'Parsing Metadata';
     notifyListeners();
 
     try {
       await _parsingService.parseMetadata(_cipher!);
-      _hasParsedMetadata = true;
     } catch (e) {
       _error = 'Error during metadata parsing: $e';
     } finally {
-      _isParsingMetadata = false;
+      _parsingStatus = 'Not parsing';
       notifyListeners();
     }
   }
 
   Future<void> _parseSections() async {
-    if (_isParsingSections || _hasParsedSections) return;
-
-    _isParsingSections = true;
+    _parsingStatus = 'Parsing Sections';
     notifyListeners();
 
     try {
       await _parsingService.parseSections(_cipher!);
-      _hasParsedSections = true;
     } catch (e) {
       _error = 'Error during section parsing: $e';
     } finally {
-      _isParsingSections = false;
+      _parsingStatus = 'Not parsing';
       notifyListeners();
     }
   }
 
   Future<void> _parseChords() async {
-    if (_isParsingChords || _hasParsedChords) return;
-
-    _isParsingChords = true;
+    _parsingStatus = 'Parsing Chords';
     notifyListeners();
 
     try {
       await _parsingService.parseChords(_cipher!);
-      _hasParsedChords = true;
     } catch (e) {
       _error = 'Error during chord parsing: $e';
     } finally {
-      _isParsingChords = false;
+      _parsingStatus = 'Not parsing';
+      notifyListeners();
+    }
+  }
+
+  Future<void> _parsePdfLines() async {
+    _parsingStatus = 'Parsing PDF Lines';
+    notifyListeners();
+
+    try {
+      await _parsingService.parsePdfLines(_cipher!);
+    } catch (e) {
+      _error = 'Error during PDF line parsing: $e';
+    } finally {
+      _parsingStatus = 'Not parsing';
       notifyListeners();
     }
   }

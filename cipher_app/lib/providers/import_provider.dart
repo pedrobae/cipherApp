@@ -1,15 +1,13 @@
 import 'package:cipher_app/models/domain/parsing_cipher.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cipher_app/services/import/image_import_service.dart';
-import 'package:cipher_app/services/import/pdf_import_service.dart';
-import 'package:cipher_app/services/import/import_debug_service.dart';
+import 'package:cipher_app/services/pdf_import_service.dart';
 
 enum ImportType { text, pdf, image }
 
 class ImportProvider extends ChangeNotifier {
   final PDFImportService _pdfService = PDFImportService();
   final ImageImportService _imageService = ImageImportService();
-  final ImportDebugService _debugService = ImportDebugService();
 
   ParsingCipher? _importedCipher;
   bool _isImporting = false;
@@ -72,14 +70,6 @@ class ImportProvider extends ChangeNotifier {
           break;
         default:
           throw Exception('Import type not set');
-      }
-
-      if (_importedCipher != null && _importedCipher!.rawText.isNotEmpty) {
-        await _debugService.saveImportSample(
-          text: _importedCipher!.rawText,
-          importType: getImportType().toLowerCase(),
-          sourceFileName: _selectedFile,
-        );
       }
     } catch (e) {
       _error = e.toString();

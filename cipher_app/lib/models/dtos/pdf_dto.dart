@@ -61,6 +61,7 @@ class LineData {
   final Rect bounds;
   final List<PdfFontStyle>? fontStyle;
   final int lineIndex;
+  int? avgSpaceBetweenWords;
   final List<WordData> wordList;
 
   LineData({

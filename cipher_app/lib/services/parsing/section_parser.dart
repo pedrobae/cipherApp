@@ -22,19 +22,6 @@ class SectionParser {
 
     // Separate raw text by double new lines
     _separateByDoubleNewLines(cipher);
-
-    // USE PDF FORMATTING DATA TO PARSE SECTIONS
-    // lines.add({
-    //     'text': line.text,
-    //     'fontSize': line.fontSize,
-    //     'fontStyle': line.fontStyle,
-    //     'bounds': line.bounds,
-    //     'lineNumber': lineNumber++,
-    //     'words': words,
-    //   });
-    if (cipher.importType == ImportType.pdf) {
-      _separateByPdfFormatting(cipher);
-    }
   }
 
   void _separateByDoubleNewLines(ParsingCipher cipher) {
@@ -109,17 +96,6 @@ class SectionParser {
         ),
         'isDuplicate': false,
       });
-    }
-  }
-
-  void _separateByPdfFormatting(ParsingCipher cipher) {
-    /// IDENTIFY different patterns, e.g.,
-    /// - Chords vs Lyrics (alternating lines with different font styles/sizes)
-    /// - Section labels (lines with different formatting, e.g., bold, larger font size)
-    /// -
-    for (var line in cipher.lines) {
-      final words = line['words'] as List<TextWord>;
-      for (var word in words) {}
     }
   }
 

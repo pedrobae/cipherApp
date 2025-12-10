@@ -28,17 +28,9 @@ class ParsingCipher {
     StringBuffer buffer = StringBuffer();
     List<Map<String, dynamic>> lines = [];
 
-    int lineNumber = 0;
     for (var line in textLines) {
       buffer.writeln(line.text);
-      lines.add({
-        'text': line.text,
-        'fontSize': line.fontSize,
-        'fontStyle': line.fontStyle,
-        'bounds': line.bounds,
-        'lineNumber': lineNumber++,
-        'words': line.wordList,
-      });
+      lines.add({'textLine': line});
     }
 
     return ParsingCipher(

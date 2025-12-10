@@ -106,7 +106,7 @@ class _CipherParsingScreenState extends State<CipherParsingScreen>
                     ),
                     subtitle: Text(
                       parserProvider.isParsing
-                          ? 'Status: ${parserProvider.getParsingStatus()}'
+                          ? 'Status: ${parserProvider.parsingStatus}'
                           : 'Parsing completed successfully!',
                     ),
                   ),
@@ -134,7 +134,9 @@ class _CipherParsingScreenState extends State<CipherParsingScreen>
                           padding: const EdgeInsets.all(8.0),
                           child: Column(
                             children: [
-                              if (parserProvider.hasParsedMetadata)
+                              if (parserProvider.doubleNewLineParsedCipher !=
+                                      null &&
+                                  parserProvider.labelParsedCipher != null)
                                 // --> METADATA CARD
                                 Card(
                                   margin: const EdgeInsets.all(8.0),
@@ -150,28 +152,25 @@ class _CipherParsingScreenState extends State<CipherParsingScreen>
                                     ],
                                   ),
                                 ),
-                              if (parserProvider.hasParsedSections &&
-                                  !parserProvider.hasParsedChords)
-                                // --> LABEL CARDS
-                                ...sections.values.map((section) {
-                                  return Card(
-                                    margin: const EdgeInsets.all(8.0),
-                                    child: ListTile(
-                                      title: Text(section.contentCode),
-                                      subtitle: Text(section.contentText),
-                                    ),
-                                  );
-                                }),
-                              if (parserProvider.hasParsedChords)
-                                // --> SECTION CARDS
-                                ...sections.entries.map((entry) {
-                                  return CipherSectionCard(
-                                    sectionCode: entry.value.contentCode,
-                                    sectionType: entry.value.contentType,
-                                    sectionText: entry.value.contentText,
-                                    sectionColor: entry.value.contentColor,
-                                  );
-                                }),
+                              ...sections.values.map((section) {
+                                return Card(
+                                  margin: const EdgeInsets.all(8.0),
+                                  child: ListTile(
+                                    title: Text(section.contentCode),
+                                    subtitle: Text(section.contentText),
+                                  ),
+                                );
+                              }),
+
+                              // --> SECTION CARDS
+                              ...sections.entries.map((entry) {
+                                return CipherSectionCard(
+                                  sectionCode: entry.value.contentCode,
+                                  sectionType: entry.value.contentType,
+                                  sectionText: entry.value.contentText,
+                                  sectionColor: entry.value.contentColor,
+                                );
+                              }),
                             ],
                           ),
                         ),

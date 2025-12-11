@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:cipher_app/models/domain/parsing_cipher.dart';
+import 'package:cipher_app/models/dtos/pdf_dto.dart';
 import 'package:cipher_app/providers/import_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
@@ -22,6 +25,10 @@ class SectionParser {
 
     // Separate raw text by double new lines
     _separateByDoubleNewLines(cipher);
+
+    if (cipher.importType == ImportType.pdf) {
+      _separateBypdfFormatting(cipher);
+    }
   }
 
   void _separateByDoubleNewLines(ParsingCipher cipher) {
@@ -96,6 +103,64 @@ class SectionParser {
         ),
         'isDuplicate': false,
       });
+    }
+  }
+
+  void _separateBypdfFormatting(ParsingCipher cipher) {
+    /// Identifies section break based on line spacing greater than the standard deviation of line spacings
+    double totalLineSpacing = 0.0;
+    for (int i = 0; i < cipher.lines.length - 1; i++) {
+      final textLine = cipher.lines[i]['textLine'] as LineData;
+      final nextLine = cipher.lines[i + 1]['textLine'] as LineData;
+      totalLineSpacing += nextLine.bounds.top - textLine.bounds.bottom;
+    }
+    double meanLineSpacing = totalLineSpacing / (cipher.lines.length - 1);
+    List<int> sectionBreakIndexes = [];
+    for (int i = 0; i < cipher.lines.length - 1; i++) {
+      final textLine = cipher.lines[i]['textLine'] as LineData;
+      final nextLine = cipher.lines[i + 1]['textLine'] as LineData;
+      double lineSpacing = nextLine.bounds.top - textLine.bounds.bottom;
+      if (lineSpacing > meanLineSpacing) {
+        sectionBreakIndexes.add(i + 1);
+      }
+    }
+
+    /// - Identify Chord Style
+    ///     - Heuristic: at least 30% of lines use this style
+    ///     - Heuristic: at least 70% of chord lines have the same following style (lyrics style)
+    ///     - Heuristic: chord lines have higher average space between words
+    final int totalLines = cipher.lines.length;
+    List<List<PdfFontStyle>> possibleChordStyles = [];
+    for (var entry in cipher.fontStyleCount.entries) {
+      final style = entry.key;
+      final count = entry.value;
+      // Check style usage threshold
+      if (count / totalLines >= 0.3) {
+        // Check following styles
+        if (cipher.followingStyleCounts[style]!.values.any(
+          (s) => s > count * 0.7,
+        )) {
+          // Potential chord style found
+          possibleChordStyles.add(style);
+        }
+      }
+    }
+    // From possible chord styles, select the one with highest average space between words
+    List<PdfFontStyle> chordStyle;
+    int highestAvgSpace = -1;
+    for (var style in possibleChordStyles) {
+      int totalSpace = 0;
+      for (var lineMap in cipher.lines) {
+        final textLine = lineMap['textLine'] as LineData;
+        if ((textLine.fontStyle ?? []) == style) {
+          totalSpace += textLine.avgSpaceBetweenWords!;
+        }
+      }
+      int avgSpace = totalSpace ~/ cipher.fontStyleCount[style]!;
+      if (avgSpace > highestAvgSpace) {
+        highestAvgSpace = avgSpace;
+        chordStyle = style;
+      }
     }
   }
 

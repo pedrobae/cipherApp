@@ -39,8 +39,8 @@ class ParserProvider extends ChangeNotifier {
           _parsingService.separateLines(_cipher!);
           break;
         case ImportType.pdf:
-          await _parsePdfLines();
-
+          // PRE-PROCESSING STEPS
+          _parsingService.preProcessPdf(_cipher!);
           break;
         case ImportType.image:
           // Image specific parsing can be added here
@@ -111,20 +111,6 @@ class ParserProvider extends ChangeNotifier {
       await _parsingService.parseChords(_cipher!);
     } catch (e) {
       _error = 'Error during chord parsing: $e';
-    } finally {
-      _parsingStatus = 'Not parsing';
-      notifyListeners();
-    }
-  }
-
-  Future<void> _parsePdfLines() async {
-    _parsingStatus = 'Parsing PDF Lines';
-    notifyListeners();
-
-    try {
-      await _parsingService.parsePdfLines(_cipher!);
-    } catch (e) {
-      _error = 'Error during PDF line parsing: $e';
     } finally {
       _parsingStatus = 'Not parsing';
       notifyListeners();

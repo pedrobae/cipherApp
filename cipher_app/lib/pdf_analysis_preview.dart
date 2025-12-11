@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -86,6 +87,7 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
       final document = PdfDocument(inputBytes: bytes);
 
       // Extract glyphs per page directly from renderer glyph list
+      // TODO: Add column-aware extraction to better handle multi-column PDFs
       final Map<int, List<TextGlyph>> pageGlyphs = {};
 
       for (int i = 0; i < document.pages.count; i++) {
@@ -593,13 +595,28 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
     }
 
     final spacings = <FlSpot>[];
+    final gaps = <double>[];
     for (int i = 1; i < data.length; i++) {
       // Calculate gap between end of previous line and start of current line
       final prevBottom = data[i - 1].bounds.top + data[i - 1].bounds.height;
       final currentTop = data[i].bounds.top;
       final gap = currentTop - prevBottom;
       spacings.add(FlSpot(i.toDouble(), gap));
+      gaps.add(gap);
     }
+
+    final double mean = gaps.isEmpty
+        ? 0
+        : gaps.reduce((a, b) => a + b) / gaps.length;
+    final double variance = gaps.isEmpty
+        ? 0
+        : gaps.fold<double>(0, (sum, g) => sum + (g - mean) * (g - mean)) /
+              gaps.length;
+    final double stdDev = sqrt(variance);
+
+    FlSpot _ref(double y) =>
+        FlSpot(spacings.first.x, y); // helper for horizontal reference
+    FlSpot _refEnd(double y) => FlSpot(spacings.last.x, y);
 
     return LineChart(
       LineChartData(
@@ -609,6 +626,23 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
             isCurved: false,
             color: Colors.purple,
             barWidth: 2,
+            dotData: const FlDotData(show: false),
+          ),
+          // Mean spacing reference line
+          LineChartBarData(
+            spots: [_ref(mean), _refEnd(mean)],
+            isCurved: false,
+            color: theme.colorScheme.outline,
+            barWidth: 1,
+            dotData: const FlDotData(show: false),
+          ),
+          // Mean + 1 std deviation reference line
+          LineChartBarData(
+            spots: [_ref(mean + stdDev), _refEnd(mean + stdDev)],
+            isCurved: false,
+            color: Colors.redAccent,
+            barWidth: 1,
+            dashArray: [6, 4],
             dotData: const FlDotData(show: false),
           ),
         ],

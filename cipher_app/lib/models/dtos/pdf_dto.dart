@@ -53,6 +53,140 @@ class DocumentData {
 
     return DocumentData(pageLines: pages);
   }
+
+  void searchColumns() {
+    // See if the lines can be split into two columns
+
+    // The x-coordinate of the left bound of the right column cannot be inside a word bound
+
+    // 'project' the word bounds onto the x-axis and find gaps big enough to fit a column gap
+    for (var pageEntry in pageLines.entries) {
+      List<double> wordBounds = [];
+      for (var line in pageEntry.value) {
+        // Skip lines that have a too great left bound (to avoid titles)
+        if (line.bounds.left > 100.0) {
+          continue;
+        }
+        for (var word in line.wordList) {
+          _projectBounds(word.bounds.left, word.bounds.right, wordBounds);
+        }
+      }
+
+      if (wordBounds.length > 3) {
+        // Find the biggest gap between projected bounds
+        double maxGap = 0.0;
+        double gapStart = 0.0;
+        for (int i = 0; i < wordBounds.length - 1; i += 2) {
+          double gap =
+              wordBounds[i + 1] -
+              wordBounds[i]; // right of current - left of next
+          if (gap > maxGap) {
+            maxGap = gap;
+            gapStart = wordBounds[i];
+          }
+        }
+
+        // If the biggest gap is big enough, we have found a column split
+        if (maxGap > 20.0) {
+          // Split lines on the column gap
+          List<LineData> rightColumnLines = [];
+          List<LineData> leftColumnLines = [];
+          for (var line in pageEntry.value) {
+            int breakIndex = 0;
+            while (breakIndex < line.wordList.length &&
+                line.wordList[breakIndex].bounds.right < gapStart) {
+              breakIndex++;
+            }
+            if (breakIndex < line.wordList.length) {
+              // There are words in the right column
+              rightColumnLines.add(
+                LineData(
+                  text: line.wordList
+                      .sublist(breakIndex)
+                      .map((w) => w.text)
+                      .join(),
+                  fontSize: line.fontSize,
+                  bounds: Rect.fromLTRB(
+                    line.wordList[breakIndex].bounds.left,
+                    line.bounds.top,
+                    line.bounds.right,
+                    line.bounds.bottom,
+                  ),
+                  fontStyle: line.fontStyle,
+                  lineIndex: line.lineIndex,
+                  wordList: line.wordList.sublist(breakIndex),
+                ),
+              );
+
+              leftColumnLines.add(
+                LineData(
+                  text: line.wordList
+                      .sublist(0, breakIndex)
+                      .map((w) => w.text)
+                      .join(),
+                  fontSize: line.fontSize,
+                  bounds: Rect.fromLTRB(
+                    line.bounds.left,
+                    line.bounds.top,
+                    line.wordList[breakIndex - 1].bounds.right,
+                    line.bounds.bottom,
+                  ),
+                  fontStyle: line.fontStyle,
+                  lineIndex: line.lineIndex,
+                  wordList: line.wordList.sublist(0, breakIndex),
+                ),
+              );
+            }
+            leftColumnLines.add(line);
+          }
+          pageLines[pageEntry.key] = [...leftColumnLines, ...rightColumnLines];
+        }
+      }
+    }
+  }
+
+  void _projectBounds(double left, double right, List<double> projections) {
+    if (projections.isEmpty) {
+      projections.add(left);
+      projections.add(right);
+      return;
+    }
+
+    // Iterate through the projections and add the new bounds if relevant
+    bool leftIsIn = false;
+    int leftInsertIndex = 0;
+    while (leftInsertIndex < projections.length &&
+        left < projections[leftInsertIndex]) {
+      leftIsIn = !leftIsIn;
+      leftInsertIndex++;
+    }
+
+    bool rightIsIn = false;
+    int rightInsertIndex = 0;
+    while (rightInsertIndex < projections.length &&
+        right < projections[rightInsertIndex]) {
+      rightIsIn = !rightIsIn;
+      rightInsertIndex++;
+    }
+
+    // Insert the new bounds if they are not already inside existing bounds - remove overlapping parts
+    if (!leftIsIn) {
+      projections.insert(leftInsertIndex, left);
+      if (rightIsIn) {
+        projections.removeAt(
+          leftInsertIndex + 1,
+        ); // Remove overlapping right bound
+      }
+    }
+    if (!rightIsIn) {
+      projections.insert(rightInsertIndex, right);
+      if (leftIsIn) {
+        projections.removeAt(
+          rightInsertIndex - 1,
+        ); // Remove overlapping left bound
+      }
+    }
+  }
 }
 
 class LineData {

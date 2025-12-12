@@ -87,7 +87,6 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
       final document = PdfDocument(inputBytes: bytes);
 
       // Extract glyphs per page directly from renderer glyph list
-      // TODO: Add column-aware extraction to better handle multi-column PDFs
       final Map<int, List<TextGlyph>> pageGlyphs = {};
 
       for (int i = 0; i < document.pages.count; i++) {
@@ -102,6 +101,7 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
       }
 
       final DocumentData documentData = DocumentData.fromGlyphMap(pageGlyphs);
+      documentData.searchColumns();
 
       if (mounted) {
         setState(() {
@@ -614,9 +614,9 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
               gaps.length;
     final double stdDev = sqrt(variance);
 
-    FlSpot _ref(double y) =>
+    FlSpot ref(double y) =>
         FlSpot(spacings.first.x, y); // helper for horizontal reference
-    FlSpot _refEnd(double y) => FlSpot(spacings.last.x, y);
+    FlSpot refEnd(double y) => FlSpot(spacings.last.x, y);
 
     return LineChart(
       LineChartData(
@@ -630,7 +630,7 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
           ),
           // Mean spacing reference line
           LineChartBarData(
-            spots: [_ref(mean), _refEnd(mean)],
+            spots: [ref(mean), refEnd(mean)],
             isCurved: false,
             color: theme.colorScheme.outline,
             barWidth: 1,
@@ -638,7 +638,7 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
           ),
           // Mean + 1 std deviation reference line
           LineChartBarData(
-            spots: [_ref(mean + stdDev), _refEnd(mean + stdDev)],
+            spots: [ref(mean + stdDev), refEnd(mean + stdDev)],
             isCurved: false,
             color: Colors.redAccent,
             barWidth: 1,

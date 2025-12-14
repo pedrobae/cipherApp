@@ -1,10 +1,11 @@
-import 'package:cipher_app/providers/auth_provider.dart';
-import 'package:cipher_app/widgets/login_bottom_sheet.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
 import 'package:cipher_app/providers/navigation_provider.dart';
-import 'package:cipher_app/routes/app_routes.dart';
+import 'package:cipher_app/providers/auth_provider.dart';
+
+import 'package:cipher_app/widgets/login_bottom_sheet.dart';
 import 'package:cipher_app/widgets/app_drawer.dart';
 
 class MainScreen extends StatefulWidget {
@@ -47,9 +48,17 @@ class MainScreenState extends State<MainScreen> {
           bottomNavigationBar: BottomNavigationBar(
             currentIndex: navigationProvider.currentIndex,
             onTap: (index) {
-              navigationProvider.(index);
+              navigationProvider.navigateToRoute(NavigationRoute.values[index]);
             },
-            items: navigationProvider.bottomNavItems,
+            items: navigationProvider
+                .getNavigationItems(context)
+                .map(
+                  (navItem) => BottomNavigationBarItem(
+                    icon: navItem.icon,
+                    label: navItem.title,
+                  ),
+                )
+                .toList(),
           ),
         );
       },

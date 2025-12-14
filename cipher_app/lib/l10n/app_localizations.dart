@@ -98,6 +98,12 @@ abstract class AppLocalizations {
     Locale('pt'),
   ];
 
+  /// No description provided for @appName.
+  ///
+  /// In pt, this message translates to:
+  /// **'Worship Link'**
+  String get appName;
+
   /// No description provided for @loginOrSignUp.
   ///
   /// In pt, this message translates to:

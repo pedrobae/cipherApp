@@ -10,7 +10,7 @@ class NavigationProvider extends ChangeNotifier {
 
   // Getters
   NavigationRoute get currentRoute => _currentRoute;
-  int get currentIndex => _getIndexFromRoute(_currentRoute);
+  int get currentIndex => _currentRoute.index;
   bool get isLoading => _isLoading;
   String? get error => _error;
 
@@ -56,7 +56,7 @@ class NavigationProvider extends ChangeNotifier {
       route: route,
       title: _getTitleForRoute(context, route),
       icon: _getIconForRoute(route, iconColor: iconColor, iconSize: iconSize),
-      index: _getIndexFromRoute(route),
+      index: route.index,
     );
   }
 
@@ -68,17 +68,6 @@ class NavigationProvider extends ChangeNotifier {
         return AppLocalizations.of(context)!.library;
       case NavigationRoute.playlists:
         return AppLocalizations.of(context)!.playlists;
-    }
-  }
-
-  int _getIndexFromRoute(NavigationRoute route) {
-    switch (route) {
-      case NavigationRoute.home:
-        return 0;
-      case NavigationRoute.library:
-        return 1;
-      case NavigationRoute.playlists:
-        return 2;
     }
   }
 
@@ -128,4 +117,26 @@ class NavigationItem {
     required this.icon,
     required this.index,
   });
+}
+
+class AdminNavigationItem {
+  final String title;
+  final Icon icon;
+
+  AdminNavigationItem({required this.title, required this.icon});
+}
+
+extension NavigationProviderAdmin on NavigationProvider {
+  List<AdminNavigationItem> getAdminItems({
+    Color? iconColor,
+    double iconSize = 64,
+  }) {
+    return [
+      AdminNavigationItem(
+        title: 'Gerenciamento de Usuários',
+        icon: Icon(Icons.manage_accounts, color: iconColor, size: iconSize),
+      ),
+      // Add more admin items here as needed
+    ];
+  }
 }

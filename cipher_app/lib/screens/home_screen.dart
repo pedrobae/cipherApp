@@ -1,4 +1,4 @@
-import 'package:cipher_app/utils/design_constants.dart';
+import 'package:cipher_app/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/providers/auth_provider.dart';
@@ -90,17 +90,10 @@ class _HomeScreenState extends State<HomeScreen> {
             // User is authenticated - show navigation options
             final Color iconColor = colorScheme.onPrimaryContainer;
             final items = navigationProvider.getNavigationItems(
+              context,
               iconColor: iconColor,
               iconSize: 80,
             );
-            if (authProvider.isAdmin) {
-              items.add(
-                navigationProvider.getAdminItem(
-                  iconColor: iconColor,
-                  iconSize: 80,
-                ),
-              );
-            }
             return CustomScrollView(
               slivers: [
                 SliverAppBar(
@@ -110,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   centerTitle: true,
                   automaticallyImplyLeading: false,
                   title: Text(
-                    appName,
+                    AppLocalizations.of(context)!.appName,
                     style: theme.textTheme.titleLarge?.copyWith(
                       color: colorScheme.onPrimaryContainer,
                       fontWeight: FontWeight.bold,
@@ -173,37 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           highlightColor: colorScheme.primary.withValues(
                             alpha: .08,
                           ),
-                          onTap: () {
-                            switch (item.route) {
-                              case NavigationProvider.libraryRoute:
-                                navigationProvider.navigateToLibrary();
-                                break;
-                              case NavigationProvider.playlistsRoute:
-                                navigationProvider.navigateToPlaylists();
-                                break;
-                              case NavigationProvider.settingsRoute:
-                                navigationProvider.navigateToSettings();
-                                break;
-                              case NavigationProvider.infoRoute:
-                                navigationProvider.navigateToInfo();
-                                break;
-                              case NavigationProvider.admin:
-                                if (authProvider.isAdmin) {
-                                  navigationProvider.navigateToAdmin();
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                        'Acesso negado. Você não é um administrador.',
-                                      ),
-                                    ),
-                                  );
-                                  return;
-                                }
-                                break;
-                            }
-                            Navigator.pushNamed(context, '/main');
-                          },
+                          onTap: () {},
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
                               vertical: 16,

@@ -1,5 +1,6 @@
 {
   "@@locale": "en",
+  "appName": "Worship Link",
   "loginOrSignUp": "Login or Sign Up",
   "loginDescription": "Please select your preferred method to continue setting up your account",
   "emailLogin": "Continue with Email",

@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:cipher_app/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/providers/navigation_provider.dart';
@@ -37,7 +38,7 @@ class AppDrawer extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  'App de Cifras',
+                  AppLocalizations.of(context)!.appName,
                   style: TextStyle(
                     color: colorScheme.onPrimary,
                     fontSize: 24,
@@ -45,56 +46,6 @@ class AppDrawer extends StatelessWidget {
                   ),
                 ),
               ),
-              ListTile(
-                leading: const Icon(Icons.library_books),
-                title: const Text('Biblioteca'),
-                selected: navigationProvider.selectedIndex == 0,
-                onTap: () {
-                  navigationProvider.navigateToLibrary();
-                  Navigator.pop(context); // Close drawer
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.featured_play_list_outlined),
-                title: const Text('Playlists'),
-                selected: navigationProvider.selectedIndex == 1,
-                onTap: () {
-                  navigationProvider.navigateToPlaylists();
-                  Navigator.pop(context); // Close drawer
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.settings),
-                title: const Text('Configurações'),
-                selected: navigationProvider.selectedIndex == 2,
-                onTap: () {
-                  navigationProvider.navigateToSettings();
-                  Navigator.pop(context); // Close drawer
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.info),
-                title: const Text('Informações'),
-                selected: navigationProvider.selectedIndex == 3,
-                onTap: () {
-                  navigationProvider.navigateToInfo();
-                  Navigator.pop(context); // Close drawer
-                },
-              ),
-              // Push admin to bottom
-              const Spacer(),
-              if (authProvider.isAdmin) ...[
-                const Divider(),
-                ListTile(
-                  leading: const Icon(Icons.admin_panel_settings),
-                  title: const Text('Administração'),
-                  selected: navigationProvider.selectedIndex == 4,
-                  onTap: () {
-                    navigationProvider.navigateToAdmin();
-                    Navigator.pop(context); // Close drawer
-                  },
-                ),
-              ],
             ],
           ),
         );

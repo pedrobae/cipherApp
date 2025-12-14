@@ -9,6 +9,9 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get appName => 'Worship Link';
+
+  @override
   String get loginOrSignUp => 'Login or Sign Up';
 
   @override

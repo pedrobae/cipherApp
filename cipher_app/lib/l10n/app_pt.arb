@@ -1,5 +1,6 @@
 {
   "@@locale": "pt",
+  "appName": "Worship Link",
   "loginOrSignUp": "Login ou Cadastro",
   "loginDescription": "Selecione um método para terminar de configurar sua conta",
   "emailLogin": "Entrar com E-mail",

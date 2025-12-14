@@ -9,6 +9,9 @@ class AppLocalizationsPt extends AppLocalizations {
   AppLocalizationsPt([String locale = 'pt']) : super(locale);
 
   @override
+  String get appName => 'Worship Link';
+
+  @override
   String get loginOrSignUp => 'Login ou Cadastro';
 
   @override

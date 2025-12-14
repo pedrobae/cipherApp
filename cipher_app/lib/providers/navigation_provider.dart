@@ -1,4 +1,7 @@
 import 'package:cipher_app/l10n/app_localizations.dart';
+import 'package:cipher_app/screens/home_screen.dart';
+import 'package:cipher_app/screens/cipher/cipher_library.dart';
+import 'package:cipher_app/screens/playlist/playlist_library.dart';
 import 'package:flutter/material.dart';
 
 enum NavigationRoute { home, library, playlists }
@@ -13,6 +16,16 @@ class NavigationProvider extends ChangeNotifier {
   int get currentIndex => _currentRoute.index;
   bool get isLoading => _isLoading;
   String? get error => _error;
+  Widget get currentScreen {
+    switch (_currentRoute) {
+      case NavigationRoute.home:
+        return const HomeScreen();
+      case NavigationRoute.library:
+        return const CipherLibraryScreen();
+      case NavigationRoute.playlists:
+        return const PlaylistLibraryScreen();
+    }
+  }
 
   /// USED BY THE MAIN SCREEN TO NAVIGATE BETWEEN CONTENT TABS
 

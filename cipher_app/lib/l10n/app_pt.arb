@@ -1,10 +1,15 @@
 {
   "@@locale": "pt",
   "appName": "Worship Link",
+  "@appName": {},
   "loginOrSignUp": "Login ou Cadastro",
+  "@loginOrSignUp": {},
   "loginDescription": "Selecione um método para terminar de configurar sua conta",
+  "@loginDescription": {},
   "emailLogin": "Entrar com E-mail",
+  "@emailLogin": {},
   "phoneLogin": "Entrar com Telefone",
+  "@phoneLogin": {},
   "accountCreationPrefix": "Se você está criando uma conta, ",
   "@accountCreationPrefix": {
     "description": "First part of terms acceptance message"
@@ -26,6 +31,9 @@
     "description": "Privacy Policy link text"
   },
   "library": "Biblioteca",
+  "@library": {},
   "home": "Home",
-  "playlists": "Playlists"
+  "@home": {},
+  "playlists": "Playlists",
+  "@playlists": {}
 }

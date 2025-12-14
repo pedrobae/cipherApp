@@ -10,8 +10,8 @@ class InfoScreen extends StatefulWidget {
   State<InfoScreen> createState() => _InfoScreenState();
 }
 
-class _InfoScreenState extends State<InfoScreen> with AutomaticKeepAliveClientMixin {
-  
+class _InfoScreenState extends State<InfoScreen>
+    with AutomaticKeepAliveClientMixin {
   bool _hasInitialized = false;
 
   @override
@@ -46,9 +46,9 @@ class _InfoScreenState extends State<InfoScreen> with AutomaticKeepAliveClientMi
               children: [
                 Text('Erro: ${infoProvider.error}'),
                 ElevatedButton(
-                  onPressed: () => infoProvider.refresh(), 
+                  onPressed: () => infoProvider.refresh(),
                   child: const Text('Tentar Novamente'),
-                )
+                ),
               ],
             ),
           );
@@ -62,12 +62,10 @@ class _InfoScreenState extends State<InfoScreen> with AutomaticKeepAliveClientMi
                 MediaQuery.of(context).size.height -
                 MediaQuery.of(context).padding.top -
                 kToolbarHeight -
-                MediaQuery.of(
-                  context,
-                ).padding.bottom,
+                MediaQuery.of(context).padding.bottom,
           ),
         );
-      }
+      },
     );
   }
 }

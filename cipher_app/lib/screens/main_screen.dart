@@ -60,6 +60,7 @@ class MainScreenState extends State<MainScreen> {
                 )
                 .toList(),
           ),
+          body: navigationProvider.currentScreen,
         );
       },
     );

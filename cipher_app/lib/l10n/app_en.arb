@@ -1,0 +1,30 @@
+{
+  "@@locale": "en",
+  "loginOrSignUp": "Login or Sign Up",
+  "loginDescription": "Please select your preferred method to continue setting up your account",
+  "emailLogin": "Continue with Email",
+  "phoneLogin": "Continue with Phone",
+  "accountCreationPrefix": "If you are creating a new account, ",
+  "@accountCreationPrefix": {
+    "description": "First part of terms acceptance message"
+  },
+  "accountCreationMiddle": " and ",
+  "@accountCreationMiddle": {
+    "description": "Middle conjunction in terms acceptance message"
+  },
+  "accountCreationSuffix": " will apply.",
+  "@accountCreationSuffix": {
+    "description": "Final part of terms acceptance message"
+  },
+  "termsAndConditions": "Terms & Conditions",
+  "@termsAndConditions": {
+    "description": "Terms and Conditions link text"
+  },
+  "privacyPolicy": "Privacy Policy",
+  "@privacyPolicy": {
+    "description": "Privacy Policy link text"
+  },
+  "library": "Library",
+  "home": "Home",
+  "playlists": "Playlists"
+}

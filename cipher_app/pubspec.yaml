@@ -10,6 +10,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: any
   provider: ^6.0.5
   carousel_slider_plus: ^7.1.1
   flutter_svg: ^2.0.10+1
@@ -30,7 +33,7 @@ dependencies:
   google_sign_in: ^6.2.1
   cloud_functions: ^6.0.3
   file_picker: ^8.1.4              # Seleção de arquivos
-  syncfusion_flutter_pdf: 28.1.33 # Extração de texto de PDF (null-safe)
+  syncfusion_flutter_pdf: ^31.2.18 # Extração de texto de PDF (null-safe)
   fl_chart: ^0.69.0                # Charts for data visualization (PDF analysis preview)
 
 dev_dependencies:
@@ -42,6 +45,7 @@ dev_dependencies:
 
 
 flutter:
+  generate: true
   uses-material-design: true
   assets:
     - assets/data/

@@ -1,0 +1,30 @@
+{
+  "@@locale": "pt",
+  "loginOrSignUp": "Login ou Cadastro",
+  "loginDescription": "Selecione um método para terminar de configurar sua conta",
+  "emailLogin": "Entrar com E-mail",
+  "phoneLogin": "Entrar com Telefone",
+  "accountCreationPrefix": "Se você está criando uma conta, ",
+  "@accountCreationPrefix": {
+    "description": "First part of terms acceptance message"
+  },
+  "accountCreationMiddle": " e ",
+  "@accountCreationMiddle": {
+    "description": "Middle conjunction in terms acceptance message"
+  },
+  "accountCreationSuffix": " se aplicarão.",
+  "@accountCreationSuffix": {
+    "description": "Final part of terms acceptance message"
+  },
+  "termsAndConditions": "Termos & Condições",
+  "@termsAndConditions": {
+    "description": "Terms and Conditions link text"
+  },
+  "privacyPolicy": "Política de Privacidade",
+  "@privacyPolicy": {
+    "description": "Privacy Policy link text"
+  },
+  "library": "Biblioteca",
+  "home": "Home",
+  "playlists": "Playlists"
+}

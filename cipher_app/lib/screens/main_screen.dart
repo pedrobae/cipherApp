@@ -1,5 +1,7 @@
 import 'package:cipher_app/providers/auth_provider.dart';
+import 'package:cipher_app/widgets/login_bottom_sheet.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/providers/navigation_provider.dart';
 import 'package:cipher_app/routes/app_routes.dart';
@@ -15,11 +17,14 @@ class MainScreen extends StatefulWidget {
 class MainScreenState extends State<MainScreen> {
   @override
   void initState() {
-    // If somehow the currentRoute is empty, default to info
+    // Open login bottom sheet if not authenticated
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final navigationProvider = context.read<NavigationProvider>();
-      if (navigationProvider.currentRoute.isEmpty) {
-        navigationProvider.navigateToInfo();
+      final isAuthenticated = context.read<AuthProvider>().isAuthenticated;
+      if (!isAuthenticated) {
+        showModalBottomSheet(
+          context: context,
+          builder: (context) => LoginBottomSheet(),
+        );
       }
     });
     super.initState();
@@ -27,54 +32,25 @@ class MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<NavigationProvider, AuthProvider>(
-      builder: (context, navigationProvider, authProvider, child) {
-        if (navigationProvider.isLoading) {
-          return const Scaffold(
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text('Carregando...'), // Portuguese UI
-                ],
-              ),
-            ),
-          );
-        }
-
-        if (navigationProvider.error != null) {
-          return Scaffold(
-            appBar: AppBar(title: const Text('App de Cifras')),
-            drawer: const AppDrawer(),
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error, size: 64, color: Colors.red),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Erro: ${navigationProvider.error}',
-                    style: const TextStyle(color: Colors.red),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () => navigationProvider.clearError(),
-                    child: const Text('Tentar Novamente'),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }
+    return Consumer2<AuthProvider, NavigationProvider>(
+      builder: (context, authProvider, navigationProvider, child) {
         return Scaffold(
-          appBar: AppBar(title: Text(navigationProvider.routeTitle)),
+          appBar: AppBar(
+            title: Center(
+              child: SvgPicture.asset(
+                'assets/logos/v2_simple_color_white.svg',
+                width: 200,
+              ),
+            ),
+          ),
           drawer: const AppDrawer(),
-          body: AppRoutes.contentRoutes(
-            authProvider.isAdmin,
-          )[navigationProvider.currentRoute],
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: navigationProvider.currentIndex,
+            onTap: (index) {
+              navigationProvider.(index);
+            },
+            items: navigationProvider.bottomNavItems,
+          ),
         );
       },
     );

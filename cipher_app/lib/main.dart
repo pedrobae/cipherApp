@@ -1,3 +1,4 @@
+import 'package:cipher_app/l10n/app_localizations.dart';
 import 'package:cipher_app/providers/collaborator_provider.dart';
 import 'package:cipher_app/providers/import_provider.dart';
 import 'package:cipher_app/providers/parser_provider.dart';
@@ -5,6 +6,7 @@ import 'package:cipher_app/providers/section_provider.dart';
 import 'package:cipher_app/providers/selection_provider.dart';
 import 'package:cipher_app/services/firebase_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/providers/auth_provider.dart';
 import 'package:cipher_app/providers/navigation_provider.dart';
@@ -66,7 +68,17 @@ class MyApp extends StatelessWidget {
         builder: (context, settingsProvider, child) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            title: 'App de Cifras',
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en', ''), // English
+              Locale('pt', ''), // Portuguese
+            ],
+            title: 'Worship Link',
             theme: settingsProvider.lightTheme,
             darkTheme: settingsProvider.darkTheme,
             themeMode: settingsProvider.themeMode,

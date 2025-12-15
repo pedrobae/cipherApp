@@ -14,22 +14,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   @override
-  void initState() {
-    super.initState();
-    // Pre-load authentication state with post-frame callback
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final isAuthenticated = context.read<AuthProvider>().isAuthenticated;
-      if (!isAuthenticated) {
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          '/login',
-          (Route<dynamic> route) => false, // Clear all routes
-        );
-      }
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
@@ -80,11 +64,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               );
-            }
-            if (!authProvider.isAuthenticated) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                Navigator.pushReplacementNamed(context, '/login');
-              });
             }
 
             // User is authenticated - show navigation options
@@ -139,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.only(top: 32, bottom: 16),
                     child: Center(
                       child: SvgPicture.asset(
-                        'assets/logos/v1_simple_color_black.svg',
+                        'assets/logos/v2_simple_color_white.svg',
                         width: 200,
                       ),
                     ),

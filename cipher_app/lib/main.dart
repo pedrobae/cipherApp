@@ -78,11 +78,11 @@ class MyApp extends StatelessWidget {
               Locale('en', ''), // English
               Locale('pt', ''), // Portuguese
             ],
-            title: 'Worship Link',
+            title: AppLocalizations.of(context)?.appName,
             theme: settingsProvider.lightTheme,
             darkTheme: settingsProvider.darkTheme,
             themeMode: settingsProvider.themeMode,
-            initialRoute: AppRoutes.home,
+            initialRoute: AppRoutes.main,
             routes: AppRoutes.routes,
           );
         },

@@ -16,19 +16,29 @@ class MainScreen extends StatefulWidget {
 }
 
 class MainScreenState extends State<MainScreen> {
+  late VoidCallback _authListener;
+
   @override
   void initState() {
-    // Open login bottom sheet if not authenticated
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final isAuthenticated = context.read<AuthProvider>().isAuthenticated;
-      if (!isAuthenticated) {
-        showModalBottomSheet(
-          context: context,
-          builder: (context) => LoginBottomSheet(),
-        );
-      }
-    });
     super.initState();
+    _authListener = () {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final authProvider = context.read<AuthProvider>();
+        if (!authProvider.isAuthenticated && mounted) {
+          showModalBottomSheet(
+            context: context,
+            builder: (context) => LoginBottomSheet(),
+          );
+        }
+      });
+    };
+    context.read<AuthProvider>().addListener(_authListener);
+  }
+
+  @override
+  void dispose() {
+    context.read<AuthProvider>().removeListener(_authListener);
+    super.dispose();
   }
 
   @override
@@ -37,11 +47,10 @@ class MainScreenState extends State<MainScreen> {
       builder: (context, authProvider, navigationProvider, child) {
         return Scaffold(
           appBar: AppBar(
-            title: Center(
-              child: SvgPicture.asset(
-                'assets/logos/v2_simple_color_white.svg',
-                width: 200,
-              ),
+            centerTitle: true,
+            title: SvgPicture.asset(
+              'assets/logos/v2_simple_color_white.svg',
+              width: 80,
             ),
           ),
           drawer: const AppDrawer(),
@@ -51,7 +60,7 @@ class MainScreenState extends State<MainScreen> {
               navigationProvider.navigateToRoute(NavigationRoute.values[index]);
             },
             items: navigationProvider
-                .getNavigationItems(context)
+                .getNavigationItems(context, iconSize: 24)
                 .map(
                   (navItem) => BottomNavigationBarItem(
                     icon: navItem.icon,

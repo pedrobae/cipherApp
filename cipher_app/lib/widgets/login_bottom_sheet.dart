@@ -11,17 +11,21 @@ class LoginBottomSheet extends StatefulWidget {
   State<LoginBottomSheet> createState() => _LoginBottomSheetState();
 }
 
-class _LoginBottomSheetState extends State<LoginBottomSheet> {
+class _LoginBottomSheetState extends State<LoginBottomSheet>
+    with TickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  late AnimationController _animationController;
 
   late final AuthProvider _authProvider;
 
   @override
   void initState() {
     super.initState();
+    _animationController = AnimationController(vsync: this);
+
     // Listen for authentication changes after the first frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _authProvider = context.read<AuthProvider>();
@@ -71,14 +75,17 @@ class _LoginBottomSheetState extends State<LoginBottomSheet> {
   }
 
   @override
-  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
     return BottomSheet(
+      animationController: _animationController,
       onClosing: () {
-        // No action needed on close
+        // If not authenticated, sign in anonymously TODO - fix this
+        if (!context.read<AuthProvider>().isAuthenticated) {
+          context.read<AuthProvider>().signInAnonymously();
+        }
       },
       showDragHandle: true,
       shape: RoundedRectangleBorder(
@@ -87,108 +94,128 @@ class _LoginBottomSheetState extends State<LoginBottomSheet> {
       builder: (context) => Padding(
         padding: MediaQuery.of(context).viewInsets,
         child: Consumer<AuthProvider>(
-          builder: (context, authProvider, child) => Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Login Title section
-              SizedBox(
-                child: Column(
-                  children: [
-                    Text(
-                      AppLocalizations.of(context)!.loginOrSignUp,
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme.onSurface,
-                      ),
-                    ),
-                    Text(
-                      AppLocalizations.of(context)!.loginDescription,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Login Method Section
-              SizedBox(
-                child: Column(
-                  children: [
-                    // Email Login
-                    TextButton(
-                      onPressed: () {}, // TODO Implement Email Login
-                      child: Text(AppLocalizations.of(context)!.emailLogin),
-                    ),
-                    // Phone Login
-                    TextButton(
-                      onPressed: () {}, // TODO Implement Phone Login
-                      child: Text(AppLocalizations.of(context)!.phoneLogin),
-                    ),
-                    Row(
-                      children: [
-                        // Google Login
-                        IconButton(
-                          onPressed: () {}, // TODO Implement Google Login
-                          icon: Icon(Icons.g_mobiledata),
+          builder: (context, authProvider, child) => Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                // Login Title section
+                SizedBox(
+                  width:
+                      MediaQuery.of(context).size.width *
+                      0.6, // 70% of screen width
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    spacing: 4,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)!.loginOrSignUp,
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onSurface,
                         ),
+                      ),
+                      Text(
+                        AppLocalizations.of(context)!.loginDescription,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
 
-                        // Facebook Login
-                        IconButton(
-                          onPressed: () {}, // TODO Implement Facebook Login
-                          icon: Icon(Icons.facebook),
+                // Login Method Section
+                SizedBox(
+                  child: Column(
+                    children: [
+                      // Email Login
+                      TextButton(
+                        onPressed: () {}, // TODO Implement Email Login
+                        child: Text(AppLocalizations.of(context)!.emailLogin),
+                      ),
+                      // Phone Login
+                      TextButton(
+                        onPressed: () {}, // TODO Implement Phone Login
+                        child: Text(AppLocalizations.of(context)!.phoneLogin),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Google Login
+                          IconButton(
+                            onPressed: () {}, // TODO Implement Google Login
+                            icon: Icon(Icons.g_mobiledata),
+                          ),
+
+                          // Facebook Login
+                          IconButton(
+                            onPressed: () {}, // TODO Implement Facebook Login
+                            icon: Icon(Icons.facebook),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                // Terms and Privacy Section
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.7,
+                  child: RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      style: TextStyle(
+                        color: colorScheme.onSurfaceVariant,
+                        fontSize: 12,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: AppLocalizations.of(
+                            context,
+                          )!.accountCreationPrefix,
+                        ),
+                        TextSpan(
+                          text: AppLocalizations.of(
+                            context,
+                          )!.termsAndConditions,
+                          style: TextStyle(
+                            color: colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.underline,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              // TODO Navigate to Terms & Conditions
+                            },
+                        ),
+                        TextSpan(
+                          text: AppLocalizations.of(
+                            context,
+                          )!.accountCreationMiddle,
+                        ),
+                        TextSpan(
+                          text: AppLocalizations.of(context)!.privacyPolicy,
+                          style: TextStyle(
+                            color: colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.underline,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              // TODO Navigate to Privacy Policy
+                            },
+                        ),
+                        TextSpan(
+                          text: AppLocalizations.of(
+                            context,
+                          )!.accountCreationSuffix,
                         ),
                       ],
                     ),
-                  ],
-                ),
-              ),
-              // Terms and Privacy Section
-              RichText(
-                textAlign: TextAlign.center,
-                text: TextSpan(
-                  style: TextStyle(
-                    color: colorScheme.onSurfaceVariant,
-                    fontSize: 12,
                   ),
-                  children: [
-                    TextSpan(
-                      text: AppLocalizations.of(context)!.accountCreationPrefix,
-                    ),
-                    TextSpan(
-                      text: AppLocalizations.of(context)!.termsAndConditions,
-                      style: TextStyle(
-                        color: colorScheme.primary,
-                        fontWeight: FontWeight.bold,
-                        decoration: TextDecoration.underline,
-                      ),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          // TODO Navigate to Terms & Conditions
-                        },
-                    ),
-                    TextSpan(
-                      text: AppLocalizations.of(context)!.accountCreationMiddle,
-                    ),
-                    TextSpan(
-                      text: AppLocalizations.of(context)!.privacyPolicy,
-                      style: TextStyle(
-                        color: colorScheme.primary,
-                        fontWeight: FontWeight.bold,
-                        decoration: TextDecoration.underline,
-                      ),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          // TODO Navigate to Privacy Policy
-                        },
-                    ),
-                    TextSpan(
-                      text: AppLocalizations.of(context)!.accountCreationSuffix,
-                    ),
-                  ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

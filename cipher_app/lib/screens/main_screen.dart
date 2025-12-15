@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -43,10 +44,14 @@ class MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Consumer2<AuthProvider, NavigationProvider>(
       builder: (context, authProvider, navigationProvider, child) {
         return Scaffold(
           appBar: AppBar(
+            backgroundColor: colorScheme.surfaceContainer,
             centerTitle: true,
             title: SvgPicture.asset(
               'assets/logos/v2_simple_color_white.svg',

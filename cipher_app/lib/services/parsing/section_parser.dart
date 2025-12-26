@@ -2,7 +2,6 @@ import 'package:cipher_app/models/domain/parsing_cipher.dart';
 import 'package:cipher_app/models/dtos/pdf_dto.dart';
 import 'package:cipher_app/providers/import_provider.dart';
 import 'package:flutter/foundation.dart';
-import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 enum SeparatorType { doubleNewLine, bracket, parenthesis, hyphen }
 

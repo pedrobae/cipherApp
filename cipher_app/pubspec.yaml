@@ -74,3 +74,11 @@ flutter:
     - family: Caveat
       fonts:
         - asset: assets/fonts/Caveat-VariableFont_wght.ttf
+
+    - family: FormaDJR
+      fonts:
+        - asset: assets/fonts/forma-djr/FormaDJRVariable-VF-Testing.ttf
+          weight: 400
+        - asset: assets/fonts/forma-djr/FormaDJRVariable-Italic-VF-Testing.ttf
+          weight: 400
+          style: italic

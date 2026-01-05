@@ -116,7 +116,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> signOut() async {
+  Future<void> logOut() async {
     if (isLoading) return;
     _isLoading = true;
     _error = null;

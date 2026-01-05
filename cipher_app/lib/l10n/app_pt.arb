@@ -55,5 +55,11 @@
   "addToPlaylist": "Adicionar à Playlist",
   "@addToPlaylist": {},
   "cloudCipher": "Cifra na Nuvem",
-  "@cloudCipher": {}
+  "@cloudCipher": {},
+  "about": "Sobre",
+  "@about": {},
+  "settings": "Configurações",
+  "@settings": {},
+  "logOut": "Sair",
+  "@logOut": {}
 }

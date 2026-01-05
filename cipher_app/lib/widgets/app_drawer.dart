@@ -18,31 +18,139 @@ class AppDrawer extends StatelessWidget {
         return Drawer(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadiusGeometry.horizontal(
-              right: Radius.circular(50),
+              right: Radius.circular(0),
             ),
           ),
           width: math.min(
-            math.max(MediaQuery.of(context).size.width * (2 / 3), 224),
+            math.max(MediaQuery.of(context).size.width * (3 / 4), 224),
             320,
           ),
-          backgroundColor: colorScheme.surfaceContainerHighest,
+          backgroundColor: colorScheme.surface,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              DrawerHeader(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [colorScheme.primary, colorScheme.tertiary],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.symmetric(
+                        vertical: 16.0,
+                        horizontal: 16.0,
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 16.0,
+                        horizontal: 16.0,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surfaceContainerHigh,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: SizedBox(), //TODO: User info here
+                    ),
+                    Divider(
+                      color: colorScheme.surfaceContainerLowest,
+                      height: 1,
+                    ),
+                    ...navigationProvider
+                        .getNavigationItems(context, iconSize: 24)
+                        .map(
+                          (navItem) => Container(
+                            decoration: BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: colorScheme.surfaceContainerLowest,
+                                  width: 1,
+                                ),
+                              ),
+                            ),
+                            child: ListTile(
+                              leading: navItem.icon,
+                              title: Text(navItem.title),
+                              selected:
+                                  navigationProvider.currentRoute ==
+                                  navItem.route,
+                              onTap: () {
+                                navigationProvider.navigateToRoute(
+                                  navItem.route,
+                                );
+                                Navigator.of(context).pop();
+                              },
+                              trailing: Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                size: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: colorScheme.surfaceContainerLowest,
+                            width: 1,
+                          ),
+                        ),
+                      ),
+                      child: ListTile(
+                        leading: const Icon(Icons.info_outline),
+                        title: Text(AppLocalizations.of(context)!.about),
+                        onTap: () {
+                          // TODO: Show about
+                        },
+                        trailing: Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          size: 16,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: colorScheme.surfaceContainerLowest,
+                            width: 1,
+                          ),
+                        ),
+                      ),
+                      child: ListTile(
+                        leading: const Icon(Icons.settings),
+                        title: Text(AppLocalizations.of(context)!.settings),
+                        onTap: () {
+                          Navigator.of(context).popAndPushNamed('/settings');
+                        },
+                        trailing: Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          size: 16,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                child: Text(
-                  AppLocalizations.of(context)!.appName,
-                  style: TextStyle(
-                    color: colorScheme.onPrimary,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+              ),
+              // LOGOUT BUTTON
+              Padding(
+                padding: const EdgeInsets.only(
+                  top: 16.0,
+                  bottom: 32.0,
+                  left: 16.0,
+                  right: 16.0,
+                ),
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    authProvider.logOut();
+                  },
+                  child: Row(
+                    spacing: 16,
+                    children: [
+                      Icon(Icons.logout),
+                      Text(
+                        AppLocalizations.of(context)!.logOut,
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                    ],
                   ),
                 ),
               ),

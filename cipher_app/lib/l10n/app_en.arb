@@ -55,5 +55,11 @@
   "addToPlaylist": "Add to Playlist",
   "@addToPlaylist": {},
   "cloudCipher": "Cloud Song Map",
-  "@cloudCipher": {}
+  "@cloudCipher": {},
+  "about": "About",
+  "@about": {},
+  "settings": "Settings",
+  "@settings": {},
+  "logOut": "Log Out",
+  "@logOut": {}
 }

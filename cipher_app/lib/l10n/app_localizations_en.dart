@@ -79,4 +79,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cloudCipher => 'Cloud Song Map';
+
+  @override
+  String get about => 'About';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get logOut => 'Log Out';
 }

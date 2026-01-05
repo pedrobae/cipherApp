@@ -241,6 +241,24 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Cifra na Nuvem'**
   String get cloudCipher;
+
+  /// No description provided for @about.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sobre'**
+  String get about;
+
+  /// No description provided for @settings.
+  ///
+  /// In pt, this message translates to:
+  /// **'Configurações'**
+  String get settings;
+
+  /// No description provided for @logOut.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sair'**
+  String get logOut;
 }
 
 class _AppLocalizationsDelegate

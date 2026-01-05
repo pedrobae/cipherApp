@@ -50,7 +50,7 @@ class MainScreenState extends State<MainScreen> {
               width: 80,
             ),
           ),
-          drawer: const AppDrawer(),
+          drawer: AppDrawer(),
           bottomNavigationBar: Container(
             decoration: BoxDecoration(
               border: Border(

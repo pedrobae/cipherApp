@@ -80,4 +80,13 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get cloudCipher => 'Cifra na Nuvem';
+
+  @override
+  String get about => 'Sobre';
+
+  @override
+  String get settings => 'Configurações';
+
+  @override
+  String get logOut => 'Sair';
 }

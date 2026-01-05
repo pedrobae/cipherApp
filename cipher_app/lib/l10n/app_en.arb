@@ -45,5 +45,9 @@
   "filter": "Filter",
   "@filter": {},
   "sort": "Sort",
-  "@sort": {}
+  "@sort": {},
+  "musicKey": "Key",
+  "@musicKey": {},
+  "musicTempo": "Tempo",
+  "@musicTempo": {}
 }

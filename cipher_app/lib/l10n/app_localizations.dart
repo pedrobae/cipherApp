@@ -211,6 +211,18 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Ordenar'**
   String get sort;
+
+  /// No description provided for @musicKey.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tom'**
+  String get musicKey;
+
+  /// No description provided for @musicTempo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Andamento'**
+  String get musicTempo;
 }
 
 class _AppLocalizationsDelegate

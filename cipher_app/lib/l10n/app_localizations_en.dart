@@ -64,4 +64,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sort => 'Sort';
+
+  @override
+  String get musicKey => 'Key';
+
+  @override
+  String get musicTempo => 'Tempo';
 }

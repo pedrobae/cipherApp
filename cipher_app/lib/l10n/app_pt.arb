@@ -45,5 +45,9 @@
   "filter": "Filtrar",
   "@filter": {},
   "sort": "Ordenar",
-  "@sort": {}
+  "@sort": {},
+  "musicKey": "Tom",
+  "@musicKey": {},
+  "musicTempo": "Andamento",
+  "@musicTempo": {}
 }

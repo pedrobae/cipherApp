@@ -14,6 +14,7 @@ class CipherDto {
   final List<String> tags;
   final DateTime? updatedAt;
   final int? downloadCount;
+  final String? duration;
 
   CipherDto({
     this.firebaseId,
@@ -25,6 +26,7 @@ class CipherDto {
     this.tags = const [],
     this.updatedAt,
     this.downloadCount,
+    this.duration,
   });
 
   factory CipherDto.fromFirestore(
@@ -48,6 +50,7 @@ class CipherDto {
                 .toList()
           : (map['tags'] as List?)?.cast<String>() ?? [],
       updatedAt: FirestoreTimestampHelper.toDateTime(map['updatedAt']),
+      duration: map['duration'] as String?,
     );
   }
 
@@ -68,6 +71,7 @@ class CipherDto {
       'tags': tags,
       'downloadCount': downloadCount,
       'updatedAt': FieldValue.serverTimestamp(),
+      'duration': duration,
     };
   }
 
@@ -82,6 +86,7 @@ class CipherDto {
       'tags': tags,
       'updatedAt': updatedAt?.toIso8601String(),
       'downloadCount': downloadCount,
+      'duration': duration,
     };
   }
 
@@ -98,6 +103,7 @@ class CipherDto {
       isLocal: false,
       versions: versions,
       updatedAt: FirestoreTimestampHelper.toDateTime(updatedAt),
+      duration: duration,
     );
   }
 
@@ -112,6 +118,7 @@ class CipherDto {
     List<String>? tags,
     DateTime? updatedAt,
     int? downloadCount,
+    String? duration,
   }) {
     return CipherDto(
       firebaseId: firebaseId ?? this.firebaseId,
@@ -123,6 +130,7 @@ class CipherDto {
       tags: tags ?? this.tags,
       updatedAt: updatedAt ?? this.updatedAt,
       downloadCount: downloadCount ?? this.downloadCount,
+      duration: duration ?? this.duration,
     );
   }
 }

@@ -479,14 +479,14 @@ class VersionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Get cached version by ID (returns null if not in cache)
-  Version? getCachedVersion(int versionId) {
-    for (var version in _versions) {
-      if (version.id == versionId) {
-        return version;
-      }
+  /// Get version by its local ID
+  Version getCachedVersionById(int versionId) {
+    try {
+      return _versions.firstWhere((version) => version.id == versionId);
+    } catch (e) {
+      _error = e.toString();
+      return Version.empty();
     }
-    return null;
   }
 
   // Check if a version is already cached

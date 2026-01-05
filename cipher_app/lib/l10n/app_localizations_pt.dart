@@ -65,4 +65,10 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get sort => 'Ordenar';
+
+  @override
+  String get musicKey => 'Tom';
+
+  @override
+  String get musicTempo => 'Andamento';
 }

@@ -514,14 +514,14 @@ class CipherProvider extends ChangeNotifier {
   }
 
   /// ===== CIPHER CACHING =====
-  // Get cached cipher by ID (returns null if not in cache)
-  Cipher? getCachedCipher(int cipherId) {
-    for (var cipher in _localCiphers) {
-      if (cipher.id == cipherId) {
-        return cipher;
-      }
+  Cipher getCachedCipherById(int cipherId) {
+    try {
+      _error = null;
+      return _localCiphers.firstWhere((cipher) => cipher.id == cipherId);
+    } catch (e) {
+      _error = e.toString();
+      return Cipher.empty();
     }
-    return null;
   }
 
   // Check if a cipher is already cached

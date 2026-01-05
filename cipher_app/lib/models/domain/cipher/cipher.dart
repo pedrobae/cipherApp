@@ -15,6 +15,7 @@ class Cipher {
   final bool isLocal;
   final List<String> tags;
   final List<Version> versions;
+  final String? duration;
 
   const Cipher({
     this.id,
@@ -28,6 +29,7 @@ class Cipher {
     this.createdAt,
     this.updatedAt,
     required this.isLocal,
+    this.duration,
     this.versions = const [],
   });
 
@@ -48,6 +50,7 @@ class Cipher {
       versions: json['maps'] != null
           ? (json['maps'] as List).map((m) => Version.fromSqLite(m)).toList()
           : const [],
+      duration: json['duration'] as String?,
     );
   }
 
@@ -79,6 +82,7 @@ class Cipher {
       'language': language,
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
+      'duration': duration,
     };
   }
 
@@ -97,6 +101,7 @@ class Cipher {
       'isLocal': false,
       'tags': tags,
       'versions': versions,
+      'duration': duration,
     };
   }
 
@@ -110,6 +115,7 @@ class Cipher {
       language: language,
       updatedAt: updatedAt,
       tags: tags,
+      duration: duration,
     );
   }
 
@@ -126,6 +132,7 @@ class Cipher {
     DateTime? updatedAt,
     bool? isLocal,
     List<Version>? versions,
+    String? duration,
   }) {
     return Cipher(
       id: id ?? this.id,
@@ -140,6 +147,7 @@ class Cipher {
       updatedAt: updatedAt ?? this.updatedAt,
       isLocal: isLocal ?? this.isLocal,
       versions: versions ?? this.versions,
+      duration: duration ?? this.duration,
     );
   }
 }

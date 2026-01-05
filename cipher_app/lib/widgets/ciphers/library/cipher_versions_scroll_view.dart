@@ -156,7 +156,6 @@ class _CipherVersionsScrollViewState extends State<CipherVersionsScrollView> {
         await cipherProvider.loadCiphers(forceReload: true);
       },
       child: ListView.builder(
-        padding: const EdgeInsets.all(4),
         cacheExtent: 500,
         physics: const AlwaysScrollableScrollPhysics(),
         itemCount:

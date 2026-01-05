@@ -77,4 +77,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get addToPlaylist => 'Adicionar à Playlist';
+
+  @override
+  String get cloudCipher => 'Cifra na Nuvem';
 }

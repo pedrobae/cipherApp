@@ -53,5 +53,7 @@
   "noCiphersFound": "Nenhuma cifra encontrada",
   "@noCiphersFound": {  "description": "Message displayed when no ciphers are found"  },
   "addToPlaylist": "Adicionar à Playlist",
-  "@addToPlaylist": {}
+  "@addToPlaylist": {},
+  "cloudCipher": "Cifra na Nuvem",
+  "@cloudCipher": {}
 }

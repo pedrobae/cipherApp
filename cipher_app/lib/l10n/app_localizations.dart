@@ -235,6 +235,12 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Adicionar à Playlist'**
   String get addToPlaylist;
+
+  /// No description provided for @cloudCipher.
+  ///
+  /// In pt, this message translates to:
+  /// **'Cifra na Nuvem'**
+  String get cloudCipher;
 }
 
 class _AppLocalizationsDelegate

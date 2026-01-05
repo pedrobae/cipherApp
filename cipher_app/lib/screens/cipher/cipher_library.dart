@@ -67,7 +67,11 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
                     )
                   : null,
               body: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.only(
+                  top: 16.0,
+                  left: 16.0,
+                  right: 16.0,
+                ),
                 child: Column(
                   spacing: 8,
                   children: [

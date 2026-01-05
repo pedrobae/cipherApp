@@ -1,8 +1,8 @@
+import 'package:cipher_app/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/models/dtos/cipher_dto.dart';
 import 'package:cipher_app/providers/selection_provider.dart';
-import 'package:cipher_app/widgets/ciphers/tag_chip.dart';
 
 class CloudCipherCard extends StatelessWidget {
   final CipherDto cipher;
@@ -17,70 +17,58 @@ class CloudCipherCard extends StatelessWidget {
     return Consumer<SelectionProvider>(
       builder: (context, selectionProvider, child) {
         return Container(
-          margin: EdgeInsets.all(4),
+          margin: const EdgeInsets.only(top: 8.0),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            color: colorScheme.surfaceContainerHighest,
-            boxShadow: [
-              BoxShadow(
-                offset: Offset(0, 1),
-                color: theme.shadowColor,
-                blurRadius: 1,
-              ),
-            ],
+            border: Border.all(color: colorScheme.surfaceContainerHigh),
           ),
-          child: ListTile(
-            onTap: () {
-              // Handle tap if needed
-            },
-            tileColor: colorScheme.surfaceContainerHighest,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            contentPadding: EdgeInsets.symmetric(horizontal: 8),
-            title: Column(
-              spacing: 4,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Wrap(
-                  alignment: WrapAlignment.spaceBetween,
-                  crossAxisAlignment: WrapCrossAlignment.end,
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              // INFO
+              Expanded(
+                child: Column(
+                  spacing: 2.0,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(cipher.title, style: theme.textTheme.titleLarge),
-                    Text(cipher.author),
+                    Text(
+                      cipher.title,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    Row(
+                      spacing: 16.0,
+                      children: [
+                        Text(
+                          '${AppLocalizations.of(context)!.musicKey}: ${cipher.musicKey}',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        cipher.tempo != ''
+                            ? Text(
+                                cipher.tempo,
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              )
+                            : Text('-'),
+                        cipher.duration != null
+                            ? Text(
+                                cipher.duration!,
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              )
+                            : Text('-'),
+                      ],
+                    ),
+                    Text(
+                      AppLocalizations.of(context)!.cloudCipher,
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainerLowest,
+                      ),
+                    ),
                   ],
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Tom: ${cipher.musicKey}'),
-                    Text('Tempo: ${cipher.tempo}'),
-                  ],
-                ),
-                Wrap(
-                  alignment: WrapAlignment.center,
-                  spacing: 4,
-                  runSpacing: 4,
-                  children: cipher.tags
-                      .map((tag) => TagChip(tag: tag))
-                      .toList(),
-                ),
-              ],
-            ),
-            trailing: selectionProvider.isSelectionMode
-                ? Checkbox(
-                    value: selectionProvider.selectedItems.contains(cipher),
-                    onChanged: (value) {
-                      selectionProvider.toggleItemSelection(cipher);
-                    },
-                  )
-                : IconButton(
-                    icon: const Icon(Icons.download_for_offline),
-                    onPressed: () {
-                      // Handle download if needed
-                    },
-                  ),
+              ),
+              // ACTIONS
+              IconButton(onPressed: () {}, icon: Icon(Icons.cloud_download)),
+            ],
           ),
         );
       },

@@ -15,6 +15,9 @@ class VersionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Consumer2<CipherProvider, VersionProvider>(
       builder: (context, cipherProvider, versionProvider, child) {
         final version = versionProvider.getCachedVersionById(versionId);
@@ -30,7 +33,7 @@ class VersionCard extends StatelessWidget {
         }
         return Container(
           decoration: BoxDecoration(
-            border: Border.all(color: Theme.of(context).colorScheme.outline),
+            border: Border.all(color: colorScheme.surfaceContainerHigh),
           ),
           padding: const EdgeInsets.all(8.0),
           child: Row(

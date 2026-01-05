@@ -72,8 +72,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get musicTempo => 'Tempo';
 
   @override
-  String get noCiphersFound => 'No ciphers found';
+  String get noCiphersFound => 'No Song Map found';
 
   @override
   String get addToPlaylist => 'Add to Playlist';
+
+  @override
+  String get cloudCipher => 'Cloud Song Map';
 }

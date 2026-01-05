@@ -50,8 +50,10 @@
   "@musicKey": {},
   "musicTempo": "Tempo",
   "@musicTempo": {},
-  "noCiphersFound": "No ciphers found",
+  "noCiphersFound": "No Song Map found",
   "@noCiphersFound": {  "description": "Message displayed when no ciphers are found"  },
   "addToPlaylist": "Add to Playlist",
-  "@addToPlaylist": {}
+  "@addToPlaylist": {},
+  "cloudCipher": "Cloud Song Map",
+  "@cloudCipher": {}
 }

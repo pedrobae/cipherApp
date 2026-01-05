@@ -51,20 +51,33 @@ class MainScreenState extends State<MainScreen> {
             ),
           ),
           drawer: const AppDrawer(),
-          bottomNavigationBar: BottomNavigationBar(
-            currentIndex: navigationProvider.currentIndex,
-            onTap: (index) {
-              navigationProvider.navigateToRoute(NavigationRoute.values[index]);
-            },
-            items: navigationProvider
-                .getNavigationItems(context, iconSize: 24)
-                .map(
-                  (navItem) => BottomNavigationBarItem(
-                    icon: navItem.icon,
-                    label: navItem.title,
-                  ),
-                )
-                .toList(),
+          bottomNavigationBar: Container(
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(
+                  color: colorScheme.surfaceContainerLowest,
+                  width: 0.1,
+                ),
+              ),
+            ),
+            child: BottomNavigationBar(
+              currentIndex: navigationProvider.currentIndex,
+              elevation: 2,
+              onTap: (index) {
+                navigationProvider.navigateToRoute(
+                  NavigationRoute.values[index],
+                );
+              },
+              items: navigationProvider
+                  .getNavigationItems(context, iconSize: 24)
+                  .map(
+                    (navItem) => BottomNavigationBarItem(
+                      icon: navItem.icon,
+                      label: navItem.title,
+                    ),
+                  )
+                  .toList(),
+            ),
           ),
           body: navigationProvider.currentScreen,
         );

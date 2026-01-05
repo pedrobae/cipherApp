@@ -7,7 +7,7 @@ class Palette {
   static const Color _orange = Color(0xFFE66423); // Orange
   static const Color _gold = Color(0xFFE6B428); // Gold
   static const Color _burgundy = Color(0xFF5A002D); // Burgundy
-  static const Color _neutral = Color(0xFFE1E1E6); // Neutral
+  static const Color _neutral = Colors.white; // Neutral
   static const Color _darkNeutral = Color(0xFF121214); // Dark Neutral
 
   /// Lighten a color by [amount] (0.0 to 1.0)

@@ -104,59 +104,11 @@ abstract class AppLocalizations {
   /// **'Worship Link'**
   String get appName;
 
-  /// No description provided for @loginOrSignUp.
+  /// No description provided for @email.
   ///
   /// In pt, this message translates to:
-  /// **'Login ou Cadastro'**
-  String get loginOrSignUp;
-
-  /// No description provided for @loginDescription.
-  ///
-  /// In pt, this message translates to:
-  /// **'Selecione um método para terminar de configurar sua conta'**
-  String get loginDescription;
-
-  /// No description provided for @emailLogin.
-  ///
-  /// In pt, this message translates to:
-  /// **'Entrar com E-mail'**
-  String get emailLogin;
-
-  /// No description provided for @phoneLogin.
-  ///
-  /// In pt, this message translates to:
-  /// **'Entrar com Telefone'**
-  String get phoneLogin;
-
-  /// First part of terms acceptance message
-  ///
-  /// In pt, this message translates to:
-  /// **'Se você está criando uma conta, '**
-  String get accountCreationPrefix;
-
-  /// Middle conjunction in terms acceptance message
-  ///
-  /// In pt, this message translates to:
-  /// **' e '**
-  String get accountCreationMiddle;
-
-  /// Final part of terms acceptance message
-  ///
-  /// In pt, this message translates to:
-  /// **' se aplicarão.'**
-  String get accountCreationSuffix;
-
-  /// Terms and Conditions link text
-  ///
-  /// In pt, this message translates to:
-  /// **'Termos & Condições'**
-  String get termsAndConditions;
-
-  /// Privacy Policy link text
-  ///
-  /// In pt, this message translates to:
-  /// **'Política de Privacidade'**
-  String get privacyPolicy;
+  /// **'E-mail'**
+  String get email;
 
   /// No description provided for @library.
   ///
@@ -175,6 +127,48 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Playlists'**
   String get playlists;
+
+  /// Prefix to use in conjunction with appName
+  ///
+  /// In pt, this message translates to:
+  /// **'Login no '**
+  String get logInTitlePrefix;
+
+  /// No description provided for @password.
+  ///
+  /// In pt, this message translates to:
+  /// **'Senha'**
+  String get password;
+
+  /// No description provided for @forgotPassword.
+  ///
+  /// In pt, this message translates to:
+  /// **'Esqueceu a Senha?'**
+  String get forgotPassword;
+
+  /// Suffix text for forgot password message
+  ///
+  /// In pt, this message translates to:
+  /// **'Por favor, tente novamente ou solicite uma nova.'**
+  String get forgotPasswordSuffix;
+
+  /// No description provided for @login.
+  ///
+  /// In pt, this message translates to:
+  /// **'Entrar'**
+  String get login;
+
+  /// Prefix text for account creation prompt
+  ///
+  /// In pt, this message translates to:
+  /// **'Não tem uma conta? '**
+  String get accountCreationPrefix;
+
+  /// Suffix text for account creation prompt
+  ///
+  /// In pt, this message translates to:
+  /// **'Registre-se.'**
+  String get accountCreationSuffix;
 }
 
 class _AppLocalizationsDelegate

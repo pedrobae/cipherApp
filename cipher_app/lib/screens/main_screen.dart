@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:cipher_app/providers/navigation_provider.dart';
 import 'package:cipher_app/providers/auth_provider.dart';
 
-import 'package:cipher_app/widgets/login_bottom_sheet.dart';
 import 'package:cipher_app/widgets/app_drawer.dart';
 
 class MainScreen extends StatefulWidget {
@@ -17,23 +15,17 @@ class MainScreen extends StatefulWidget {
 }
 
 class MainScreenState extends State<MainScreen> {
-  late VoidCallback _authListener;
-
   @override
   void initState() {
     super.initState();
-    _authListener = () {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        final authProvider = context.read<AuthProvider>();
-        if (!authProvider.isAuthenticated && mounted) {
-          showModalBottomSheet(
-            context: context,
-            builder: (context) => LoginBottomSheet(),
-          );
-        }
-      });
-    };
     context.read<AuthProvider>().addListener(_authListener);
+  }
+
+  void _authListener() {
+    final authProvider = context.read<AuthProvider>();
+    if (!authProvider.isAuthenticated) {
+      Navigator.of(context).pushNamed('/login');
+    }
   }
 
   @override

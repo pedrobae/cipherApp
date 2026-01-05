@@ -12,32 +12,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appName => 'Worship Link';
 
   @override
-  String get loginOrSignUp => 'Login or Sign Up';
-
-  @override
-  String get loginDescription =>
-      'Please select your preferred method to continue setting up your account';
-
-  @override
-  String get emailLogin => 'Continue with Email';
-
-  @override
-  String get phoneLogin => 'Continue with Phone';
-
-  @override
-  String get accountCreationPrefix => 'If you are creating a new account, ';
-
-  @override
-  String get accountCreationMiddle => ' and ';
-
-  @override
-  String get accountCreationSuffix => ' will apply.';
-
-  @override
-  String get termsAndConditions => 'Terms & Conditions';
-
-  @override
-  String get privacyPolicy => 'Privacy Policy';
+  String get email => 'Email';
 
   @override
   String get library => 'Library';
@@ -47,4 +22,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get playlists => 'Playlists';
+
+  @override
+  String get logInTitlePrefix => 'Login to ';
+
+  @override
+  String get password => 'Password';
+
+  @override
+  String get forgotPassword => 'Forgot Password?';
+
+  @override
+  String get forgotPasswordSuffix => 'Please try again or Request a new one.';
+
+  @override
+  String get login => 'Log In';
+
+  @override
+  String get accountCreationPrefix => 'New User? ';
+
+  @override
+  String get accountCreationSuffix => 'Sign Up';
 }

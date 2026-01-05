@@ -270,7 +270,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
-      fontFamily: 'OpenSans',
+      fontFamily: 'FormaDJRMicro',
       shadowColor: isDark
           ? NeutralPalette.shadowDark
           : NeutralPalette.shadowLight,

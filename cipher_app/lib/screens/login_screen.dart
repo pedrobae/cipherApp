@@ -1,3 +1,4 @@
+import 'package:cipher_app/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:cipher_app/providers/auth_provider.dart';
 import 'package:cipher_app/providers/user_provider.dart';
@@ -30,18 +31,15 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _authListener() {
-    if (_authProvider.isAuthenticated) {
-      _navigateToHome();
+    if (_authProvider.isAuthenticated && context.mounted) {
+      _authProvider.removeListener(_authListener); // Prevent multiple calls
+      context.read<UserProvider>().ensureUsersExist([_authProvider.id!]);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (context.mounted) {
+          Navigator.of(context).pop();
+        }
+      });
     }
-  }
-
-  void _navigateToHome() {
-    context.read<UserProvider>().ensureUsersExist([_authProvider.id!]);
-    _authProvider.removeListener(_authListener);
-    Navigator.of(context).pushNamedAndRemoveUntil(
-      '/',
-      (Route<dynamic> route) => false, // Remove all previous routes
-    );
   }
 
   @override
@@ -84,293 +82,253 @@ class _LoginScreenState extends State<LoginScreen> {
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      // Background Gradient
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              colorScheme.primaryContainer,
-              colorScheme.surfaceContainerLow,
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-        child: Consumer<AuthProvider>(
-          builder: (context, authProvider, child) => Center(
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Use SVG logo asset instead of music note icon
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: SvgPicture.asset(
-                      'assets/logos/v1_simple_color_black.svg',
-                      width: 120,
-                      height: 120,
-                    ),
+      body: Consumer<AuthProvider>(
+        builder: (context, authProvider, child) => SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              spacing: 24,
+              children: [
+                SizedBox(height: 40),
+                SvgPicture.asset(
+                  'assets/logos/v1_simple_color_black.svg',
+                  width: 80,
+                  height: 80,
+                ),
+                Text(
+                  AppLocalizations.of(context)!.logInTitlePrefix +
+                      AppLocalizations.of(context)!.appName,
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: colorScheme.onSurface,
                   ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Bem-vindo ao App de Cifras',
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.onSurface,
+                ),
+                Column(
+                  spacing: 8,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      AppLocalizations.of(context)!.email,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                  Container(
-                    constraints: const BoxConstraints(maxWidth: 340),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      color: colorScheme.surface,
-                      borderRadius: BorderRadius.circular(18),
-                      boxShadow: [
-                        BoxShadow(
-                          color: colorScheme.surfaceContainerHighest,
-                          blurRadius: 8,
-                          offset: const Offset(0, 3),
+                    TextFormField(
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.next,
+                      autofocus: true,
+                      maxLines: 1,
+                      decoration: InputDecoration(
+                        label: Text(AppLocalizations.of(context)!.email),
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
+                        prefixIcon: Icon(
+                          Icons.email,
+                          color: colorScheme.primary,
                         ),
-                      ],
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(0),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(0),
+                          borderSide: BorderSide(
+                            color: colorScheme.primary,
+                            width: 2,
+                          ),
+                        ),
+                        visualDensity: VisualDensity.compact,
+                      ),
+                      validator: _validateEmail,
                     ),
-                    child: Form(
-                      key: _formKey,
+                  ],
+                ),
+                Column(
+                  spacing: 8,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      AppLocalizations.of(context)!.password,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    TextFormField(
+                      controller: _passwordController,
+                      obscureText: _obscurePassword,
+                      textInputAction: TextInputAction.done,
+                      maxLines: 1,
+                      decoration: InputDecoration(
+                        label: Text(AppLocalizations.of(context)!.password),
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
+                        prefixIcon: Icon(
+                          Icons.lock,
+                          color: colorScheme.primary,
+                        ),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: colorScheme.primary,
+                          ),
+                          onPressed: _toggleObscure,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(0),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(0),
+                          borderSide: BorderSide(
+                            color: colorScheme.primary,
+                            width: 2,
+                          ),
+                        ),
+                        visualDensity: VisualDensity.compact,
+                      ),
+                      validator: _validatePassword,
+                    ),
+                    Center(
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        spacing: 0,
                         children: [
-                          TextFormField(
-                            controller: _emailController,
-                            keyboardType: TextInputType.emailAddress,
-                            textInputAction: TextInputAction.next,
-                            autofocus: true,
-                            maxLines: 1,
-                            decoration: InputDecoration(
-                              label: const Text(
-                                'E-mail',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              prefixIcon: Icon(
-                                Icons.email,
+                          GestureDetector(
+                            onTap: () {
+                              // TODO: Implement forgot password functionality
+                            },
+                            child: Text(
+                              AppLocalizations.of(context)!.forgotPassword,
+                              style: TextStyle(
                                 color: colorScheme.primary,
+                                fontWeight: FontWeight.bold,
                               ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30),
-                                borderSide: BorderSide(
-                                  color: colorScheme.primary,
-                                  width: 2,
-                                ),
-                              ),
-                            ),
-                            validator: _validateEmail,
-                          ),
-                          const SizedBox(height: 16),
-                          TextFormField(
-                            controller: _passwordController,
-                            obscureText: _obscurePassword,
-                            textInputAction: TextInputAction.done,
-                            maxLines: 1,
-                            decoration: InputDecoration(
-                              label: const Text(
-                                'Senha',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              prefixIcon: Icon(
-                                Icons.lock,
-                                color: colorScheme.primary,
-                              ),
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  _obscurePassword
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
-                                  color: colorScheme.primary,
-                                ),
-                                tooltip: _obscurePassword
-                                    ? 'Mostrar senha'
-                                    : 'Ocultar senha',
-                                onPressed: _toggleObscure,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30),
-                                borderSide: BorderSide(
-                                  color: colorScheme.primary,
-                                  width: 2,
-                                ),
-                              ),
-                            ),
-                            validator: _validatePassword,
-                          ),
-                          const SizedBox(height: 12),
-                          if (authProvider.isLoading)
-                            const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 8),
-                              child: CircularProgressIndicator(),
-                            ),
-                          if (authProvider.error != null)
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 8),
-                              child: Text(
-                                authProvider.error!,
-                                style: TextStyle(
-                                  color: colorScheme.error,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton.icon(
-                              icon: const Icon(Icons.login),
-                              label: Text(
-                                'Entrar',
-                                style: theme.textTheme.labelLarge!.copyWith(
-                                  color: colorScheme.onPrimaryContainer,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: colorScheme.primaryContainer,
-                                foregroundColor: colorScheme.onPrimaryContainer,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                elevation: 2,
-                              ),
-                              onPressed: authProvider.isLoading
-                                  ? null
-                                  : () {
-                                      if (_formKey.currentState?.validate() ??
-                                          false) {
-                                        authProvider.signInWithEmail(
-                                          _emailController.text,
-                                          _passwordController.text,
-                                        );
-                                      }
-                                    },
                             ),
                           ),
-                          // Divider between login and other options
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Divider(
-                                    color: colorScheme.outlineVariant,
-                                    thickness: 1,
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                  ),
-                                  child: Text(
-                                    'ou',
-                                    style: TextStyle(
-                                      color: colorScheme.outline,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Divider(
-                                    color: colorScheme.outlineVariant,
-                                    thickness: 1,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          // Google Sign-In Button
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton.icon(
-                              icon: const Icon(Icons.g_mobiledata, size: 24),
-                              label: Text(
-                                'Entrar com Google',
-                                style: theme.textTheme.labelLarge!.copyWith(
-                                  color: colorScheme.onSecondaryContainer,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: colorScheme.secondaryContainer,
-                                foregroundColor:
-                                    colorScheme.onSecondaryContainer,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                elevation: 2,
-                              ),
-                              onPressed: authProvider.isLoading
-                                  ? null
-                                  : () => authProvider.signInWithGoogle(),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton.icon(
-                              icon: const Icon(Icons.person_outline),
-                              label: Text(
-                                'Entrar Anonimamente',
-                                style: theme.textTheme.labelLarge!.copyWith(
-                                  color: colorScheme.onPrimary,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: colorScheme.primary,
-                                foregroundColor: colorScheme.onPrimary,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                elevation: 2,
-                              ),
-                              onPressed: authProvider.isLoading
-                                  ? null
-                                  : () => authProvider.signInAnonymously(),
-                            ),
-                          ),
-                          // Sign Up Link
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Não tem uma conta? ',
-                                style: TextStyle(
-                                  color: colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: () =>
-                                    Navigator.of(context).pushNamed('/signup'),
-                                child: Text(
-                                  'Criar Conta',
-                                  style: TextStyle(
-                                    color: colorScheme.primary,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ],
+                          Text(
+                            AppLocalizations.of(context)!.forgotPasswordSuffix,
                           ),
                         ],
                       ),
                     ),
+                  ],
+                ),
+                if (authProvider.isLoading)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: CircularProgressIndicator(),
                   ),
-                ],
-              ),
+                if (authProvider.error != null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Text(
+                      authProvider.error!,
+                      style: TextStyle(
+                        color: colorScheme.error,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.login),
+                    label: Text(
+                      AppLocalizations.of(context)!.login,
+                      style: theme.textTheme.labelLarge!.copyWith(
+                        color: colorScheme.surface,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: colorScheme.onSurface,
+                      foregroundColor: colorScheme.surface,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(0),
+                      ),
+                      elevation: 2,
+                    ),
+                    onPressed: authProvider.isLoading
+                        ? null
+                        : () {
+                            if (_formKey.currentState?.validate() ?? false) {
+                              authProvider.signInWithEmail(
+                                _emailController.text,
+                                _passwordController.text,
+                              );
+                            }
+                          },
+                  ),
+                ),
+                // Sign Up Link
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      AppLocalizations.of(context)!.accountCreationPrefix,
+                      style: TextStyle(color: colorScheme.onSurfaceVariant),
+                    ),
+                    GestureDetector(
+                      onTap: () => Navigator.of(context).pushNamed('/signup'),
+                      child: Text(
+                        AppLocalizations.of(context)!.accountCreationSuffix,
+                        style: TextStyle(
+                          color: colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                // Google Sign-In Button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.g_mobiledata, size: 24),
+                    label: Text(
+                      'Entrar com Google',
+                      style: theme.textTheme.labelLarge!.copyWith(
+                        color: colorScheme.onSecondaryContainer,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: colorScheme.secondaryContainer,
+                      foregroundColor: colorScheme.onSecondaryContainer,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 2,
+                    ),
+                    onPressed: authProvider.isLoading
+                        ? null
+                        : () => authProvider.signInWithGoogle(),
+                  ),
+                ),
+                // SizedBox(
+                //   width: double.infinity,
+                //   child: ElevatedButton.icon(
+                //     icon: const Icon(Icons.person_outline),
+                //     label: Text(
+                //       'Entrar Anonimamente',
+                //       style: theme.textTheme.labelLarge!.copyWith(
+                //         color: colorScheme.onPrimary,
+                //         fontWeight: FontWeight.bold,
+                //       ),
+                //     ),
+                //     style: ElevatedButton.styleFrom(
+                //       backgroundColor: colorScheme.primary,
+                //       foregroundColor: colorScheme.onPrimary,
+                //       shape: RoundedRectangleBorder(
+                //         borderRadius: BorderRadius.circular(16),
+                //       ),
+                //       elevation: 2,
+                //     ),
+                //     onPressed: authProvider.isLoading
+                //         ? null
+                //         : () => authProvider.signInAnonymously(),
+                //   ),
+                // ),
+              ],
             ),
           ),
         ),

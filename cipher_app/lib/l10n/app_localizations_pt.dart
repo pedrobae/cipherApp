@@ -12,32 +12,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get appName => 'Worship Link';
 
   @override
-  String get loginOrSignUp => 'Login ou Cadastro';
-
-  @override
-  String get loginDescription =>
-      'Selecione um método para terminar de configurar sua conta';
-
-  @override
-  String get emailLogin => 'Entrar com E-mail';
-
-  @override
-  String get phoneLogin => 'Entrar com Telefone';
-
-  @override
-  String get accountCreationPrefix => 'Se você está criando uma conta, ';
-
-  @override
-  String get accountCreationMiddle => ' e ';
-
-  @override
-  String get accountCreationSuffix => ' se aplicarão.';
-
-  @override
-  String get termsAndConditions => 'Termos & Condições';
-
-  @override
-  String get privacyPolicy => 'Política de Privacidade';
+  String get email => 'E-mail';
 
   @override
   String get library => 'Biblioteca';
@@ -47,4 +22,26 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get playlists => 'Playlists';
+
+  @override
+  String get logInTitlePrefix => 'Login no ';
+
+  @override
+  String get password => 'Senha';
+
+  @override
+  String get forgotPassword => 'Esqueceu a Senha?';
+
+  @override
+  String get forgotPasswordSuffix =>
+      'Por favor, tente novamente ou solicite uma nova.';
+
+  @override
+  String get login => 'Entrar';
+
+  @override
+  String get accountCreationPrefix => 'Não tem uma conta? ';
+
+  @override
+  String get accountCreationSuffix => 'Registre-se.';
 }

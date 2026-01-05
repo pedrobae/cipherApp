@@ -2,38 +2,34 @@
   "@@locale": "pt",
   "appName": "Worship Link",
   "@appName": {},
-  "loginOrSignUp": "Login ou Cadastro",
-  "@loginOrSignUp": {},
-  "loginDescription": "Selecione um método para terminar de configurar sua conta",
-  "@loginDescription": {},
-  "emailLogin": "Entrar com E-mail",
-  "@emailLogin": {},
-  "phoneLogin": "Entrar com Telefone",
-  "@phoneLogin": {},
-  "accountCreationPrefix": "Se você está criando uma conta, ",
-  "@accountCreationPrefix": {
-    "description": "First part of terms acceptance message"
-  },
-  "accountCreationMiddle": " e ",
-  "@accountCreationMiddle": {
-    "description": "Middle conjunction in terms acceptance message"
-  },
-  "accountCreationSuffix": " se aplicarão.",
-  "@accountCreationSuffix": {
-    "description": "Final part of terms acceptance message"
-  },
-  "termsAndConditions": "Termos & Condições",
-  "@termsAndConditions": {
-    "description": "Terms and Conditions link text"
-  },
-  "privacyPolicy": "Política de Privacidade",
-  "@privacyPolicy": {
-    "description": "Privacy Policy link text"
-  },
+  "email": "E-mail",
+  "@email": {},
   "library": "Biblioteca",
   "@library": {},
   "home": "Home",
   "@home": {},
   "playlists": "Playlists",
-  "@playlists": {}
+  "@playlists": {},
+  "logInTitlePrefix": "Login no ",
+  "@logInTitlePrefix": {
+    "description": "Prefix to use in conjunction with appName"
+  },
+  "password": "Senha",
+  "@password": {},
+  "forgotPassword": "Esqueceu a Senha?",
+  "@forgotPassword": {},
+  "forgotPasswordSuffix": "Por favor, tente novamente ou solicite uma nova.",
+  "@forgotPasswordSuffix": {
+    "description": "Suffix text for forgot password message"
+  },
+  "login": "Entrar",
+  "@login": {},
+  "accountCreationPrefix": "Não tem uma conta? ",
+  "@accountCreationPrefix": {
+    "description": "Prefix text for account creation prompt"
+  },
+  "accountCreationSuffix": "Registre-se.",
+  "@accountCreationSuffix": {
+    "description": "Suffix text for account creation prompt"
+  }
 }

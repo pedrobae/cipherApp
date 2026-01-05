@@ -31,5 +31,19 @@
   "accountCreationSuffix": "Registre-se.",
   "@accountCreationSuffix": {
     "description": "Suffix text for account creation prompt"
-  }
+  },
+  "loading": "Carregando...",
+  "@loading": {},
+  "errorPrefix": "Erro: ",
+  "@errorPrefix": {"description": "Prefix to be used with the relevant error message"},
+  "tryAgain": "Tentar Novamente",
+  "@tryAgain": {},
+  "searchCiphers": "Pesquisar por título, autor...",
+  "@searchCiphers": {},
+  "create": "Criar",
+  "@create": {},
+  "filter": "Filtrar",
+  "@filter": {},
+  "sort": "Ordenar",
+  "@sort": {}
 }

@@ -169,6 +169,48 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Registre-se.'**
   String get accountCreationSuffix;
+
+  /// No description provided for @loading.
+  ///
+  /// In pt, this message translates to:
+  /// **'Carregando...'**
+  String get loading;
+
+  /// Prefix to be used with the relevant error message
+  ///
+  /// In pt, this message translates to:
+  /// **'Erro: '**
+  String get errorPrefix;
+
+  /// No description provided for @tryAgain.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tentar Novamente'**
+  String get tryAgain;
+
+  /// No description provided for @searchCiphers.
+  ///
+  /// In pt, this message translates to:
+  /// **'Pesquisar por título, autor...'**
+  String get searchCiphers;
+
+  /// No description provided for @create.
+  ///
+  /// In pt, this message translates to:
+  /// **'Criar'**
+  String get create;
+
+  /// No description provided for @filter.
+  ///
+  /// In pt, this message translates to:
+  /// **'Filtrar'**
+  String get filter;
+
+  /// No description provided for @sort.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ordenar'**
+  String get sort;
 }
 
 class _AppLocalizationsDelegate

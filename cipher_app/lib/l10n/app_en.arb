@@ -31,5 +31,19 @@
   "accountCreationSuffix": "Sign Up",
   "@accountCreationSuffix": {
     "description": "Suffix text for account creation prompt"
-  }
+  },
+  "loading": "Loading...",
+  "@loading": {},
+  "errorPrefix": "Error: ",
+  "@errorPrefix": {"description": "Prefix to be used with the relevant error message"},
+  "tryAgain": "Try Again",
+  "@tryAgain": {},
+  "searchCiphers": "Search title, author...",
+  "@searchCiphers": {},
+  "create": "Create",
+  "@create": {},
+  "filter": "Filter",
+  "@filter": {},
+  "sort": "Sort",
+  "@sort": {}
 }

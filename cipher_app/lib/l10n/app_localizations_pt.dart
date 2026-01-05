@@ -44,4 +44,25 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get accountCreationSuffix => 'Registre-se.';
+
+  @override
+  String get loading => 'Carregando...';
+
+  @override
+  String get errorPrefix => 'Erro: ';
+
+  @override
+  String get tryAgain => 'Tentar Novamente';
+
+  @override
+  String get searchCiphers => 'Pesquisar por título, autor...';
+
+  @override
+  String get create => 'Criar';
+
+  @override
+  String get filter => 'Filtrar';
+
+  @override
+  String get sort => 'Ordenar';
 }

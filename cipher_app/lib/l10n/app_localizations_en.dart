@@ -43,4 +43,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountCreationSuffix => 'Sign Up';
+
+  @override
+  String get loading => 'Loading...';
+
+  @override
+  String get errorPrefix => 'Error: ';
+
+  @override
+  String get tryAgain => 'Try Again';
+
+  @override
+  String get searchCiphers => 'Search title, author...';
+
+  @override
+  String get create => 'Create';
+
+  @override
+  String get filter => 'Filter';
+
+  @override
+  String get sort => 'Sort';
 }

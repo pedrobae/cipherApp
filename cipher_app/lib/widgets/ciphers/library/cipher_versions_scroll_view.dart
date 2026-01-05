@@ -9,13 +9,13 @@ import 'package:cipher_app/widgets/ciphers/library/import_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class LocalCipherList extends StatefulWidget {
+class CipherVersionsScrollView extends StatefulWidget {
   final bool selectionMode;
   final int? playlistId;
   final Function(int versionId, int cipherId) onTap;
   final Function(int versionId, int cipherId) onLongPress;
 
-  const LocalCipherList({
+  const CipherVersionsScrollView({
     super.key,
     this.selectionMode = false,
     this.playlistId,
@@ -24,10 +24,11 @@ class LocalCipherList extends StatefulWidget {
   });
 
   @override
-  State<LocalCipherList> createState() => _LocalCipherListState();
+  State<CipherVersionsScrollView> createState() =>
+      _CipherVersionsScrollViewState();
 }
 
-class _LocalCipherListState extends State<LocalCipherList> {
+class _CipherVersionsScrollViewState extends State<CipherVersionsScrollView> {
   @override
   void initState() {
     super.initState();

@@ -1,14 +1,14 @@
+import 'package:cipher_app/l10n/app_localizations.dart';
 import 'package:cipher_app/providers/auth_provider.dart';
 import 'package:cipher_app/providers/selection_provider.dart';
 import 'package:cipher_app/providers/user_provider.dart';
 import 'package:cipher_app/providers/version_provider.dart';
-import 'package:cipher_app/widgets/search_app_bar.dart';
+import 'package:cipher_app/widgets/icon_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cipher_app/providers/cipher_provider.dart';
 import 'package:cipher_app/providers/playlist_provider.dart';
-import 'package:cipher_app/widgets/ciphers/library/local_cipher_list.dart';
-import 'package:cipher_app/widgets/ciphers/library/cloud_cipher_list.dart';
+import 'package:cipher_app/widgets/ciphers/library/cipher_versions_scroll_view.dart';
 import 'package:cipher_app/screens/cipher/cipher_viewer.dart';
 
 class CipherLibraryScreen extends StatefulWidget {
@@ -25,29 +25,14 @@ class CipherLibraryScreen extends StatefulWidget {
   State<CipherLibraryScreen> createState() => _CipherLibraryScreenState();
 }
 
-class _CipherLibraryScreenState extends State<CipherLibraryScreen>
-    with TickerProviderStateMixin {
-  late TabController _tabController;
+class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
   final TextEditingController _searchController = TextEditingController();
-  late CipherProvider _cipherProvider;
 
   @override
   void initState() {
+    final cipherProvider = Provider.of<CipherProvider>(context, listen: false);
+    cipherProvider.loadCiphers();
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _cipherProvider = Provider.of<CipherProvider>(context, listen: false);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    _cipherProvider.clearSearch();
-    super.dispose();
   }
 
   @override
@@ -81,113 +66,98 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen>
                       backgroundColor: colorScheme.surface,
                     )
                   : null,
-              bottomNavigationBar: Container(
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerHighest,
-                  boxShadow: [
-                    BoxShadow(
-                      color: colorScheme.shadow.withValues(alpha: .3),
-                      blurRadius: 2,
-                      offset: const Offset(0, -1),
-                    ),
-                  ],
-                ),
-                child: TabBar(
-                  controller: _tabController,
-                  tabs: [
-                    const Tab(
-                      text: 'Local',
-                      icon: Icon(Icons.my_library_music),
-                    ),
-                    const Tab(text: 'Cloud', icon: Icon(Icons.cloud)),
-                  ],
-                ),
-              ),
-              body: Stack(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: kToolbarHeight),
-                    child: TabBarView(
-                      controller: _tabController,
-                      children: [
-                        LocalCipherList(
-                          onTap: (int versionId, int cipherId) =>
-                              onTapCipherVersion(
-                                versionId,
-                                cipherId,
-                                playlistProvider,
-                                userProvider,
-                                authProvider,
-                                versionProvider,
-                                selectionProvider,
-                              ),
-                          onLongPress: (int versionId, int cipherId) {
-                            onLongPressCipherVersion(
-                              versionId,
-                              cipherId,
-                              playlistProvider,
-                              userProvider,
-                              authProvider,
-                              versionProvider,
-                              selectionProvider,
-                            );
-                          },
-                          selectionMode: widget.selectionMode,
-                          playlistId: widget.playlistId,
+              body: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  spacing: 8,
+                  children: [
+                    // Search Bar
+                    TextField(
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        hintText: AppLocalizations.of(context)!.searchCiphers,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(0),
+                          borderSide: BorderSide(
+                            color: colorScheme.surfaceContainer,
+                          ),
                         ),
-                        CloudCipherList(
-                          searchCloudCiphers: _searchCloudCiphers,
-                          changeTab: () {
-                            _tabController.index = 0;
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(0),
+                          borderSide: BorderSide(color: colorScheme.primary),
+                        ),
+                        suffixIcon: const Icon(Icons.search),
+                        fillColor: colorScheme.surfaceContainerHighest,
+                        visualDensity: VisualDensity.compact,
+                      ),
+                      onChanged: (value) {
+                        // TODO: Implement search functionality
+                      },
+                    ),
+                    // Buttons Row (e.g., Filters, Sort, Create New Cipher)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // CREATE NEW CIPHER
+                        IconTextButton(
+                          onTap: () {
+                            //TODO: Implement create new cipher functionality
                           },
+                          text: AppLocalizations.of(context)!.create,
+                          icon: Icon(Icons.add, color: colorScheme.onSurface),
+                        ),
+                        // SORT BUTTON
+                        IconTextButton(
+                          onTap: () {
+                            // TODO: Implement sort functionality
+                          },
+                          text: AppLocalizations.of(context)!.sort,
+                          icon: Icon(Icons.sort, color: colorScheme.onSurface),
+                        ),
+                        // FILTER BUTTON
+                        IconTextButton(
+                          onTap: () {
+                            // TODO: Implement filter functionality
+                          },
+                          text: AppLocalizations.of(context)!.filter,
+                          icon: Icon(
+                            Icons.filter_list,
+                            color: colorScheme.onSurface,
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                  SizedBox(
-                    height: kToolbarHeight,
-                    child: SearchAppBar(
-                      searchController: _searchController,
-                      onSearchChanged: (value) {
-                        _tabController.index == 0
-                            ? cipherProvider.searchLocalCiphers(value)
-                            : cipherProvider.searchCachedCloudCiphers(value);
+                    CipherVersionsScrollView(
+                      onTap: (int versionId, int cipherId) =>
+                          onTapCipherVersion(
+                            versionId,
+                            cipherId,
+                            playlistProvider,
+                            userProvider,
+                            authProvider,
+                            versionProvider,
+                            selectionProvider,
+                          ),
+                      onLongPress: (int versionId, int cipherId) {
+                        onLongPressCipherVersion(
+                          versionId,
+                          cipherId,
+                          playlistProvider,
+                          userProvider,
+                          authProvider,
+                          versionProvider,
+                          selectionProvider,
+                        );
                       },
-                      hint: 'Procure Cifras...',
-                      title: widget.selectionMode
-                          ? 'Adicionar à Playlist'
-                          : null,
+                      selectionMode: widget.selectionMode,
+                      playlistId: widget.playlistId,
                     ),
-                  ),
-                  AnimatedBuilder(
-                    animation: _tabController,
-                    builder: (context, child) {
-                      return _tabController.index == 1
-                          ? Positioned(
-                              right: 0,
-                              top: 3,
-                              child: IconButton(
-                                icon: Icon(
-                                  Icons.cloud_download,
-                                  color: Theme.of(context).colorScheme.primary,
-                                  size: kToolbarHeight / 1.5,
-                                ),
-                                tooltip: 'Procurar na Nuvem',
-                                onPressed: _searchCloudCiphers,
-                              ),
-                            )
-                          : const SizedBox.shrink();
-                    },
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           },
     );
-  }
-
-  void _searchCloudCiphers() {
-    _cipherProvider.searchCachedCloudCiphers(_searchController.text);
   }
 
   void onTapCipherVersion(

@@ -463,10 +463,9 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
     for (final item in playlist.items) {
       switch (item.type) {
         case 'cipher_version':
-          final version = versionProvider.getCachedVersion(item.contentId!);
-          if (version != null) {
-            versions.add(version.toDto());
-          }
+          final version = versionProvider.getCachedVersionById(item.contentId!);
+          versions.add(version.toDto());
+
           break;
         case 'text_section':
           final textSection = await textSectionProvider.getTextSectionById(

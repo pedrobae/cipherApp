@@ -49,5 +49,7 @@
   "musicKey": "Tom",
   "@musicKey": {},
   "musicTempo": "Andamento",
-  "@musicTempo": {}
+  "@musicTempo": {},
+  "noCiphersFound": "Nenhuma cifra encontrada",
+  "@noCiphersFound": {  "description": "Message displayed when no ciphers are found"  }
 }

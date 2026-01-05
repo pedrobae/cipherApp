@@ -70,4 +70,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get musicTempo => 'Tempo';
+
+  @override
+  String get noCiphersFound => 'No ciphers found';
 }

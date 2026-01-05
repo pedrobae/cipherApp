@@ -45,45 +45,11 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
   Widget build(BuildContext context) {
     return Consumer<VersionProvider>(
       builder: (context, versionProvider, child) {
-        final version = versionProvider.getCachedVersion(widget.versionId);
-
-        // If version is not cached yet, show loading indicator
-        if (version == null) {
-          return Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  const CircularProgressIndicator(),
-                  const SizedBox(height: 8),
-                  Text('Carregando cifra...'),
-                  Text('ID: ${widget.versionId}'),
-                ],
-              ),
-            ),
-          );
-        }
+        final version = versionProvider.getCachedVersionById(widget.versionId);
 
         return Consumer<CipherProvider>(
           builder: (context, cipherProvider, child) {
-            final cipher = cipherProvider.getCachedCipher(version.cipherId);
-
-            // If cipher is not cached yet, show loading indicator
-            if (cipher == null) {
-              return Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      const CircularProgressIndicator(),
-                      const SizedBox(height: 8),
-                      Text('Carregando dados da cifra...'),
-                      Text('Cipher ID: ${version.cipherId}'),
-                    ],
-                  ),
-                ),
-              );
-            }
+            final cipher = cipherProvider.getCachedCipherById(version.cipherId);
 
             return Consumer<LayoutSettingsProvider>(
               builder: (context, layoutProvider, child) {

@@ -49,5 +49,7 @@
   "musicKey": "Key",
   "@musicKey": {},
   "musicTempo": "Tempo",
-  "@musicTempo": {}
+  "@musicTempo": {},
+  "noCiphersFound": "No ciphers found",
+  "@noCiphersFound": {  "description": "Message displayed when no ciphers are found"  }
 }

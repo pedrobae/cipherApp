@@ -223,6 +223,12 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Andamento'**
   String get musicTempo;
+
+  /// Message displayed when no ciphers are found
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma cifra encontrada'**
+  String get noCiphersFound;
 }
 
 class _AppLocalizationsDelegate

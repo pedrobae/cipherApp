@@ -10,16 +10,14 @@ class VersionProvider extends ChangeNotifier {
 
   VersionProvider();
 
-  int _expandedCipherId = -1;
-  List<Version> _versions = [];
+  Map<int, Version> _versions = {};
   Version _currentVersion = Version.empty();
   bool _isLoading = false;
   bool _isSaving = false;
   String? _error;
 
   // Getters
-  int get expandedCipherId => _expandedCipherId;
-  List<Version> get versions => _versions;
+  Map<int, Version> get versions => _versions;
   Version get currentVersion => _currentVersion;
   bool get isLoading => _isLoading;
   bool get isSaving => _isSaving;
@@ -28,7 +26,8 @@ class VersionProvider extends ChangeNotifier {
   /// Checks if a version exists locally by its Firebase ID
   /// Returns the local id if found, otherwise null
   Future<int?> getLocalIdByFirebaseId(String firebaseId) async {
-    for (var v in _versions) {
+    for (var entry in _versions.entries) {
+      final v = entry.value;
       if (v.firebaseId == firebaseId) {
         return v.id;
       }
@@ -39,14 +38,20 @@ class VersionProvider extends ChangeNotifier {
 
   Future<String?> getFirebaseIdByLocalId(int localId) async {
     // cipherFirebaseId:versionFirebaseId
-    for (var v in _versions) {
-      if (v.id == localId) {
-        return '${v.firebaseCipherId}:${v.firebaseId}';
-      }
+    if (_versions[localId] != null) {
+      final v = _versions[localId];
+      return '${v!.firebaseCipherId}:${v.firebaseId}';
     }
     // Not in cache, query repository
     final version = await _cipherRepository.getVersionWithId(localId);
     return '${version?.firebaseCipherId}:${version?.firebaseId}';
+  }
+
+  List<int> getVersionIdsByCipherId(int cipherId) {
+    return _versions.values
+        .where((v) => v.cipherId == cipherId)
+        .map((v) => v.id!)
+        .toList();
   }
 
   /// ===== CREATE - new version to an existing cipher =====
@@ -138,23 +143,24 @@ class VersionProvider extends ChangeNotifier {
     }
   }
 
-  // Load all versions of a cipher into cache, used for version selector and cipher expansion
+  // Load all versions of a cipher into cache, used for cipher library display
   Future<void> loadVersionsOfCipher(int cipherId) async {
     if (_isLoading) return;
 
     _isLoading = true;
     _error = null;
-    _expandedCipherId = cipherId; // Set the expanded cipher ID immediately
     notifyListeners();
 
     try {
-      _versions = await _cipherRepository.getVersions(cipherId);
+      final versionsList = await _cipherRepository.getVersions(cipherId);
       if (kDebugMode) {
         print('Loaded ${_versions.length} versions of cipher $cipherId');
       }
+      for (var version in versionsList) {
+        _versions[version.id!] = version;
+      }
     } catch (e) {
       _error = e.toString();
-      _versions = [];
       if (kDebugMode) {
         print('Error loading versions of cipher: $e');
       }
@@ -178,9 +184,11 @@ class VersionProvider extends ChangeNotifier {
         throw Exception('Version with id $versionId not found locally');
       }
 
-      _versions.add(version);
+      _versions[versionId] = version;
       if (kDebugMode) {
-        print('Loaded the version: ${_versions.last.versionName} into cache');
+        print(
+          'Loaded the version: ${_versions[versionId]!.versionName} into cache',
+        );
       }
     } catch (e) {
       _error = e.toString();
@@ -260,11 +268,8 @@ class VersionProvider extends ChangeNotifier {
       await _cipherRepository.updateVersion(version);
 
       // Update cached version if it exists
-      final cachedVersionIndex = _versions.indexWhere(
-        (v) => v.id == version.id,
-      );
-      if (cachedVersionIndex != -1) {
-        _versions[cachedVersionIndex] = version;
+      if (_versions.containsKey(version.id!)) {
+        _versions[version.id!] = version;
       }
 
       // Update version on the sqlLite
@@ -301,9 +306,8 @@ class VersionProvider extends ChangeNotifier {
       });
 
       // Update cached version if it exists
-      final cachedVersionIndex = _versions.indexWhere((v) => v.id == versionId);
-      if (cachedVersionIndex != -1) {
-        _versions[cachedVersionIndex] = _versions[cachedVersionIndex].copyWith(
+      if (_versions.containsKey(versionId)) {
+        _versions[versionId] = _versions[versionId]!.copyWith(
           songStructure: songStructure,
         );
       }
@@ -379,11 +383,8 @@ class VersionProvider extends ChangeNotifier {
       await _cipherRepository.updateVersion(currentVersion);
 
       // Check if the version exists in the versions list, if so update it
-      final index = _versions.indexWhere(
-        (version) => version.id == currentVersion.id,
-      );
-      if (index != -1) {
-        _versions[index] = currentVersion;
+      if (_versions.containsKey(currentVersion.id)) {
+        _versions[currentVersion.id!] = currentVersion;
       }
 
       if (kDebugMode) {
@@ -430,10 +431,9 @@ class VersionProvider extends ChangeNotifier {
     _currentVersion = Version.empty();
   }
 
-  // Clear current expanded cipher
+  // Clear cached versions
   void clearVersions() {
-    _expandedCipherId = -1;
-    _versions = [];
+    _versions = {};
   }
 
   /// ===== PLAYLIST SUPPORT =====
@@ -448,8 +448,6 @@ class VersionProvider extends ChangeNotifier {
         .toList();
 
     if (versionIds.isEmpty) {
-      _versions = [];
-      notifyListeners();
       return;
     }
 
@@ -458,13 +456,12 @@ class VersionProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _versions = await _cipherRepository.getVersionsByIds(versionIds);
-      if (kDebugMode) {
-        print('Loaded ${_versions.length} versions for playlist');
+      final versionsList = await _cipherRepository.getVersionsByIds(versionIds);
+      for (var version in versionsList) {
+        _versions[version.id!] = version;
       }
     } catch (e) {
       _error = e.toString();
-      _versions = [];
       if (kDebugMode) {
         print('Error loading versions for playlist: $e');
       }
@@ -482,7 +479,7 @@ class VersionProvider extends ChangeNotifier {
   /// Get version by its local ID
   Version getCachedVersionById(int versionId) {
     try {
-      return _versions.firstWhere((version) => version.id == versionId);
+      return _versions[versionId]!;
     } catch (e) {
       _error = e.toString();
       return Version.empty();
@@ -491,7 +488,7 @@ class VersionProvider extends ChangeNotifier {
 
   // Check if a version is already cached
   bool isVersionCached(int versionId) {
-    return _versions.any((version) => version.id == versionId);
+    return _versions.containsKey(versionId);
   }
 
   /// ===== SONG STRUCTURE =====

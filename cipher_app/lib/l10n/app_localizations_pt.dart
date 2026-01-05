@@ -71,4 +71,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get musicTempo => 'Andamento';
+
+  @override
+  String get noCiphersFound => 'Nenhuma cifra encontrada';
 }

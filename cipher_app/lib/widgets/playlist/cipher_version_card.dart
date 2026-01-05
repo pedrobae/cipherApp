@@ -71,18 +71,9 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
   Widget build(BuildContext context) {
     return Consumer<VersionProvider>(
       builder: (context, versionProvider, child) {
-        final version = versionProvider.getCachedVersion(widget.versionId);
+        final version = versionProvider.getCachedVersionById(widget.versionId);
 
         // If version is not cached yet, show loading indicator
-        if (version == null) {
-          return const Card(
-            child: Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Center(child: CircularProgressIndicator()),
-            ),
-          );
-        }
-
         final songStructure = version.songStructure
             .map((s) => s.trim())
             .where((s) => s.isNotEmpty)
@@ -90,17 +81,7 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
 
         return Consumer2<CipherProvider, PlaylistProvider>(
           builder: (context, cipherProvider, playlistProvider, child) {
-            final cipher = cipherProvider.getCachedCipher(version.cipherId);
-
-            // If cipher is not cached yet, show loading indicator
-            if (cipher == null) {
-              return const Card(
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-              );
-            }
+            final cipher = cipherProvider.getCachedCipherById(version.cipherId);
 
             return InkWell(
               onTap: () {

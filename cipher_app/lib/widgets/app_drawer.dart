@@ -130,7 +130,7 @@ class AppDrawer extends StatelessWidget {
               ),
               // LOGOUT BUTTON
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.only(left: 16.0, bottom: 32.0),
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onTap: () {
@@ -145,7 +145,6 @@ class AppDrawer extends StatelessWidget {
                         AppLocalizations.of(context)!.logOut,
                         style: theme.textTheme.bodyMedium,
                       ),
-                      SizedBox(height: 16),
                     ],
                   ),
                 ),

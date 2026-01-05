@@ -229,6 +229,12 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Nenhuma cifra encontrada'**
   String get noCiphersFound;
+
+  /// No description provided for @addToPlaylist.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicionar à Playlist'**
+  String get addToPlaylist;
 }
 
 class _AppLocalizationsDelegate

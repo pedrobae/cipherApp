@@ -74,4 +74,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get noCiphersFound => 'Nenhuma cifra encontrada';
+
+  @override
+  String get addToPlaylist => 'Adicionar à Playlist';
 }

@@ -51,5 +51,7 @@
   "musicTempo": "Andamento",
   "@musicTempo": {},
   "noCiphersFound": "Nenhuma cifra encontrada",
-  "@noCiphersFound": {  "description": "Message displayed when no ciphers are found"  }
+  "@noCiphersFound": {  "description": "Message displayed when no ciphers are found"  },
+  "addToPlaylist": "Adicionar à Playlist",
+  "@addToPlaylist": {}
 }

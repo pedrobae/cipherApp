@@ -62,7 +62,7 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
             return Scaffold(
               appBar: widget.selectionMode
                   ? AppBar(
-                      title: const Text('Adicionar à Playlist'),
+                      title: Text(AppLocalizations.of(context)!.addToPlaylist),
                       backgroundColor: colorScheme.surface,
                     )
                   : null,
@@ -127,30 +127,11 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
                         ),
                       ],
                     ),
-                    CipherVersionsScrollView(
-                      onTap: (int versionId, int cipherId) =>
-                          onTapCipherVersion(
-                            versionId,
-                            cipherId,
-                            playlistProvider,
-                            userProvider,
-                            authProvider,
-                            versionProvider,
-                            selectionProvider,
-                          ),
-                      onLongPress: (int versionId, int cipherId) {
-                        onLongPressCipherVersion(
-                          versionId,
-                          cipherId,
-                          playlistProvider,
-                          userProvider,
-                          authProvider,
-                          versionProvider,
-                          selectionProvider,
-                        );
-                      },
-                      selectionMode: widget.selectionMode,
-                      playlistId: widget.playlistId,
+                    Expanded(
+                      child: CipherVersionsScrollView(
+                        selectionMode: widget.selectionMode,
+                        playlistId: widget.playlistId,
+                      ),
                     ),
                   ],
                 ),
@@ -187,7 +168,7 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
       } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erro ao adicionar à playlist: $error'),
+            content: Text('${AppLocalizations.of(context)!.errorPrefix}$error'),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );

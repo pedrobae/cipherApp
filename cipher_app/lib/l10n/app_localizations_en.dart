@@ -73,4 +73,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noCiphersFound => 'No ciphers found';
+
+  @override
+  String get addToPlaylist => 'Add to Playlist';
 }

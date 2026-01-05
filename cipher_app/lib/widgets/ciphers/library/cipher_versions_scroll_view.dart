@@ -15,15 +15,11 @@ import 'package:provider/provider.dart';
 class CipherVersionsScrollView extends StatefulWidget {
   final bool selectionMode;
   final int? playlistId;
-  final Function(int versionId, int cipherId) onTap;
-  final Function(int versionId, int cipherId) onLongPress;
 
   const CipherVersionsScrollView({
     super.key,
     this.selectionMode = false,
     this.playlistId,
-    required this.onTap,
-    required this.onLongPress,
   });
 
   @override

@@ -29,13 +29,16 @@ class VersionCard extends StatelessWidget {
           );
         }
         return Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Theme.of(context).colorScheme.outline),
+          ),
           padding: const EdgeInsets.all(8.0),
           child: Row(
             children: [
               // INFO
               Expanded(
                 child: Column(
-                  spacing: 8.0,
+                  spacing: 2.0,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
@@ -54,13 +57,13 @@ class VersionCard extends StatelessWidget {
                                 cipher.tempo,
                                 style: Theme.of(context).textTheme.bodyMedium,
                               )
-                            : const SizedBox.shrink(),
+                            : Text('-'),
                         cipher.duration != null
                             ? Text(
                                 cipher.duration!,
                                 style: Theme.of(context).textTheme.bodyMedium,
                               )
-                            : const SizedBox.shrink(),
+                            : Text('-'),
                       ],
                     ),
                     Text(
@@ -68,7 +71,7 @@ class VersionCard extends StatelessWidget {
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                         color: Theme.of(
                           context,
-                        ).colorScheme.surfaceContainerHighest,
+                        ).colorScheme.surfaceContainerLowest,
                       ),
                     ),
                   ],

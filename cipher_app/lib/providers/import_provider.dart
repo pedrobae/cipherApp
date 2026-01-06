@@ -9,6 +9,7 @@ class ImportProvider extends ChangeNotifier {
   final PDFImportService _pdfService = PDFImportService();
   final ImageImportService _imageService = ImageImportService();
 
+  /// Single ParsingCipher object that may contain multiple import variants
   ParsingCipher? _importedCipher;
   bool _isImporting = false;
   String? _selectedFile;
@@ -40,6 +41,8 @@ class ImportProvider extends ChangeNotifier {
   }
 
   /// Imports text based on the selected import type.
+  /// For PDFs: creates multiple import variants (with/without columns) in a single ParsingCipher
+  /// For text/images: creates a single import variant
   Future<void> importText({String? data}) async {
     if (_isImporting) return;
 
@@ -50,24 +53,68 @@ class ImportProvider extends ChangeNotifier {
     try {
       switch (_importType) {
         case ImportType.text:
-          _importedCipher = ParsingCipher(
+          // Text import: single import variant (textDirect)
+          final lines = (data ?? '').split('\n');
+          _importedCipher = ParsingCipher(importType: ImportType.text);
+
+          final variant = ImportVariant(
+            strategy: ImportStrategy.textDirect,
             rawText: data ?? '',
-            importType: ImportType.text,
+            lines: lines
+                .asMap()
+                .entries
+                .map((entry) => {'lineNumber': entry.key, 'text': entry.value})
+                .toList(),
+          );
+          _importedCipher!.addImportVariant(
+            ImportStrategy.textDirect.name,
+            variant,
           );
           break;
+
         case ImportType.pdf:
+          // PDF import: multiple import variants (with/without columns)
           final pdfDocument = await _pdfService.extractTextWithFormatting(
             selectedFile!,
           );
 
-          _importedCipher = ParsingCipher.fromPdfLines(
+          _importedCipher = ParsingCipher(importType: ImportType.pdf);
+
+          // Variant 1: PDF without column detection
+          // TODO: Handle multi-page PDFs - currently only processes page 0
+          final noColumnsVariant = ImportVariant.fromPdfLines(
             pdfDocument.pageLines[0]!,
+            strategy: ImportStrategy.pdfNoColumns,
           );
+          _importedCipher!.addImportVariant(
+            ImportStrategy.pdfNoColumns.name,
+            noColumnsVariant,
+          );
+
+          // Variant 2: PDF with column detection (if columns detected)
+          if (pdfDocument.hasColumns[0] == true) {
+            final hasColumnsVariant = ImportVariant.fromPdfLines(
+              pdfDocument.pageLinesWithColumns[0]!,
+              strategy: ImportStrategy.pdfWithColumns,
+            );
+            _importedCipher!.addImportVariant(
+              ImportStrategy.pdfWithColumns.name,
+              hasColumnsVariant,
+            );
+          }
+
+          // Store metadata in all variants
+          for (var variant in _importedCipher!.allImportVariants.values) {
+            variant.metadata['hasColumns'] = pdfDocument.hasColumns[0];
+            variant.metadata['pageCount'] = pdfDocument.pageLines.length;
+          }
           break;
+
         case ImportType.image:
           // TODO: Implement image import logic
           await _imageService.extractText(selectedFile!);
           break;
+
         default:
           throw Exception('Import type not set');
       }

@@ -56,6 +56,7 @@ class PDFImportService extends ImportService {
       }
 
       final DocumentData documentData = DocumentData.fromGlyphMap(pageGlyphs);
+      documentData.searchColumns();
       return documentData;
     } catch (e) {
       throw Exception('Failed to extract formatted text from PDF: $e');

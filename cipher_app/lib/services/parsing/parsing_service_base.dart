@@ -1,53 +1,100 @@
+import 'package:cipher_app/models/domain/cipher/cipher.dart';
+import 'package:cipher_app/models/domain/cipher/version.dart';
 import 'package:cipher_app/models/domain/parsing_cipher.dart';
 import 'package:cipher_app/models/dtos/pdf_dto.dart';
 import 'package:cipher_app/services/parsing/chord_line_parser.dart';
 import 'package:cipher_app/services/parsing/metadata_parser.dart';
 import 'package:cipher_app/services/parsing/section_parser.dart';
 import 'package:flutter/foundation.dart';
-import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 class ParsingServiceBase {
   final MetadataParser metadataParser = MetadataParser();
   final ChordLineParser chordLineParser = ChordLineParser();
   final SectionParser sectionParser = SectionParser();
 
-  Future<void> parseMetadata(ParsingCipher cipher) async {
-    await metadataParser.parseMetadata(cipher);
-  }
-
-  Future<void> parseSections(ParsingCipher cipher) async {
-    await sectionParser.parseSections(cipher);
-    separateSectionLines(cipher);
-    for (var section
-        in cipher.doubleLineSeparatedSections + cipher.labelSeparatedSections) {
-      calculateLines(section['lines']);
+  void textParser(ImportVariant variant) {
+    for (var strategy in variant.parsingResults.keys) {
+      parseSections(variant, strategy);
+      parseMetadata(variant, strategy);
+      parseChords(variant, strategy);
     }
   }
 
-  void preProcessPdf(ParsingCipher cipher) {
+  void pdfParser(ImportVariant variant) {
+    for (var strategy in variant.parsingResults.keys) {
+      parseSections(variant, strategy);
+      parseMetadata(variant, strategy);
+      parseChords(variant, strategy);
+    }
+  }
+
+  void parseSections(ImportVariant variant, ParsingStrategy strategy) {
+    switch (strategy) {
+      case ParsingStrategy.doubleNewLine:
+        sectionParser.parseByDoubleNewLine(variant);
+        break;
+      case ParsingStrategy.sectionLabels:
+        sectionParser.parseBySectionLabels(variant);
+        break;
+      case ParsingStrategy.pdfFormatting:
+        sectionParser.parseByPdfFormatting(variant);
+        break;
+    }
+  }
+
+  void parseMetadata(ImportVariant variant, ParsingStrategy strategy) {
+    switch (strategy) {
+      case ParsingStrategy.doubleNewLine:
+      case ParsingStrategy.sectionLabels:
+        metadataParser.textParser(variant, strategy);
+        break;
+      case ParsingStrategy.pdfFormatting:
+        // metadataParser.parsePdfMetadata(variant);
+        break;
+    }
+  }
+
+  void parseChords(ImportVariant variant, ParsingStrategy strategy) {
+    switch (strategy) {
+      case ParsingStrategy.doubleNewLine:
+      case ParsingStrategy.sectionLabels:
+        chordLineParser.textParser(variant, strategy);
+        break;
+      case ParsingStrategy.pdfFormatting:
+        break;
+    }
+  }
+
+  /// ----- PRE-PROCESSING HELPERS ------
+  void preProcessPdf(ImportVariant variant) {
     /// PRE-PROCESSING STEPS
+    /// - Initialize the PDF-specific parsing result
     /// - Identify different font styles used in the document
     /// - Calculate average space between words for each line
-    Map<List<PdfFontStyle>, int> fontStyleCount = cipher.fontStyleCount;
-    Map<List<PdfFontStyle>, Map<List<PdfFontStyle>, int>> followingStyleCounts =
-        cipher.followingStyleCounts;
-    for (int i = 0; i < cipher.lines.length; i++) {
-      final textLine = cipher.lines[i]['textLine'] as LineData;
-      final followingLine = (i + 1 < cipher.lines.length)
-          ? cipher.lines[i + 1]['textLine'] as LineData
+    ParsingResult result = ParsingResult(
+      strategy: ParsingStrategy.pdfFormatting,
+    );
+
+    for (int i = 0; i < variant.lines.length; i++) {
+      final textLine = variant.lines[i]['textLine'] as LineData;
+      final followingLine = (i + 1 < variant.lines.length)
+          ? variant.lines[i + 1]['textLine'] as LineData
           : null;
 
       // Keep count of font styles
       final fontStyles = textLine.fontStyle ?? [];
-      fontStyleCount[fontStyles] = (fontStyleCount[fontStyles] ?? 0) + 1;
+      result.fontStyleCount[fontStyles] =
+          (result.fontStyleCount[fontStyles] ?? 0) + 1;
 
       // Keep count of adjacent font styles
-      if (followingStyleCounts[fontStyles] == null) {
-        followingStyleCounts[fontStyles] = {};
+      if (result.followingStyleCounts[fontStyles] == null) {
+        result.followingStyleCounts[fontStyles] = {};
       }
       if (followingLine != null) {
-        followingStyleCounts[fontStyles]![followingLine.fontStyle ?? []] =
-            (followingStyleCounts[fontStyles]![followingLine.fontStyle ?? []] ??
+        result.followingStyleCounts[fontStyles]![followingLine.fontStyle ??
+                []] =
+            (result.followingStyleCounts[fontStyles]![followingLine.fontStyle ??
+                    []] ??
                 0) +
             1;
       }
@@ -65,62 +112,67 @@ class ParsingServiceBase {
         textLine.avgSpaceBetweenWords = 0;
       }
     }
-    cipher.fontStyleCount = fontStyleCount;
-    cipher.followingStyleCounts = followingStyleCounts;
+    variant.parsingResults[ParsingStrategy.pdfFormatting] = result;
   }
 
-  Future<void> parseChords(ParsingCipher cipher) async {
-    await chordLineParser.parseChords(cipher);
+  void preProcessText(ImportVariant variant) {
+    /// PRE-PROCESSING STEPS
+    /// - Initialize empty parsing results for text strategies
+    variant.parsingResults[ParsingStrategy.doubleNewLine] = ParsingResult(
+      strategy: ParsingStrategy.doubleNewLine,
+    );
+    variant.parsingResults[ParsingStrategy.sectionLabels] = ParsingResult(
+      strategy: ParsingStrategy.sectionLabels,
+    );
   }
 
-  void separateSectionLines(ParsingCipher cipher) {
-    for (var section
-        in cipher.doubleLineSeparatedSections + cipher.labelSeparatedSections) {
-      List<Map<String, dynamic>> lines = [];
-      section['content']
-          .split('\n')
-          .map((line) => lines.add({'text': line}))
-          .toList();
-      section['lines'] = lines;
-    }
-  }
-
-  void separateLines(ParsingCipher cipher) {
-    List<Map<String, dynamic>> lines = [];
-    int lineNumber = 0;
-    cipher.rawText
-        .split('\n')
-        .map((line) => lines.add({'text': line, 'lineNumber': lineNumber++}))
-        .toList();
-    cipher.lines = lines;
-  }
-
-  void calculateLines(List<Map<String, dynamic>> lines) {
-    for (var line in lines) {
+  void calculateLines(ImportVariant variant) {
+    for (var line in variant.lines) {
       // Split line text into words using whitespace as delimiter
       List<String> words = line['text'].split(RegExp(r'\s+')).toList();
 
-      line['wordCount'] = words.length;
+      variant.metadata['wordCount'] = words.length;
 
       // Calculate average word length
       double avgWordLength = words.isNotEmpty
           ? words.map((w) => w.length).reduce((a, b) => a + b) / words.length
           : 0.0;
 
-      line['avgWordLength'] = avgWordLength;
+      variant.metadata['avgWordLength'] = avgWordLength;
     }
   }
 
-  void debugPrintCalcs(ParsingCipher cipher) {
+  void debugPrintCalcs(ImportVariant variant) {
     if (kDebugMode) {
+      print('--- PDF Pre-Processing Results for ${variant.strategy.name} ---');
       print(
         '--- Line Calculations ---\n\tLine Number\tWord Count\tAvg Word Length',
       );
-      for (var line in cipher.lines) {
+      for (var line in variant.lines) {
         print(
-          '\t${line['lineNumber']}\t\t${line['wordCount']}\t\t${line['avgWordLength'].toStringAsFixed(2)}',
+          '\t${line['lineNumber']}\t\t${variant.metadata['wordCount']}\t\t${variant.metadata['avgWordLength'].toStringAsFixed(2)}',
         );
       }
     }
+  }
+
+  Cipher buildCipherFromParsedImportVariant(
+    ImportVariant variant,
+    ParsingStrategy strategy,
+  ) {
+    return Cipher(
+      versions: [
+        Version(
+          sections: variant.parsingResults[strategy]!.parsedSections,
+          cipherId: -1,
+        ),
+      ],
+      title: variant.metadata['title'] ?? 'Unknown Title',
+      author: variant.metadata['artist'] ?? 'Unknown Artist',
+      tempo: variant.metadata['tempo'] ?? '',
+      musicKey: variant.metadata['key'] ?? '',
+      language: variant.metadata['language'] ?? '',
+      isLocal: true,
+    );
   }
 }

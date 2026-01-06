@@ -1,37 +1,14 @@
 import 'package:cipher_app/models/domain/parsing_cipher.dart';
 import 'package:cipher_app/models/dtos/pdf_dto.dart';
-import 'package:cipher_app/providers/import_provider.dart';
-import 'package:flutter/foundation.dart';
 
 enum SeparatorType { doubleNewLine, bracket, parenthesis, hyphen }
 
 class SectionParser {
-  Future<void> parseSections(ParsingCipher cipher) async {
-    // Identifies and separates the blocks of the lyrics from the imported text
-    // Label sections that are identified (e.g., Verse, Chorus, Bridge)
-    _separateSections(cipher);
+  void parseByDoubleNewLine(ImportVariant variant) {
+    List<String> rawSections = variant.rawText.split('\n\n');
 
-    _checkDuplicates(cipher);
-
-    _debugPrint(cipher);
-  }
-
-  void _separateSections(ParsingCipher cipher) {
-    // Search text for section labels and separate sections accordingly
-    _separateByLabels(cipher);
-
-    // Separate raw text by double new lines
-    _separateByDoubleNewLines(cipher);
-
-    if (cipher.importType == ImportType.pdf) {
-      _separateBypdfFormatting(cipher);
-    }
-  }
-
-  void _separateByDoubleNewLines(ParsingCipher cipher) {
-    List<String> rawSections = cipher.rawText.split('\n\n');
-
-    cipher.doubleLineSeparatedSections = [];
+    ParsingResult result =
+        variant.parsingResults[ParsingStrategy.doubleNewLine]!;
     for (int i = 0; i < rawSections.length; i++) {
       String sectionContent = rawSections[i].trim();
       if (sectionContent.isEmpty) {
@@ -46,21 +23,23 @@ class SectionParser {
         'suggestedTitle': 'Unlabeled Section',
       };
 
-      cipher.doubleLineSeparatedSections.add(section);
+      result.rawSections.add(section);
     }
   }
 
-  void _separateByLabels(ParsingCipher cipher) {
-    String rawText = cipher.rawText;
+  void parseBySectionLabels(ImportVariant variant) {
+    ParsingResult result =
+        variant.parsingResults[ParsingStrategy.sectionLabels]!;
+    String rawText = variant.rawText;
     List<Map<String, dynamic>> validMatches = [];
     // Search common label texts
     for (var label in commonSectionLabels) {
       for (var labelVariation in label.labelVariations) {
         RegExp regex = RegExp(labelVariation, caseSensitive: false);
-        Iterable<RegExpMatch> matches = regex.allMatches(cipher.rawText);
+        Iterable<RegExpMatch> matches = regex.allMatches(variant.rawText);
 
         for (var match in matches) {
-          final result = _validateLabel(cipher.rawText, match);
+          final result = _validateLabel(variant.rawText, match);
 
           // Possible Label found -  Validate
           if (result['isValid']) {
@@ -86,8 +65,8 @@ class SectionParser {
           ? nextMatch['labelStart']
           : rawText.length;
 
-      cipher.labelSeparatedSections.add({
-        'index': cipher.labelSeparatedSections.length,
+      result.rawSections.add({
+        'index': result.rawSections.length,
         'content': rawText.substring(sectionStart, sectionEnd).trim(),
         'numberOfLines':
             '\n'
@@ -101,21 +80,25 @@ class SectionParser {
         'isDuplicate': false,
       });
     }
+    _checkDuplicates(result);
   }
 
-  void _separateBypdfFormatting(ParsingCipher cipher) {
+  void parseByPdfFormatting(ImportVariant variant) {
+    ParsingResult result =
+        variant.parsingResults[ParsingStrategy.pdfFormatting]!;
+
     /// Identifies section break based on line spacing greater than the standard deviation of line spacings
     double totalLineSpacing = 0.0;
-    for (int i = 0; i < cipher.lines.length - 1; i++) {
-      final textLine = cipher.lines[i]['textLine'] as LineData;
-      final nextLine = cipher.lines[i + 1]['textLine'] as LineData;
+    for (int i = 0; i < variant.lines.length - 1; i++) {
+      final textLine = variant.lines[i]['textLine'] as LineData;
+      final nextLine = variant.lines[i + 1]['textLine'] as LineData;
       totalLineSpacing += nextLine.bounds.top - textLine.bounds.bottom;
     }
-    double meanLineSpacing = totalLineSpacing / (cipher.lines.length - 1);
+    double meanLineSpacing = totalLineSpacing / (variant.lines.length - 1);
     List<int> sectionBreakIndexes = [];
-    for (int i = 0; i < cipher.lines.length - 1; i++) {
-      final textLine = cipher.lines[i]['textLine'] as LineData;
-      final nextLine = cipher.lines[i + 1]['textLine'] as LineData;
+    for (int i = 0; i < variant.lines.length - 1; i++) {
+      final textLine = variant.lines[i]['textLine'] as LineData;
+      final nextLine = variant.lines[i + 1]['textLine'] as LineData;
       double lineSpacing = nextLine.bounds.top - textLine.bounds.bottom;
       if (lineSpacing > meanLineSpacing) {
         sectionBreakIndexes.add(i + 1);
@@ -246,65 +229,36 @@ class SectionParser {
     return mirroredPairs[char1] == char2;
   }
 
-  void _checkDuplicates(ParsingCipher cipher) {
+  void _checkDuplicates(ParsingResult result) {
     // Check for duplicate content and mark them
-    for (int i = 0; i < SeparationType.values.length; i++) {
-      List<Map<String, dynamic>> sections;
-      if (i == 0) {
-        sections = cipher.labelSeparatedSections;
-      } else if (i == 1) {
-        sections = cipher.doubleLineSeparatedSections;
+    List<Map<String, dynamic>> sections = result.rawSections;
+    Map<String, int> seenContentIndex = {};
+    for (var section in sections) {
+      String content = section['content'];
+
+      if (seenContentIndex.containsKey(content)) {
+        section['duplicatedSectionIndex'] =
+            seenContentIndex[content]; // Mark as duplicate, with a reference
       } else {
-        sections = [];
-      }
-      Map<String, int> seenContentIndex = {};
-      for (var section in sections) {
-        String content = section['content'];
-
-        if (seenContentIndex.containsKey(content)) {
-          section['duplicatedSectionIndex'] =
-              seenContentIndex[content]; // Mark as duplicate, with a reference
-        } else {
-          seenContentIndex[content] = section['index'];
-        }
-      }
-
-      // Check for duplicate titles and mark them, except 'verse' and 'unlabeled section'
-      Map<String, int> seenTitleIndex = {};
-      for (var section in sections) {
-        String title = section['suggestedTitle'].toString().toLowerCase();
-
-        if (section['suggestedTitle'] == 'Unlabeled Section' ||
-            section['suggestedTitle'] == 'Verse') {
-          continue;
-        }
-
-        if (seenTitleIndex.containsKey(title)) {
-          section['duplicatedSectionIndex'] =
-              seenTitleIndex[title]; // Mark as duplicate, with a reference
-        } else {
-          seenTitleIndex[title] = section['index'];
-        }
+        seenContentIndex[content] = section['index'];
       }
     }
-  }
 
-  void _debugPrint(ParsingCipher cipher) {
-    if (kDebugMode) {
-      print('--- Parsed Double Line Separated Sections ---');
-      print('\tIndex\tisDuplicate\tNumLines\tTitle');
-      for (var section in cipher.doubleLineSeparatedSections) {
-        print(
-          '\t${section['index']}\t${section['isDuplicate']}\t\t${section['numberOfLines']}\t"${section['suggestedTitle']}"',
-        );
+    // Check for duplicate titles and mark them, except 'verse' and 'unlabeled section'
+    Map<String, int> seenTitleIndex = {};
+    for (var section in sections) {
+      String title = section['suggestedTitle'].toString().toLowerCase();
+
+      if (section['suggestedTitle'] == 'Unlabeled Section' ||
+          section['suggestedTitle'] == 'Verse') {
+        continue;
       }
-      print('----------------------------------------------');
-      print('--- Parsed Label Separated Sections ---');
-      print('\tIndex\tisDuplicate\tNumLines\tTitle');
-      for (var section in cipher.labelSeparatedSections) {
-        print(
-          '\t${section['index']}\t${section['isDuplicate']}\t\t${section['numberOfLines']}\t"${section['suggestedTitle']}"',
-        );
+
+      if (seenTitleIndex.containsKey(title)) {
+        section['duplicatedSectionIndex'] =
+            seenTitleIndex[title]; // Mark as duplicate, with a reference
+      } else {
+        seenTitleIndex[title] = section['index'];
       }
     }
   }

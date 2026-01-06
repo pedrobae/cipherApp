@@ -1,5 +1,5 @@
 import 'package:cipher_app/models/domain/cipher/cipher.dart';
-import 'package:cipher_app/models/domain/cipher/version.dart';
+import 'package:cipher_app/models/domain/parsed_doc.dart';
 import 'package:cipher_app/models/domain/parsing_cipher.dart';
 import 'package:cipher_app/providers/import_provider.dart';
 import 'package:cipher_app/services/parsing/parsing_service_base.dart';
@@ -10,10 +10,17 @@ class ParserProvider extends ChangeNotifier {
 
   ParsingCipher? _cipher;
   ParsingCipher? get cipher => _cipher;
-  Cipher? _labelCipherObject;
-  Cipher? get labelParsedCipher => _labelCipherObject;
-  Cipher? _doubleNewLineCipherObject;
-  Cipher? get doubleNewLineParsedCipher => _doubleNewLineCipherObject;
+
+  // Consolidated document for UI consumption
+  ParsedCipherDoc? _doc;
+  ParsedCipherDoc? get doc => _doc;
+
+  // Chosen Cipher after parsing
+  Cipher? _parsedCipher;
+  Cipher? get parsedCipher => _parsedCipher;
+  set parsedCipher(Cipher? cipher) {
+    _parsedCipher = cipher;
+  }
 
   bool _isParsing = false;
   bool get isParsing => _isParsing;
@@ -24,46 +31,56 @@ class ParserProvider extends ChangeNotifier {
   String _error = '';
   String get error => _error;
 
-  Future<void> parseCipher(ParsingCipher cipher) async {
+  Future<void> parseCipher(ParsingCipher importedCipher) async {
     if (_isParsing) return;
 
-    _cipher = cipher;
+    _cipher = importedCipher;
     _isParsing = true;
     _error = '';
     notifyListeners();
 
     try {
-      switch (cipher.importType) {
+      // ===== PRE-PROCESSING STEPS =====
+      switch (importedCipher.importType) {
         case ImportType.text:
-          // Separate lines
-          _parsingService.separateLines(_cipher!);
           break;
         case ImportType.pdf:
-          // PRE-PROCESSING STEPS
-          _parsingService.preProcessPdf(_cipher!);
+          for (var importVariant in _cipher!.allImportVariants.values) {
+            // Separate lines for each import variant
+            _parsingService.preProcessPdf(importVariant);
+          }
           break;
         case ImportType.image:
           // Image specific parsing can be added here
           break;
       }
-      // Calculate lines
-      _parsingService.calculateLines(_cipher!.lines);
-      _parsingService.debugPrintCalcs(_cipher!);
 
-      // Parse sections
-      await _parseSections();
+      for (var importVariant in _cipher!.allImportVariants.values) {
+        // Separate lines for each import variant
+        _parsingService.calculateLines(importVariant);
+        _parsingService.debugPrintCalcs(importVariant);
+      }
 
-      // Parse metadata
-      await _parseMetadata();
+      /// ===== PARSING STEPS =====
+      switch (importedCipher.importType) {
+        case ImportType.text:
+          for (var importVariant in _cipher!.allImportVariants.values) {
+            // Parse sections for each import variant and strategy
+            _parsingService.textParser(importVariant);
+          }
+          break;
+        case ImportType.pdf:
+          for (var importVariant in _cipher!.allImportVariants.values) {
+            // Parse sections for each import variant and strategy
+            _parsingService.pdfParser(importVariant);
+          }
+          break;
+        case ImportType.image:
+          // Image specific parsing can be added here
+          break;
+      }
 
-      // Parse chords
-      await _parseChords();
-
-      _labelCipherObject = _buildCipherObject(_cipher!, SeparationType.label);
-      _doubleNewLineCipherObject = _buildCipherObject(
-        _cipher!,
-        SeparationType.doubleNewLine,
-      );
+      _selectCandidates();
 
       _isParsing = false;
       notifyListeners();
@@ -75,90 +92,32 @@ class ParserProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> _parseMetadata() async {
-    _parsingStatus = 'Parsing Metadata';
-    notifyListeners();
+  void _selectCandidates() {
+    List<CipherParseCandidate> candidates = [];
 
-    try {
-      await _parsingService.parseMetadata(_cipher!);
-    } catch (e) {
-      _error = 'Error during metadata parsing: $e';
-    } finally {
-      _parsingStatus = 'Not parsing';
-      notifyListeners();
-    }
-  }
+    _cipher!.allImportVariants.forEach((importKey, importVariant) {
+      importVariant.parsingResults.forEach((strategy, result) {
+        // Build domain Cipher from parsed sections
+        Cipher cipher = _parsingService.buildCipherFromParsedImportVariant(
+          importVariant,
+          strategy,
+        );
 
-  Future<void> _parseSections() async {
-    _parsingStatus = 'Parsing Sections';
-    notifyListeners();
+        // Create candidate
+        CipherParseCandidate candidate = CipherParseCandidate(
+          strategy: strategy,
+          importVariant: importVariant,
+          cipher: cipher,
+          sectionCount: result.parsedSections.length,
+        );
 
-    try {
-      await _parsingService.parseSections(_cipher!);
-    } catch (e) {
-      _error = 'Error during section parsing: $e';
-    } finally {
-      _parsingStatus = 'Not parsing';
-      notifyListeners();
-    }
-  }
+        candidates.add(candidate);
+      });
+    });
 
-  Future<void> _parseChords() async {
-    _parsingStatus = 'Parsing Chords';
-    notifyListeners();
-
-    try {
-      await _parsingService.parseChords(_cipher!);
-    } catch (e) {
-      _error = 'Error during chord parsing: $e';
-    } finally {
-      _parsingStatus = 'Not parsing';
-      notifyListeners();
-    }
-  }
-
-  Cipher _buildCipherObject(ParsingCipher cipher, SeparationType type) {
-    return Cipher(
-      id: -1, // Temporary ID, to be set when saving to DB
-      title: cipher.metadata['title'] ?? 'Untitled',
-      author: cipher.metadata['author'] ?? 'Unknown Artist',
-      musicKey: cipher.metadata['key'] ?? '-',
-      tempo: cipher.metadata['tempo'] ?? '-',
-      language: cipher.metadata['language'] ?? 'Unknown',
-      isLocal: false, // Will be set when saving to DB
-      versions: _buildVersionObjects(cipher, type),
+    _doc = ParsedCipherDoc(
+      importType: _cipher!.importType,
+      candidates: candidates,
     );
-  }
-
-  List<Version> _buildVersionObjects(
-    ParsingCipher cipher,
-    SeparationType type,
-  ) {
-    if (type == SeparationType.doubleNewLine) {
-      Version version = Version(
-        transposedKey: cipher.metadata['key'],
-        id: -1, // Temporary ID
-        cipherId: -1, // Temporary cipher ID
-        sections: cipher.parsedDoubleLineSeparatedSections,
-        songStructure: cipher.doubleLineSeparatedSongStructure,
-        versionName: 'imported',
-      );
-
-      return [version];
-    }
-    if (type == SeparationType.label) {
-      Version version = Version(
-        transposedKey: cipher.metadata['key'],
-        id: -1, // Temporary ID
-        cipherId: -1, // Temporary cipher ID
-        sections: cipher.parsedLabelSeparatedSections,
-        songStructure: cipher.labelSeparatedSongStructure,
-        versionName: 'imported',
-      );
-
-      return [version];
-    } else {
-      return [];
-    }
   }
 }

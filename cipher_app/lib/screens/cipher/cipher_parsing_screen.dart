@@ -207,7 +207,7 @@ class _CipherParsingScreenState extends State<CipherParsingScreen>
             children: availableStrategies.map((strategy) {
               final result = doc.candidates[_tabController!.index];
 
-              if (result.cipher.versions.first.sectionCount > 0) {
+              if (result.cipher.versions.first.sectionCount == 0) {
                 return Center(
                   child: Text('Nenhuma seção encontrada com esta estratégia'),
                 );
@@ -233,16 +233,15 @@ class _CipherParsingScreenState extends State<CipherParsingScreen>
                       ),
 
                       // Section cards
-                      ...result.cipher.versions.first.sections!.entries.map((
-                        entry,
-                      ) {
-                        return CipherSectionCard(
-                          sectionCode: entry.value.contentCode,
-                          sectionType: entry.value.contentType,
-                          sectionText: entry.value.contentText,
-                          sectionColor: entry.value.contentColor,
-                        );
-                      }),
+                      ...(result.cipher.versions.first.sections?.entries ?? [])
+                          .map((entry) {
+                            return CipherSectionCard(
+                              sectionCode: entry.value.contentCode,
+                              sectionType: entry.value.contentType,
+                              sectionText: entry.value.contentText,
+                              sectionColor: entry.value.contentColor,
+                            );
+                          }),
                     ],
                   ),
                 ),

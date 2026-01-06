@@ -5,44 +5,26 @@
 
 **IMPORTANT: All developer communication must be in ENGLISH.**
 
-### UI Text Guidelines:
+### UI Text Guidelines (Using App Localization):
 
-1. **All user-visible text must be in Brazilian Portuguese**
-2. **Screen titles and buttons must use Portuguese**
-3. **Error messages and feedback must be in Portuguese**
-4. **Tooltips and labels must be in Portuguese**
-5. **All code comments, documentation, and developer communication must be in English**
+1. **All user-visible text must use localization keys** (via `context.l10n`)
+2. **Use localization keys** from `lib/l10n/` for all user-facing text
+3. **Key naming pattern:** `context.l10n.featureName` (e.g., `context.l10n.analyzerTitle`, `context.l10n.noSectionsFound`)
+4. **All code comments, documentation, and developer communication must be in English**
 
-### Translation Examples Already Implemented:
+### Localization Setup:
 
-- "Cipher App" → "App de Cifras"
-- "Library" → "Biblioteca"
-- "Playlists" → "Playlists"
-- "Settings" → "Configurações"
-- "Information" → "Informações"
-- "Add Cipher" → "Adicionar Cifra"
-- "Edit Cipher" → "Editar Cifra"
-- "New Cipher" → "Nova Cifra"
-- "Delete Cipher" → "Excluir Cifra"
-- "Save Changes" → "Salvar Alterações"
-- "Create Cipher" → "Criar Cifra"
-- "Cancel" → "Cancelar"
-- "Error" → "Erro"
-- "Retry" → "Tentar Novamente"
-- "No ciphers found" → "Nenhuma cifra encontrada"
-- "Search Ciphers..." → "Procure Cifras..."
-- "Add to playlist" → "Adicionar à playlist"
-- "Key" → "Tom"
-- "Author" → "Autor"
-- "Title" → "Título"
-- "Language" → "Idioma"
+- App uses Flutter's **gen_l10n** with intl package
+- Localization files: `lib/l10n/app_*.arb` (app_en.arb, app_pt.arb, etc.)
+- Access in code: `context.l10n.keyName` or `AppLocalizations.of(context).keyName`
+- Add new strings to `.arb` files, **not** hardcoded in widgets
 
 ### Coding Conventions:
 
-1. Comments can be in English (for developers)
-2. Variable and function names should remain in English
-3. Strings shown to users MUST be in Portuguese
-4. Documentation and README can be in Portuguese or English
+1. All code comments in English
+2. Variable and function names in English
+3. **User-visible text ONLY via localization keys**
+4. Documentation and README in English
 
 ## 🏗️ Architecture Overview
 

@@ -58,7 +58,7 @@ class ImportProvider extends ChangeNotifier {
           _importedCipher = ParsingCipher(importType: ImportType.text);
 
           final variant = ImportVariant(
-            strategy: ImportStrategy.textDirect,
+            strategy: ImportVariation.textDirect,
             rawText: data ?? '',
             lines: lines
                 .asMap()
@@ -67,7 +67,7 @@ class ImportProvider extends ChangeNotifier {
                 .toList(),
           );
           _importedCipher!.addImportVariant(
-            ImportStrategy.textDirect.name,
+            ImportVariation.textDirect.name,
             variant,
           );
           break;
@@ -84,10 +84,10 @@ class ImportProvider extends ChangeNotifier {
           // TODO: Handle multi-page PDFs - currently only processes page 0
           final noColumnsVariant = ImportVariant.fromPdfLines(
             pdfDocument.pageLines[0]!,
-            strategy: ImportStrategy.pdfNoColumns,
+            strategy: ImportVariation.pdfNoColumns,
           );
           _importedCipher!.addImportVariant(
-            ImportStrategy.pdfNoColumns.name,
+            ImportVariation.pdfNoColumns.name,
             noColumnsVariant,
           );
 
@@ -95,10 +95,10 @@ class ImportProvider extends ChangeNotifier {
           if (pdfDocument.hasColumns[0] == true) {
             final hasColumnsVariant = ImportVariant.fromPdfLines(
               pdfDocument.pageLinesWithColumns[0]!,
-              strategy: ImportStrategy.pdfWithColumns,
+              strategy: ImportVariation.pdfWithColumns,
             );
             _importedCipher!.addImportVariant(
-              ImportStrategy.pdfWithColumns.name,
+              ImportVariation.pdfWithColumns.name,
               hasColumnsVariant,
             );
           }

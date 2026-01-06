@@ -1107,7 +1107,7 @@ class ProjectedBoundsPainter extends CustomPainter {
       // Draw interval rectangle
       canvas.drawRect(
         Rect.fromLTWH(x1, size.height / 4, x2 - x1, size.height / 2),
-        Paint()..color = Colors.blue.withOpacity(0.6),
+        Paint()..color = Colors.blue.withAlpha((0.6 * 255).toInt()),
       );
 
       // Draw labels

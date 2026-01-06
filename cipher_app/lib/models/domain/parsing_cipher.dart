@@ -5,7 +5,7 @@ import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 /// Import strategy variants - different ways to extract text from source
 /// Used when the same import type has multiple extraction methods
-enum ImportStrategy {
+enum ImportVariation {
   pdfWithColumns, // PDF with column detection applied
   pdfNoColumns, // PDF without column detection
   textDirect, // Plain text as-is
@@ -15,12 +15,6 @@ enum ImportStrategy {
 /// Available parsing strategies for converting imported text to cipher sections
 enum ParsingStrategy { doubleNewLine, sectionLabels, pdfFormatting }
 
-/// Simple data class representing the styles of a PDF font (combination of multiple styles)
-class PdfFontStyles {
-  List<PdfFontStyle> styles;
-  PdfFontStyles(this.styles);
-}
-
 /// Container for results from a single parsing strategy
 class ParsingResult {
   final ParsingStrategy strategy;
@@ -28,18 +22,17 @@ class ParsingResult {
   Map<String, Section> parsedSections = {};
   List<String> songStructure = [];
   final Map<String, dynamic> strategyMetadata;
-  PdfFontStyles? dominantChordStyle;
+  List<PdfFontStyle>? dominantChordStyle;
 
   /// PDF-specific formatting analysis (only populated for PDF imports)
-  final Map<PdfFontStyles, int> fontStyleCount;
-  final Map<PdfFontStyles, Map<PdfFontStyles, int>> followingStyleCounts;
+  final Map<List<PdfFontStyle>, int> fontStyleCount = {};
+  final Map<List<PdfFontStyle>, Map<List<PdfFontStyle>, int>>
+  followingStyleCounts = {};
 
   ParsingResult({
     required this.strategy,
     this.rawSections = const [],
     this.strategyMetadata = const {},
-    this.fontStyleCount = const {},
-    this.followingStyleCounts = const {},
   });
 
   /// Check if this result has any parsed content
@@ -51,19 +44,18 @@ class ParsingResult {
 
 /// Container for a single import variant with its line data and parsing results
 class ImportVariant {
-  final ImportStrategy strategy;
+  final ImportVariation strategy;
   final String rawText;
   final List<Map<String, dynamic>> lines;
   final Map<ParsingStrategy, ParsingResult> parsingResults = {};
 
   /// Metadata specific to this import variant
-  final Map<String, dynamic> metadata;
+  Map<String, dynamic> metadata = {};
 
   ImportVariant({
     required this.strategy,
     required this.rawText,
     required this.lines,
-    this.metadata = const {},
   });
 
   /// Get available parsing strategies for this variant
@@ -73,7 +65,7 @@ class ImportVariant {
   /// Factory constructor for PDF imports with formatted line data
   factory ImportVariant.fromPdfLines(
     List<LineData> textLines, {
-    required ImportStrategy strategy,
+    required ImportVariation strategy,
   }) {
     StringBuffer buffer = StringBuffer();
     List<Map<String, dynamic>> lines = [];

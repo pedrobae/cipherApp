@@ -54,26 +54,24 @@ class _CipherParsingScreenState extends State<CipherParsingScreen>
             body: Center(child: Text('Nenhum documento para analisar.')),
           );
         }
-        final availableStrategies = doc.candidates
-            .map((candidate) => candidate.strategy)
-            .toList();
 
         return Scaffold(
           appBar: AppBar(
             title: Text('Analisador de Cifras'),
-            bottom: _tabController != null && availableStrategies.isNotEmpty
+            bottom: _tabController != null && doc.candidates.isNotEmpty
                 ? TabBar(
                     controller: _tabController,
-                    tabs: availableStrategies.map((strategy) {
+                    tabs: doc.candidates.map((candidate) {
                       return Tab(
-                        text: strategy.name,
-                        icon: Icon(_getStrategyIcon(strategy)),
+                        text:
+                            '${candidate.importStrategy.name}\n${candidate.strategy.name}',
+                        icon: Icon(_getStrategyIcon(candidate.strategy)),
                       );
                     }).toList(),
                   )
                 : null,
           ),
-          floatingActionButton: availableStrategies.isNotEmpty
+          floatingActionButton: doc.candidates.isNotEmpty
               ? FloatingActionButton.extended(
                   label: Text('Confirmar'),
                   icon: Icon(Icons.check),
@@ -139,14 +137,6 @@ class _CipherParsingScreenState extends State<CipherParsingScreen>
             CircularProgressIndicator.adaptive(),
             SizedBox(height: 16.0),
             Text('Analisando cifra, aguarde...'),
-            if (parserProvider.parsingStatus.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Text(
-                  parserProvider.parsingStatus,
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-              ),
           ],
         ),
       );

@@ -1,5 +1,6 @@
 import 'package:cipher_app/models/domain/parsing_cipher.dart';
 import 'package:cipher_app/models/dtos/pdf_dto.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 enum SeparatorType { doubleNewLine, bracket, parenthesis, hyphen }
 
@@ -110,7 +111,7 @@ class SectionParser {
     //     - Heuristic: at least 70% of chord lines have the same following style (lyrics style)
     //     - Heuristic: chord lines have higher average space between words
     final int totalLines = variant.lines.length;
-    List<PdfFontStyles> possibleChordStyles = [];
+    List<List<PdfFontStyle>> possibleChordStyles = [];
     for (var entry in result.fontStyleCount.entries) {
       final style = entry.key;
       final count = entry.value;

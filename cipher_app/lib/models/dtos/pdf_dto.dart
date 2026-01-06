@@ -12,7 +12,7 @@ class DocumentData {
   final Map<int, List<LineData>>
   pageLinesWithColumns; // With column reordering applied
   final Map<int, List<double>> projectedBounds; // bounds per page
-  final Map<int, bool> hasColumns; // Whether columns were detected per page
+  Map<int, bool> hasColumns; // Whether columns were detected per page
 
   DocumentData({
     required this.pageLines,

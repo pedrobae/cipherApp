@@ -16,17 +16,10 @@ class ParserProvider extends ChangeNotifier {
   ParsedCipherDoc? get doc => _doc;
 
   // Chosen Cipher after parsing
-  Cipher? _parsedCipher;
-  Cipher? get parsedCipher => _parsedCipher;
-  set parsedCipher(Cipher? cipher) {
-    _parsedCipher = cipher;
-  }
+  Cipher? parsedCipher;
 
   bool _isParsing = false;
   bool get isParsing => _isParsing;
-
-  String _parsingStatus = 'Not parsing';
-  String get parsingStatus => _parsingStatus;
 
   String _error = '';
   String get error => _error;
@@ -43,22 +36,21 @@ class ParserProvider extends ChangeNotifier {
       // ===== PRE-PROCESSING STEPS =====
       switch (importedCipher.importType) {
         case ImportType.text:
+          for (var importVariant in _cipher!.allImportVariants.values) {
+            // Separate lines for each import variant
+            _parsingService.calculateLines(importVariant);
+            _parsingService.debugPrintCalcs(importVariant);
+          }
           break;
         case ImportType.pdf:
           for (var importVariant in _cipher!.allImportVariants.values) {
-            // Separate lines for each import variant
+            // Average character spacing and font style analysis
             _parsingService.preProcessPdf(importVariant);
           }
           break;
         case ImportType.image:
           // Image specific parsing can be added here
           break;
-      }
-
-      for (var importVariant in _cipher!.allImportVariants.values) {
-        // Separate lines for each import variant
-        _parsingService.calculateLines(importVariant);
-        _parsingService.debugPrintCalcs(importVariant);
       }
 
       /// ===== PARSING STEPS =====
@@ -106,7 +98,7 @@ class ParserProvider extends ChangeNotifier {
         // Create candidate
         CipherParseCandidate candidate = CipherParseCandidate(
           strategy: strategy,
-          importVariant: importVariant,
+          importStrategy: importVariant.strategy,
           cipher: cipher,
           sectionCount: result.parsedSections.length,
         );

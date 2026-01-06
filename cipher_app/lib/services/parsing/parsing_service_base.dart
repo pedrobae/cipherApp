@@ -83,18 +83,20 @@ class ParsingServiceBase {
 
       // Keep count of font styles
       final fontStyles = textLine.fontStyle ?? [];
-      result.fontStyleCount[fontStyles] =
-          (result.fontStyleCount[fontStyles] ?? 0) + 1;
+      result.fontStyleCount[PdfFontStyles(fontStyles)] =
+          (result.fontStyleCount[PdfFontStyles(fontStyles)] ?? 0) + 1;
 
       // Keep count of adjacent font styles
-      if (result.followingStyleCounts[fontStyles] == null) {
-        result.followingStyleCounts[fontStyles] = {};
+      if (result.followingStyleCounts[PdfFontStyles(fontStyles)] == null) {
+        result.followingStyleCounts[PdfFontStyles(fontStyles)] = {};
       }
       if (followingLine != null) {
-        result.followingStyleCounts[fontStyles]![followingLine.fontStyle ??
-                []] =
-            (result.followingStyleCounts[fontStyles]![followingLine.fontStyle ??
-                    []] ??
+        result.followingStyleCounts[PdfFontStyles(fontStyles)]![PdfFontStyles(
+              followingLine.fontStyle ?? [],
+            )] =
+            (result.followingStyleCounts[PdfFontStyles(
+                  fontStyles,
+                )]![PdfFontStyles(followingLine.fontStyle ?? [])] ??
                 0) +
             1;
       }

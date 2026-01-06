@@ -105,43 +105,42 @@ class SectionParser {
       }
     }
 
-    /// - Identify Chord Style
-    ///     - Heuristic: at least 30% of lines use this style
-    ///     - Heuristic: at least 70% of chord lines have the same following style (lyrics style)
-    ///     - Heuristic: chord lines have higher average space between words
-    // final int totalLines = cipher.lines.length;
-    // List<List<PdfFontStyle>> possibleChordStyles = [];
-    // for (var entry in cipher.fontStyleCount.entries) {
-    //   final style = entry.key;
-    //   final count = entry.value;
-    //   // Check style usage threshold
-    //   if (count / totalLines >= 0.3) {
-    //     // Check following styles
-    //     if (cipher.followingStyleCounts[style]!.values.any(
-    //       (s) => s > count * 0.7,
-    //     )) {
-    //       // Potential chord style found
-    //       possibleChordStyles.add(style);
-    //     }
-    //   }
-    // }
-    // // From possible chord styles, select the one with highest average space between words
-    // List<PdfFontStyle> chordStyle;
-    // int highestAvgSpace = -1;
-    // for (var style in possibleChordStyles) {
-    //   int totalSpace = 0;
-    //   for (var lineMap in cipher.lines) {
-    //     final textLine = lineMap['textLine'] as LineData;
-    //     if ((textLine.fontStyle ?? []) == style) {
-    //       totalSpace += textLine.avgSpaceBetweenWords!;
-    //     }
-    //   }
-    //   int avgSpace = totalSpace ~/ cipher.fontStyleCount[style]!;
-    //   if (avgSpace > highestAvgSpace) {
-    //     highestAvgSpace = avgSpace;
-    //     chordStyle = style;
-    //   }
-    // }
+    // - Identify Chord Style
+    //     - Heuristic: at least 30% of lines use this style
+    //     - Heuristic: at least 70% of chord lines have the same following style (lyrics style)
+    //     - Heuristic: chord lines have higher average space between words
+    final int totalLines = variant.lines.length;
+    List<PdfFontStyles> possibleChordStyles = [];
+    for (var entry in result.fontStyleCount.entries) {
+      final style = entry.key;
+      final count = entry.value;
+      // Check style usage threshold
+      if (count / totalLines >= 0.3) {
+        // Check following styles
+        if (result.followingStyleCounts[style]!.values.any(
+          (s) => s > count * 0.7,
+        )) {
+          // Potential chord style found
+          possibleChordStyles.add(style);
+        }
+      }
+    }
+    // From possible chord styles, select the one with highest average space between words
+    int highestAvgSpace = -1;
+    for (var style in possibleChordStyles) {
+      int totalSpace = 0;
+      for (var lineMap in variant.lines) {
+        final textLine = lineMap['textLine'] as LineData;
+        if ((textLine.fontStyle ?? []) == style) {
+          totalSpace += textLine.avgSpaceBetweenWords!;
+        }
+      }
+      int avgSpace = totalSpace ~/ result.fontStyleCount[style]!;
+      if (avgSpace > highestAvgSpace) {
+        highestAvgSpace = avgSpace;
+        result.dominantChordStyle = style;
+      }
+    }
   }
 
   /// Validates if a found label is indeed a section label,

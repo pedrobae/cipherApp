@@ -15,6 +15,12 @@ enum ImportStrategy {
 /// Available parsing strategies for converting imported text to cipher sections
 enum ParsingStrategy { doubleNewLine, sectionLabels, pdfFormatting }
 
+/// Simple data class representing the styles of a PDF font (combination of multiple styles)
+class PdfFontStyles {
+  List<PdfFontStyle> styles;
+  PdfFontStyles(this.styles);
+}
+
 /// Container for results from a single parsing strategy
 class ParsingResult {
   final ParsingStrategy strategy;
@@ -22,11 +28,11 @@ class ParsingResult {
   Map<String, Section> parsedSections = {};
   List<String> songStructure = [];
   final Map<String, dynamic> strategyMetadata;
+  PdfFontStyles? dominantChordStyle;
 
   /// PDF-specific formatting analysis (only populated for PDF imports)
-  final Map<List<PdfFontStyle>, int> fontStyleCount;
-  final Map<List<PdfFontStyle>, Map<List<PdfFontStyle>, int>>
-  followingStyleCounts;
+  final Map<PdfFontStyles, int> fontStyleCount;
+  final Map<PdfFontStyles, Map<PdfFontStyles, int>> followingStyleCounts;
 
   ParsingResult({
     required this.strategy,

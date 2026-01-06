@@ -1,25 +1,26 @@
-import 'package:cipher_app/providers/collaborator_provider.dart';
-import 'package:cipher_app/providers/import_provider.dart';
-import 'package:cipher_app/providers/parser_provider.dart';
-import 'package:cipher_app/providers/section_provider.dart';
-import 'package:cipher_app/providers/selection_provider.dart';
-import 'package:cipher_app/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import 'package:cipher_app/helpers/database_factory.dart';
+import 'package:cipher_app/providers/admin_provider.dart';
 import 'package:cipher_app/providers/auth_provider.dart';
-import 'package:cipher_app/providers/navigation_provider.dart';
+import 'package:cipher_app/providers/cipher_provider.dart';
+import 'package:cipher_app/providers/collaborator_provider.dart';
+import 'package:cipher_app/providers/import_provider.dart';
+import 'package:cipher_app/providers/info_provider.dart';
 import 'package:cipher_app/providers/layout_settings_provider.dart';
+import 'package:cipher_app/providers/navigation_provider.dart';
+import 'package:cipher_app/providers/parser_provider.dart';
+import 'package:cipher_app/providers/playlist_provider.dart';
+import 'package:cipher_app/providers/section_provider.dart';
+import 'package:cipher_app/providers/selection_provider.dart';
+import 'package:cipher_app/providers/settings_provider.dart';
 import 'package:cipher_app/providers/text_section_provider.dart';
 import 'package:cipher_app/providers/user_provider.dart';
-import 'package:cipher_app/providers/cipher_provider.dart';
 import 'package:cipher_app/providers/version_provider.dart';
-import 'package:cipher_app/providers/info_provider.dart';
-import 'package:cipher_app/providers/playlist_provider.dart';
-import 'package:cipher_app/providers/settings_provider.dart';
-import 'package:cipher_app/providers/admin_provider.dart';
-import 'package:cipher_app/services/settings_service.dart';
 import 'package:cipher_app/routes/app_routes.dart';
-import 'package:cipher_app/helpers/database_factory.dart';
+import 'package:cipher_app/services/firebase_service.dart';
+import 'package:cipher_app/services/settings_service.dart';
 
 void main() async {
   // Ensure Flutter is initialized before database operations

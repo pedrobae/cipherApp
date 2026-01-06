@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
@@ -5,12 +7,25 @@ const double newLineThreshold = 2.0; // Tolerance for y-position differences
 const double spaceThreshold = 1.0; // Threshold to detect spaces between words
 
 class DocumentData {
-  final Map<int, List<LineData>> pageLines;
+  final Map<int, List<LineData>>
+  pageLines; // Original without column reordering
+  final Map<int, List<LineData>>
+  pageLinesWithColumns; // With column reordering applied
+  final Map<int, List<double>> projectedBounds; // bounds per page
+  final Map<int, bool> hasColumns; // Whether columns were detected per page
 
-  DocumentData({required this.pageLines});
+  DocumentData({
+    required this.pageLines,
+    this.pageLinesWithColumns = const {},
+    this.projectedBounds = const {},
+    this.hasColumns = const {},
+  });
 
   factory DocumentData.fromGlyphMap(Map<int, List<TextGlyph>> pageGlyphs) {
     Map<int, List<LineData>> pages = {};
+    Map<int, List<double>> bounds = {};
+    Map<int, List<LineData>> pagesWithColumns = {};
+    Map<int, bool> columnDetection = {};
     for (var pageGlyph in pageGlyphs.entries) {
       int currentLineIndex = -1;
       double lastY = -1.0;
@@ -51,7 +66,12 @@ class DocumentData {
       pages[pageGlyph.key] = lines;
     }
 
-    return DocumentData(pageLines: pages);
+    return DocumentData(
+      pageLines: pages,
+      projectedBounds: bounds,
+      pageLinesWithColumns: pagesWithColumns,
+      hasColumns: columnDetection,
+    );
   }
 
   void searchColumns() {
@@ -68,18 +88,23 @@ class DocumentData {
           continue;
         }
         for (var word in line.wordList) {
-          _projectBounds(word.bounds.left, word.bounds.right, wordBounds);
+          wordBounds = _projectWord(
+            word.bounds.left,
+            word.bounds.right,
+            wordBounds,
+          );
         }
       }
+
+      // Save the projected bounds for visualization
+      projectedBounds[pageEntry.key] = List<double>.from(wordBounds);
 
       if (wordBounds.length > 3) {
         // Find the biggest gap between projected bounds
         double maxGap = 0.0;
         double gapStart = 0.0;
-        for (int i = 0; i < wordBounds.length - 1; i += 2) {
-          double gap =
-              wordBounds[i + 1] -
-              wordBounds[i]; // right of current - left of next
+        for (int i = 1; i < wordBounds.length - 1; i += 2) {
+          double gap = wordBounds[i + 1] - wordBounds[i];
           if (gap > maxGap) {
             maxGap = gap;
             gapStart = wordBounds[i];
@@ -87,12 +112,26 @@ class DocumentData {
         }
 
         // If the biggest gap is big enough, we have found a column split
-        if (maxGap > 20.0) {
-          // Split lines on the column gap
+        if (maxGap > 25.0) {
+          hasColumns[pageEntry.key] = true;
+
+          // Create the column-reordered version
           List<LineData> rightColumnLines = [];
           List<LineData> leftColumnLines = [];
+          bool startedContent = false;
+
           for (var line in pageEntry.value) {
+            // Skip lines until we reach a left column line
+            if (line.bounds.left < 100.0) {
+              startedContent = true;
+            }
+
+            if (!startedContent) {
+              continue;
+            }
+
             int breakIndex = 0;
+            print("line: ${line.text}");
             while (breakIndex < line.wordList.length &&
                 line.wordList[breakIndex].bounds.right < gapStart) {
               breakIndex++;
@@ -139,53 +178,67 @@ class DocumentData {
             }
             leftColumnLines.add(line);
           }
-          pageLines[pageEntry.key] = [...leftColumnLines, ...rightColumnLines];
+          // Save the reordered version (left column, then right column)
+          pageLinesWithColumns[pageEntry.key] = [
+            ...leftColumnLines,
+            ...rightColumnLines,
+          ];
+        } else {
+          hasColumns[pageEntry.key] = false;
         }
+      } else {
+        hasColumns[pageEntry.key] = false;
       }
     }
   }
 
-  void _projectBounds(double left, double right, List<double> projections) {
+  List<double> _projectWord(
+    double left,
+    double right,
+    List<double> projections,
+  ) {
     if (projections.isEmpty) {
-      projections.add(left);
-      projections.add(right);
-      return;
+      return [left, right];
     }
 
-    // Iterate through the projections and add the new bounds if relevant
-    bool leftIsIn = false;
-    int leftInsertIndex = 0;
-    while (leftInsertIndex < projections.length &&
-        left < projections[leftInsertIndex]) {
-      leftIsIn = !leftIsIn;
-      leftInsertIndex++;
-    }
+    List<double> newProjections = [];
+    int i = 0;
+    bool addedNewInterval = false;
 
-    bool rightIsIn = false;
-    int rightInsertIndex = 0;
-    while (rightInsertIndex < projections.length &&
-        right < projections[rightInsertIndex]) {
-      rightIsIn = !rightIsIn;
-      rightInsertIndex++;
-    }
+    while (i < projections.length) {
+      double boundStart = projections[i];
+      double boundEnd = projections[i + 1];
 
-    // Insert the new bounds if they are not already inside existing bounds - remove overlapping parts
-    if (!leftIsIn) {
-      projections.insert(leftInsertIndex, left);
-      if (rightIsIn) {
-        projections.removeAt(
-          leftInsertIndex + 1,
-        ); // Remove overlapping right bound
+      if (!addedNewInterval) {
+        // New interval ends before the existing interval
+        if (right <= boundStart) {
+          newProjections.add(left);
+          newProjections.add(right);
+          addedNewInterval = true;
+        }
+
+        // Check if we need to merge with the existing bound
+        if (left < boundEnd && right > boundStart) {
+          // Overlapping - merge by extending boundaries
+          left = min(left, boundStart);
+          right = max(right, boundEnd);
+          i += 2;
+          continue;
+        }
       }
+      // Add the existing bound
+      newProjections.add(boundStart);
+      newProjections.add(boundEnd);
+      i += 2;
     }
-    if (!rightIsIn) {
-      projections.insert(rightInsertIndex, right);
-      if (leftIsIn) {
-        projections.removeAt(
-          rightInsertIndex - 1,
-        ); // Remove overlapping left bound
-      }
+
+    // Add the new interval if not yet added
+    if (!addedNewInterval) {
+      newProjections.add(left);
+      newProjections.add(right);
     }
+
+    return newProjections;
   }
 }
 
@@ -354,10 +407,10 @@ Rect _calculateBounds(List<TextGlyph> glyphs) {
     (child) => child.fontSize == children.first.fontSize,
   );
   bool allSameStyle = children.every((child) {
-    List<PdfFontStyle> fontStyles = child.fontStyle;
+    List<PdfFontStyle>? fontStyles = child.fontStyle;
 
-    for (var style in fontStyles) {
-      if (!children.every((c) => c.fontStyle.contains(style))) {
+    for (var style in fontStyles ?? []) {
+      if (!children.every((c) => c.fontStyle?.contains(style) ?? false)) {
         return false;
       }
     }

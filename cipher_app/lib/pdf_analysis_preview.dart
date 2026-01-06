@@ -39,8 +39,10 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
   final List<PdfDocument> _documents = [];
   final List<String> _documentNames = [];
   final Map<String, List<LineData>> _documentData = {};
+  final Map<String, DocumentData> _documentDataObjects = {};
   int _selectedDocIndex = 0;
   bool _isLoading = false;
+  final Map<String, bool> _showColumnReorderedVersion = {};
 
   @override
   void dispose() {
@@ -108,6 +110,7 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
           _documents.add(document);
           _documentNames.add(name);
           _documentData[name] = documentData.pageLines.values.first;
+          _documentDataObjects[name] = documentData;
           _selectedDocIndex = _documents.length - 1;
         });
       }
@@ -128,6 +131,8 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
       _documents.clear();
       _documentNames.clear();
       _documentData.clear();
+      _documentDataObjects.clear();
+      _showColumnReorderedVersion.clear();
       _selectedDocIndex = 0;
     });
   }
@@ -222,7 +227,23 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
                   child: Stack(
                     children: [
                       if (currentData != null)
-                        _buildAnalysisView(currentData, theme)
+                        _buildAnalysisView(
+                          currentData,
+                          theme,
+                          _documentDataObjects[currentDocName],
+                          currentDocName != null
+                              ? _showColumnReorderedVersion[currentDocName] ??
+                                    false
+                              : false,
+                          currentDocName != null
+                              ? (show) {
+                                  setState(() {
+                                    _showColumnReorderedVersion[currentDocName] =
+                                        show;
+                                  });
+                                }
+                              : null,
+                        )
                       else
                         const Center(child: CircularProgressIndicator()),
                       if (_isLoading)
@@ -250,18 +271,66 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
     );
   }
 
-  Widget _buildAnalysisView(List<LineData> data, ThemeData theme) {
+  Widget _buildAnalysisView(
+    List<LineData> data,
+    ThemeData theme,
+    DocumentData? documentData,
+    bool showColumnReorderedVersion,
+    Function(bool)? onColumnVersionChanged,
+  ) {
+    // Choose which version to display
+    List<LineData> displayData = data;
+    bool hasColumnDetection = false;
+
+    if (documentData != null && documentData.pageLinesWithColumns.isNotEmpty) {
+      // Check if the first page has column detection
+      if (documentData.hasColumns.values.any((hasCol) => hasCol)) {
+        hasColumnDetection = true;
+        if (showColumnReorderedVersion &&
+            documentData.pageLinesWithColumns.values.isNotEmpty) {
+          displayData = documentData.pageLinesWithColumns.values.first;
+        }
+      }
+    }
+
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
+        // Version selector toggle
+        if (hasColumnDetection)
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Visualizando: ${showColumnReorderedVersion ? 'Com Reordenação de Colunas' : 'Sem Reordenação'}',
+                    style: theme.textTheme.bodyMedium,
+                  ),
+                  Switch(
+                    value: showColumnReorderedVersion,
+                    onChanged: onColumnVersionChanged,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        if (hasColumnDetection) const SizedBox(height: 16),
         // Summary stats
-        _buildSummaryCard(data, theme),
+        _buildSummaryCard(displayData, theme),
         const SizedBox(height: 16),
+
+        // Projected bounds visualization
+        if (documentData != null && documentData.projectedBounds.isNotEmpty)
+          _buildProjectedBoundsCard(documentData, theme),
+        if (documentData != null && documentData.projectedBounds.isNotEmpty)
+          const SizedBox(height: 16),
 
         // Word count per line chart
         _buildChartCard(
           'Palavras por Linha',
-          _buildWordCountChart(data, theme),
+          _buildWordCountChart(displayData, theme),
           theme,
         ),
         const SizedBox(height: 16),
@@ -269,7 +338,7 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
         // Font Size chart
         _buildChartCard(
           'Tamanho da Fonte por Linha',
-          _buildFontSizeChart(data, theme),
+          _buildFontSizeChart(displayData, theme),
           theme,
         ),
         const SizedBox(height: 16),
@@ -277,7 +346,7 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
         // Line height chart
         _buildChartCard(
           'Altura por Linha',
-          _buildLineHeightChart(data, theme),
+          _buildLineHeightChart(displayData, theme),
           theme,
         ),
         const SizedBox(height: 16),
@@ -285,7 +354,7 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
         // Y-position chart
         _buildChartCard(
           'Posição Vertical (Y)',
-          _buildYPositionChart(data, theme),
+          _buildYPositionChart(displayData, theme),
           theme,
         ),
         const SizedBox(height: 16),
@@ -293,7 +362,7 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
         // Line spacing chart
         _buildChartCard(
           'Espaçamento Entre Linhas',
-          _buildLineSpacingChart(data, theme),
+          _buildLineSpacingChart(displayData, theme),
           theme,
         ),
         const SizedBox(height: 16),
@@ -301,13 +370,13 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
         // Font style per line chart
         _buildChartCard(
           'Estilo de Fonte por Linha',
-          _buildFontStylePerLineChart(data, theme),
+          _buildFontStylePerLineChart(displayData, theme),
           theme,
         ),
         const SizedBox(height: 16),
 
         // Detailed line list
-        _buildDetailedLineList(data, theme),
+        _buildDetailedLineList(displayData, theme),
       ],
     );
   }
@@ -392,6 +461,28 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
           ),
           Text(value),
         ],
+      ),
+    );
+  }
+
+  Widget _buildProjectedBoundsCard(DocumentData documentData, ThemeData theme) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Projeção de Limites', style: theme.textTheme.titleMedium),
+            const SizedBox(height: 16),
+            SizedBox(
+              height: 100,
+              child: CustomPaint(
+                painter: ProjectedBoundsPainter(documentData.projectedBounds),
+                size: Size.infinite,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -976,4 +1067,84 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
       ],
     );
   }
+}
+
+class ProjectedBoundsPainter extends CustomPainter {
+  final Map<int, List<double>> projectedBounds;
+
+  ProjectedBoundsPainter(this.projectedBounds);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (projectedBounds.isEmpty) {
+      return;
+    }
+
+    final bounds = projectedBounds.values.first; // Get first page bounds
+    if (bounds.isEmpty) return;
+
+    // Get min and max values for scaling
+    final minBound = bounds.reduce((a, b) => a < b ? a : b);
+    final maxBound = bounds.reduce((a, b) => a > b ? a : b);
+    final range = maxBound - minBound;
+    final padding = 20.0;
+    final availableWidth = size.width - (padding * 2);
+
+    // Paint background
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, size.width, size.height),
+      Paint()..color = Colors.grey.shade100,
+    );
+
+    // Paint intervals
+    for (int i = 0; i < bounds.length - 1; i += 2) {
+      final startNorm = ((bounds[i] - minBound) / range) * availableWidth;
+      final endNorm = ((bounds[i + 1] - minBound) / range) * availableWidth;
+
+      final x1 = padding + startNorm;
+      final x2 = padding + endNorm;
+
+      // Draw interval rectangle
+      canvas.drawRect(
+        Rect.fromLTWH(x1, size.height / 4, x2 - x1, size.height / 2),
+        Paint()..color = Colors.blue.withOpacity(0.6),
+      );
+
+      // Draw labels
+      final textPainter = TextPainter(
+        text: TextSpan(
+          text: bounds[i].toStringAsFixed(0),
+          style: const TextStyle(color: Colors.black, fontSize: 10),
+        ),
+        textDirection: TextDirection.ltr,
+      );
+      textPainter.layout();
+      textPainter.paint(canvas, Offset(x1 - textPainter.width / 2, 5));
+
+      final endTextPainter = TextPainter(
+        text: TextSpan(
+          text: bounds[i + 1].toStringAsFixed(0),
+          style: const TextStyle(color: Colors.black, fontSize: 10),
+        ),
+        textDirection: TextDirection.ltr,
+      );
+      endTextPainter.layout();
+      endTextPainter.paint(
+        canvas,
+        Offset(x2 - endTextPainter.width / 2, size.height - 20),
+      );
+    }
+
+    // Draw axis line
+    canvas.drawLine(
+      Offset(padding, size.height / 2),
+      Offset(size.width - padding, size.height / 2),
+      Paint()
+        ..color = Colors.grey
+        ..strokeWidth = 1,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }

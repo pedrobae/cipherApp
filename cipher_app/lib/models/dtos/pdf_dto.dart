@@ -130,54 +130,53 @@ class DocumentData {
               continue;
             }
 
-            int breakIndex = 0;
-            print("line: ${line.text}");
-            while (breakIndex < line.wordList.length &&
-                line.wordList[breakIndex].bounds.right < gapStart) {
-              breakIndex++;
+            List<WordData> wordsInLeftColumn = [];
+            List<WordData> wordsInRightColumn = [];
+            for (var word in line.wordList) {
+              if (word.bounds.right < gapStart) {
+                wordsInLeftColumn.add(word);
+              } else {
+                wordsInRightColumn.add(word);
+              }
             }
-            if (breakIndex < line.wordList.length) {
+
+            if (wordsInRightColumn.isNotEmpty) {
               // There are words in the right column
               rightColumnLines.add(
                 LineData(
-                  text: line.wordList
-                      .sublist(breakIndex)
-                      .map((w) => w.text)
-                      .join(),
+                  text: wordsInRightColumn.map((w) => w.text).join(),
                   fontSize: line.fontSize,
                   bounds: Rect.fromLTRB(
-                    line.wordList[breakIndex].bounds.left,
+                    wordsInRightColumn.first.bounds.left,
                     line.bounds.top,
                     line.bounds.right,
                     line.bounds.bottom,
                   ),
                   fontStyle: line.fontStyle,
                   lineIndex: line.lineIndex,
-                  wordList: line.wordList.sublist(breakIndex),
+                  wordList: wordsInRightColumn,
                 ),
               );
-
+            }
+            if (wordsInLeftColumn.isNotEmpty) {
               leftColumnLines.add(
                 LineData(
-                  text: line.wordList
-                      .sublist(0, breakIndex)
-                      .map((w) => w.text)
-                      .join(),
+                  text: wordsInLeftColumn.map((w) => w.text).join(),
                   fontSize: line.fontSize,
                   bounds: Rect.fromLTRB(
                     line.bounds.left,
                     line.bounds.top,
-                    line.wordList[breakIndex - 1].bounds.right,
+                    wordsInLeftColumn.last.bounds.right,
                     line.bounds.bottom,
                   ),
                   fontStyle: line.fontStyle,
                   lineIndex: line.lineIndex,
-                  wordList: line.wordList.sublist(0, breakIndex),
+                  wordList: wordsInLeftColumn,
                 ),
               );
             }
-            leftColumnLines.add(line);
           }
+
           // Save the reordered version (left column, then right column)
           pageLinesWithColumns[pageEntry.key] = [
             ...leftColumnLines,

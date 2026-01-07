@@ -185,13 +185,16 @@ class SectionParser {
         'isValid': true,
         'labelStart': lineStart,
         'labelEnd': lineStart + labelEnd,
+        'labelWithColon': true,
       };
     }
 
     // Check preceding and following characters, examining equally spaced characters
     if (start - lineStart > lineEnd - end) {
       // More preceding characters than following characters ---> ASSUMING THIS ISNT A VALID LABEL
-      return {'isValid': false};
+      if (lineEnd != -1) {
+        return {'isValid': false};
+      }
     }
     int j = 0;
     for (int i = start - 1; i >= lineStart; i--, j++) {
@@ -287,6 +290,10 @@ class SectionParser {
         label = linesData[0].text
             .substring(labelData['labelStart'], labelData['labelEnd'])
             .trim();
+
+        if (labelData['labelWithColon'] == true) {
+          label = label.substring(0, label.length - 1).trim();
+        }
 
         // Remove label from LineData
         linesData[0].text = linesData[0].text

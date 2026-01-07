@@ -50,10 +50,16 @@ class ParsingServiceBase {
     switch (strategy) {
       case ParsingStrategy.doubleNewLine:
       case ParsingStrategy.sectionLabels:
-        chordLineParser.parseBySimpleText(variant, strategy);
+        chordLineParser.parseBySimpleText(
+          variant,
+          variant.parsingResults[strategy]!,
+        );
         break;
       case ParsingStrategy.pdfFormatting:
-        chordLineParser.parseByPdfFormatting(variant, strategy);
+        chordLineParser.parseByPdfFormatting(
+          variant,
+          variant.parsingResults[strategy]!,
+        );
         break;
     }
   }

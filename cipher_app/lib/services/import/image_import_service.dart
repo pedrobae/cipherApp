@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:cipher_app/services/import/import_service_base.dart';
-// TODO: Uncomment when implementing OCR
+// TODO: Implement OCR (Optical Character Recognition)
 // import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 
 /// Service for extracting text from images using OCR (Optical Character Recognition)
@@ -19,7 +19,7 @@ class ImageImportService extends ImportService {
     // final recognizedText = await textRecognizer.processImage(inputImage);
     // return recognizedText.text;
 
-    throw UnimplementedError('Image OCR will be implemented in Phase 5');
+    throw UnimplementedError('Image OCR will be implemented later.');
   }
 
   /// Validates that the image file exists and has valid image extension

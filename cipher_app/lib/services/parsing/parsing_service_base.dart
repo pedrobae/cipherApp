@@ -50,10 +50,10 @@ class ParsingServiceBase {
     switch (strategy) {
       case ParsingStrategy.doubleNewLine:
       case ParsingStrategy.sectionLabels:
-        chordLineParser.textParser(variant, strategy);
+        chordLineParser.parseBySimpleText(variant, strategy);
         break;
       case ParsingStrategy.pdfFormatting:
-        chordLineParser.parseByPdfFormatting(variant);
+        chordLineParser.parseByPdfFormatting(variant, strategy);
         break;
     }
   }
@@ -93,7 +93,7 @@ class ParsingServiceBase {
             1;
       }
 
-      // Calculate average space between words
+      // Calculate average space between words and average word length
       final words = textLine.wordList;
       if (words.length > 1) {
         int totalSpace = 0;
@@ -196,6 +196,8 @@ class ParsingServiceBase {
       versions: [
         Version(
           sections: variant.parsingResults[strategy]!.parsedSections,
+          songStructure: variant.parsingResults[strategy]!.songStructure,
+          versionName: 'Imported',
           cipherId: -1,
         ),
       ],

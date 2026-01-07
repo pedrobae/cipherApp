@@ -282,6 +282,11 @@ class SectionParser {
       final labelData = _validateLabel(linesData[0].text, match!);
 
       if (labelData['isValid']) {
+        // Save extracted label
+        label = linesData[0].text
+            .substring(labelData['labelStart'], labelData['labelEnd'])
+            .trim();
+
         // Remove label from LineData
         linesData[0].text = linesData[0].text
             .substring(labelData['labelEnd'])

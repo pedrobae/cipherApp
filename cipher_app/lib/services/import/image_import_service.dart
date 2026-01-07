@@ -5,7 +5,6 @@ import 'package:cipher_app/services/import/import_service_base.dart';
 
 /// Service for extracting text from images using OCR (Optical Character Recognition)
 class ImageImportService extends ImportService {
-  // TODO: Initialize text recognizer when implementing
   // final textRecognizer = TextRecognizer();
 
   /// Extracts text from an image using OCR
@@ -16,8 +15,6 @@ class ImageImportService extends ImportService {
   /// Throws [Exception] if OCR fails
   @override
   Future<String> extractText(String path) async {
-    // TODO: Implement OCR extraction
-    //
     // final inputImage = InputImage.fromFilePath(path);
     // final recognizedText = await textRecognizer.processImage(inputImage);
     // return recognizedText.text;
@@ -42,7 +39,6 @@ class ImageImportService extends ImportService {
   /// Clean up text recognizer resources
   @override
   Future<void> dispose() async {
-    // TODO: Uncomment when implementing
     // await textRecognizer.close();
   }
 }

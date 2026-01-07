@@ -127,6 +127,7 @@ class DocumentData {
             }
 
             if (!startedContent) {
+              leftColumnLines.add(line);
               continue;
             }
 
@@ -144,7 +145,7 @@ class DocumentData {
               // There are words in the right column
               rightColumnLines.add(
                 LineData(
-                  text: wordsInRightColumn.map((w) => w.text).join(),
+                  text: wordsInRightColumn.map((w) => w.text).join(' '),
                   fontSize: line.fontSize,
                   bounds: Rect.fromLTRB(
                     wordsInRightColumn.first.bounds.left,
@@ -161,7 +162,7 @@ class DocumentData {
             if (wordsInLeftColumn.isNotEmpty) {
               leftColumnLines.add(
                 LineData(
-                  text: wordsInLeftColumn.map((w) => w.text).join(),
+                  text: wordsInLeftColumn.map((w) => w.text).join(' '),
                   fontSize: line.fontSize,
                   bounds: Rect.fromLTRB(
                     line.bounds.left,
@@ -242,7 +243,7 @@ class DocumentData {
 }
 
 class LineData {
-  final String text;
+  String text;
   final double? fontSize;
   final Rect bounds;
   final List<PdfFontStyle>? fontStyle;
@@ -295,7 +296,7 @@ class LineData {
 
     return LineData(
       lineIndex: lineIndex,
-      text: glyphs.map((g) => g.text).join(),
+      text: words.map((w) => w.text).join(' '),
       fontSize: fontSize,
       fontStyle: fontStyle,
       bounds: _calculateBounds(glyphs),

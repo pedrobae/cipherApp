@@ -1,6 +1,5 @@
 import 'package:cipher_app/models/domain/parsing_cipher.dart';
 import 'package:cipher_app/models/dtos/pdf_dto.dart';
-import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 enum SeparatorType { doubleNewLine, bracket, parenthesis, hyphen }
 
@@ -40,14 +39,14 @@ class SectionParser {
         Iterable<RegExpMatch> matches = regex.allMatches(variant.rawText);
 
         for (var match in matches) {
-          final result = _validateLabel(variant.rawText, match);
+          final labelData = _validateLabel(variant.rawText, match);
 
           // Possible Label found -  Validate
-          if (result['isValid']) {
+          if (labelData['isValid']) {
             validMatches.add({
               'label': match.group(0),
-              'labelStart': result['labelStart'],
-              'labelEnd': result['labelEnd'],
+              'labelStart': labelData['labelStart'],
+              'labelEnd': labelData['labelEnd'],
             });
           }
         }
@@ -88,60 +87,55 @@ class SectionParser {
     ParsingResult result =
         variant.parsingResults[ParsingStrategy.pdfFormatting]!;
 
-    /// Identifies section break based on line spacing greater than the standard deviation of line spacings
+    /// Identifies section break based on line spacing greater than the mean line spacing
     double totalLineSpacing = 0.0;
+    int relativeSpacingCount = 0;
     for (int i = 0; i < variant.lines.length - 1; i++) {
       final textLine = variant.lines[i]['textLine'] as LineData;
       final nextLine = variant.lines[i + 1]['textLine'] as LineData;
-      totalLineSpacing += nextLine.bounds.top - textLine.bounds.bottom;
+      final spacing = nextLine.bounds.top - textLine.bounds.bottom;
+      if (spacing > 0) {
+        totalLineSpacing += spacing;
+        relativeSpacingCount++;
+      }
     }
-    double meanLineSpacing = totalLineSpacing / (variant.lines.length - 1);
-    List<int> sectionBreakIndexes = [];
+    double meanLineSpacing = totalLineSpacing / relativeSpacingCount;
+    int previousBreakIndex = 0;
     for (int i = 0; i < variant.lines.length - 1; i++) {
       final textLine = variant.lines[i]['textLine'] as LineData;
       final nextLine = variant.lines[i + 1]['textLine'] as LineData;
       double lineSpacing = nextLine.bounds.top - textLine.bounds.bottom;
+      // Line spacing greater than mean indicates a section break
       if (lineSpacing > meanLineSpacing) {
-        sectionBreakIndexes.add(i + 1);
+        // Section break found
+        int sectionStart = previousBreakIndex;
+        int sectionEnd = i + 1;
+
+        List<LineData> sectionLines = variant.lines
+            .sublist(sectionStart, sectionEnd)
+            .map((lineMap) {
+              return lineMap['textLine'] as LineData;
+            })
+            .toList();
+
+        _mapSectionFromLinesData(result, sectionLines);
+
+        previousBreakIndex = sectionEnd;
       }
+    }
+    // Handle last section if any lines remain
+    if (previousBreakIndex < variant.lines.length) {
+      List<LineData> sectionLines = variant.lines
+          .sublist(previousBreakIndex)
+          .map((lineMap) {
+            return lineMap['textLine'] as LineData;
+          })
+          .toList();
+
+      _mapSectionFromLinesData(result, sectionLines);
     }
 
-    // - Identify Chord Style
-    //     - Heuristic: at least 30% of lines use this style
-    //     - Heuristic: at least 70% of chord lines have the same following style (lyrics style)
-    //     - Heuristic: chord lines have higher average space between words
-    final int totalLines = variant.lines.length;
-    List<List<PdfFontStyle>> possibleChordStyles = [];
-    for (var entry in result.fontStyleCount.entries) {
-      final style = entry.key;
-      final count = entry.value;
-      // Check style usage threshold
-      if (count / totalLines >= 0.3) {
-        // Check following styles
-        if (result.followingStyleCounts[style]!.values.any(
-          (s) => s > count * 0.7,
-        )) {
-          // Potential chord style found
-          possibleChordStyles.add(style);
-        }
-      }
-    }
-    // From possible chord styles, select the one with highest average space between words
-    int highestAvgSpace = -1;
-    for (var style in possibleChordStyles) {
-      int totalSpace = 0;
-      for (var lineMap in variant.lines) {
-        final textLine = lineMap['textLine'] as LineData;
-        if ((textLine.fontStyle ?? []) == style) {
-          totalSpace += textLine.avgSpaceBetweenWords!;
-        }
-      }
-      int avgSpace = totalSpace ~/ result.fontStyleCount[style]!;
-      if (avgSpace > highestAvgSpace) {
-        highestAvgSpace = avgSpace;
-        result.dominantChordStyle = style;
-      }
-    }
+    _checkDuplicates(result);
   }
 
   /// Validates if a found label is indeed a section label,
@@ -172,10 +166,15 @@ class SectionParser {
     int lineStart = rawText.lastIndexOf('\n', start) + 1;
     int lineEnd = rawText.indexOf('\n', end);
     if (lineEnd == -1) {
-      // No newline was found after the match, invalid label
-      return {'isValid': false};
+      if (lineStart != 0) {
+        // No newline was found after the match
+        // And the text is not single line
+        return {'isValid': false};
+      }
+      matchLine = rawText;
+    } else {
+      matchLine = rawText.substring(lineStart, lineEnd);
     }
-    matchLine = rawText.substring(lineStart, lineEnd);
 
     // Search for colon after the label
     RegExp colonRegex = RegExp(r':');
@@ -262,11 +261,77 @@ class SectionParser {
       }
     }
   }
+
+  void _mapSectionFromLinesData(
+    ParsingResult result,
+    List<LineData> linesData,
+  ) {
+    if (linesData.isEmpty) {
+      return; // No lines to process
+    }
+    // Check first line for label
+    bool firstLineHasLabel;
+    RegExpMatch? match;
+    String officialLabel;
+    String label = 'Unlabeled Section';
+    (firstLineHasLabel, match, officialLabel) = _containsLabel(
+      linesData[0].text,
+    );
+
+    if (firstLineHasLabel) {
+      final labelData = _validateLabel(linesData[0].text, match!);
+
+      if (labelData['isValid']) {
+        // Remove label from LineData
+        linesData[0].text = linesData[0].text
+            .substring(labelData['labelEnd'])
+            .trimLeft();
+
+        if (linesData[0].text.isEmpty) {
+          // If the line is now empty, remove it from linesData
+          linesData.removeAt(0);
+        }
+      }
+    }
+    StringBuffer buffer = StringBuffer();
+    for (var line in linesData) {
+      buffer.writeln(line.text);
+    }
+    String sectionContent = buffer.toString().trim();
+
+    if (sectionContent.isEmpty) {
+      return; // Skip empty sections
+    }
+
+    Map<String, dynamic> section = {
+      'index': result.rawSections.length,
+      'content': sectionContent,
+      'numberOfLines': linesData.length,
+      'isDuplicate': false,
+      'suggestedTitle': label,
+      'linesData': linesData,
+      'officialLabel': officialLabel,
+    };
+
+    result.rawSections.add(section);
+  }
+
+  (bool, RegExpMatch?, String) _containsLabel(String text) {
+    for (var label in commonSectionLabels) {
+      for (var labelVariation in label.labelVariations) {
+        RegExp regex = RegExp(labelVariation, caseSensitive: false);
+        if (regex.hasMatch(text)) {
+          return (true, regex.firstMatch(text)!, label.officialLabel);
+        }
+      }
+    }
+    return (false, null, 'Unlabeled Section');
+  }
 }
 
 final List<SectionLabels> commonSectionLabels = [
   SectionLabels(
-    labelVariations: ['verse', 'verso', r'parte\s*\d+'],
+    labelVariations: ['verse', 'verso', r'parte\s*\d+', r'estrofe\s*\d+'],
     officialLabel: 'Verse',
   ),
   SectionLabels(

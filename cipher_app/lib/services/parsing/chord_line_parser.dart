@@ -7,8 +7,10 @@ class ChordLineParser {
   /// Parses sections from the given [ImportVariant] and creates the parsed objects.
   void textParser(ImportVariant variation, ParsingStrategy strategy) {
     // Iterates through each section of the cipher creating Section objects
-    Map<String, Section> parsedSections = {};
-    List<String> songStructure = [];
+    Map<String, Section> parsedSections =
+        variation.parsingResults[strategy]!.parsedSections;
+    List<String> songStructure =
+        variation.parsingResults[strategy]!.songStructure;
     int incrementalDefaultCode = 0;
 
     List<Map<String, dynamic>> sections =
@@ -47,19 +49,18 @@ class ChordLineParser {
 
       parsedSections[code] = parsedSection;
     }
-    // Assign parsed sections and song structure to the appropriate fields
-    variation.parsingResults[strategy]!.parsedSections = parsedSections;
-    variation.parsingResults[strategy]!.songStructure = songStructure;
   }
 
-  String _buildContent(Map<String, dynamic> section) {
+  void parseByPdfFormatting(ImportVariant variant) {}
+
+  String _buildContent(Map<String, dynamic> rawSection) {
     String content = '';
 
     // Iterate through lines in the section, creating the content
-    for (int index = 0; index < section['lines'].length; index++) {
-      var line = section['lines'][index];
-      var nextLine = (index + 1 < section['lines'].length)
-          ? section['lines'][index + 1]
+    for (int index = 0; index < rawSection['lines'].length; index++) {
+      var line = rawSection['lines'][index];
+      var nextLine = (index + 1 < rawSection['lines'].length)
+          ? rawSection['lines'][index + 1]
           : null;
 
       if (_isChordLine(line) == true) {

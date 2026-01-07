@@ -6,21 +6,14 @@ import 'package:cipher_app/services/parsing/chord_line_parser.dart';
 import 'package:cipher_app/services/parsing/metadata_parser.dart';
 import 'package:cipher_app/services/parsing/section_parser.dart';
 import 'package:flutter/foundation.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 class ParsingServiceBase {
   final MetadataParser metadataParser = MetadataParser();
   final ChordLineParser chordLineParser = ChordLineParser();
   final SectionParser sectionParser = SectionParser();
 
-  void textParser(ImportVariant variant) {
-    for (var strategy in variant.parsingResults.keys) {
-      parseSections(variant, strategy);
-      parseMetadata(variant, strategy);
-      parseChords(variant, strategy);
-    }
-  }
-
-  void pdfParser(ImportVariant variant) {
+  void parse(ImportVariant variant) {
     for (var strategy in variant.parsingResults.keys) {
       parseSections(variant, strategy);
       parseMetadata(variant, strategy);
@@ -46,10 +39,9 @@ class ParsingServiceBase {
     switch (strategy) {
       case ParsingStrategy.doubleNewLine:
       case ParsingStrategy.sectionLabels:
-        metadataParser.textParser(variant, strategy);
+        metadataParser.parseBySimpleText(variant, strategy);
         break;
       case ParsingStrategy.pdfFormatting:
-        // metadataParser.parsePdfMetadata(variant);
         break;
     }
   }
@@ -61,6 +53,7 @@ class ParsingServiceBase {
         chordLineParser.textParser(variant, strategy);
         break;
       case ParsingStrategy.pdfFormatting:
+        chordLineParser.parseByPdfFormatting(variant);
         break;
     }
   }
@@ -113,6 +106,44 @@ class ParsingServiceBase {
         textLine.avgSpaceBetweenWords = 0;
       }
     }
+
+    // - Identify Chord Style
+    //     - Heuristic: at least 30% of lines use this style
+    //     - Heuristic: at least 70% of chord lines have the same following style (lyrics style)
+    //     - Heuristic: chord lines have higher average space between words
+    final int totalLines = variant.lines.length;
+    List<List<PdfFontStyle>> possibleChordStyles = [];
+    for (var entry in result.fontStyleCount.entries) {
+      final style = entry.key;
+      final count = entry.value;
+      // Check style usage threshold
+      if (count / totalLines >= 0.3) {
+        // Check following styles
+        if (result.followingStyleCounts[style]!.values.any(
+          (s) => s > count * 0.7,
+        )) {
+          // Potential chord style found
+          possibleChordStyles.add(style);
+        }
+      }
+    }
+    // From possible chord styles, select the one with highest average space between words
+    int highestAvgSpace = -1;
+    for (var style in possibleChordStyles) {
+      int totalSpace = 0;
+      for (var lineMap in variant.lines) {
+        final textLine = lineMap['textLine'] as LineData;
+        if ((textLine.fontStyle ?? []) == style) {
+          totalSpace += textLine.avgSpaceBetweenWords!;
+        }
+      }
+      int avgSpace = totalSpace ~/ result.fontStyleCount[style]!;
+      if (avgSpace > highestAvgSpace) {
+        highestAvgSpace = avgSpace;
+        result.dominantChordStyle = style;
+      }
+    }
+
     variant.parsingResults[ParsingStrategy.pdfFormatting] = result;
   }
 
@@ -145,7 +176,7 @@ class ParsingServiceBase {
 
   void debugPrintCalcs(ImportVariant variant) {
     if (kDebugMode) {
-      print('--- PDF Pre-Processing Results for ${variant.strategy.name} ---');
+      print('--- PDF Pre-Processing Results for ${variant.variation.name} ---');
       print(
         '--- Line Calculations ---\n\tLine Number\tWord Count\tAvg Word Length',
       );

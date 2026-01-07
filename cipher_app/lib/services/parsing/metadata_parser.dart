@@ -1,10 +1,7 @@
 import 'package:cipher_app/models/domain/parsing_cipher.dart';
 
 class MetadataParser {
-  Future<void> textParser(
-    ImportVariant variant,
-    ParsingStrategy strategy,
-  ) async {
+  void parseBySimpleText(ImportVariant variant, ParsingStrategy strategy) {
     // Iterates through sections
     for (var section in variant.parsingResults[strategy]!.rawSections) {
       // Simple heuristic: if the section is labeled it doesn't contain metadata

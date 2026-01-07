@@ -54,22 +54,8 @@ class ParserProvider extends ChangeNotifier {
       }
 
       /// ===== PARSING STEPS =====
-      switch (importedCipher.importType) {
-        case ImportType.text:
-          for (var importVariant in _cipher!.allImportVariants.values) {
-            // Parse sections for each import variant and strategy
-            _parsingService.textParser(importVariant);
-          }
-          break;
-        case ImportType.pdf:
-          for (var importVariant in _cipher!.allImportVariants.values) {
-            // Parse sections for each import variant and strategy
-            _parsingService.pdfParser(importVariant);
-          }
-          break;
-        case ImportType.image:
-          // Image specific parsing can be added here
-          break;
+      for (var importVariant in _cipher!.allImportVariants.values) {
+        _parsingService.parse(importVariant);
       }
 
       _selectCandidates();
@@ -98,7 +84,7 @@ class ParserProvider extends ChangeNotifier {
         // Create candidate
         CipherParseCandidate candidate = CipherParseCandidate(
           strategy: strategy,
-          importStrategy: importVariant.strategy,
+          importStrategy: importVariant.variation,
           cipher: cipher,
           sectionCount: result.parsedSections.length,
         );

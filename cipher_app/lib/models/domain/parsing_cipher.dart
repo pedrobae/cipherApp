@@ -18,9 +18,9 @@ enum ParsingStrategy { doubleNewLine, sectionLabels, pdfFormatting }
 /// Container for results from a single parsing strategy
 class ParsingResult {
   final ParsingStrategy strategy;
-  final List<Map<String, dynamic>> rawSections;
-  Map<String, Section> parsedSections = {};
-  List<String> songStructure = [];
+  final List<Map<String, dynamic>> rawSections = [];
+  final Map<String, Section> parsedSections = {};
+  final List<String> songStructure = [];
   final Map<String, dynamic> strategyMetadata;
   List<PdfFontStyle>? dominantChordStyle;
 
@@ -29,11 +29,7 @@ class ParsingResult {
   final Map<List<PdfFontStyle>, Map<List<PdfFontStyle>, int>>
   followingStyleCounts = {};
 
-  ParsingResult({
-    required this.strategy,
-    this.rawSections = const [],
-    this.strategyMetadata = const {},
-  });
+  ParsingResult({required this.strategy, this.strategyMetadata = const {}});
 
   /// Check if this result has any parsed content
   bool get hasContent => parsedSections.isNotEmpty || rawSections.isNotEmpty;
@@ -44,7 +40,7 @@ class ParsingResult {
 
 /// Container for a single import variant with its line data and parsing results
 class ImportVariant {
-  final ImportVariation strategy;
+  final ImportVariation variation;
   final String rawText;
   final List<Map<String, dynamic>> lines;
   final Map<ParsingStrategy, ParsingResult> parsingResults = {};
@@ -53,7 +49,7 @@ class ImportVariant {
   Map<String, dynamic> metadata = {};
 
   ImportVariant({
-    required this.strategy,
+    required this.variation,
     required this.rawText,
     required this.lines,
   });
@@ -76,7 +72,7 @@ class ImportVariant {
     }
 
     final variant = ImportVariant(
-      strategy: strategy,
+      variation: strategy,
       rawText: buffer.toString(),
       lines: lines,
     );

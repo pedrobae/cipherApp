@@ -58,7 +58,7 @@ class ImportProvider extends ChangeNotifier {
           _importedCipher = ParsingCipher(importType: ImportType.text);
 
           final variant = ImportVariant(
-            strategy: ImportVariation.textDirect,
+            variation: ImportVariation.textDirect,
             rawText: data ?? '',
             lines: lines
                 .asMap()

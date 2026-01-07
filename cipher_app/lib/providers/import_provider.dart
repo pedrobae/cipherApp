@@ -104,7 +104,7 @@ class ImportProvider extends ChangeNotifier {
           }
 
           // Store metadata in all variants
-          for (var variant in _importedCipher!.allImportVariants.values) {
+          for (var variant in _importedCipher!.importVariants.values) {
             variant.metadata['hasColumns'] = pdfDocument.hasColumns[0];
             variant.metadata['pageCount'] = pdfDocument.pageLines.length;
           }

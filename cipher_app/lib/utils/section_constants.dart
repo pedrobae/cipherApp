@@ -1,5 +1,37 @@
 import 'package:flutter/material.dart';
 
+final List<SectionLabels> commonSectionLabels = [
+  SectionLabels(
+    labelVariations: ['verse', 'verso', r'parte\s*\d+', r'estrofe\s*\d+'],
+    officialLabel: 'Verse',
+    code: 'V',
+  ),
+  SectionLabels(
+    labelVariations: ['chorus', 'coro', 'refrao', 'refrão'],
+    officialLabel: 'Chorus',
+    code: 'C',
+  ),
+  SectionLabels(
+    labelVariations: ['bridge', 'ponte'],
+    officialLabel: 'Bridge',
+    code: 'B',
+  ),
+  SectionLabels(labelVariations: ['intro'], officialLabel: 'Intro', code: 'I'),
+  SectionLabels(labelVariations: ['outro'], officialLabel: 'Outro', code: 'O'),
+];
+
+class SectionLabels {
+  List<String> labelVariations;
+  String officialLabel;
+  String code;
+
+  SectionLabels({
+    required this.labelVariations,
+    required this.officialLabel,
+    required this.code,
+  });
+}
+
 /// Available colors for section selection in the cipher editor
 const List<Color> availableColors = [
   Colors.blue,
@@ -63,9 +95,9 @@ const Map<String, Color> defaultSectionColors = {
 String? getCodeFromLabel(String label) {
   String? code;
 
-  for (var entry in predefinedSectionTypes.entries) {
-    if (entry.value.toLowerCase() == label.toLowerCase()) {
-      code = entry.key;
+  for (var entry in commonSectionLabels) {
+    if (entry.officialLabel.toLowerCase() == label.toLowerCase()) {
+      code = entry.code;
       break;
     }
   }

@@ -42,7 +42,11 @@ class SectionProvider extends ChangeNotifier {
       versionId: _currentVersionId!,
       contentCode: contentCode,
       contentColor: color ?? (defaultSectionColors[contentCode]!),
-      contentType: sectionType ?? predefinedSectionTypes[contentCode]!,
+      contentType:
+          sectionType ??
+          commonSectionLabels
+              .firstWhere((label) => label.code == contentCode)
+              .officialLabel,
       contentText: '',
     );
     _sections[newSection.contentCode] = newSection;

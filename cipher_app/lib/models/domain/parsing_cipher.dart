@@ -105,7 +105,7 @@ class ParsingCipher {
   ImportVariant? getImportVariant(String key) => _importVariants[key];
 
   /// Get all import variants
-  Map<String, ImportVariant> get allImportVariants => Map.from(_importVariants);
+  Map<String, ImportVariant> get importVariants => _importVariants;
 
   /// Get list of available import variant keys
   List<String> get availableImportVariants => _importVariants.keys.toList();

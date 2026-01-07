@@ -1,3 +1,4 @@
+import 'package:cipher_app/models/domain/cipher/cipher.dart';
 import 'package:cipher_app/models/domain/parsing_cipher.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -64,7 +65,7 @@ class _CipherParsingScreenState extends State<CipherParsingScreen>
                     tabs: doc.candidates.map((candidate) {
                       return Tab(
                         text:
-                            '${candidate.importStrategy.name}\n${candidate.strategy.name}',
+                            '${candidate.variation.name}\n${candidate.strategy.name}',
                         icon: Icon(_getStrategyIcon(candidate.strategy)),
                       );
                     }).toList(),
@@ -142,12 +143,6 @@ class _CipherParsingScreenState extends State<CipherParsingScreen>
       );
     }
 
-    final doc = parserProvider.doc!;
-    final cipher = parserProvider.cipher!;
-    final availableStrategies = doc.candidates
-        .map((candidate) => candidate.strategy)
-        .toList();
-
     // Display parsing results in tabs
     return Column(
       children: [
@@ -161,31 +156,7 @@ class _CipherParsingScreenState extends State<CipherParsingScreen>
                 title: Text(
                   'Cifra importada de ${importProvider.getImportType()}',
                 ),
-                subtitle: Text(
-                  '${availableStrategies.length} estratégias disponíveis',
-                ),
               ),
-              if (cipher.metadata.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: cipher.metadata.entries.map((entry) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4.0),
-                        child: Row(
-                          children: [
-                            Text(
-                              '${entry.key}: ',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            Text(entry.value.toString()),
-                          ],
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ),
             ],
           ),
         ),
@@ -194,52 +165,72 @@ class _CipherParsingScreenState extends State<CipherParsingScreen>
         Expanded(
           child: TabBarView(
             controller: _tabController,
-            children: availableStrategies.map((strategy) {
-              final result = doc.candidates[_tabController!.index];
-
-              if (result.cipher.versions.first.sectionCount == 0) {
-                return Center(
-                  child: Text('Nenhuma seção encontrada com esta estratégia'),
-                );
-              }
-
-              return SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      // Strategy info card
-                      Card(
-                        color: Colors.blue.shade50,
-                        child: ListTile(
-                          leading: Icon(_getStrategyIcon(strategy)),
-                          title: Text(strategy.name),
-                          trailing: Chip(
-                            label: Text(
-                              '${result.cipher.versions.first.sectionCount} seções',
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      // Section cards
-                      ...(result.cipher.versions.first.sections?.entries ?? [])
-                          .map((entry) {
-                            return CipherSectionCard(
-                              sectionCode: entry.value.contentCode,
-                              sectionType: entry.value.contentType,
-                              sectionText: entry.value.contentText,
-                              sectionColor: entry.value.contentColor,
-                            );
-                          }),
-                    ],
-                  ),
+            children: [
+              for (var candidate in parserProvider.doc!.candidates)
+                _buildParsingResultTab(
+                  candidate.strategy,
+                  candidate.variation,
+                  candidate.cipher,
                 ),
-              );
-            }).toList(),
+            ],
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildParsingResultTab(
+    ParsingStrategy strategy,
+    ImportVariation variation,
+    Cipher cipher,
+  ) {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            // Strategy info card
+            Card(
+              color: Colors.blue.shade50,
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: Icon(_getStrategyIcon(strategy)),
+                    title: Text(strategy.name),
+                    trailing: Chip(
+                      label: Text(
+                        '${cipher.versions.first.sectionCount} seções',
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Título: ${cipher.title}'),
+                        Text('Artista: ${cipher.author}'),
+                        if (cipher.tempo.isNotEmpty)
+                          Text('Tempo: ${cipher.tempo}'),
+                        if (cipher.musicKey.isNotEmpty)
+                          Text('Tom: ${cipher.musicKey}'),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            for (var section in cipher.versions.first.sections!.entries) ...[
+              CipherSectionCard(
+                sectionCode: section.value.contentCode,
+                sectionType: section.value.contentType,
+                sectionText: section.value.contentText,
+                sectionColor: section.value.contentColor,
+              ),
+            ],
+          ],
+        ),
+      ),
     );
   }
 

@@ -6,13 +6,13 @@ import 'package:cipher_app/providers/import_provider.dart';
 /// This is the minimal payload the UI needs to render and choose.
 class CipherParseCandidate {
   final ParsingStrategy strategy;
-  final ImportVariation importStrategy; // Import strategy used
+  final ImportVariation variation; // Import strategy used
   final Cipher cipher; // Fully built domain Cipher
   final int sectionCount; // For quick ranking/display
 
   const CipherParseCandidate({
     required this.strategy,
-    required this.importStrategy,
+    required this.variation,
     required this.cipher,
     required this.sectionCount,
   });

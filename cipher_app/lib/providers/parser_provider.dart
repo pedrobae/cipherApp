@@ -36,14 +36,14 @@ class ParserProvider extends ChangeNotifier {
       // ===== PRE-PROCESSING STEPS =====
       switch (importedCipher.importType) {
         case ImportType.text:
-          for (var importVariant in _cipher!.allImportVariants.values) {
+          for (var importVariant in _cipher!.importVariants.values) {
             // Separate lines for each import variant
             _parsingService.calculateLines(importVariant);
             _parsingService.debugPrintCalcs(importVariant);
           }
           break;
         case ImportType.pdf:
-          for (var importVariant in _cipher!.allImportVariants.values) {
+          for (var importVariant in _cipher!.importVariants.values) {
             // Average character spacing and font style analysis
             _parsingService.preProcessPdf(importVariant);
           }
@@ -54,7 +54,7 @@ class ParserProvider extends ChangeNotifier {
       }
 
       /// ===== PARSING STEPS =====
-      for (var importVariant in _cipher!.allImportVariants.values) {
+      for (var importVariant in _cipher!.importVariants.values) {
         _parsingService.parse(importVariant);
       }
 
@@ -73,18 +73,18 @@ class ParserProvider extends ChangeNotifier {
   void _selectCandidates() {
     List<CipherParseCandidate> candidates = [];
 
-    _cipher!.allImportVariants.forEach((importKey, importVariant) {
+    _cipher!.importVariants.forEach((_, importVariant) {
       importVariant.parsingResults.forEach((strategy, result) {
         // Build domain Cipher from parsed sections
         Cipher cipher = _parsingService.buildCipherFromParsedImportVariant(
+          result,
           importVariant,
-          strategy,
         );
 
         // Create candidate
         CipherParseCandidate candidate = CipherParseCandidate(
           strategy: strategy,
-          importStrategy: importVariant.variation,
+          variation: importVariant.variation,
           cipher: cipher,
           sectionCount: result.parsedSections.length,
         );
@@ -97,5 +97,6 @@ class ParserProvider extends ChangeNotifier {
       importType: _cipher!.importType,
       candidates: candidates,
     );
+    parsedCipher = candidates.isNotEmpty ? candidates[0].cipher : null;
   }
 }

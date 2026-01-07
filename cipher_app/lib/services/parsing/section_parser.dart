@@ -1,5 +1,6 @@
 import 'package:cipher_app/models/domain/parsing_cipher.dart';
 import 'package:cipher_app/models/dtos/pdf_dto.dart';
+import 'package:cipher_app/utils/section_constants.dart';
 
 enum SeparatorType { doubleNewLine, bracket, parenthesis, hyphen }
 
@@ -105,8 +106,8 @@ class SectionParser {
       final textLine = variant.lines[i]['textLine'] as LineData;
       final nextLine = variant.lines[i + 1]['textLine'] as LineData;
       double lineSpacing = nextLine.bounds.top - textLine.bounds.bottom;
-      // Line spacing greater than mean indicates a section break
-      if (lineSpacing > meanLineSpacing) {
+      // Line spacing greater than mean indicates a section break (negative spacing implies column change)
+      if (lineSpacing > meanLineSpacing || lineSpacing < 0) {
         // Section break found
         int sectionStart = previousBreakIndex;
         int sectionEnd = i + 1;
@@ -332,27 +333,6 @@ class SectionParser {
     }
     return (false, null, 'Unlabeled Section');
   }
-}
-
-final List<SectionLabels> commonSectionLabels = [
-  SectionLabels(
-    labelVariations: ['verse', 'verso', r'parte\s*\d+', r'estrofe\s*\d+'],
-    officialLabel: 'Verse',
-  ),
-  SectionLabels(
-    labelVariations: ['chorus', 'coro', 'refrao', 'refrão'],
-    officialLabel: 'Chorus',
-  ),
-  SectionLabels(labelVariations: ['bridge', 'ponte'], officialLabel: 'Bridge'),
-  SectionLabels(labelVariations: ['intro'], officialLabel: 'Intro'),
-  SectionLabels(labelVariations: ['outro'], officialLabel: 'Outro'),
-];
-
-class SectionLabels {
-  List<String> labelVariations;
-  String officialLabel;
-
-  SectionLabels({required this.labelVariations, required this.officialLabel});
 }
 
 bool _isNumber(String char) {

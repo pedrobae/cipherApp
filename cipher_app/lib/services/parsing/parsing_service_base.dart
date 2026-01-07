@@ -189,14 +189,14 @@ class ParsingServiceBase {
   }
 
   Cipher buildCipherFromParsedImportVariant(
+    ParsingResult result,
     ImportVariant variant,
-    ParsingStrategy strategy,
   ) {
     return Cipher(
       versions: [
         Version(
-          sections: variant.parsingResults[strategy]!.parsedSections,
-          songStructure: variant.parsingResults[strategy]!.songStructure,
+          sections: result.parsedSections,
+          songStructure: result.songStructure,
           versionName: 'Imported',
           cipherId: -1,
         ),

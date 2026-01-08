@@ -430,6 +430,7 @@ class FirestoreService {
   Future<List<QueryDocumentSnapshot>> fetchDocumentsContainingValue({
     required String collectionPath,
     required String field,
+    required String orderField,
     required dynamic value,
     int limit = 50,
   }) async {
@@ -437,6 +438,7 @@ class FirestoreService {
       final querySnapshot = await _firestore
           .collection(collectionPath)
           .where(field, arrayContains: value)
+          .orderBy(orderField)
           .limit(limit)
           .get();
       return querySnapshot.docs;

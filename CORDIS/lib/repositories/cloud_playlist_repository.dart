@@ -51,6 +51,7 @@ class CloudPlaylistRepository {
           .fetchDocumentsContainingValue(
             collectionPath: 'playlists',
             field: 'collaboratorIds',
+            orderField: 'updatedAt',
             value: userId,
           );
 

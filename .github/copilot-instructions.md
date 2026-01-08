@@ -1,148 +1,186 @@
 # GitHub Copilot Instructions for Cipher App
-**IMPORTANT: UNLESS ASKED TO ACT DEFAULT TO A MENTOR ROLE, ASKING AND ANSWERING QUESTIONS AND GIVING ADVICE.**
 
 ## ✅ Language Configuration
 
 **IMPORTANT: All developer communication must be in ENGLISH.**
 
 ### UI Text Guidelines (Using App Localization):
-
 1. **All user-visible text must use localization keys** (via `context.l10n`)
-2. **Use localization keys** from `lib/l10n/` for all user-facing text
+2. **Localization files:** `cipher_app/lib/l10n/app_*.arb` (app_en.arb, app_pt.arb, etc.)
 3. **Key naming pattern:** `context.l10n.featureName` (e.g., `context.l10n.analyzerTitle`, `context.l10n.noSectionsFound`)
-4. **All code comments, documentation, and developer communication must be in English**
-
-### Localization Setup:
-
-- App uses Flutter's **gen_l10n** with intl package
-- Localization files: `lib/l10n/app_*.arb` (app_en.arb, app_pt.arb, etc.)
-- Access in code: `context.l10n.keyName` or `AppLocalizations.of(context).keyName`
-- Add new strings to `.arb` files, **not** hardcoded in widgets
+4. **All code comments, variable names, and developer communication must be in English**
 
 ### Coding Conventions:
-
 1. All code comments in English
 2. Variable and function names in English
-3. **User-visible text ONLY via localization keys**
-4. Documentation and README in English
+3. **User-visible text ONLY via localization keys** - never hardcode Portuguese or English strings in widgets
 
 ## 🏗️ Architecture Overview
 
-This Flutter app manages musical ciphers (chord charts) with a strict layered architecture supporting both local-first and cloud synchronization:
+This Flutter app manages musical ciphers (chord charts) with layered offline-first architecture + optional cloud sync:
 
-### Core Architecture Pattern
+### Core Data Flow
 ```
-Local SQLite ←→ Repository ←→ Provider (ChangeNotifier) ←→ UI (Screens/Widgets)
-     ↕                ↕
-  FirebaseSync ←→ CloudRepository
-```
-
-**Critical**: Hybrid offline-first architecture with cloud sync capabilities for sharing and collaboration.
-
-### Domain Model Evolution (UPDATED)
-The app has evolved from legacy `cipher_map`/`map_content` to modern `version`/`section`:
-
-- **Cipher**: Base song entity with metadata (`title`, `author`, `musicKey`, `language`, `tags`)
-- **Version**: Different arrangements of same cipher (`song_structure`, `transposed_key`, `version_name`)
-- **Section**: Content blocks within versions (`content_type`, `content_code`, `content_text`, `content_color`)
-
-### Key Directory Structure
-```
-lib/
-├── models/domain/cipher/     # Core domain models (Cipher, Version, Section)
-├── repositories/             # Data access layer (no business logic)
-├── providers/               # State management (ChangeNotifier pattern)
-├── screens/                 # Full-screen UI components
-├── widgets/cipher/editor/   # Specialized cipher editing widgets
-├── helpers/                 # Database setup and utilities
-└── utils/                   # Project-specific utilities (color, string)
+SQLite DB ←→ Local Repository ←→ Provider (ChangeNotifier) ←→ UI
+    ↕                    ↕
+(seeds on first run)  Cloud Repo (optional downloads)
 ```
 
-## 🗄️ Critical Database Patterns
+### Domain Model (Cipher → Version → Section)
+- **Cipher**: Base entity with `title`, `author`, `musicKey`, `language`, `tags`, `firebaseId` (optional)
+- **Version**: Arrangement of cipher with `versionName`, `songStructure` (List<String>), `sections` (Map<String, Section>), `transposedKey`
+- **Section**: Content block in version with `contentCode`, `contentText`, `contentColor`, `contentType`
+- **Playlist**: Collection of versions (many:many relationship via `playlist_version` table)
 
-### Modern Schema (v3)
+### Directory Structure
+```
+cipher_app/lib/
+├── models/domain/          # Core domain (Cipher, Version, Section, Playlist)
+├── models/dtos/            # Data transfer objects for serialization
+├── repositories/           # Data access layer (Local + Cloud patterns)
+├── providers/              # State management (16 ChangeNotifier providers)
+├── screens/                # Full-screen UI components
+├── widgets/                # Reusable UI components (cipher/editor, cipher/viewer)
+├── helpers/                # Database, factory, parsing utilities
+├── services/               # Firebase, Auth, Settings, Import/Parsing services
+├── utils/                  # Color, String, Datetime helpers
+├── l10n/                   # Localization files (app_*.arb)
+└── routes/                 # AppRoutes navigation configuration
+```
+
+## 🗄️ Database Patterns
+
+### Current Schema (v3)
 ```sql
 cipher → version (1:many, different arrangements)
-version → section (1:many, content blocks like verses/chorus)
+version → section (1:many, content blocks)
 cipher ↔ tag (many:many via cipher_tags)
+playlist → version (many:many via playlist_version)
 ```
 
-### Database Singleton Pattern
-```dart
-final dbHelper = DatabaseHelper();
-final db = await dbHelper.database;
-```
-
-### Cross-Platform Database Setup
-**CRITICAL**: Must initialize DatabaseFactory before any database operations:
+### Database Initialization
+**CRITICAL**: Must initialize `DatabaseFactoryHelper` before database operations:
 ```dart
 // In main.dart
-await DatabaseFactoryHelper.initialize(); // Handles desktop vs mobile
-
-// In tests
-DatabaseFactoryHelper.initializeForTesting(); // Always uses FFI
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await DatabaseFactoryHelper.initialize(); // Handles desktop FFI vs mobile native
+  await FirebaseService.initialize();
+  runApp(const MyApp());
+}
 ```
 
+**Platform-Specific Behavior:**
+- **Mobile (iOS/Android)**: Uses native sqflite (no setup needed)
+- **Desktop (Windows/Linux/macOS)**: Uses sqflite_common_ffi (FFI initialized by `DatabaseFactoryHelper`)
+- **Web**: Not supported - throws UnsupportedError (use Firestore/SharedPreferences)
+
+### Repository Layer Pattern
+All repositories follow access pattern:
+```dart
+// Local repository (SQLite reads/writes)
+final repository = LocalCipherRepository();
+final cipher = await repository.getCipherById(id);
+
+// Cloud repository (Firebase reads)
+final cloudRepo = CloudCipherRepository();
+final downloaded = await cloudRepo.downloadCipherData(firebaseId);
+```
+
+**Key Data Operations:**
+- **getPruned()**: Metadata only (fast, for browsing)
+- **getById()**: Full entity with relations loaded
+- **insert/update/delete**: All go through local SQLite first
+
 ### Automatic Seeding
-Database seeds with sample hymns on first creation. Seeds are in `lib/helpers/seed_data/`.
+Database auto-seeds with 4 sample hymns on first creation (in `lib/helpers/seed_data/`).
 
 ## 🔄 State Management Patterns
 
+### Provider Ecosystem (16 Providers in main.dart)
+```dart
+// Core cipher/version management
+ChangeNotifierProvider(create: (_) => CipherProvider()),      // Cipher CRUD + cloud sync
+ChangeNotifierProvider(create: (_) => VersionProvider()),     // Version CRUD
+ChangeNotifierProvider(create: (_) => SectionProvider()),     // Section CRUD
+
+// Settings & UI state
+ChangeNotifierProvider(create: (_) => SettingsProvider()..loadSettings()),
+ChangeNotifierProvider(create: (_) => LayoutSettingsProvider()..loadSettings()),
+ChangeNotifierProvider(create: (_) => NavigationProvider()),   // Bottom nav state
+ChangeNotifierProvider(create: (_) => SelectionProvider()),    // Multi-select state
+
+// Cloud & Auth
+ChangeNotifierProvider(create: (_) => AuthProvider()),        // Firebase Auth
+ChangeNotifierProvider(create: (_) => AdminProvider()),       // Admin operations
+
+// Specialized domains
+ChangeNotifierProvider(create: (_) => PlaylistProvider()),    // Playlist CRUD
+ChangeNotifierProvider(create: (_) => UserProvider()..loadUsers()),
+ChangeNotifierProvider(create: (_) => CollaboratorProvider()), // Share/permissions
+ChangeNotifierProvider(create: (_) => ImportProvider()),      // PDF/file imports
+ChangeNotifierProvider(create: (_) => ParserProvider()),      // Text parsing
+ChangeNotifierProvider(create: (_) => TextSectionProvider()), // Text section editing
+ChangeNotifierProvider(create: (_) => InfoProvider()),        // Info items (help content)
+```
+
 ### Provider Usage Pattern
-All providers follow identical patterns:
+Each provider follows identical structure:
 ```dart
 class CipherProvider extends ChangeNotifier {
-  final CipherRepository _repository = CipherRepository();
+  final LocalCipherRepository _repository = LocalCipherRepository();
+  final CloudCipherRepository _cloudRepository = CloudCipherRepository();
   
   List<Cipher> _ciphers = [];
   bool _isLoading = false;
   String? _error;
   
-  // Load, Create, Update, Delete methods with error handling
   // Always call notifyListeners() after state changes
+  Future<void> loadCiphers() async {
+    _isLoading = true;
+    try {
+      _ciphers = await _repository.getAllCipher();
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 }
 ```
 
-### Multi-Provider Setup
-App uses multiple providers in `main.dart`:
-- `CipherProvider` + `VersionProvider` work together for editing
-- `SettingsProvider` + `LayoutSettingsProvider` for configuration
-- **Future**: `AuthProvider` + `SyncProvider` for Firebase integration
-- Each provider has independent lifecycle
-
 ### Critical Provider Patterns
-1. **Always check `_isLoading`** before async operations
-2. **Use `Timer` for debouncing** rapid user input (see `cipher_section_form.dart`)
-3. **Sync state in `didChangeDependencies`** for complex widgets that need to react to dependency changes
-4. **Consumer2/Consumer3** for widgets needing multiple providers
-5. **Follow StatefulWidget pattern** for widgets requiring data pre-loading (see UI Component Patterns)
-6. **Use post-frame callbacks** to avoid setState during build cycles
-7. **Generate unique keys** for reorderable widgets to prevent global key collisions
-8. **Firebase operations** should extend existing repository methods, not replace them
+1. **Cache State Awareness**: `CipherProvider._ciphers` serves multiple contexts (library + playlist)
+   - Use `loadCiphers()` for library view (loads ALL ciphers once)
+   - Use `getCachedCipher(id)` in playlists to avoid redundant loads
+   - Call `versionProvider.clearVersions()` when switching between contexts
 
-### Cache Management Patterns (CRITICAL)
-**Dual-Purpose Cache Awareness**: Both `_ciphers` and `_versions` serve multiple contexts:
+2. **Debouncing**: Form inputs use `Timer` for rapid updates
+   - See `cipher_provider.dart` for `_loadTimer` pattern
+   - Prevents excessive notifyListeners() calls
 
-**CipherProvider `_ciphers` Cache:**
-- **Primary**: Cipher Library (loads ALL ciphers via `loadCiphers()`)
-- **Secondary**: Playlist contexts use existing cache via `getCachedCipher(id)`
-- **Cloud Integration**: `syncCiphers()` updates local cache after Firebase sync
-- **NEVER add playlist-specific loading** - use existing `loadCiphers()` if not `hasLoadedCiphers`
+3. **Widget Loading Pattern**:
+   ```dart
+   class MyWidget extends StatefulWidget {
+     @override
+     void initState() {
+       super.initState();
+       // Pre-load with post-frame callback to avoid setState during build
+       WidgetsBinding.instance.addPostFrameCallback((_) {
+         final provider = context.read<MyProvider>();
+         if (!provider.isDataLoaded(id)) {
+           provider.loadData(id);
+         }
+       });
+     }
+   }
+   ```
 
-**VersionProvider `_versions` Cache:**
-- **Cipher Expansion**: Multiple versions of one cipher (via `loadVersionsOfCipher()`)
-- **Playlist Context**: Specific versions by IDs (via `loadVersionsForPlaylist()`)
-- **Cache Conflicts**: Playlist loading overwrites cipher expansion - this is expected behavior
-
-**Cache Cleaning Rules:**
-```dart
-// For navigating between library and playlist contexts:
-versionProvider.clearVersions(); // Clears _versions safely
-// CipherProvider._ciphers should persist across contexts (never clear in playlist)
-
-// For cache consistency during updates:
-// Always update both caches when modifying version data (see saveUpdatedSongStructure)
-```
+4. **Multi-Provider Access**:
+   - Use `Consumer2`/`Consumer3` for widgets needing multiple providers
+   - Separate concerns: CipherProvider + VersionProvider for editing
+   - Keep providers independent (no direct provider-to-provider calls)
 
 ## 🎵 Cipher-Specific Patterns
 
@@ -158,9 +196,10 @@ const Map<String, Color> _defaultSectionColors = {
 ```
 
 ### Song Structure Format
-Stored as comma-separated codes: `"I,V1,C,V2,C,B,C,F"`
+Stored as `List<String>`: `["I", "V1", "C", "V2", "C", "B", "C", "F"]`
 - Allows reuse of sections (multiple chorus occurrences)
 - Order defines playback sequence
+- Matches section keys in `Version.sections` map
 
 ### ChordPro Content Format
 Sections contain ChordPro-formatted text for chord charts:
@@ -218,25 +257,23 @@ firestore/
 lib/services/
 ├── firebase_service.dart      // Core Firebase initialization
 ├── auth_service.dart          // Authentication wrapper
-├── download_service.dart      // On-demand cipher downloads
-└── presentation_sync_service.dart // Real-time presentation sync
+├── firestore_service.dart     // Firestore operations
+└── (future) download_service.dart // On-demand cipher downloads
 ```
 
 **Cloud Repository Extensions:**
 ```dart
 // Extend existing repositories, don't replace them
-class CipherRepository {
-  Future<List<CipherMetadata>> getPublicCipherMetadata(); // Browse without downloading
-  Future<Cipher> downloadFirebaseCipher(String firebaseId); // Single read, full download
-  Future<void> shareCipher(Cipher cipher); // Upload to shared collection
+class CloudCipherRepository {
+  Future<List<CipherDto>> getPublicCipherMetadata(); // Browse without downloading
+  Future<Cipher> downloadCipherData(String firebaseId); // Single read, full download
 }
 ```
 
 **Provider Integration:**
 - `AuthProvider`: Manages Firebase Auth state
-- `DownloadProvider`: Handles cipher download progress and caching
-- `CipherProvider`: Extended with `loadCipherFromFirebase()` method
-- Existing providers: Add cloud download methods without breaking local functionality
+- `CipherProvider`: Handles both local and cloud cipher loading (with CloudCipherCache)
+- Existing providers: Extended with cloud download methods without breaking local functionality
 
 **Portuguese UI Extensions:**
 - "Entrar" (Sign In), "Sair" (Sign Out)
@@ -366,28 +403,61 @@ String colorToHex(Color? color)       // Converts back for storage
 
 ### Build & Test Commands
 ```powershell
+# From cipher_app/ directory
 flutter pub get                    # Install dependencies
-flutter test                       # Run unit tests
+flutter test                       # Run unit tests (see test/*.dart)
 flutter analyze                    # Lint analysis
-flutter run                        # Debug build
-flutter build windows              # Windows desktop build
+flutter run -d chrome              # Debug on Chrome (web)
+flutter run -d windows             # Debug on Windows desktop
+flutter build web --release        # Production web build (→ build/web)
+flutter build windows              # Production Windows build
+```
+
+### Web Hosting (Firebase Hosting)
+See [FIREBASE_HOSTING.md](../docs/FIREBASE_HOSTING.md) for complete setup:
+```powershell
+# From repo root
+firebase init hosting    # Configure hosting (set public: cipher_app/build/web)
+flutter build web --release
+firebase deploy --only hosting
+# or for preview channels:
+firebase hosting:channel:deploy preview-123
+```
+
+### Database Testing
+```dart
+// Test setup pattern
+setUpAll(() {
+  DatabaseFactoryHelper.initializeForTesting(); // Always uses FFI
+});
+
+setUp(() async {
+  dbHelper = DatabaseHelper();
+  await dbHelper.resetDatabase(); // Recreates and seeds with 4 sample hymns
+});
+```
+
+### Analyze & Fix Commands
+```powershell
+# From cipher_app/ directory
+flutter analyze                    # Check for lint/compilation issues
+dart fix --dry-run                # Preview suggested fixes
+dart fix --apply                  # Apply auto-fixes
+dart format .                     # Format code
 ```
 
 ### Database Operations
-- Database version is currently 3 (handles table renaming migration)
-- Use `resetDatabase()` in tests to ensure clean state
-- Database file: `cipher_app.db` in platform-specific location
+- **Current schema version**: 3 (includes table renaming migration)
+- **Seeded data**: 4 sample hymns on first creation (from `lib/helpers/seed_data/`)
+- **Test reset**: Use `dbHelper.resetDatabase()` to get clean state with seeds
+- **Database file location**: Platform-specific (set up by `DatabaseFactoryHelper`)
+- **Desktop support**: Windows, Linux, macOS use FFI; iOS/Android use native sqflite
 
-### Key Dependencies
-- `provider: ^6.0.5` - State management
-- `sqflite: ^2.3.0` + `sqflite_common_ffi: ^2.3.0` - Cross-platform database
-- `flutter_colorpicker: ^1.0.3` - Section color selection
-- `shared_preferences: ^2.2.2` - Settings persistence
-- **Firebase Stack (Future):**
-  - `firebase_core: ^2.24.2` - Firebase initialization
-  - `cloud_firestore: ^4.13.6` - Cloud database
-  - `firebase_auth: ^4.15.3` - User authentication
-  - `firebase_storage: ^11.5.6` - File storage (future attachments)
+### Cloud Functions & Firestore
+- **Cloud Functions**: `functions/index.js` contains backend logic
+- **Firestore Rules**: `firestore.rules` defines security rules
+- **Firebase Config**: `firebase.json` and `.firebaserc` configure projects
+- **Local Testing**: `firebase emulators:start` for local Firebase emulation
 
 ## 🚨 Common Pitfalls
 

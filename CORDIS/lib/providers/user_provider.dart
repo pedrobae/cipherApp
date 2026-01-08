@@ -26,7 +26,7 @@ class UserProvider extends ChangeNotifier {
   bool get isLoadingCloud => _isLoadingCloud;
 
   // ===== CREATE =====
-  /// Downloads users from Firebase if they don't exist locally
+  /// Downloads users from Firebase
   /// Saves them to local SQLite db
   Future<void> downloadUsersFromCloud(List<String> firebaseUserIds) async {
     if (_isLoadingCloud) return;
@@ -36,20 +36,15 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      for (var userId in firebaseUserIds) {
-        final userDto = await _cloudUserRepository.fetchUserById(userId);
-        if (userDto != null) {
-          final user = userDto.toDomain();
-          final userId = await _localUserRepository.createUser(user);
-          _knownUsers.add(user.copyWith(id: userId));
-          if (kDebugMode) {
-            print('Downloaded and saved user: ${user.username}');
-          }
-        } else {
-          if (kDebugMode) {
-            print('User with Firebase ID $userId not found in cloud.');
-          }
-          throw Exception('User with Firebase ID $userId not found in cloud.');
+      final users = await _cloudUserRepository.fetchUsersByIds(firebaseUserIds);
+
+      for (final userDto in users) {
+        final user = userDto.toDomain();
+        final userId = await _localUserRepository.createUser(user);
+        _knownUsers.add(user.copyWith(id: userId));
+
+        if (kDebugMode) {
+          print('Downloaded and saved user: ${user.username}');
         }
       }
     } catch (e) {

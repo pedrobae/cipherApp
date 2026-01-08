@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+/// Common Section labels are iterated through on import / parsing to identify sections
+/// MIGHT BE PRUDENT TO MAKE THIS LOCALIZABLE IN THE FUTURE
+/// AREA OF OPTIMIZATION: use a more efficient data structure for lookups
 final List<SectionLabels> commonSectionLabels = [
   SectionLabels(
     labelVariations: ['verse', 'verso', r'parte\s*\d+', r'estrofe\s*\d+'],

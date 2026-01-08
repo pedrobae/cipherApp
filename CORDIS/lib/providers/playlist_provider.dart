@@ -184,7 +184,7 @@ class PlaylistProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      int id = await _playlistRepository.createPlaylist(playlist);
+      int id = await _playlistRepository.insertPlaylist(playlist);
 
       // Add the created playlist directly to cache
       _playlists.add(playlist.copyWith(id: id));
@@ -518,7 +518,7 @@ class PlaylistProvider extends ChangeNotifier {
         rethrow;
       }
     } else {
-      await _playlistRepository.createPlaylist(
+      await _playlistRepository.insertPlaylist(
         cloudDto.toDomain(items!, ownerLocalId),
       );
     }

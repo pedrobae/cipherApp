@@ -19,8 +19,9 @@ class PlaylistRepository {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
 
   // ===== PLAYLIST CRUD =====
-  // Creates a new playlist, as well as the playlist_cipher, and user_playlist relational objects
-  Future<int> createPlaylist(Playlist playlist) async {
+  // ===== CREATE =====
+  /// Creates a new playlist, as well as the playlist_cipher, and user_playlist relational objects
+  Future<int> insertPlaylist(Playlist playlist) async {
     final db = await _databaseHelper.database;
 
     return await db.transaction((txn) async {
@@ -65,7 +66,8 @@ class PlaylistRepository {
     });
   }
 
-  // Get all playlists stored in the database
+  // ===== READ =====
+  /// Gets all playlists stored in the database
   Future<List<Playlist>> getAllPlaylists() async {
     final db = await _databaseHelper.database;
 
@@ -78,14 +80,14 @@ class PlaylistRepository {
     List<Playlist> playlists = [];
 
     for (Map<String, dynamic> playlistData in playlistResults) {
-      final playlist = await buildPlaylist(playlistData);
-      playlists.add(playlist);
+      playlists.add(Playlist.fromJson(playlistData));
     }
 
     return playlists;
   }
 
-  // Get single playlist by ID with all relationships
+  /// Gets a single playlist by ID with all relationships
+  /// Returns null if not found
   Future<Playlist?> getPlaylistById(int playlistId) async {
     final db = await _databaseHelper.database;
 
@@ -96,10 +98,12 @@ class PlaylistRepository {
     );
 
     if (playlistResults.isEmpty) return null;
-    return await buildPlaylist(playlistResults.first);
+
+    return Playlist.fromJson(playlistResults.first);
   }
 
-  // Update playlist, for name and description
+  // ===== UPDATE =====
+  /// Update playlist, for name and description
   Future<void> updatePlaylist(
     int playlistId,
     Map<String, dynamic> changes,
@@ -116,7 +120,8 @@ class PlaylistRepository {
     );
   }
 
-  // Upsert playlist
+  /// Upserts playlist
+  /// Used for syncing playlists from cloud to local database
   Future<int> upsertPlaylist(Playlist playlist) async {
     final db = await _databaseHelper.database;
 
@@ -154,7 +159,8 @@ class PlaylistRepository {
     }
   }
 
-  // Delete playlist
+  // ===== DELETE =====
+  /// Deletes a playlist and all its related data
   Future<void> deletePlaylist(int playlistId) async {
     final db = await _databaseHelper.database;
 
@@ -172,6 +178,7 @@ class PlaylistRepository {
   }
 
   // ===== VERSION MANAGEMENT =====
+  /// Adds a version to the end of the playlist
   Future<void> addVersionToPlaylist(
     int playlistId,
     int cipherMapId,
@@ -244,6 +251,7 @@ class PlaylistRepository {
     );
   }
 
+  /// Removes a version from a playlist by playlist version ID
   Future<void> removeVersionFromPlaylist(int itemId, int playlistId) async {
     final db = await _databaseHelper.database;
 
@@ -295,6 +303,7 @@ class PlaylistRepository {
 
   // ===== UNIFIED PLAYLIST ITEMS =====
   /// Saves playlist items from a list
+  /// Used for reordering items in a playlist
   Future<void> savePlaylistOrder(
     int playlistId,
     List<PlaylistItem> items,
@@ -400,6 +409,7 @@ class PlaylistRepository {
   }
 
   /// Gets version item ID in a playlist by playlist and version IDs
+  /// Returns null if not found
   Future<int?> getPlaylistVersionId(int playlistId, int versionId) async {
     final db = await _databaseHelper.database;
 
@@ -417,7 +427,7 @@ class PlaylistRepository {
     }
   }
 
-  /// Inserts or updates a text item in a playlist - Universal compatibility
+  /// Inserts or updates a text item in a playlist
   Future<void> upsertTextItem(
     int addedBy,
     String firebaseTextId,
@@ -459,6 +469,7 @@ class PlaylistRepository {
   }
 
   /// Prunes playlist items present in the provided lists
+  /// Used during sync to remove items no longer in the cloud playlist
   Future<void> prunePlaylistItems(
     int playlistId,
     List<int> textItemIds,
@@ -491,26 +502,6 @@ class PlaylistRepository {
   }
 
   // ===== UTILS =====
-  /// Build playlist domain object from database row
-  Future<Playlist> buildPlaylist(Map<String, dynamic> playlistRow) async {
-    final items = await getItemsOfPlaylist(playlistRow['id'] as int);
-    final collaborators = await getCollaborators(playlistRow['id'] as int);
-
-    return Playlist(
-      id: playlistRow['id'] as int,
-      firebaseId: playlistRow['firebase_id'] as String?,
-      isPublic: playlistRow['is_public'] == 1,
-      name: playlistRow['name'] as String,
-      description: playlistRow['description'] as String?,
-      createdBy: playlistRow['author_id'] as int,
-      createdAt: DateTime.parse(playlistRow['created_at'] as String),
-      updatedAt: DateTime.parse(playlistRow['updated_at'] as String),
-      shareCode: playlistRow['share_code'] as String? ?? '',
-      collaborators: collaborators,
-      items: items,
-    );
-  }
-
   /// Sync entire playlist with all its items in a single transaction
   /// This prevents database locking issues during bulk sync operations
   Future<int> syncPlaylistWithTransaction(

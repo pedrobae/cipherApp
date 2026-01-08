@@ -1,10 +1,9 @@
-// ignore_for_file: avoid_print
-
 import 'package:cordis/models/dtos/playlist_dto.dart';
 import 'package:cordis/models/dtos/text_section_dto.dart';
 import 'package:cordis/helpers/codes.dart';
 import 'package:cordis/helpers/datetime.dart';
 import 'package:cordis/models/dtos/version_dto.dart';
+import 'package:flutter/foundation.dart';
 import 'playlist_item.dart';
 
 class Playlist {
@@ -200,16 +199,18 @@ class Playlist {
 
   // Debug method for quick playlist inspection
   void debugPrint() {
-    print('=== Playlist Debug ===');
-    print('ID: $id | Name: $name');
-    print('Items: ${items.length}');
-    for (int i = 0; i < items.length; i++) {
-      final item = items[i];
-      print(
-        '  [$i] ${item.type} - ID: ${item.contentId} (order: ${item.position})',
-      );
+    if (kDebugMode) {
+      print('=== Playlist Debug ===');
+      print('ID: $id | Name: $name');
+      print('Items: ${items.length}');
+      for (int i = 0; i < items.length; i++) {
+        final item = items[i];
+        print(
+          '  [$i] ${item.type} - ID: ${item.contentId} (order: ${item.position})',
+        );
+      }
+      print('======================');
     }
-    print('======================');
   }
 
   // Helper method to parse boolean from database (handles both bool and int types)

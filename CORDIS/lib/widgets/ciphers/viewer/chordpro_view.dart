@@ -120,7 +120,7 @@ class ChordProView extends StatelessWidget {
           rowChildren.add(Text(chord.name, style: ls.chordTextStyle));
         }
       }
-      sectionChildren.add(Row(spacing: 5, children: rowChildren));
+      sectionChildren.add(Wrap(spacing: 5, children: rowChildren));
     }
 
     return Column(

@@ -19,60 +19,68 @@ class CipherSectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ls = context.watch<LayoutSettingsProvider>();
-
     if (sectionText.trim().isEmpty) {
       return SizedBox.shrink();
     }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: 8,
-      children: [
-        Row(
+    return Consumer<LayoutSettingsProvider>(
+      builder: (context, layoutSettingsProvider, child) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 8,
           children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: sectionColor,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Row(
+                    spacing: 8,
+                    children: [
+                      Text(
+                        sectionCode,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          fontSize: layoutSettingsProvider.fontSize,
+                        ),
+                      ),
+                      Text(
+                        sectionType,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: (layoutSettingsProvider.fontSize * .9),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: sectionColor,
-                borderRadius: BorderRadius.circular(4),
+                color: sectionColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: sectionColor.withValues(alpha: 0.3),
+                  width: 1,
+                ),
               ),
-              child: Row(
-                spacing: 8,
-                children: [
-                  Text(
-                    sectionCode,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: ls.fontSize,
-                    ),
-                  ),
-                  Text(
-                    sectionType,
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: (ls.fontSize * .9),
-                    ),
-                  ),
-                ],
+              child: ChordProView(
+                chordPro: sectionText,
+                maxWidth: double.infinity,
               ),
             ),
           ],
-        ),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: sectionColor.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: sectionColor.withValues(alpha: 0.3),
-              width: 1,
-            ),
-          ),
-          child: ChordProView(chordPro: sectionText, maxWidth: double.infinity),
-        ),
-      ],
+        );
+      },
     );
   }
 }

@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "626503496187-1511c7inestoffbedm2dbpi6f8geh3bu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.newHeartBrasil.cordis",
+            "certificate_hash": "c67bf5f40b5d192ee55b63dbe276f04986833a34"
+          }
+        },
+        {
           "client_id": "626503496187-vgc1h886893dqh26dgbrhnpb1obepipv.apps.googleusercontent.com",
           "client_type": 3
         }

@@ -26,7 +26,7 @@ service cloud.firestore {
     // ===== USERS COLLECTION =====
     match /users/{userId} {
       // Users can read and write their own profile data
-      allow read, write: if isAuthenticated() && isOwner(userId);
+      allow read, write, update: if isAuthenticated() && isOwner(userId);
       
       // Admins can read all user profiles (for admin panel)
       allow read: if isAdmin();

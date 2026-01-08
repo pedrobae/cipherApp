@@ -6,11 +6,11 @@
 
 ## Setup Checklist
 
-- [ ] Firebase project created and configured
-- [ ] Firebase CLI installed (`npm i -g firebase-tools`)
-- [ ] Web platform enabled in Flutter
+- [x] Firebase project created and configured
+- [x] Firebase CLI installed (`npm i -g firebase-tools`)
+- [x] Web platform enabled in Flutter
 - [ ] Firestore security rules updated (user-scoped access)
-- [ ] Firebase domain authorized in Auth settings
+- [x] Firebase domain authorized in Auth settings
 
 ---
 

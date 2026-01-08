@@ -24,21 +24,6 @@ class DefaultFirebaseOptions {
         return android;
       case TargetPlatform.iOS:
         return ios;
-      case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
-      case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
-      case TargetPlatform.linux:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for linux - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
       default:
         throw UnsupportedError(
           'DefaultFirebaseOptions are not supported for this platform.',
@@ -70,8 +55,10 @@ class DefaultFirebaseOptions {
     messagingSenderId: '626503496187',
     projectId: 'cipherapp-8c2ee',
     storageBucket: 'cipherapp-8c2ee.firebasestorage.app',
-    androidClientId: '626503496187-97o5d9ki4dpeou4712al5f18lpohn0ke.apps.googleusercontent.com',
-    iosClientId: '626503496187-pneti15mm653acbbaqinq5n4bqib0qkb.apps.googleusercontent.com',
+    androidClientId:
+        '626503496187-97o5d9ki4dpeou4712al5f18lpohn0ke.apps.googleusercontent.com',
+    iosClientId:
+        '626503496187-pneti15mm653acbbaqinq5n4bqib0qkb.apps.googleusercontent.com',
     iosBundleId: 'com.newHeartBrasil.cordis',
   );
 }

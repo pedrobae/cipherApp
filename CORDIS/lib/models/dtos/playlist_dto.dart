@@ -13,8 +13,7 @@ class PlaylistDto {
   final bool isPublic;
   final DateTime updatedAt;
   final DateTime createdAt;
-  final List<Map<String, dynamic>>
-  collaborators; // {'id': String, 'role': String}
+  final List<String> collaborators; // [userId1, userId2, ...]
   final String shareCode;
   final List<String> itemOrder;
   final List<TextSectionDto> textSections;
@@ -49,9 +48,7 @@ class PlaylistDto {
       createdAt:
           FirestoreTimestampHelper.toDateTime(json['createdAt']) ??
           DateTime.now(),
-      collaborators: List<Map<String, dynamic>>.from(
-        json['collaborators'] ?? [],
-      ),
+      collaborators: List<String>.from(json['collaborators'] ?? []),
       shareCode: json['shareCode'] as String,
       itemOrder:
           (json['itemOrder'] as List<dynamic>?)
@@ -78,9 +75,6 @@ class PlaylistDto {
       'updatedAt': FirestoreTimestampHelper.fromDateTime(updatedAt),
       'createdAt': FirestoreTimestampHelper.fromDateTime(createdAt),
       'collaborators': collaborators,
-      'collaboratorIds': collaborators
-          .map((collaborator) => collaborator['id'] as String)
-          .toList(),
       'shareCode': shareCode,
       'itemOrder': itemOrder,
       'textSections': textSections
@@ -100,9 +94,7 @@ class PlaylistDto {
       isPublic: isPublic,
       updatedAt: updatedAt,
       createdAt: createdAt,
-      collaborators: collaborators
-          .map((collaborator) => collaborator['id'] as String)
-          .toList(),
+      collaborators: collaborators,
       shareCode: shareCode,
       items: items,
       firebaseId: firebaseId,

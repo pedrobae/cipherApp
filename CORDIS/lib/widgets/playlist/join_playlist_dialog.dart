@@ -1,5 +1,4 @@
 import 'package:cordis/models/dtos/playlist_dto.dart';
-import 'package:cordis/providers/collaborator_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/auth_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
@@ -37,60 +36,46 @@ class _JoinPlaylistDialogState extends State<JoinPlaylistDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer4<
-      AuthProvider,
-      PlaylistProvider,
-      CollaboratorProvider,
-      UserProvider
-    >(
-      builder:
-          (
-            context,
-            authProvider,
-            playlistProvider,
-            collaboratorProvider,
-            userProvider,
-            child,
-          ) {
-            return Dialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16.0),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  spacing: 8.0,
-                  children: [
-                    TextField(
-                      controller: shareCodeController,
-                      decoration: const InputDecoration(
-                        labelText: 'Insira o código de Compartilhamento',
-                      ),
-                    ),
-                    TextField(
-                      controller: roleController,
-                      decoration: const InputDecoration(
-                        labelText: 'Insira a Função',
-                      ),
-                    ),
-                    ElevatedButton(
-                      onPressed: () => joinPlaylistByCode(
-                        shareCodeController,
-                        roleController,
-                        authProvider,
-                        playlistProvider,
-                        collaboratorProvider,
-                        userProvider,
-                        widget.syncPlaylist,
-                      ),
-                      child: const Text('Join Playlist'),
-                    ),
-                  ],
+    return Consumer3<AuthProvider, PlaylistProvider, UserProvider>(
+      builder: (context, authProvider, playlistProvider, userProvider, child) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.0),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 8.0,
+              children: [
+                TextField(
+                  controller: shareCodeController,
+                  decoration: const InputDecoration(
+                    labelText: 'Insira o código de Compartilhamento',
+                  ),
                 ),
-              ),
-            );
-          },
+                TextField(
+                  controller: roleController,
+                  decoration: const InputDecoration(
+                    labelText: 'Insira a Função',
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () => joinPlaylistByCode(
+                    shareCodeController,
+                    roleController,
+                    authProvider,
+                    playlistProvider,
+                    userProvider,
+                    widget.syncPlaylist,
+                  ),
+                  child: const Text('Join Playlist'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -99,7 +84,6 @@ class _JoinPlaylistDialogState extends State<JoinPlaylistDialog> {
     TextEditingController roleController,
     AuthProvider authProvider,
     PlaylistProvider playlistProvider,
-    CollaboratorProvider collaboratorProvider,
     UserProvider userProvider,
     Function syncPlaylist,
   ) async {
@@ -125,17 +109,18 @@ class _JoinPlaylistDialogState extends State<JoinPlaylistDialog> {
         roleController.text,
       );
 
-      final playlist = playlistProvider.getPlaylistByFirebaseId(
-        playlistDto.firebaseId!,
-      );
+      // final playlist = playlistProvider.getPlaylistByFirebaseId(
+      //   playlistDto.firebaseId!,
+      // );
 
       // Add current user as collaborator to the local database
-      await collaboratorProvider.addCollaborator(
-        playlist!.id,
-        userProvider.getLocalIdByFirebaseId(currentUserId)!,
-        roleController.text,
-        userProvider.getLocalIdByFirebaseId(playlistDto.ownerId)!,
-      );
+      /// TODO: Reimplement on playlist provider refactor
+      // await collaboratorProvider.addCollaborator(
+      //   playlist!.id,
+      //   userProvider.getLocalIdByFirebaseId(currentUserId)!,
+      //   roleController.text,
+      //   userProvider.getLocalIdByFirebaseId(playlistDto.ownerId)!,
+      // );
 
       // Close Dialog
       if (mounted) {

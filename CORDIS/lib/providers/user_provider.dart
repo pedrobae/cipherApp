@@ -5,12 +5,12 @@ import 'package:cordis/repositories/cloud_user_repository.dart';
 import 'package:flutter/foundation.dart';
 
 class UserProvider extends ChangeNotifier {
-  final UserRepository _userRepository = UserRepository();
+  final UserRepository _localUserRepository = UserRepository();
   final CloudUserRepository _cloudUserRepository = CloudUserRepository();
 
   UserProvider();
 
-  List<User> _knownCollaborators = [];
+  List<User> _knownUsers = [];
   List<User> _searchResults = [];
   String? _error;
   bool _hasInitialized = false;
@@ -18,14 +18,16 @@ class UserProvider extends ChangeNotifier {
   bool _isLoadingCloud = false;
 
   // Getters
-  List<User> get knownCollaborators => _knownCollaborators;
+  List<User> get knownUsers => _knownUsers;
   List<User> get searchResults => _searchResults;
   String? get error => _error;
   bool get hasInitialized => _hasInitialized;
   bool get isLoading => _isLoading;
   bool get isLoadingCloud => _isLoadingCloud;
 
+  // ===== CREATE =====
   /// Downloads users from Firebase if they don't exist locally
+  /// Saves them to local SQLite db
   Future<void> downloadUsersFromCloud(List<String> firebaseUserIds) async {
     if (_isLoadingCloud) return;
 
@@ -38,8 +40,8 @@ class UserProvider extends ChangeNotifier {
         final userDto = await _cloudUserRepository.fetchUserById(userId);
         if (userDto != null) {
           final user = userDto.toDomain();
-          final userId = await _userRepository.createUser(user);
-          _knownCollaborators.add(user.copyWith(id: userId));
+          final userId = await _localUserRepository.createUser(user);
+          _knownUsers.add(user.copyWith(id: userId));
           if (kDebugMode) {
             print('Downloaded and saved user: ${user.username}');
           }
@@ -64,7 +66,7 @@ class UserProvider extends ChangeNotifier {
   /// Ensures that all users in the provided list of Firebase IDs exist locally
   /// Downloads any missing users from the cloud
   Future<void> ensureUsersExist(List<String> firebaseUserIds) async {
-    final presentIds = await _userRepository.getUsersByFirebaseId(
+    final presentIds = await _localUserRepository.getUsersByFirebaseId(
       firebaseUserIds,
     );
 
@@ -77,7 +79,8 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  // Load users from local SQLite db
+  // ==== READ =====
+  /// Load users from local SQLite db
   Future<void> loadUsers() async {
     if (_isLoading) return;
 
@@ -86,11 +89,11 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _knownCollaborators = await _userRepository.getAllUsers();
+      _knownUsers = await _localUserRepository.getAllUsers();
       _hasInitialized = true;
 
       if (kDebugMode) {
-        print('Loaded ${_knownCollaborators.length} Users from SQLite');
+        print('Loaded ${_knownUsers.length} Users from SQLite');
       }
     } catch (e) {
       _error = e.toString();
@@ -103,13 +106,13 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  // Search users
+  /// Search users
   void searchUsers(String value) async {
     String searchValue = value.toLowerCase();
     if (searchValue.isEmpty) {
-      _searchResults = _knownCollaborators;
+      _searchResults = _knownUsers;
     } else {
-      _searchResults = _knownCollaborators
+      _searchResults = _knownUsers
           .where(
             (user) =>
                 user.username.toLowerCase().contains(searchValue) ||
@@ -122,7 +125,7 @@ class UserProvider extends ChangeNotifier {
 
   int? getLocalIdByFirebaseId(String firebaseId) {
     try {
-      final user = _knownCollaborators.firstWhere(
+      final user = _knownUsers.firstWhere(
         (user) => user.firebaseId == firebaseId,
       );
       return user.id;
@@ -136,7 +139,7 @@ class UserProvider extends ChangeNotifier {
 
   String getFirebaseIdByLocalId(int localId) {
     try {
-      final user = _knownCollaborators.firstWhere((user) => user.id == localId);
+      final user = _knownUsers.firstWhere((user) => user.id == localId);
       return user.firebaseId!;
     } catch (e) {
       if (kDebugMode) {
@@ -146,13 +149,23 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
+  List<User> getUsersByIds(List<int> ids) {
+    return _knownUsers.where((user) => ids.contains(user.id)).toList();
+  }
+
+  List<User> getUsersByFirebaseIds(List<String> firebaseIds) {
+    return _knownUsers
+        .where((user) => firebaseIds.contains(user.firebaseId))
+        .toList();
+  }
+
   // Clears search users
   void clearSearchResults() async {
-    _searchResults = _knownCollaborators;
+    _searchResults = _knownUsers;
   }
 
   void clearCache() {
-    _knownCollaborators = [];
+    _knownUsers = [];
     _searchResults = [];
     _error = null;
     _hasInitialized = false;

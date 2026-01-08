@@ -660,9 +660,6 @@ class PlaylistProvider extends ChangeNotifier {
       // Add collaborators if changed
       if (changes.containsKey('collaborators')) {
         updatePayload['collaborators'] = playlistDto.collaborators;
-        updatePayload['collaboratorIds'] = playlistDto.collaborators
-            .map((c) => c['id'])
-            .toList();
       }
 
       // Upload to Firebase

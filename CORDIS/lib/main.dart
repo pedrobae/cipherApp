@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:cordis/providers/admin_provider.dart';
 import 'package:cordis/providers/auth_provider.dart';
 import 'package:cordis/providers/cipher_provider.dart';
-import 'package:cordis/providers/collaborator_provider.dart';
 import 'package:cordis/providers/import_provider.dart';
 import 'package:cordis/providers/layout_settings_provider.dart';
 import 'package:cordis/providers/navigation_provider.dart';
@@ -43,7 +42,6 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AdminProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => CipherProvider()),
-        ChangeNotifierProvider(create: (_) => CollaboratorProvider()),
         ChangeNotifierProvider(create: (_) => ImportProvider()),
         ChangeNotifierProvider(
           create: (_) => LayoutSettingsProvider()..loadSettings(),

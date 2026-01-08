@@ -13,7 +13,6 @@ import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/version_provider.dart';
 import 'package:cordis/providers/auth_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
-import 'package:cordis/providers/collaborator_provider.dart';
 import 'package:cordis/screens/cipher/cipher_library.dart';
 import 'package:cordis/screens/playlist/playlist_presentation.dart';
 import 'package:cordis/widgets/playlist/cipher_version_card.dart';
@@ -73,13 +72,12 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
   @override
   Widget build(BuildContext context) {
     // Read the playlist from the provider
-    return Consumer6<
+    return Consumer5<
       PlaylistProvider,
       VersionProvider,
       CipherProvider,
       UserProvider,
-      AuthProvider,
-      CollaboratorProvider
+      AuthProvider
     >(
       builder:
           (
@@ -89,7 +87,6 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
             cipherProvider,
             userProvider,
             authProvider,
-            collaboratorProvider,
             child,
           ) {
             final colorScheme = Theme.of(context).colorScheme;
@@ -133,7 +130,6 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                     IconButton(
                       onPressed: () {
                         _publishPlaylist(
-                          collaboratorProvider,
                           userProvider,
                           playlistProvider,
                           authProvider,
@@ -431,7 +427,6 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
   }
 
   Future<void> _publishPlaylist(
-    CollaboratorProvider collaboratorProvider,
     UserProvider userProvider,
     PlaylistProvider playlistProvider,
     AuthProvider authProvider,
@@ -441,22 +436,15 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
   ) async {
     final textSectionProvider = context.read<TextSectionProvider>();
 
-    collaboratorProvider.loadCollaborators(playlist.id);
     final ownerFirebaseId = userProvider.getFirebaseIdByLocalId(
       playlist.createdBy,
     );
 
-    final fullCollaborators = collaboratorProvider.getCollaboratorsForPlaylist(
-      playlist.id,
-    );
-
-    List<Map<String, dynamic>> collaborators = [];
-    for (final fullCollab in fullCollaborators) {
-      collaborators.add({
-        'id': userProvider.getFirebaseIdByLocalId(fullCollab.userId),
-        'role': fullCollab.role,
-      });
-    }
+    final userLocalIds = playlist.collaborators
+        .map((firebaseId) => userProvider.getLocalIdByFirebaseId(firebaseId))
+        .whereType<int>()
+        .toList();
+    final users = userProvider.getUsersByIds(userLocalIds);
 
     List<VersionDto> versions = [];
     List<TextSectionDto> textSections = [];
@@ -484,7 +472,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
 
     final playlistDto = playlist.toDto(
       ownerFirebaseId,
-      collaborators,
+      users.map((user) => user.firebaseId!).toList(),
       versions,
       textSections,
     );

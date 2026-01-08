@@ -4,7 +4,23 @@ import '../models/domain/user.dart';
 class UserRepository {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
 
-  /// Get all users
+  // ===== CREATE =====
+  /// Creates a new user
+  /// Returns the ID of the newly created user
+  Future<int> createUser(User user) async {
+    final db = await _databaseHelper.database;
+
+    // Convert the user model to a Map for insertion
+    final userData = user.toJson();
+
+    // Remove the id field for auto-increment
+    userData.remove('id');
+
+    return await db.insert('user', userData);
+  }
+
+  // ===== READ =====
+  /// Gets all users known by the local database
   Future<List<User>> getAllUsers() async {
     final db = await _databaseHelper.database;
 
@@ -13,7 +29,8 @@ class UserRepository {
     return result.map((row) => User.fromJson(row)).toList();
   }
 
-  /// Get a user by ID
+  /// Gets a user by ID
+  /// Returns null if no user is found
   Future<User?> getUserById(int userId) async {
     final db = await _databaseHelper.database;
 
@@ -30,7 +47,8 @@ class UserRepository {
     return null;
   }
 
-  /// Get users by Firebase ID - to be used when ensuring users exist locally
+  /// Gets users by Firebase ID
+  /// Used when ensuring users exist locally
   Future<List<String>> getUsersByFirebaseId(List<String> firebaseIds) async {
     final db = await _databaseHelper.database;
 
@@ -45,68 +63,25 @@ class UserRepository {
     return results.map((row) => row['firebase_id'] as String).toList();
   }
 
-  /// Find a user by email
-  Future<User?> getUserByEmail(String email) async {
+  /// Gets all users that collaborate on a given playlist
+  Future<List<User>> getUsersForPlaylist(int playlistId) async {
     final db = await _databaseHelper.database;
 
-    final results = await db.query(
-      'user',
-      where: 'mail = ?',
-      whereArgs: [email],
+    final results = await db.rawQuery(
+      '''
+      SELECT u.*
+      FROM user u
+      INNER JOIN collaborator c ON u.id = c.user_id
+      WHERE c.playlist_id = ?
+    ''',
+      [playlistId],
     );
 
-    if (results.isNotEmpty) {
-      return User.fromJson(results.first);
-    }
-
-    return null;
+    return results.map((row) => User.fromJson(row)).toList();
   }
 
-  /// Find a user by Google ID
-  Future<User?> getUserByGoogleId(String googleId) async {
-    final db = await _databaseHelper.database;
-
-    final results = await db.query(
-      'user',
-      where: 'google_id = ?',
-      whereArgs: [googleId],
-    );
-
-    if (results.isNotEmpty) {
-      return User.fromJson(results.first);
-    }
-
-    return null;
-  }
-
-  /// Search for users by email or username
-  Future<List<User>> findUsersByEmailOrUsername(String query) async {
-    final db = await _databaseHelper.database;
-
-    final results = await db.query(
-      'user',
-      where: 'mail LIKE ? OR username LIKE ?',
-      whereArgs: ['%$query%', '%$query%'],
-      limit: 10,
-    );
-
-    return results.map((map) => User.fromJson(map)).toList();
-  }
-
-  /// Create a new user
-  Future<int> createUser(User user) async {
-    final db = await _databaseHelper.database;
-
-    // Convert the user model to a Map for insertion
-    final userData = user.toJson();
-
-    // Remove the id field for auto-increment
-    userData.remove('id');
-
-    return await db.insert('user', userData);
-  }
-
-  /// Update an existing user
+  // ===== UPDATE =====
+  /// Updates an existing user
   Future<int> updateUser(User user) async {
     final db = await _databaseHelper.database;
 
@@ -118,21 +93,11 @@ class UserRepository {
     );
   }
 
-  /// Get all playlists that a user collaborates on
-  Future<List<Map<String, dynamic>>> getUserCollaborativePlaylists(
-    int userId,
-  ) async {
+  // ===== DELETE =====
+  /// Deletes a user by ID
+  Future<void> deleteUser(int userId) async {
     final db = await _databaseHelper.database;
 
-    return await db.rawQuery(
-      '''
-      SELECT p.*, up.role
-      FROM playlist p
-      JOIN user_playlist up ON p.id = up.playlist_id
-      WHERE up.user_id = ?
-      ORDER BY p.updated_at DESC
-    ''',
-      [userId],
-    );
+    await db.delete('user', where: 'id = ?', whereArgs: [userId]);
   }
 }

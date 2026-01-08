@@ -1,165 +1,70 @@
-import 'package:cordis/providers/collaborator_provider.dart';
+import 'package:cordis/models/domain/user.dart';
+import 'package:cordis/providers/playlist_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:cordis/models/domain/collaborator.dart';
 import 'package:provider/provider.dart';
 
 class CollaboratorTile extends StatelessWidget {
-  final Collaborator collaborator;
   final int playlistId;
+  final User user;
 
   const CollaboratorTile({
     super.key,
-    required this.collaborator,
     required this.playlistId,
+    required this.user,
   });
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return ListTile(
-      contentPadding: EdgeInsets.only(left: 8),
-      leading: CircleAvatar(
-        backgroundColor: colorScheme.primary,
-        backgroundImage: collaborator.profilePhoto != null
-            ? NetworkImage(collaborator.profilePhoto!)
-            : null,
-        child: collaborator.profilePhoto == null
-            ? Text(
-                collaborator.username?[0] ?? '?',
-                style: TextStyle(color: colorScheme.onPrimary),
-              )
-            : null,
-      ),
-      title: Text(collaborator.username ?? 'Usuário'),
-      subtitle: Text(collaborator.email ?? ''),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Chip(
-            label: Text(
-              collaborator.role,
-              style: TextStyle(color: colorScheme.onPrimary),
-            ),
-            color: WidgetStateColor.fromMap({
-              WidgetState.any: colorScheme.primary,
-            }),
+    return Consumer<PlaylistProvider>(
+      builder: (context, playlistProvider, child) {
+        final colorScheme = Theme.of(context).colorScheme;
+        return ListTile(
+          contentPadding: EdgeInsets.only(left: 8),
+          leading: CircleAvatar(
+            backgroundColor: colorScheme.primary,
+            backgroundImage: user.profilePhoto != null
+                ? NetworkImage(user.profilePhoto!)
+                : null,
+            child: user.profilePhoto == null
+                ? Text(
+                    user.username,
+                    style: TextStyle(color: colorScheme.onPrimary),
+                  )
+                : null,
           ),
-          PopupMenuButton(
-            icon: Icon(Icons.more_vert, color: colorScheme.primary),
-            onSelected: (value) {
-              if (value == 'edit') {
-                _showInstrumentSelectionDialog(context, collaborator);
-              } else if (value == 'remove') {
-                _showRemoveConfirmationDialog(context, collaborator);
-              }
-            },
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'edit',
-                child: ListTile(
-                  leading: Icon(Icons.edit),
-                  title: Text('Alterar Função'),
-                ),
-              ),
-              const PopupMenuItem(
-                value: 'remove',
-                child: ListTile(
-                  leading: Icon(Icons.delete, color: Colors.red),
-                  title: Text('Remover', style: TextStyle(color: Colors.red)),
-                ),
+          title: Text(user.username),
+          subtitle: Text(user.mail),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: Icon(Icons.more_vert, color: colorScheme.primary),
+                onPressed: () {
+                  _showRemoveConfirmationDialog(
+                    context,
+                    user,
+                    playlistProvider,
+                  );
+                },
               ),
             ],
           ),
-        ],
-      ),
-    );
-  }
-
-  void _showInstrumentSelectionDialog(
-    BuildContext context,
-    Collaborator collaborator,
-  ) {
-    String selectedInstrument = collaborator.role;
-    final instrumentOptions = context
-        .read<CollaboratorProvider>()
-        .getCommonInstruments();
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Alterar Função'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ListTile(
-              leading: CircleAvatar(
-                backgroundImage: collaborator.profilePhoto != null
-                    ? NetworkImage(collaborator.profilePhoto!)
-                    : null,
-                child: collaborator.profilePhoto == null
-                    ? Text(collaborator.username?[0] ?? '?')
-                    : null,
-              ),
-              title: Text(collaborator.username ?? 'Usuário'),
-              subtitle: Text(collaborator.email ?? ''),
-            ),
-            const SizedBox(height: 16),
-            const Text('Selecione a função:'),
-            StatefulBuilder(
-              builder: (context, setState) {
-                return DropdownButtonFormField<String>(
-                  initialValue: instrumentOptions.contains(selectedInstrument)
-                      ? selectedInstrument
-                      : 'Outro',
-                  decoration: const InputDecoration(labelText: 'Função'),
-                  items: instrumentOptions.map((String instrument) {
-                    return DropdownMenuItem<String>(
-                      value: instrument,
-                      child: Text(instrument),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedInstrument = newValue!;
-                    });
-                  },
-                );
-              },
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancelar'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              context.read<CollaboratorProvider>().updateCollaboratorInstrument(
-                playlistId,
-                collaborator.userId,
-                selectedInstrument,
-              );
-              Navigator.of(context).pop();
-            },
-            child: const Text('Salvar'),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
   void _showRemoveConfirmationDialog(
     BuildContext context,
-    Collaborator collaborator,
+    User user,
+    PlaylistProvider playlistProvider,
   ) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Remover Colaborador'),
         content: Text(
-          'Tem certeza que deseja remover ${collaborator.username ?? "este colaborador"} da playlist?',
+          'Tem certeza que deseja remover ${user.username} da playlist?',
         ),
         actions: [
           TextButton(
@@ -169,10 +74,11 @@ class CollaboratorTile extends StatelessWidget {
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () {
-              context.read<CollaboratorProvider>().removeCollaborator(
-                playlistId,
-                collaborator.userId,
-              );
+              // TODO: Implement remove collaborator logic when playlistProvider Refactor
+              // playlistProvider.removeCollaborator(
+              //   playlistId,
+              //   user.userId,
+              // );
               Navigator.of(context).pop();
             },
             child: const Text('Remover'),

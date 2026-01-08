@@ -3,19 +3,8 @@ import '../models/domain/playlist/playlist_text_section.dart';
 
 class TextSectionRepository {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
-  static int? _currentUserId;
 
-  // Static method to set current user ID (for testing and app initialization)
-  static void setCurrentUserId(int userId) {
-    _currentUserId = userId;
-  }
-
-  // Static method to get current user ID
-  static int? getCurrentUserId() {
-    return _currentUserId;
-  }
-
-  // ===== CRUD =====
+  // ===== CREATE =====
   Future<int> createPlaylistText(
     int playlistId,
     String? firebaseContentId,
@@ -34,6 +23,56 @@ class TextSectionRepository {
     });
   }
 
+  // ===== READ =====
+  Future<TextSection?> getTextSection(int id) async {
+    final db = await _databaseHelper.database;
+
+    final results = await db.query(
+      'playlist_text',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+
+    if (results.isNotEmpty) {
+      return TextSection.fromJson(results.first);
+    }
+    return null;
+  }
+
+  Future<TextSection?> getTextSectionByFirebaseId(String firebaseId) async {
+    final db = await _databaseHelper.database;
+
+    final results = await db.query(
+      'playlist_text',
+      where: 'firebase_id = ?',
+      whereArgs: [firebaseId],
+    );
+
+    if (results.isNotEmpty) {
+      return TextSection.fromJson(results.first);
+    }
+    return null;
+  }
+
+  Future<Map<int, TextSection>> getTextSectionsByIds(List<int> ids) async {
+    final db = await _databaseHelper.database;
+    Map<int, TextSection> textSections = {};
+
+    final placeholders = List.filled(ids.length, '?').join(',');
+    final results = await db.query(
+      'playlist_text',
+      where: 'id IN ($placeholders)',
+      whereArgs: ids,
+    );
+
+    for (final row in results) {
+      textSections[row['id'] as int] = TextSection.fromJson(row);
+    }
+
+    return textSections;
+  }
+
+  // ===== UPDATE =====
   Future<void> updatePlaylistText(
     int id, {
     String? title,
@@ -66,6 +105,7 @@ class TextSectionRepository {
     });
   }
 
+  // ===== DELETE =====
   Future<void> deletePlaylistText(int id) async {
     final db = await _databaseHelper.database;
 
@@ -98,53 +138,5 @@ class TextSectionRepository {
         );
       }
     });
-  }
-
-  Future<TextSection?> getTextSection(int id) async {
-    final db = await _databaseHelper.database;
-
-    final results = await db.query(
-      'playlist_text',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
-
-    if (results.isNotEmpty) {
-      return TextSection.fromJson(results.first);
-    }
-    return null;
-  }
-
-  Future<TextSection?> getTextSectionByFirebaseId(String firebaseId) async {
-    final db = await _databaseHelper.database;
-
-    final results = await db.query(
-      'playlist_text',
-      where: 'firebase_id = ?',
-      whereArgs: [firebaseId],
-    );
-
-    if (results.isNotEmpty) {
-      return TextSection.fromJson(results.first);
-    }
-    return null;
-  }
-
-  Future<Map<int, TextSection>> getTextSections(List<int> ids) async {
-    final db = await _databaseHelper.database;
-    Map<int, TextSection> textSections = {};
-
-    final placeholders = List.filled(ids.length, '?').join(',');
-    final results = await db.query(
-      'playlist_text',
-      where: 'id IN ($placeholders)',
-      whereArgs: ids,
-    );
-
-    for (final row in results) {
-      textSections[row['id'] as int] = TextSection.fromJson(row);
-    }
-
-    return textSections;
   }
 }

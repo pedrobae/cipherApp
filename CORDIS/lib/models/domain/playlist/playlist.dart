@@ -93,7 +93,7 @@ class Playlist {
 
   PlaylistDto toDto(
     String ownerFirebaseId,
-    List<Map<String, dynamic>> collaborators,
+    List<String> collaborators,
     List<VersionDto> versions,
     List<TextSectionDto> textSections,
   ) {

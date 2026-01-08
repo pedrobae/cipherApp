@@ -1,4 +1,5 @@
-import 'package:cordis/providers/collaborator_provider.dart';
+import 'package:cordis/providers/playlist_provider.dart';
+import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/widgets/playlist/collaborators/tile.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -14,37 +15,25 @@ class CollaboratorList extends StatefulWidget {
 
 class _CollaboratorListState extends State<CollaboratorList> {
   @override
-  void initState() {
-    super.initState();
-    // Load collaborators when the widget is initialized
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<CollaboratorProvider>(
-        context,
-        listen: false,
-      ).loadCollaborators(widget.playlistId);
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Consumer<CollaboratorProvider>(
-      builder: (context, provider, child) {
-        if (provider.isLoading) {
+    return Consumer2<UserProvider, PlaylistProvider>(
+      builder: (context, userProvider, playlistProvider, child) {
+        if (userProvider.isLoading) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        if (provider.error != null) {
+        if (userProvider.error != null) {
           return Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Icon(Icons.error_outline, size: 48, color: Colors.red),
                 const SizedBox(height: 16),
-                Text('Erro: ${provider.error}'),
+                Text('Erro: ${userProvider.error}'),
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () {
-                    provider.loadCollaborators(widget.playlistId);
+                    // TODO : Implement retry logic
                   },
                   child: const Text('Tentar Novamente'),
                 ),
@@ -53,10 +42,10 @@ class _CollaboratorListState extends State<CollaboratorList> {
           );
         }
 
-        final collaborators = provider.getCollaboratorsForPlaylist(
-          widget.playlistId,
-        );
-        if (collaborators.isEmpty) {
+        final userIds = playlistProvider.currentPlaylist?.collaborators;
+        final users = userProvider.getUsersByFirebaseIds(userIds ?? []);
+
+        if (users.isEmpty) {
           return Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -72,11 +61,11 @@ class _CollaboratorListState extends State<CollaboratorList> {
 
         return Expanded(
           child: ListView.builder(
-            itemCount: collaborators.length,
+            itemCount: users.length,
             itemBuilder: (context, index) {
-              final collaborator = collaborators[index];
+              final user = users[index];
               return CollaboratorTile(
-                collaborator: collaborator,
+                user: user,
                 playlistId: widget.playlistId,
               );
             },

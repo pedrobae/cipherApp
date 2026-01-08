@@ -1,11 +1,9 @@
-import 'package:cordis/providers/auth_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/widgets/playlist/collaborators/list.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cordis/models/domain/playlist/playlist.dart';
 import 'package:cordis/models/domain/user.dart';
-import 'package:cordis/providers/collaborator_provider.dart';
 
 class CollaboratorsBottomSheet extends StatefulWidget {
   final Playlist playlist;
@@ -21,17 +19,6 @@ class _CollaboratorsBottomSheetState extends State<CollaboratorsBottomSheet> {
   final TextEditingController _searchController = TextEditingController();
   bool _isSearching = false;
   bool _showShareCode = false;
-
-  @override
-  void initState() {
-    super.initState();
-    // Load collaborators when the sheet opens
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<CollaboratorProvider>().loadCollaborators(
-        widget.playlist.id,
-      );
-    });
-  }
 
   @override
   void dispose() {
@@ -192,10 +179,6 @@ class _CollaboratorsBottomSheetState extends State<CollaboratorsBottomSheet> {
 
   Widget _buildUserSearchResultTile(BuildContext context, User user) {
     // Check if user is already a collaborator
-    final collaborators = context
-        .read<CollaboratorProvider>()
-        .getCollaboratorsForPlaylist(widget.playlist.id);
-    final isCollaborator = collaborators.any((c) => c.userId == user.id);
 
     return ListTile(
       leading: CircleAvatar(
@@ -206,23 +189,16 @@ class _CollaboratorsBottomSheetState extends State<CollaboratorsBottomSheet> {
       ),
       title: Text(user.username),
       subtitle: Text(user.mail),
-      trailing: isCollaborator
-          ? const Chip(label: Text('Já é colaborador'))
-          : ElevatedButton(
-              onPressed: () {
-                _showAddCollaboratorDialog(context, user);
-              },
-              child: const Text('Adicionar'),
-            ),
+      trailing: ElevatedButton(
+        onPressed: () {
+          _showAddCollaboratorDialog(context, user);
+        },
+        child: const Text('Adicionar'),
+      ),
     );
   }
 
   void _showAddCollaboratorDialog(BuildContext context, User user) {
-    String selectedInstrument = 'Vocalista';
-    final instrumentOptions = context
-        .read<CollaboratorProvider>()
-        .getCommonInstruments();
-
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -243,29 +219,6 @@ class _CollaboratorsBottomSheetState extends State<CollaboratorsBottomSheet> {
               title: Text(user.username),
               subtitle: Text(user.mail),
             ),
-            const SizedBox(height: 16),
-            const Text('Instrumento:'),
-            StatefulBuilder(
-              builder: (context, setState) {
-                return DropdownButtonFormField<String>(
-                  initialValue: selectedInstrument,
-                  decoration: const InputDecoration(
-                    labelText: 'Selecione o instrumento',
-                  ),
-                  items: instrumentOptions.map((String instrument) {
-                    return DropdownMenuItem<String>(
-                      value: instrument,
-                      child: Text(instrument),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedInstrument = newValue!;
-                    });
-                  },
-                );
-              },
-            ),
           ],
         ),
         actions: [
@@ -275,14 +228,15 @@ class _CollaboratorsBottomSheetState extends State<CollaboratorsBottomSheet> {
           ),
           ElevatedButton(
             onPressed: () {
-              context.read<CollaboratorProvider>().addCollaborator(
-                widget.playlist.id,
-                user.id!,
-                selectedInstrument,
-                context.read<UserProvider>().getLocalIdByFirebaseId(
-                  context.read<AuthProvider>().id!,
-                )!,
-              );
+              // TODO - Implement on playilst provider refactors
+              // context.read<CollaboratorProvider>().addCollaborator(
+              //   widget.playlist.id,
+              //   user.id!,
+              //   selectedInstrument,
+              //   context.read<UserProvider>().getLocalIdByFirebaseId(
+              //     context.read<AuthProvider>().id!,
+              //   )!,
+              // );
               Navigator.of(context).pop();
               setState(() {
                 _isSearching = false;

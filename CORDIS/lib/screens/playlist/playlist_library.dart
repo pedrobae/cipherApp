@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:cordis/models/domain/playlist/playlist.dart';
 import 'package:cordis/models/domain/playlist/playlist_text_section.dart';
 import 'package:cordis/models/dtos/playlist_dto.dart';
-import 'package:cordis/providers/collaborator_provider.dart';
 import 'package:cordis/providers/text_section_provider.dart';
 import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
@@ -44,13 +43,12 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Consumer6<
+    return Consumer5<
       PlaylistProvider,
       CipherProvider,
       UserProvider,
       VersionProvider,
-      AuthProvider,
-      CollaboratorProvider
+      AuthProvider
     >(
       builder:
           (
@@ -60,7 +58,6 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
             userProvider,
             versionProvider,
             authProvider,
-            collaboratorProvider,
             child,
           ) {
             return Scaffold(
@@ -97,7 +94,6 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                           userProvider,
                           versionProvider,
                           authProvider,
-                          collaboratorProvider,
                         );
                       },
                     );
@@ -119,7 +115,6 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                         userProvider,
                         versionProvider,
                         authProvider,
-                        collaboratorProvider,
                       );
                     },
                     child: ListView.builder(
@@ -136,7 +131,6 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                             cipherProvider,
                             userProvider,
                             versionProvider,
-                            collaboratorProvider,
                             authProvider,
                             playlistFirebaseId: playlist.firebaseId,
                           ),
@@ -159,7 +153,6 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                       userProvider,
                       versionProvider,
                       authProvider,
-                      collaboratorProvider,
                     ),
                     child: const Icon(Icons.cloud_sync),
                   ),
@@ -182,7 +175,6 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
     UserProvider userProvider,
     VersionProvider versionProvider,
     AuthProvider authProvider,
-    CollaboratorProvider collaboratorProvider,
   ) async {
     try {
       await playlistProvider.loadCloudPlaylists(authProvider.id!);
@@ -198,7 +190,6 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
           userProvider,
           versionProvider,
           authProvider,
-          collaboratorProvider,
         );
       }
 
@@ -225,7 +216,6 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
     UserProvider userProvider,
     VersionProvider versionProvider,
     AuthProvider authProvider,
-    CollaboratorProvider collaboratorProvider,
   ) async {
     try {
       setState(() {
@@ -233,11 +223,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
       });
 
       /// Ensure User Exists (download if necessary)
-      await userProvider.ensureUsersExist(
-        playlistDto.collaborators
-            .map((collaborator) => collaborator['id'] as String)
-            .toList(),
-      );
+      await userProvider.ensureUsersExist(playlistDto.collaborators);
       final ownerId = userProvider.getLocalIdByFirebaseId(playlistDto.ownerId);
 
       /// Upsert Ciphers
@@ -314,7 +300,6 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
     CipherProvider cipherProvider,
     UserProvider userProvider,
     VersionProvider versionProvider,
-    CollaboratorProvider collaboratorProvider,
     AuthProvider authProvider, {
     String? playlistFirebaseId,
   }) async {

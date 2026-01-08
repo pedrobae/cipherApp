@@ -37,7 +37,9 @@ class TextSectionProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _textSections = await _textSectionRepo.getTextSections(textSectionsIds);
+      _textSections = await _textSectionRepo.getTextSectionsByIds(
+        textSectionsIds,
+      );
     } catch (e) {
       _error = e.toString();
     } finally {

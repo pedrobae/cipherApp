@@ -9,6 +9,7 @@ class ChordProView extends StatelessWidget {
   final double maxWidth;
   final int transpose;
   final bool centerChords;
+  final bool isAnnotation;
 
   const ChordProView({
     super.key,
@@ -16,6 +17,7 @@ class ChordProView extends StatelessWidget {
     required this.maxWidth,
     this.transpose = 0,
     this.centerChords = true,
+    this.isAnnotation = false,
   });
 
   @override
@@ -27,7 +29,7 @@ class ChordProView extends StatelessWidget {
     List<Widget> sectionChildren = [];
 
     // CHECKS FILTERS - chords and lyrics
-    if (ls.showChords && ls.showLyrics) {
+    if (ls.showChords && (ls.showLyrics || isAnnotation)) {
       /// ITERATE THROUGH LYRIC LINES
       for (int i = 0; i < parsedSong.linesMap.length; i++) {
         /// EMPTY LINES WITH CHORDS ONLY

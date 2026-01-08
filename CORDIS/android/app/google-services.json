@@ -7,58 +7,6 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:626503496187:android:6c8883ac416779ff70db5e",
-        "android_client_info": {
-          "package_name": "com.example.cipher_app"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "626503496187-97o5d9ki4dpeou4712al5f18lpohn0ke.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.cipher_app",
-            "certificate_hash": "c67bf5f40b5d192ee55b63dbe276f04986833a34"
-          }
-        },
-        {
-          "client_id": "626503496187-npiutkhpvqu04mlms8ftu9v7ius42drl.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.cipher_app",
-            "certificate_hash": "f2ee0f24c8a669328979e3c3d5c092e65823ddd4"
-          }
-        },
-        {
-          "client_id": "626503496187-vgc1h886893dqh26dgbrhnpb1obepipv.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBlb5ok06zm1yIW5KcqqtiQk59yCFvM2jQ"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "626503496187-vgc1h886893dqh26dgbrhnpb1obepipv.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "626503496187-qbj629tsppoufakn6r4831asa431722r.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.cipherApp"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
         "mobilesdk_app_id": "1:626503496187:android:191ccca7f6cfb78c70db5e",
         "android_client_info": {
           "package_name": "com.newHeartBrasil.cordis"
@@ -83,10 +31,10 @@
               "client_type": 3
             },
             {
-              "client_id": "626503496187-qbj629tsppoufakn6r4831asa431722r.apps.googleusercontent.com",
+              "client_id": "626503496187-pneti15mm653acbbaqinq5n4bqib0qkb.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.cipherApp"
+                "bundle_id": "com.newHeartBrasil.cordis"
               }
             }
           ]

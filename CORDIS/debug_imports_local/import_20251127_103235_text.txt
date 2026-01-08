@@ -1,0 +1,217 @@
+﻿================================================================================
+IMPORT DEBUG SAMPLE
+================================================================================
+Timestamp: 2025-11-27T10:32:35.487231
+Import Type: text
+Source File: N/A (direct text input)
+Text Length: 4264 characters
+Lines: 207
+================================================================================
+
+Quem ├ë Esse?
+Julliany Souza
+Cifra: Principal (Teclado)  Favoritar Cifra
+
+Tom: F#
+[Intro] B2  C#2 D#m7  A#m7(11)
+
+[Primeira Parte]
+
+           B2 
+Eu me deparei 
+                        C#2
+Com aquele mestre escrevendo
+                A#m7(11)
+Com o dedo no ch├úo
+                            D#m7
+Ouvindo os fariseus a lhes falar
+
+                 B2
+Que a Lei de Mois├⌐s
+                      C#2
+Me condenava por meus erros
+             A#m7(11)                       
+Mas nenhuma pedra 
+                   D#m7
+Ele pegou pra me apedrejar
+
+[Pr├⌐-Refr├úo]
+
+B2
+Eu s├│ tinha os meus pecados
+  C#2
+Pra lhe oferecer
+             A#m7(11)
+Mas mesmo assim me amou
+             D#m7
+Mas mesmo assim me amou
+
+ B2
+Com uma frase: atire a pedra
+  C#2
+Quem nunca pecou
+        A#m7(11)
+Ele me perdoou
+        D#m7
+Ele me perdoou
+
+ G#m7(11)   F#/A#       B2
+Sua irresist├¡vel gra├ºa me alcan├ºou
+
+[Refr├úo]
+
+       F#
+Quem ├⌐ esse?
+                             D#m7
+Que era sem pecado e n├úo me condenou
+                             B2
+No lugar da morte, vida me ofertou
+      G#m7(11)                F#/C#
+O Cordeiro que por mim se entregou
+             C#2
+E os meus pecados levou
+
+( B2  C#2 D#m7  A#m7(11) )
+
+[Pr├⌐-Refr├úo]
+
+B2
+Eu s├│ tinha os meus pecados
+  C#2
+Pra lhe oferecer
+             A#m7(11)
+Mas mesmo assim me amou
+             D#m7
+Mas mesmo assim me amou
+
+ B2
+Com uma frase: atire a pedra
+  C#2
+Quem nunca pecou
+        A#m7(11)        D#m7
+Ele me perdoou, Ele me perdoou
+ G#m7(11)   F#/A#        B2
+Sua irresist├¡vel gra├ºa me alcan├ºou
+
+[Refr├úo]
+
+       F#
+Quem ├⌐ esse?
+                             D#m7
+Que era sem pecado e n├úo me condenou
+                             B2
+No lugar da morte, vida me ofertou
+      G#m7(11)                F#/C#
+O Cordeiro que por mim se entregou
+             C#2
+E os meus pecados levou
+
+       F#
+Quem ├⌐ esse?
+                             D#m7
+Que era sem pecado e n├úo me condenou
+                             B2
+No lugar da morte, vida me ofertou
+      G#m7(11)                F#/C#
+O Cordeiro que por mim se entregou
+             C#2
+E os meus pecados levou
+
+( B2  C#2 D#m7  A#m7(11) )
+( B2  C#2 D#m7  A#m7(11) )
+
+[Segunda parte]
+
+B2                      C#2
+   Eu n├úo Te troco por nada
+                        D#m7
+N├úo h├í espa├ºo pra mais nada
+                         A#m7(11)
+Todo vazio que havia em mim
+              B2
+Hoje ├⌐ Sua morada
+
+                 C#2
+A minha alma buscava
+                 D#m7
+E nada me completava
+                                   A#m7(11)
+A Tua presen├ºa ├⌐ o que faltava em mim
+                        B2
+Minha vida foi transformada
+
+                     C#2
+Eu n├úo Te troco por nada
+                        D#m7
+N├úo h├í espa├ºo pra mais nada
+                         A#m7(11)
+Todo vazio que havia em mim
+              B2
+Hoje ├⌐ Sua morada
+
+                 C#2
+A minha alma buscava
+                 D#m7
+E nada me completava
+                                   A#m7(11)
+A Tua presen├ºa ├⌐ o que faltava em mim
+                        G#m7(11)  F#/A#  
+Minha vida foi transformada
+
+( C#2 D#2 )
+
+[Refr├úo]
+
+Quem ├⌐ esse?
+                             Fm7
+Que era sem pecado e n├úo me condenou
+                             C#2
+No lugar da morte, vida me ofertou
+                              G#/D#
+O Cordeiro que por mim se entregou
+             D#2
+E os meus pecados levou
+
+       G#
+Quem ├⌐ esse?
+                             Fm7
+Que era sem pecado e n├úo me condenou
+                                C#2
+No lugar da morte, vida me ofertou
+                                G#/D#
+O Cordeiro que por mim se entregou
+             A#m7    D#2
+E os meus pecados levou
+
+[Segunda parte]
+
+    C#2                  D#2
+Eu n├úo Te troco por nada
+                            Fm7
+N├úo h├í espa├ºo pra mais nada
+                         Cm7
+Todo vazio que havia em mim
+              C#2
+Hoje ├⌐ Sua morada
+
+                 D#2
+A minha alma buscava
+                 Fm7
+E nada me completava
+                                   Cm7
+A Tua presen├ºa ├⌐ o que faltava em mim
+                        C#2 D#2
+Minha vida foi transformada
+                        Fm7  Cm7
+Minha vida foi transformada
+
+[Pr├⌐-Refr├úo]
+
+C#2
+Eu s├│ tinha os meus pecados
+  D#2
+Pra lhe oferecer
+             Fm7
+Mas mesmo assim me amou
+             Cm7
+Mas mesmo assim me amou

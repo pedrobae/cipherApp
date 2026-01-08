@@ -1,0 +1,17 @@
+﻿================================================================================
+IMPORT DEBUG SAMPLE
+================================================================================
+Timestamp: 2025-11-27T10:29:15.075211
+Import Type: pdf
+Source File: /data/user/0/com.example.cipher_app/cache/file_picker/1764250152017/Bom estarmos aqui.pdf
+Text Length: 513 characters
+Lines: 8
+================================================================================
+
+Bom estarmos aqui 
+D                      Em/D          F#m/D   Em/D E          Em/D       F#m/D [Am D] 
+Bom estarmos aqui louvando a Deus...      ...podendo exaltar Seu santo nome 
+G              A/G F#m             B#m                Em      A7                  D      1: D7  
+Tempo para isso tempo para louvarmos a Deus num s├│ amor, num s├│ esp├¡rito 2: G A7 
+D                               Em                      A G             A/G  D  [G A7] 
+Deus, venha nos aben├ºoar e que essa uni├úo nunca falte para n├│s 

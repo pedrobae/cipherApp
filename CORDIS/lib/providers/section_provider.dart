@@ -62,7 +62,7 @@ class SectionProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _sections = await _cipherRepository.getAllSections(versionId);
+      _sections = await _cipherRepository.getSections(versionId);
 
       _currentVersionId = versionId;
     } catch (e) {

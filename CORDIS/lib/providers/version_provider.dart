@@ -34,7 +34,14 @@ class VersionProvider extends ChangeNotifier {
       }
     }
     // Not in cache, query repository
-    return await _cipherRepository.getVersionWithFirebaseId(firebaseId);
+    final version = await _cipherRepository.getVersionWithFirebaseId(
+      firebaseId,
+    );
+
+    if (version == null) {
+      return null;
+    }
+    return version.id;
   }
 
   Future<String?> getFirebaseIdByLocalId(int localId) async {
@@ -61,9 +68,7 @@ class VersionProvider extends ChangeNotifier {
     try {
       // Create version with the correct cipher ID
       final versionWithCipherId = _currentVersion.copyWith(cipherId: cipherId);
-      versionId = await _cipherRepository.insertVersionToCipher(
-        versionWithCipherId,
-      );
+      versionId = await _cipherRepository.insertVersion(versionWithCipherId);
       // Load the new ID into the version cache
       _currentVersion = versionWithCipherId.copyWith(id: versionId);
 
@@ -93,7 +98,7 @@ class VersionProvider extends ChangeNotifier {
 
     try {
       // Create version with the correct cipher ID
-      versionId = await _cipherRepository.insertVersionToCipher(version);
+      versionId = await _cipherRepository.insertVersion(version);
 
       if (kDebugMode) {
         print('Created a new version with id $versionId from domain object');
@@ -224,9 +229,7 @@ class VersionProvider extends ChangeNotifier {
         }
       } else {
         // Insert new version
-        final newVersionId = await _cipherRepository.insertVersionToCipher(
-          version,
-        );
+        final newVersionId = await _cipherRepository.insertVersion(version);
         for (final section in version.sections!.values) {
           await _cipherRepository.insertSection(
             section.copyWith(versionId: newVersionId),

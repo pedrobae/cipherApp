@@ -538,7 +538,11 @@ class CipherProvider extends ChangeNotifier {
         '${result != null ? "Found" : "Not Found"}',
       );
     }
-    return result;
+    if (result == null) {
+      return null;
+    }
+
+    return result.id;
   }
 
   void setCurrentCipher(Cipher cipher) {

@@ -1,4 +1,5 @@
 # GitHub Copilot Instructions for Cipher App
+**IMPORTANT: UNLESS ASKED TO ACT DEFAULT TO A MENTOR ROLE, ASKING AND ANSWERING QUESTIONS AND GIVING ADVICE.**
 
 ## ✅ Language Configuration
 
@@ -13,7 +14,7 @@
 ### Coding Conventions:
 1. All code comments in English
 2. Variable and function names in English
-3. **User-visible text ONLY via localization keys** - never hardcode Portuguese or English strings in widgets
+3. **User-visible text ONLY via localization keys** - never hardcode strings in widgets
 
 ## 🏗️ Architecture Overview
 
@@ -34,7 +35,7 @@ SQLite DB ←→ Local Repository ←→ Provider (ChangeNotifier) ←→ UI
 
 ### Directory Structure
 ```
-cipher_app/lib/
+CORDIS/lib/
 ├── models/domain/          # Core domain (Cipher, Version, Section, Playlist)
 ├── models/dtos/            # Data transfer objects for serialization
 ├── repositories/           # Data access layer (Local + Cloud patterns)
@@ -93,7 +94,7 @@ final downloaded = await cloudRepo.downloadCipherData(firebaseId);
 - **insert/update/delete**: All go through local SQLite first
 
 ### Automatic Seeding
-Database auto-seeds with 4 sample hymns on first creation (in `lib/helpers/seed_data/`).
+Database auto-seeds with sample data on first creation (in `CORDIS/lib/helpers/seed_data/`).
 
 ## 🔄 State Management Patterns
 
@@ -411,17 +412,6 @@ flutter run -d chrome              # Debug on Chrome (web)
 flutter run -d windows             # Debug on Windows desktop
 flutter build web --release        # Production web build (→ build/web)
 flutter build windows              # Production Windows build
-```
-
-### Web Hosting (Firebase Hosting)
-See [FIREBASE_HOSTING.md](../docs/FIREBASE_HOSTING.md) for complete setup:
-```powershell
-# From repo root
-firebase init hosting    # Configure hosting (set public: cipher_app/build/web)
-flutter build web --release
-firebase deploy --only hosting
-# or for preview channels:
-firebase hosting:channel:deploy preview-123
 ```
 
 ### Database Testing

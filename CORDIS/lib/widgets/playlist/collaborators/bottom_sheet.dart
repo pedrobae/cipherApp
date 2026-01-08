@@ -1,11 +1,11 @@
-import 'package:cipher_app/providers/auth_provider.dart';
-import 'package:cipher_app/providers/user_provider.dart';
-import 'package:cipher_app/widgets/playlist/collaborators/list.dart';
+import 'package:cordis/providers/auth_provider.dart';
+import 'package:cordis/providers/user_provider.dart';
+import 'package:cordis/widgets/playlist/collaborators/list.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cipher_app/models/domain/playlist/playlist.dart';
-import 'package:cipher_app/models/domain/user.dart';
-import 'package:cipher_app/providers/collaborator_provider.dart';
+import 'package:cordis/models/domain/playlist/playlist.dart';
+import 'package:cordis/models/domain/user.dart';
+import 'package:cordis/providers/collaborator_provider.dart';
 
 class CollaboratorsBottomSheet extends StatefulWidget {
   final Playlist playlist;

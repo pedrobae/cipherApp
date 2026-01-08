@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cipher_app/utils/section_constants.dart';
+import 'package:cordis/utils/section_constants.dart';
 
 class PresetSectionsDialog extends StatelessWidget {
   final Map<String, String> sectionTypes;

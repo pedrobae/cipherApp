@@ -1,7 +1,7 @@
-import 'package:cipher_app/screens/cipher/cipher_parsing_screen.dart';
+import 'package:cordis/screens/cipher/cipher_parsing_screen.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:cipher_app/providers/import_provider.dart';
+import 'package:cordis/providers/import_provider.dart';
 import 'package:flutter/material.dart';
 
 class ImportPdfScreen extends StatefulWidget {

@@ -1,15 +1,15 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cipher_app/models/domain/playlist/playlist_item.dart';
-import 'package:cipher_app/providers/cipher_provider.dart';
-import 'package:cipher_app/providers/playlist_provider.dart';
-import 'package:cipher_app/providers/version_provider.dart';
-import 'package:cipher_app/providers/layout_settings_provider.dart';
-import 'package:cipher_app/widgets/playlist/presentation/presentation_cipher_section.dart';
-import 'package:cipher_app/widgets/playlist/presentation/presentation_text_section.dart';
-import 'package:cipher_app/widgets/playlist/presentation/playlist_navigation_drawer.dart';
-import 'package:cipher_app/widgets/settings/layout_settings.dart';
+import 'package:cordis/models/domain/playlist/playlist_item.dart';
+import 'package:cordis/providers/cipher_provider.dart';
+import 'package:cordis/providers/playlist_provider.dart';
+import 'package:cordis/providers/version_provider.dart';
+import 'package:cordis/providers/layout_settings_provider.dart';
+import 'package:cordis/widgets/playlist/presentation/presentation_cipher_section.dart';
+import 'package:cordis/widgets/playlist/presentation/presentation_text_section.dart';
+import 'package:cordis/widgets/playlist/presentation/playlist_navigation_drawer.dart';
+import 'package:cordis/widgets/settings/layout_settings.dart';
 
 class PlaylistPresentationScreen extends StatefulWidget {
   final int playlistId;

@@ -1,5 +1,5 @@
-import 'package:cipher_app/providers/playlist_provider.dart';
-import 'package:cipher_app/providers/text_section_provider.dart';
+import 'package:cordis/providers/playlist_provider.dart';
+import 'package:cordis/providers/text_section_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

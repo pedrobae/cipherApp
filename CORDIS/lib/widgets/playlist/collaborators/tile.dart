@@ -1,6 +1,6 @@
-import 'package:cipher_app/providers/collaborator_provider.dart';
+import 'package:cordis/providers/collaborator_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:cipher_app/models/domain/collaborator.dart';
+import 'package:cordis/models/domain/collaborator.dart';
 import 'package:provider/provider.dart';
 
 class CollaboratorTile extends StatelessWidget {

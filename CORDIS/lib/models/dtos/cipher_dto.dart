@@ -1,6 +1,6 @@
-import 'package:cipher_app/models/domain/cipher/cipher.dart';
-import 'package:cipher_app/models/domain/cipher/version.dart';
-import 'package:cipher_app/helpers/firestore_timestamp_helper.dart';
+import 'package:cordis/models/domain/cipher/cipher.dart';
+import 'package:cordis/models/domain/cipher/version.dart';
+import 'package:cordis/helpers/firestore_timestamp_helper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// DTO para metadados de cifra (usado para navegação, busca e listagem).

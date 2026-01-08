@@ -1,6 +1,6 @@
-import 'package:cipher_app/models/domain/cipher/cipher.dart';
-import 'package:cipher_app/models/domain/parsing_cipher.dart';
-import 'package:cipher_app/providers/import_provider.dart';
+import 'package:cordis/models/domain/cipher/cipher.dart';
+import 'package:cordis/models/domain/parsing_cipher.dart';
+import 'package:cordis/providers/import_provider.dart';
 
 /// Represents a single candidate produced by a parsing strategy.
 /// This is the minimal payload the UI needs to render and choose.

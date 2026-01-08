@@ -1,6 +1,6 @@
-import 'package:cipher_app/models/domain/cipher/section.dart';
-import 'package:cipher_app/models/domain/cipher/version.dart';
-import 'package:cipher_app/utils/color.dart';
+import 'package:cordis/models/domain/cipher/section.dart';
+import 'package:cordis/models/domain/cipher/version.dart';
+import 'package:cordis/utils/color.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../helpers/database.dart';

@@ -1,6 +1,6 @@
-import 'package:cipher_app/models/domain/cipher/section.dart';
-import 'package:cipher_app/models/domain/cipher/version.dart';
-import 'package:cipher_app/helpers/firestore_timestamp_helper.dart';
+import 'package:cordis/models/domain/cipher/section.dart';
+import 'package:cordis/models/domain/cipher/version.dart';
+import 'package:cordis/helpers/firestore_timestamp_helper.dart';
 
 /// DTO para metadados de version (camada de separação entre a nuvem e o armazenamento local).
 class VersionDto {

@@ -1,5 +1,5 @@
-name: cipher_app
-description: "A new Flutter project."
+name: cordis
+description: "Chord Map Application."
 publish_to: 'none'
 
 version: 1.0.0+1
@@ -15,7 +15,6 @@ dependencies:
   flutter_svg: ^2.0.10+1
   flutter_staggered_grid_view: ^0.7.0
   sqflite: ^2.3.0
-  sqflite_common_ffi: ^2.3.0  # For desktop support
   path: ^1.8.3
   cupertino_icons: ^1.0.8
   flutter_colorpicker: ^1.0.3
@@ -31,7 +30,6 @@ dependencies:
   cloud_functions: ^6.0.3
   file_picker: ^8.1.4              # Seleção de arquivos
   syncfusion_flutter_pdf: 28.1.33 # Extração de texto de PDF (null-safe)
-  fl_chart: ^0.69.0                # Charts for data visualization (PDF analysis preview)
 
 dev_dependencies:
   flutter_test:
@@ -39,6 +37,7 @@ dev_dependencies:
   mockito: ^5.4.4
   build_runner: ^2.4.9
   flutter_lints: ^6.0.0
+  fl_chart: ^0.69.0                # Charts for data visualization (PDF analysis preview)
 
 
 flutter:

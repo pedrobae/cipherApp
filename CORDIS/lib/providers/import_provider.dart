@@ -1,7 +1,7 @@
-import 'package:cipher_app/models/domain/parsing_cipher.dart';
+import 'package:cordis/models/domain/parsing_cipher.dart';
 import 'package:flutter/foundation.dart';
-import 'package:cipher_app/services/import/image_import_service.dart';
-import 'package:cipher_app/services/import/pdf_import_service.dart';
+import 'package:cordis/services/import/image_import_service.dart';
+import 'package:cordis/services/import/pdf_import_service.dart';
 
 enum ImportType { text, pdf, image }
 

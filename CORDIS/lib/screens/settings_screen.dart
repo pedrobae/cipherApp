@@ -1,7 +1,7 @@
-import 'package:cipher_app/providers/text_section_provider.dart';
-import 'package:cipher_app/providers/user_provider.dart';
-import 'package:cipher_app/providers/version_provider.dart';
-import 'package:cipher_app/utils/app_theme.dart';
+import 'package:cordis/providers/text_section_provider.dart';
+import 'package:cordis/providers/user_provider.dart';
+import 'package:cordis/providers/version_provider.dart';
+import 'package:cordis/utils/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';

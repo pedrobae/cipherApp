@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
-import 'package:cipher_app/models/domain/info_item.dart';
+import 'package:cordis/models/domain/info_item.dart';
 import '../info/info_card.dart';
 
 class CarouselInfo extends StatelessWidget {

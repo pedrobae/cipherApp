@@ -1,4 +1,4 @@
-import 'package:cipher_app/providers/layout_settings_provider.dart';
+import 'package:cordis/providers/layout_settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 

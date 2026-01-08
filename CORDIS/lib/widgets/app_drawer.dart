@@ -1,8 +1,8 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cipher_app/providers/navigation_provider.dart';
-import 'package:cipher_app/providers/auth_provider.dart';
+import 'package:cordis/providers/navigation_provider.dart';
+import 'package:cordis/providers/auth_provider.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});

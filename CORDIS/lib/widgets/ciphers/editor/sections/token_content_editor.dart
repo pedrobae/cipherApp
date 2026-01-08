@@ -1,9 +1,9 @@
-import 'package:cipher_app/models/domain/cipher/section.dart';
-import 'package:cipher_app/widgets/ciphers/editor/sections/chord_token.dart';
-import 'package:cipher_app/widgets/ciphers/editor/sections/edit_section_dialog.dart';
+import 'package:cordis/models/domain/cipher/section.dart';
+import 'package:cordis/widgets/ciphers/editor/sections/chord_token.dart';
+import 'package:cordis/widgets/ciphers/editor/sections/edit_section_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:cipher_app/models/ui/content_token.dart';
-import 'package:cipher_app/services/tokenization_service.dart';
+import 'package:cordis/models/ui/content_token.dart';
+import 'package:cordis/services/tokenization_service.dart';
 
 final double _fontSize = 18;
 

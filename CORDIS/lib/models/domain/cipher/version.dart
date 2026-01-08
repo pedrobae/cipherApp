@@ -1,5 +1,5 @@
-import 'package:cipher_app/models/domain/cipher/section.dart';
-import 'package:cipher_app/models/dtos/version_dto.dart';
+import 'package:cordis/models/domain/cipher/section.dart';
+import 'package:cordis/models/dtos/version_dto.dart';
 
 class Version {
   final int? id;

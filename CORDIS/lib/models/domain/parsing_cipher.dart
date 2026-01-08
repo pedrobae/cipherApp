@@ -1,6 +1,6 @@
-import 'package:cipher_app/models/domain/cipher/section.dart';
-import 'package:cipher_app/models/dtos/pdf_dto.dart';
-import 'package:cipher_app/providers/import_provider.dart';
+import 'package:cordis/models/domain/cipher/section.dart';
+import 'package:cordis/models/dtos/pdf_dto.dart';
+import 'package:cordis/providers/import_provider.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 /// Import strategy variants - different ways to extract text from source

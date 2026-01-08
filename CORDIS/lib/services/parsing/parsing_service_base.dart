@@ -1,10 +1,10 @@
-import 'package:cipher_app/models/domain/cipher/cipher.dart';
-import 'package:cipher_app/models/domain/cipher/version.dart';
-import 'package:cipher_app/models/domain/parsing_cipher.dart';
-import 'package:cipher_app/models/dtos/pdf_dto.dart';
-import 'package:cipher_app/services/parsing/chord_line_parser.dart';
-import 'package:cipher_app/services/parsing/metadata_parser.dart';
-import 'package:cipher_app/services/parsing/section_parser.dart';
+import 'package:cordis/models/domain/cipher/cipher.dart';
+import 'package:cordis/models/domain/cipher/version.dart';
+import 'package:cordis/models/domain/parsing_cipher.dart';
+import 'package:cordis/models/dtos/pdf_dto.dart';
+import 'package:cordis/services/parsing/chord_line_parser.dart';
+import 'package:cordis/services/parsing/metadata_parser.dart';
+import 'package:cordis/services/parsing/section_parser.dart';
 import 'package:flutter/foundation.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 

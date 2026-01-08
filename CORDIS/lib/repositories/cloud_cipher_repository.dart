@@ -1,10 +1,10 @@
-import 'package:cipher_app/helpers/guard.dart';
-import 'package:cipher_app/models/domain/cipher/cipher.dart';
-import 'package:cipher_app/models/domain/cipher/version.dart';
-import 'package:cipher_app/models/dtos/cipher_dto.dart';
-import 'package:cipher_app/models/dtos/version_dto.dart';
-import 'package:cipher_app/services/firestore_service.dart';
-import 'package:cipher_app/services/auth_service.dart';
+import 'package:cordis/helpers/guard.dart';
+import 'package:cordis/models/domain/cipher/cipher.dart';
+import 'package:cordis/models/domain/cipher/version.dart';
+import 'package:cordis/models/dtos/cipher_dto.dart';
+import 'package:cordis/models/dtos/version_dto.dart';
+import 'package:cordis/services/firestore_service.dart';
+import 'package:cordis/services/auth_service.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 
 class CloudCipherRepository {

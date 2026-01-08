@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cipher_app/helpers/chords/chords.dart';
-import 'package:cipher_app/models/ui/content_token.dart';
-import 'package:cipher_app/providers/cipher_provider.dart';
-import 'package:cipher_app/providers/version_provider.dart';
-import 'package:cipher_app/widgets/ciphers/editor/sections/chord_token.dart';
+import 'package:cordis/helpers/chords/chords.dart';
+import 'package:cordis/models/ui/content_token.dart';
+import 'package:cordis/providers/cipher_provider.dart';
+import 'package:cordis/providers/version_provider.dart';
+import 'package:cordis/widgets/ciphers/editor/sections/chord_token.dart';
 
 double _fontSize = 20;
 

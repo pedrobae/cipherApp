@@ -1,11 +1,11 @@
-import 'package:cipher_app/providers/auth_provider.dart';
-import 'package:cipher_app/providers/cipher_provider.dart';
-import 'package:cipher_app/providers/playlist_provider.dart';
-import 'package:cipher_app/providers/selection_provider.dart';
-import 'package:cipher_app/providers/user_provider.dart';
-import 'package:cipher_app/screens/cipher/cipher_editor.dart';
-import 'package:cipher_app/widgets/ciphers/library/expandible_cipher_card.dart';
-import 'package:cipher_app/widgets/ciphers/library/import_bottom_sheet.dart';
+import 'package:cordis/providers/auth_provider.dart';
+import 'package:cordis/providers/cipher_provider.dart';
+import 'package:cordis/providers/playlist_provider.dart';
+import 'package:cordis/providers/selection_provider.dart';
+import 'package:cordis/providers/user_provider.dart';
+import 'package:cordis/screens/cipher/cipher_editor.dart';
+import 'package:cordis/widgets/ciphers/library/expandible_cipher_card.dart';
+import 'package:cordis/widgets/ciphers/library/import_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cipher_app/services/firebase_service.dart';
+import 'package:cordis/services/firebase_service.dart';
 
 /// Generic Firestore service for database operations.
 class FirestoreService {

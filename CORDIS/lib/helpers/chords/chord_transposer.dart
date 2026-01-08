@@ -1,4 +1,4 @@
-import 'package:cipher_app/helpers/chords/chords.dart';
+import 'package:cordis/helpers/chords/chords.dart';
 
 class ChordTransposer extends ChordHelper {
   static const List<String> flatKeys = [

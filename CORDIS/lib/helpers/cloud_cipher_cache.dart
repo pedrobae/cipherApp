@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:cipher_app/models/dtos/cipher_dto.dart';
+import 'package:cordis/models/dtos/cipher_dto.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CloudCipherCache {

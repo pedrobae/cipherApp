@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cipher_app/utils/palette.dart';
+import 'package:cordis/utils/palette.dart';
 
 enum ThemeColor { green, gold, orange, burgundy }
 

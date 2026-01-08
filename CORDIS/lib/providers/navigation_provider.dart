@@ -1,4 +1,4 @@
-import 'package:cipher_app/utils/design_constants.dart';
+import 'package:cordis/utils/design_constants.dart';
 import 'package:flutter/material.dart';
 
 class NavigationProvider extends ChangeNotifier {

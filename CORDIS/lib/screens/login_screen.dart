@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cipher_app/providers/auth_provider.dart';
-import 'package:cipher_app/providers/user_provider.dart';
+import 'package:cordis/providers/auth_provider.dart';
+import 'package:cordis/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 

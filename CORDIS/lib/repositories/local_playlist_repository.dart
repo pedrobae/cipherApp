@@ -1,6 +1,6 @@
-import 'package:cipher_app/helpers/database.dart';
-import 'package:cipher_app/models/domain/playlist/playlist.dart';
-import 'package:cipher_app/models/domain/playlist/playlist_item.dart';
+import 'package:cordis/helpers/database.dart';
+import 'package:cordis/models/domain/playlist/playlist.dart';
+import 'package:cordis/models/domain/playlist/playlist_item.dart';
 
 // class Playlist {
 //   final int id;

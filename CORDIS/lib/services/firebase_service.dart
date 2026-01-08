@@ -3,7 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:cipher_app/firebase_options.dart';
+import 'package:cordis/firebase_options.dart';
 
 /// Central service for Firebase initialization and global access.
 class FirebaseService {

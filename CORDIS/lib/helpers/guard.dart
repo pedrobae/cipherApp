@@ -1,4 +1,4 @@
-import 'package:cipher_app/services/auth_service.dart';
+import 'package:cordis/services/auth_service.dart';
 
 class GuardHelper {
   final AuthService _authService = AuthService();

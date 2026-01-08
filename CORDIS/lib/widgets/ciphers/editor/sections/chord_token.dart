@@ -1,4 +1,4 @@
-import 'package:cipher_app/models/ui/content_token.dart';
+import 'package:cordis/models/ui/content_token.dart';
 import 'package:flutter/material.dart';
 
 class ChordToken extends StatelessWidget {

@@ -1,4 +1,4 @@
-import 'package:cipher_app/models/domain/parsing_cipher.dart';
+import 'package:cordis/models/domain/parsing_cipher.dart';
 
 class MetadataParser {
   void parseBySimpleText(ImportVariant variant, ParsingStrategy strategy) {

@@ -1,4 +1,4 @@
-import 'package:cipher_app/models/ui/content_token.dart';
+import 'package:cordis/models/ui/content_token.dart';
 
 class TokenizationService {
   List<ContentToken> tokenize(String content) {

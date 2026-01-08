@@ -1,8 +1,8 @@
-import 'package:cipher_app/models/domain/cipher/cipher.dart';
-import 'package:cipher_app/models/domain/parsed_doc.dart';
-import 'package:cipher_app/models/domain/parsing_cipher.dart';
-import 'package:cipher_app/providers/import_provider.dart';
-import 'package:cipher_app/services/parsing/parsing_service_base.dart';
+import 'package:cordis/models/domain/cipher/cipher.dart';
+import 'package:cordis/models/domain/parsed_doc.dart';
+import 'package:cordis/models/domain/parsing_cipher.dart';
+import 'package:cordis/providers/import_provider.dart';
+import 'package:cordis/services/parsing/parsing_service_base.dart';
 import 'package:flutter/material.dart';
 
 class ParserProvider extends ChangeNotifier {

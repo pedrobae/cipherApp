@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:cipher_app/services/import/import_service_base.dart';
+import 'package:cordis/services/import/import_service_base.dart';
 // TODO: Implement OCR (Optical Character Recognition)
 // import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 

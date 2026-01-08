@@ -1,11 +1,11 @@
-import 'package:cipher_app/models/domain/cipher/cipher.dart';
-import 'package:cipher_app/models/domain/parsing_cipher.dart';
+import 'package:cordis/models/domain/cipher/cipher.dart';
+import 'package:cordis/models/domain/parsing_cipher.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cipher_app/providers/import_provider.dart';
-import 'package:cipher_app/providers/parser_provider.dart';
-import 'package:cipher_app/screens/cipher/cipher_editor.dart';
-import 'package:cipher_app/widgets/ciphers/viewer/section_card.dart';
+import 'package:cordis/providers/import_provider.dart';
+import 'package:cordis/providers/parser_provider.dart';
+import 'package:cordis/screens/cipher/cipher_editor.dart';
+import 'package:cordis/widgets/ciphers/viewer/section_card.dart';
 
 class CipherParsingScreen extends StatefulWidget {
   const CipherParsingScreen({super.key});

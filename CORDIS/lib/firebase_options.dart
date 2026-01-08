@@ -25,9 +25,15 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        return macos;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.windows:
-        return windows;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for windows - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -42,45 +48,30 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyBWewT7qIfm24LIUNozdyP1BMmtaVoVV1g',
-    appId: '1:626503496187:web:be79bdccf08839ac70db5e',
+    appId: '1:626503496187:web:12d88396c72b1c7870db5e',
     messagingSenderId: '626503496187',
     projectId: 'cipherapp-8c2ee',
     authDomain: 'cipherapp-8c2ee.firebaseapp.com',
     storageBucket: 'cipherapp-8c2ee.firebasestorage.app',
+    measurementId: 'G-PMWJPW8PTH',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBlb5ok06zm1yIW5KcqqtiQk59yCFvM2jQ',
-    appId: '1:626503496187:android:6c8883ac416779ff70db5e',
+    appId: '1:626503496187:android:191ccca7f6cfb78c70db5e',
     messagingSenderId: '626503496187',
     projectId: 'cipherapp-8c2ee',
     storageBucket: 'cipherapp-8c2ee.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBuqESM-VBOIEXSpQnKBvZCbLC8oKkwL48',
-    appId: '1:626503496187:ios:0d6603fcaf14b0a970db5e',
+    apiKey: 'AIzaSyC_RPRjXXa86lmFsiQ7nj2jSx_yPAQV110',
+    appId: '1:626503496187:ios:aea6925f495bfa0e70db5e',
     messagingSenderId: '626503496187',
     projectId: 'cipherapp-8c2ee',
     storageBucket: 'cipherapp-8c2ee.firebasestorage.app',
-    iosBundleId: 'com.example.cipherApp',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyBuqESM-VBOIEXSpQnKBvZCbLC8oKkwL48',
-    appId: '1:626503496187:ios:0d6603fcaf14b0a970db5e',
-    messagingSenderId: '626503496187',
-    projectId: 'cipherapp-8c2ee',
-    storageBucket: 'cipherapp-8c2ee.firebasestorage.app',
-    iosBundleId: 'com.example.cipherApp',
-  );
-
-  static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyBWewT7qIfm24LIUNozdyP1BMmtaVoVV1g',
-    appId: '1:626503496187:web:59007bed61b7f6b670db5e',
-    messagingSenderId: '626503496187',
-    projectId: 'cipherapp-8c2ee',
-    authDomain: 'cipherapp-8c2ee.firebaseapp.com',
-    storageBucket: 'cipherapp-8c2ee.firebasestorage.app',
+    androidClientId: '626503496187-97o5d9ki4dpeou4712al5f18lpohn0ke.apps.googleusercontent.com',
+    iosClientId: '626503496187-pneti15mm653acbbaqinq5n4bqib0qkb.apps.googleusercontent.com',
+    iosBundleId: 'com.newHeartBrasil.cordis',
   );
 }

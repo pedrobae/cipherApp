@@ -1,9 +1,9 @@
-import 'package:cipher_app/models/domain/cipher/section.dart';
-import 'package:cipher_app/models/ui/song.dart';
-import 'package:cipher_app/providers/section_provider.dart';
-import 'package:cipher_app/providers/version_provider.dart';
+import 'package:cordis/models/domain/cipher/section.dart';
+import 'package:cordis/models/ui/song.dart';
+import 'package:cordis/providers/section_provider.dart';
+import 'package:cordis/providers/version_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:cipher_app/utils/section_constants.dart';
+import 'package:cordis/utils/section_constants.dart';
 import 'package:provider/provider.dart';
 
 class EditSectionDialog extends StatefulWidget {

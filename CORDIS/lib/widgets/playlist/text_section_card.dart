@@ -1,5 +1,5 @@
-import 'package:cipher_app/providers/text_section_provider.dart';
-import 'package:cipher_app/widgets/dialogs/text_section_dialog.dart';
+import 'package:cordis/providers/text_section_provider.dart';
+import 'package:cordis/widgets/dialogs/text_section_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -69,10 +69,8 @@ class _TextSectionCardState extends State<TextSectionCard> {
       ),
     );
   }
+
   void _ontap() {
-    TextSectionDialog.show(
-      context,
-      textSectionId: widget.textSectionId,
-    );
+    TextSectionDialog.show(context, textSectionId: widget.textSectionId);
   }
 }

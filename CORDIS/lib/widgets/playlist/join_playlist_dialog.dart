@@ -1,8 +1,8 @@
-import 'package:cipher_app/models/dtos/playlist_dto.dart';
-import 'package:cipher_app/providers/collaborator_provider.dart';
-import 'package:cipher_app/providers/playlist_provider.dart';
-import 'package:cipher_app/providers/auth_provider.dart';
-import 'package:cipher_app/providers/user_provider.dart';
+import 'package:cordis/models/dtos/playlist_dto.dart';
+import 'package:cordis/providers/collaborator_provider.dart';
+import 'package:cordis/providers/playlist_provider.dart';
+import 'package:cordis/providers/auth_provider.dart';
+import 'package:cordis/providers/user_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

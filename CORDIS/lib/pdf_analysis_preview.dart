@@ -3,9 +3,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:cipher_app/models/dtos/pdf_dto.dart';
+import 'package:cordis/models/dtos/pdf_dto.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
-import 'package:cipher_app/helpers/pdf_glyph_extractor.dart';
+import 'package:cordis/helpers/pdf_glyph_extractor.dart';
 
 void main() {
   runApp(const PdfAnalysisApp());

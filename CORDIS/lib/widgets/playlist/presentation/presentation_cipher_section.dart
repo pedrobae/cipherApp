@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
-import 'package:cipher_app/models/domain/cipher/cipher.dart';
-import 'package:cipher_app/models/domain/cipher/version.dart';
-import 'package:cipher_app/providers/cipher_provider.dart';
-import 'package:cipher_app/providers/version_provider.dart';
-import 'package:cipher_app/providers/layout_settings_provider.dart';
-import 'package:cipher_app/widgets/ciphers/viewer/section_card.dart';
-import 'package:cipher_app/utils/section_helper.dart';
+import 'package:cordis/models/domain/cipher/cipher.dart';
+import 'package:cordis/models/domain/cipher/version.dart';
+import 'package:cordis/providers/cipher_provider.dart';
+import 'package:cordis/providers/version_provider.dart';
+import 'package:cordis/providers/layout_settings_provider.dart';
+import 'package:cordis/widgets/ciphers/viewer/section_card.dart';
+import 'package:cordis/utils/section_helper.dart';
 
 class PresentationCipherSection extends StatefulWidget {
   final int versionId;

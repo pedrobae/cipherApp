@@ -1,6 +1,6 @@
-import 'package:cipher_app/helpers/codes.dart';
-import 'package:cipher_app/providers/auth_provider.dart';
-import 'package:cipher_app/providers/user_provider.dart';
+import 'package:cordis/helpers/codes.dart';
+import 'package:cordis/providers/auth_provider.dart';
+import 'package:cordis/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/domain/playlist/playlist.dart';

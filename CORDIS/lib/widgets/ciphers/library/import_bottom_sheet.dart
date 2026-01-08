@@ -1,6 +1,6 @@
-import 'package:cipher_app/screens/cipher/import/import_image.dart';
-import 'package:cipher_app/screens/cipher/import/import_pdf.dart';
-import 'package:cipher_app/screens/cipher/import/import_text.dart';
+import 'package:cordis/screens/cipher/import/import_image.dart';
+import 'package:cordis/screens/cipher/import/import_pdf.dart';
+import 'package:cordis/screens/cipher/import/import_text.dart';
 import 'package:flutter/material.dart';
 
 class ImportBottomSheet extends StatelessWidget {

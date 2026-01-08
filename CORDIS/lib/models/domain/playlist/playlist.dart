@@ -1,10 +1,10 @@
 // ignore_for_file: avoid_print
 
-import 'package:cipher_app/models/dtos/playlist_dto.dart';
-import 'package:cipher_app/models/dtos/text_section_dto.dart';
-import 'package:cipher_app/helpers/codes.dart';
-import 'package:cipher_app/helpers/datetime.dart';
-import 'package:cipher_app/models/dtos/version_dto.dart';
+import 'package:cordis/models/dtos/playlist_dto.dart';
+import 'package:cordis/models/dtos/text_section_dto.dart';
+import 'package:cordis/helpers/codes.dart';
+import 'package:cordis/helpers/datetime.dart';
+import 'package:cordis/models/dtos/version_dto.dart';
 import 'playlist_item.dart';
 
 class Playlist {

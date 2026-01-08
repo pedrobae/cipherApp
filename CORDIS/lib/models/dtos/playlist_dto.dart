@@ -1,9 +1,9 @@
-import 'package:cipher_app/models/domain/playlist/playlist.dart';
-import 'package:cipher_app/models/domain/playlist/playlist_item.dart';
-import 'package:cipher_app/models/dtos/cipher_dto.dart';
-import 'package:cipher_app/models/dtos/version_dto.dart';
-import 'package:cipher_app/models/dtos/text_section_dto.dart';
-import 'package:cipher_app/helpers/firestore_timestamp_helper.dart';
+import 'package:cordis/models/domain/playlist/playlist.dart';
+import 'package:cordis/models/domain/playlist/playlist_item.dart';
+import 'package:cordis/models/dtos/cipher_dto.dart';
+import 'package:cordis/models/dtos/version_dto.dart';
+import 'package:cordis/models/dtos/text_section_dto.dart';
+import 'package:cordis/helpers/firestore_timestamp_helper.dart';
 
 class PlaylistDto {
   final String? firebaseId; // ID na nuvem (Firebase)

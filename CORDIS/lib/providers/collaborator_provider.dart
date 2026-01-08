@@ -1,4 +1,4 @@
-import 'package:cipher_app/repositories/collaborator_repository.dart';
+import 'package:cordis/repositories/collaborator_repository.dart';
 import 'package:flutter/material.dart';
 import '../models/domain/collaborator.dart';
 

@@ -1,4 +1,4 @@
-import 'package:cipher_app/providers/layout_settings_provider.dart';
+import 'package:cordis/providers/layout_settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -6,7 +6,7 @@ class Transposer extends StatelessWidget {
   const Transposer({super.key});
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     final settings = Provider.of<LayoutSettingsProvider>(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,

@@ -1,6 +1,6 @@
-import 'package:cipher_app/models/domain/cipher/version.dart';
-import 'package:cipher_app/helpers/datetime.dart';
-import 'package:cipher_app/models/dtos/cipher_dto.dart';
+import 'package:cordis/models/domain/cipher/version.dart';
+import 'package:cordis/helpers/datetime.dart';
+import 'package:cordis/models/dtos/cipher_dto.dart';
 
 class Cipher {
   final int? id;

@@ -1,27 +1,27 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:cipher_app/models/dtos/text_section_dto.dart';
-import 'package:cipher_app/models/dtos/version_dto.dart';
-import 'package:cipher_app/providers/text_section_provider.dart';
+import 'package:cordis/models/dtos/text_section_dto.dart';
+import 'package:cordis/models/dtos/version_dto.dart';
+import 'package:cordis/providers/text_section_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cipher_app/models/domain/playlist/playlist.dart';
-import 'package:cipher_app/models/domain/playlist/playlist_item.dart';
-import 'package:cipher_app/providers/cipher_provider.dart';
-import 'package:cipher_app/providers/playlist_provider.dart';
-import 'package:cipher_app/providers/version_provider.dart';
-import 'package:cipher_app/providers/auth_provider.dart';
-import 'package:cipher_app/providers/user_provider.dart';
-import 'package:cipher_app/providers/collaborator_provider.dart';
-import 'package:cipher_app/screens/cipher/cipher_library.dart';
-import 'package:cipher_app/screens/playlist/playlist_presentation.dart';
-import 'package:cipher_app/widgets/playlist/cipher_version_card.dart';
-import 'package:cipher_app/widgets/playlist/text_section_card.dart';
-import 'package:cipher_app/widgets/ciphers/editor/custom_reorderable_delayed.dart';
-import 'package:cipher_app/widgets/playlist/collaborators/bottom_sheet.dart';
-import 'package:cipher_app/widgets/dialogs/edit_playlist_dialog.dart';
-import 'package:cipher_app/widgets/dialogs/new_text_section_dialog.dart';
+import 'package:cordis/models/domain/playlist/playlist.dart';
+import 'package:cordis/models/domain/playlist/playlist_item.dart';
+import 'package:cordis/providers/cipher_provider.dart';
+import 'package:cordis/providers/playlist_provider.dart';
+import 'package:cordis/providers/version_provider.dart';
+import 'package:cordis/providers/auth_provider.dart';
+import 'package:cordis/providers/user_provider.dart';
+import 'package:cordis/providers/collaborator_provider.dart';
+import 'package:cordis/screens/cipher/cipher_library.dart';
+import 'package:cordis/screens/playlist/playlist_presentation.dart';
+import 'package:cordis/widgets/playlist/cipher_version_card.dart';
+import 'package:cordis/widgets/playlist/text_section_card.dart';
+import 'package:cordis/widgets/ciphers/editor/custom_reorderable_delayed.dart';
+import 'package:cordis/widgets/playlist/collaborators/bottom_sheet.dart';
+import 'package:cordis/widgets/dialogs/edit_playlist_dialog.dart';
+import 'package:cordis/widgets/dialogs/new_text_section_dialog.dart';
 
 class PlaylistViewer extends StatefulWidget {
   final int playlistId; // Receive the playlist ID from the parent

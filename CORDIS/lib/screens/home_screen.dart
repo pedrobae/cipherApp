@@ -1,8 +1,8 @@
-import 'package:cipher_app/utils/design_constants.dart';
+import 'package:cordis/utils/design_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cipher_app/providers/auth_provider.dart';
-import 'package:cipher_app/providers/navigation_provider.dart';
+import 'package:cordis/providers/auth_provider.dart';
+import 'package:cordis/providers/navigation_provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class HomeScreen extends StatefulWidget {

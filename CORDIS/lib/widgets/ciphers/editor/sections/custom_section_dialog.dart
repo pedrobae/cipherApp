@@ -1,4 +1,4 @@
-import 'package:cipher_app/utils/section_constants.dart';
+import 'package:cordis/utils/section_constants.dart';
 import 'package:flutter/material.dart';
 
 class CustomSectionDialog extends StatefulWidget {

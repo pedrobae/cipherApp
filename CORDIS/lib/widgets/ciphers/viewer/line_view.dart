@@ -1,8 +1,8 @@
-import 'package:cipher_app/models/ui/chord.dart';
+import 'package:cordis/models/ui/chord.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cipher_app/helpers/chords/chord_transposer.dart';
-import 'package:cipher_app/providers/layout_settings_provider.dart';
+import 'package:cordis/helpers/chords/chord_transposer.dart';
+import 'package:cordis/providers/layout_settings_provider.dart';
 
 class LineView extends StatelessWidget {
   final List<Chord> chords;

@@ -1,7 +1,7 @@
-import "package:cipher_app/models/domain/cipher/section.dart";
-import "package:cipher_app/utils/section_constants.dart";
+import "package:cordis/models/domain/cipher/section.dart";
+import "package:cordis/utils/section_constants.dart";
 import "package:flutter/foundation.dart";
-import 'package:cipher_app/repositories/local_cipher_repository.dart';
+import 'package:cordis/repositories/local_cipher_repository.dart';
 import "package:flutter/material.dart";
 
 class SectionProvider extends ChangeNotifier {

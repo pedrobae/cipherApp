@@ -1,7 +1,7 @@
 import 'dart:io';
-import 'package:cipher_app/helpers/pdf_glyph_extractor.dart';
-import 'package:cipher_app/models/dtos/pdf_dto.dart';
-import 'package:cipher_app/services/import/import_service_base.dart';
+import 'package:cordis/helpers/pdf_glyph_extractor.dart';
+import 'package:cordis/models/dtos/pdf_dto.dart';
+import 'package:cordis/services/import/import_service_base.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 class PDFImportService extends ImportService {

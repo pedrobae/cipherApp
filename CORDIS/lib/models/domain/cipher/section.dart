@@ -1,4 +1,4 @@
-import 'package:cipher_app/utils/color.dart' as c;
+import 'package:cordis/utils/color.dart' as c;
 import 'package:flutter/cupertino.dart';
 
 class Section {

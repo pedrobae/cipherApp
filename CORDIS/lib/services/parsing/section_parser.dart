@@ -1,6 +1,6 @@
-import 'package:cipher_app/models/domain/parsing_cipher.dart';
-import 'package:cipher_app/models/dtos/pdf_dto.dart';
-import 'package:cipher_app/utils/section_constants.dart';
+import 'package:cordis/models/domain/parsing_cipher.dart';
+import 'package:cordis/models/dtos/pdf_dto.dart';
+import 'package:cordis/utils/section_constants.dart';
 
 enum SeparatorType { doubleNewLine, bracket, parenthesis, hyphen }
 

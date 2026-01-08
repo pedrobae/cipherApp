@@ -1,12 +1,12 @@
-import 'package:cipher_app/providers/playlist_provider.dart';
-import 'package:cipher_app/providers/section_provider.dart';
-import 'package:cipher_app/screens/playlist/playlist_presentation.dart';
+import 'package:cordis/providers/playlist_provider.dart';
+import 'package:cordis/providers/section_provider.dart';
+import 'package:cordis/screens/playlist/playlist_presentation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cipher_app/screens/cipher/cipher_viewer.dart';
-import 'package:cipher_app/providers/cipher_provider.dart';
-import 'package:cipher_app/providers/version_provider.dart';
-import 'package:cipher_app/widgets/ciphers/editor/custom_reorderable_delayed.dart';
+import 'package:cordis/screens/cipher/cipher_viewer.dart';
+import 'package:cordis/providers/cipher_provider.dart';
+import 'package:cordis/providers/version_provider.dart';
+import 'package:cordis/widgets/ciphers/editor/custom_reorderable_delayed.dart';
 
 class CipherVersionCard extends StatefulWidget {
   final int versionId;

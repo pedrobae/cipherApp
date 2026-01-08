@@ -1,10 +1,10 @@
-import 'package:cipher_app/providers/version_provider.dart';
+import 'package:cordis/providers/version_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cipher_app/models/domain/playlist/playlist.dart';
-import 'package:cipher_app/models/domain/playlist/playlist_item.dart';
-import 'package:cipher_app/providers/cipher_provider.dart';
-import 'package:cipher_app/providers/text_section_provider.dart';
+import 'package:cordis/models/domain/playlist/playlist.dart';
+import 'package:cordis/models/domain/playlist/playlist_item.dart';
+import 'package:cordis/providers/cipher_provider.dart';
+import 'package:cordis/providers/text_section_provider.dart';
 
 class PlaylistNavigationDrawer extends StatelessWidget {
   final Playlist playlist;

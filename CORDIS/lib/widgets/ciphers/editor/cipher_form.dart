@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:cipher_app/models/domain/cipher/cipher.dart';
-import 'package:cipher_app/providers/cipher_provider.dart';
+import 'package:cordis/models/domain/cipher/cipher.dart';
+import 'package:cordis/providers/cipher_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

@@ -1,15 +1,15 @@
-import 'package:cipher_app/providers/auth_provider.dart';
-import 'package:cipher_app/providers/selection_provider.dart';
-import 'package:cipher_app/providers/user_provider.dart';
-import 'package:cipher_app/providers/version_provider.dart';
-import 'package:cipher_app/widgets/search_app_bar.dart';
+import 'package:cordis/providers/auth_provider.dart';
+import 'package:cordis/providers/selection_provider.dart';
+import 'package:cordis/providers/user_provider.dart';
+import 'package:cordis/providers/version_provider.dart';
+import 'package:cordis/widgets/search_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cipher_app/providers/cipher_provider.dart';
-import 'package:cipher_app/providers/playlist_provider.dart';
-import 'package:cipher_app/widgets/ciphers/library/local_cipher_list.dart';
-import 'package:cipher_app/widgets/ciphers/library/cloud_cipher_list.dart';
-import 'package:cipher_app/screens/cipher/cipher_viewer.dart';
+import 'package:cordis/providers/cipher_provider.dart';
+import 'package:cordis/providers/playlist_provider.dart';
+import 'package:cordis/widgets/ciphers/library/local_cipher_list.dart';
+import 'package:cordis/widgets/ciphers/library/cloud_cipher_list.dart';
+import 'package:cordis/screens/cipher/cipher_viewer.dart';
 
 class CipherLibraryScreen extends StatefulWidget {
   final bool selectionMode;

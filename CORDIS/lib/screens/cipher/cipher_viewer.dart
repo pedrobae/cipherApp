@@ -1,14 +1,14 @@
-import 'package:cipher_app/providers/section_provider.dart';
+import 'package:cordis/providers/section_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cipher_app/providers/cipher_provider.dart';
-import 'package:cipher_app/providers/layout_settings_provider.dart';
-import 'package:cipher_app/providers/version_provider.dart';
-import 'package:cipher_app/screens/cipher/cipher_editor.dart';
-import 'package:cipher_app/widgets/settings/layout_settings.dart';
-import 'package:cipher_app/widgets/ciphers/viewer/content_section.dart';
-import 'package:cipher_app/widgets/ciphers/viewer/version_header.dart';
-import 'package:cipher_app/widgets/ciphers/viewer/version_selector.dart';
+import 'package:cordis/providers/cipher_provider.dart';
+import 'package:cordis/providers/layout_settings_provider.dart';
+import 'package:cordis/providers/version_provider.dart';
+import 'package:cordis/screens/cipher/cipher_editor.dart';
+import 'package:cordis/widgets/settings/layout_settings.dart';
+import 'package:cordis/widgets/ciphers/viewer/content_section.dart';
+import 'package:cordis/widgets/ciphers/viewer/version_header.dart';
+import 'package:cordis/widgets/ciphers/viewer/version_selector.dart';
 
 class CipherViewer extends StatefulWidget {
   final int cipherId;

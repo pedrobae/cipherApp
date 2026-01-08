@@ -1,5 +1,5 @@
-import 'package:cipher_app/providers/navigation_provider.dart';
-import 'package:cipher_app/routes/app_routes.dart';
+import 'package:cordis/providers/navigation_provider.dart';
+import 'package:cordis/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

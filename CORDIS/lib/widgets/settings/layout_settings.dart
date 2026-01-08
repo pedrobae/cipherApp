@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cipher_app/providers/layout_settings_provider.dart';
-import 'package:cipher_app/widgets/settings/section_modules.dart';
-import 'package:cipher_app/widgets/ciphers/transposer.dart';
+import 'package:cordis/providers/layout_settings_provider.dart';
+import 'package:cordis/widgets/settings/section_modules.dart';
+import 'package:cordis/widgets/ciphers/transposer.dart';
 
 class LayoutSettings extends StatelessWidget {
   final bool includeTransposer;

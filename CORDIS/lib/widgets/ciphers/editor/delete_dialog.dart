@@ -1,5 +1,5 @@
-import 'package:cipher_app/providers/cipher_provider.dart';
-import 'package:cipher_app/providers/version_provider.dart';
+import 'package:cordis/providers/cipher_provider.dart';
+import 'package:cordis/providers/version_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

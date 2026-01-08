@@ -1,7 +1,7 @@
-import 'package:cipher_app/providers/cipher_provider.dart';
-import 'package:cipher_app/providers/selection_provider.dart';
-import 'package:cipher_app/screens/cipher/cipher_viewer.dart';
-import 'package:cipher_app/widgets/ciphers/library/cloud_cipher_card.dart';
+import 'package:cordis/providers/cipher_provider.dart';
+import 'package:cordis/providers/selection_provider.dart';
+import 'package:cordis/screens/cipher/cipher_viewer.dart';
+import 'package:cordis/widgets/ciphers/library/cloud_cipher_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

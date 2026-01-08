@@ -1,5 +1,5 @@
-import 'package:cipher_app/providers/collaborator_provider.dart';
-import 'package:cipher_app/widgets/playlist/collaborators/tile.dart';
+import 'package:cordis/providers/collaborator_provider.dart';
+import 'package:cordis/widgets/playlist/collaborators/tile.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

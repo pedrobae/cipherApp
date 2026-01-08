@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cipher_app/providers/cipher_provider.dart';
-import 'package:cipher_app/providers/section_provider.dart';
-import 'package:cipher_app/providers/version_provider.dart';
-import 'package:cipher_app/widgets/ciphers/editor/sections/custom_section_dialog.dart';
-import 'package:cipher_app/widgets/ciphers/editor/sections/preset_section_dialog.dart';
-import 'package:cipher_app/widgets/ciphers/editor/reorderable_structure_chips.dart';
-import 'package:cipher_app/widgets/ciphers/editor/sections/token_content_editor.dart';
-import 'package:cipher_app/utils/section_constants.dart';
+import 'package:cordis/providers/cipher_provider.dart';
+import 'package:cordis/providers/section_provider.dart';
+import 'package:cordis/providers/version_provider.dart';
+import 'package:cordis/widgets/ciphers/editor/sections/custom_section_dialog.dart';
+import 'package:cordis/widgets/ciphers/editor/sections/preset_section_dialog.dart';
+import 'package:cordis/widgets/ciphers/editor/reorderable_structure_chips.dart';
+import 'package:cordis/widgets/ciphers/editor/sections/token_content_editor.dart';
+import 'package:cordis/utils/section_constants.dart';
 
 class VersionForm extends StatefulWidget {
   const VersionForm({super.key});

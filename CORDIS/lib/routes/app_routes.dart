@@ -1,9 +1,9 @@
-import 'package:cipher_app/providers/navigation_provider.dart';
-import 'package:cipher_app/screens/admin/admin_screen.dart';
-import 'package:cipher_app/screens/admin/user_management_screen.dart';
-import 'package:cipher_app/screens/login_screen.dart';
-import 'package:cipher_app/screens/signup_screen.dart';
-import 'package:cipher_app/screens/main_screen.dart';
+import 'package:cordis/providers/navigation_provider.dart';
+import 'package:cordis/screens/admin/admin_screen.dart';
+import 'package:cordis/screens/admin/user_management_screen.dart';
+import 'package:cordis/screens/login_screen.dart';
+import 'package:cordis/screens/signup_screen.dart';
+import 'package:cordis/screens/main_screen.dart';
 import 'package:flutter/material.dart';
 import '../screens/home_screen.dart';
 import '../screens/cipher/cipher_library.dart';

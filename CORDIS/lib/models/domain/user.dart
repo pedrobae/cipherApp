@@ -1,4 +1,4 @@
-import 'package:cipher_app/models/dtos/user_dto.dart';
+import 'package:cordis/models/dtos/user_dto.dart';
 
 import '../../helpers/datetime.dart';
 

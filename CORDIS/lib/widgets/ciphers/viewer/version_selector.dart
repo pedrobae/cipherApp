@@ -1,4 +1,4 @@
-import 'package:cipher_app/models/domain/cipher/version.dart';
+import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:flutter/material.dart';
 
 class VersionSelectorBottomSheet extends StatelessWidget {

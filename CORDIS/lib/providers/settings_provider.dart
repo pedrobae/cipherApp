@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cipher_app/utils/app_theme.dart';
-import 'package:cipher_app/services/settings_service.dart';
+import 'package:cordis/utils/app_theme.dart';
+import 'package:cordis/services/settings_service.dart';
 
 class SettingsProvider extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.system;

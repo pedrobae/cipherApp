@@ -1,7 +1,7 @@
-import 'package:cipher_app/helpers/guard.dart';
-import 'package:cipher_app/models/dtos/playlist_dto.dart';
-import 'package:cipher_app/models/dtos/text_section_dto.dart';
-import 'package:cipher_app/services/firestore_service.dart';
+import 'package:cordis/helpers/guard.dart';
+import 'package:cordis/models/dtos/playlist_dto.dart';
+import 'package:cordis/models/dtos/text_section_dto.dart';
+import 'package:cordis/services/firestore_service.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 

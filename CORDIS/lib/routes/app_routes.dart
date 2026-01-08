@@ -7,7 +7,6 @@ import 'package:cordis/screens/main_screen.dart';
 import 'package:flutter/material.dart';
 import '../screens/home_screen.dart';
 import '../screens/cipher/cipher_library.dart';
-import '../screens/info_screen.dart';
 import '../screens/playlist/playlist_library.dart';
 import '../screens/settings_screen.dart';
 
@@ -33,7 +32,6 @@ class AppRoutes {
       NavigationProvider.libraryRoute: const CipherLibraryScreen(),
       NavigationProvider.playlistsRoute: const PlaylistLibraryScreen(),
       NavigationProvider.settingsRoute: const SettingsScreen(),
-      NavigationProvider.infoRoute: const InfoScreen(),
       if (isAdmin) NavigationProvider.admin: const AdminScreen(),
     };
   }

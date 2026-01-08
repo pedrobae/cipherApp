@@ -8,7 +8,6 @@ import 'package:provider/provider.dart';
 import '../helpers/database.dart';
 import '../providers/cipher_provider.dart';
 import '../providers/playlist_provider.dart';
-import '../providers/info_provider.dart';
 import '../providers/settings_provider.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -268,7 +267,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       // Clear all provider caches first
       context.read<CipherProvider>().clearCache();
       context.read<PlaylistProvider>().clearCache();
-      context.read<InfoProvider>().clearCache();
       context.read<VersionProvider>().clearCache();
       context.read<UserProvider>().clearCache();
       context.read<TextSectionProvider>().clearCache();
@@ -277,7 +275,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       await Future.wait([
         context.read<CipherProvider>().loadCiphers(forceReload: true),
         context.read<PlaylistProvider>().loadLocalPlaylists(),
-        context.read<InfoProvider>().loadInfo(),
         context.read<UserProvider>().loadUsers(),
       ]);
 

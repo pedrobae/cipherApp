@@ -175,29 +175,6 @@ class DatabaseHelper {
       )
     ''');
 
-    // Create app_info table for cached announcements/news
-    await db.execute('''
-      CREATE TABLE app_info (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        firebase_id TEXT UNIQUE,
-        title TEXT NOT NULL,
-        description TEXT,
-        content TEXT,
-        type TEXT NOT NULL,
-        priority INTEGER DEFAULT 0,
-        published_at TIMESTAMP,
-        expires_at TIMESTAMP,
-        source_url TEXT,
-        link TEXT,
-        language TEXT DEFAULT 'por',
-        is_dismissible BOOLEAN DEFAULT 1,
-        fetched_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        cache_expires_at TIMESTAMP,
-        is_stale BOOLEAN DEFAULT 0,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
-    ''');
-
     // Create indexes for better performance
     await db.execute(
       'CREATE INDEX idx_cipher_tags_cipher_id ON cipher_tags(cipher_id)',

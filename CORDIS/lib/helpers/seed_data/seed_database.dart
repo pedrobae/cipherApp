@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:sqflite/sqflite.dart';
-import 'info.dart';
 import 'users.dart';
 import 'tags.dart';
 import 'ciphers.dart';
@@ -52,8 +51,5 @@ Future<void> seedDatabase(Database db) async {
 
     // Create collaborator relationships between users and playlists
     await insertCollaborators(txn, userIds, playlistIds);
-
-    // Seed info items after cipher data
-    await seedInfoDatabase(db);
   });
 }

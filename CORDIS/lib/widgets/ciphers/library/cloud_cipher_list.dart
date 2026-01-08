@@ -70,19 +70,18 @@ class _CloudCipherListState extends State<CloudCipherList> {
                 selectionProvider.toggleItemSelection(cipher);
               },
               onDownload: () async {
+                final navigator = Navigator.of(context);
                 await cipherProvider.downloadFullCipher(cipher);
                 widget.changeTab();
-                if (mounted) {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => CipherViewer(
-                        cipherId: cipherProvider.currentCipher.id!,
-                        versionId:
-                            cipherProvider.currentCipher.versions.last.id!,
-                      ),
+
+                navigator.push(
+                  MaterialPageRoute(
+                    builder: (context) => CipherViewer(
+                      cipherId: cipherProvider.currentCipher.id!,
+                      versionId: cipherProvider.currentCipher.versions.last.id!,
                     ),
-                  );
-                }
+                  ),
+                );
               },
             ),
           );

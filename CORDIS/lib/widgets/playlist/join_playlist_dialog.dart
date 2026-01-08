@@ -19,12 +19,10 @@ class JoinPlaylistDialog extends StatefulWidget {
 
 class _JoinPlaylistDialogState extends State<JoinPlaylistDialog> {
   late final TextEditingController shareCodeController;
-  late final TextEditingController roleController;
 
   @override
   void initState() {
     shareCodeController = TextEditingController();
-    roleController = TextEditingController();
     super.initState();
   }
 
@@ -54,16 +52,9 @@ class _JoinPlaylistDialogState extends State<JoinPlaylistDialog> {
                     labelText: 'Insira o código de Compartilhamento',
                   ),
                 ),
-                TextField(
-                  controller: roleController,
-                  decoration: const InputDecoration(
-                    labelText: 'Insira a Função',
-                  ),
-                ),
                 ElevatedButton(
                   onPressed: () => joinPlaylistByCode(
                     shareCodeController,
-                    roleController,
                     authProvider,
                     playlistProvider,
                     userProvider,
@@ -81,13 +72,13 @@ class _JoinPlaylistDialogState extends State<JoinPlaylistDialog> {
 
   Future<void> joinPlaylistByCode(
     TextEditingController shareCodeController,
-    TextEditingController roleController,
     AuthProvider authProvider,
     PlaylistProvider playlistProvider,
     UserProvider userProvider,
     Function syncPlaylist,
   ) async {
     try {
+      // TODO CHANGE THE FLOW - CARE WITH THE FIRESTORE RULES
       // Fetch playlist data from cloud repository using the code
       await playlistProvider.loadCloudPlaylistByCode(shareCodeController.text);
       final playlistDto = playlistProvider.currentCloudPlaylist;
@@ -106,7 +97,6 @@ class _JoinPlaylistDialogState extends State<JoinPlaylistDialog> {
       await playlistProvider.addCollaboratorToPlaylist(
         playlistDto.firebaseId!,
         currentUserId!,
-        roleController.text,
       );
 
       // final playlist = playlistProvider.getPlaylistByFirebaseId(

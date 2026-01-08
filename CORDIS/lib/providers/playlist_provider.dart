@@ -264,9 +264,8 @@ class PlaylistProvider extends ChangeNotifier {
   Future<void> addCollaboratorToPlaylist(
     String playlistId,
     String userId,
-    String role,
   ) async {
-    await _cloudPlaylistRepository.addCollaborator(playlistId, userId, role);
+    await _cloudPlaylistRepository.addCollaborator(playlistId, userId);
   }
 
   // Update a Playlist with a version

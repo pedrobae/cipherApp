@@ -146,30 +146,19 @@ class CloudPlaylistRepository {
     });
   }
 
-  Future<void> addCollaborator(
-    String playlistId,
-    String userId,
-    String role,
-  ) async {
+  Future<void> addCollaborator(String playlistId, String userId) async {
     return await _withErrorHandling('add collaborator to playlist', () async {
       await _guardHelper.requireAuth();
 
       await _firestoreService.addToArrayField(
         collectionPath: 'playlists',
         documentId: playlistId,
-        arrayField: 'collaboratorIds',
+        arrayField: 'collaborators',
         value: userId,
       );
 
-      await _firestoreService.addToArrayField(
-        collectionPath: 'playlists',
-        documentId: playlistId,
-        arrayField: 'collaborators',
-        value: {'id': userId, 'role': role},
-      );
-
       await FirebaseAnalytics.instance.logEvent(
-        name: 'added_collaborator',
+        name: 'included_collaborator',
         parameters: {'playlistId': playlistId, 'userId': userId},
       );
     });

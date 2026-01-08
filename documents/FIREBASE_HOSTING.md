@@ -6,28 +6,13 @@
 
 ## Setup Checklist
 
-- [x] Firebase project created and configured
-- [x] Firebase CLI installed (`npm i -g firebase-tools`)
-- [x] Web platform enabled in Flutter
 - [ ] Firestore security rules updated (user-scoped access)
-- [x] Firebase domain authorized in Auth settings
 
 ---
 
 ## Action Plan
 
 ### Phase 1: Initial Setup (1 day)
-
-1. **Configure Firebase for web**
-   - Verify CORDIS/lib/firebase_options.dart exists and is current
-   - Add web app in Firebase Console if missing
-   - Add domain to Firebase Auth authorized domains
-
-2. **Enable & build web**
-   - Run: `flutter config --enable-web`
-   - Run: `flutter pub get`
-   - Run: `flutter build web --release`
-   - Verify CORDIS/build/web exists
 
 3. **Initialize Firebase Hosting**
    - Run: `firebase init hosting` (from repo root)
@@ -42,31 +27,37 @@
 
 ### Phase 2: Firestore Schema (1-2 days)
 
-Migrate to playlist-driven, user-scoped structure:
+Top-level playlists with lazy-fetched version snapshots:
 
 ```
-users/{userId}/
-  ├── profile/
-  ├── playlists/{playlistId}/
-  │   ├── metadata (name, owner, description)
-  │   ├── items/ (references to ciphers)
-  │   └── collaborators/ (shared access)
-  └── settings/
+playlists/{playlistId}
+   ownerId: string
+   collaboratorIds: [string]
+   name, description, createdAt, updatedAt
+   items: [
+      { pvId: string, order: number, updatedAt: timestamp, type: 'cipherVersion' }
+   ]
 
-ciphers/{cipherId}/  (only rights-owned ciphers)
-  ├── metadata (title, author, key, tags)
-  ├── versions/{versionId}/
-  │   ├── songStructure
-  │   └── sections/
-  └── stats/
+playlists/{playlistId}/versions/{pvId}  // snapshot used in this playlist
+   baseCipherId: string
+   title, author, musicKey, tags
+   versionName, songStructure, transposedKey
+   sections: { sectionId: { contentCode, contentText, contentColor, contentType } }
+   createdAt, updatedAt
 
-playlists/{playlistId}/  (global, not per-user)
-  ├── metadata
-  ├── items/
-  └── collaborators/
+users/{ownerId}/ciphers/{cipherId}      // owner-only source of truth
+   full editable cipher content (not read by collaborators)
+
+publicCiphers/{cipherId} (optional)
+   metadata only; rights-owned and readable by authenticated users
 ```
 
 **Cost impact:** ~80% reduction vs public cipher browsing model
+
+#### Indexes (recommended)
+
+- playlists: `collaboratorIds array-contains` + `updatedAt desc` for member queries
+- playlists/versions: `order asc` (single-field) for presentation ordering
 
 ### Phase 3: Repository Layer (2-3 days)
 
@@ -125,18 +116,6 @@ cd CORDIS && flutter build web --release && cd .. && firebase deploy --only host
 - Create `.github/workflows/firebase-hosting.yml`
 - Deploy previews on PRs, production on main
 - Requires `FIREBASE_TOKEN` in repo secrets
-
----
-
-## Key Differences from Desktop/Mobile
-
-| Aspect | Desktop/Mobile | Web |
-|--------|---|---|
-| **Storage** | SQLite (local) | Firestore (cloud) |
-| **Offline** | Full ✅ | Partial (cached only) |
-| **Sync** | Manual sync to Firestore | Real-time Firestore |
-| **Ciphers** | All downloaded/available | Only in playlists |
-| **Auth** | Optional (local-first) | Required (Firestore access) |
 
 ---
 

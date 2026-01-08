@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:cordis/helpers/database_factory.dart';
 import 'package:cordis/providers/admin_provider.dart';
 import 'package:cordis/providers/auth_provider.dart';
 import 'package:cordis/providers/cipher_provider.dart';
@@ -18,15 +17,15 @@ import 'package:cordis/providers/settings_provider.dart';
 import 'package:cordis/providers/text_section_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/providers/version_provider.dart';
+
 import 'package:cordis/routes/app_routes.dart';
+
 import 'package:cordis/services/firebase_service.dart';
 import 'package:cordis/services/settings_service.dart';
 
 void main() async {
   // Ensure Flutter is initialized before database operations
   WidgetsFlutterBinding.ensureInitialized();
-
-  await DatabaseFactoryHelper.initialize();
 
   await FirebaseService.initialize();
 

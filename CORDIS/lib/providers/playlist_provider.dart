@@ -305,7 +305,6 @@ class PlaylistProvider extends ChangeNotifier {
         playlistId,
         versionId,
         position,
-        includerId: addedBy,
       );
     } else {
       // Version exists, just update its position

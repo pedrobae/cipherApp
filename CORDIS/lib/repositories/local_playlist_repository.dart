@@ -37,7 +37,6 @@ class PlaylistRepository {
             await txn.insert('playlist_version', {
               'version_id': item.contentId,
               'playlist_id': playlistId,
-              'includer_id': playlist.createdBy,
               'position': item.position,
               'included_at': DateTime.now().toIso8601String(),
             });
@@ -176,11 +175,9 @@ class PlaylistRepository {
   Future<void> addVersionToPlaylist(
     int playlistId,
     int cipherMapId,
-    int currentUserId, {
-    int? includerId,
-  }) async {
+    int currentUserId,
+  ) async {
     final db = await _databaseHelper.database;
-    final effectiveIncluderId = includerId ?? currentUserId;
 
     await db.transaction((txn) async {
       // Get current max position
@@ -199,7 +196,6 @@ class PlaylistRepository {
       await txn.insert('playlist_version', {
         'version_id': cipherMapId,
         'playlist_id': playlistId,
-        'includer_id': effectiveIncluderId,
         'position': nextPosition,
         'included_at': DateTime.now().toIso8601String(),
       });
@@ -218,9 +214,8 @@ class PlaylistRepository {
   Future<void> addVersionToPlaylistAtPosition(
     int playlistId,
     int cipherMapId,
-    int position, {
-    int? includerId,
-  }) async {
+    int position,
+  ) async {
     final db = await _databaseHelper.database;
 
     await db.transaction((txn) async {
@@ -272,19 +267,13 @@ class PlaylistRepository {
 
   // ===== COLLABORATOR MANAGEMENT =====
   /// Adds a collaborator to a playlist
-  Future<void> addCollaborator(
-    int playlistId,
-    int userId,
-    String role,
-    int includerId,
-  ) async {
+  Future<void> addCollaborator(int playlistId, int userId, String role) async {
     final db = await _databaseHelper.database;
 
     await db.insert('user_playlist', {
       'user_id': userId,
       'playlist_id': playlistId,
       'role': role,
-      'added_by': includerId,
       'added_at': DateTime.now().toIso8601String(),
     });
   }
@@ -648,7 +637,6 @@ class PlaylistRepository {
           await txn.insert('playlist_version', {
             'version_id': item['contentId'],
             'playlist_id': playlistId,
-            'includer_id': item['addedBy'],
             'position': item['position'],
             'included_at': DateTime.now().toIso8601String(),
           });

@@ -18,6 +18,23 @@ final List<SectionLabels> commonSectionLabels = [
   ),
   SectionLabels(labelVariations: ['intro'], officialLabel: 'Intro', code: 'I'),
   SectionLabels(labelVariations: ['outro'], officialLabel: 'Outro', code: 'O'),
+  SectionLabels(labelVariations: ['solo'], officialLabel: 'Solo', code: 'S'),
+  SectionLabels(
+    labelVariations: ['pre[- ]?chorus', 'pre[- ]?refrao', 'pré[- ]?refrão'],
+    officialLabel: 'Pre-Chorus',
+    code: 'PC',
+  ),
+  SectionLabels(labelVariations: ['tag'], officialLabel: 'Tag', code: 'T'),
+  SectionLabels(
+    labelVariations: ['finale', 'final'],
+    officialLabel: 'Finale',
+    code: 'F',
+  ),
+  SectionLabels(
+    labelVariations: ['notes', 'anotacoes', 'anotações'],
+    officialLabel: 'Annotations',
+    code: 'N',
+  ),
 ];
 
 class SectionLabels {

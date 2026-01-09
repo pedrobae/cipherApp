@@ -1,6 +1,5 @@
 import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
-import 'package:cordis/screens/cipher/cipher_viewer.dart';
 import 'package:cordis/widgets/ciphers/library/cloud_cipher_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -51,37 +50,23 @@ class _CloudCipherListState extends State<CloudCipherList> {
         padding: const EdgeInsets.all(4),
         cacheExtent: 200,
         physics: const AlwaysScrollableScrollPhysics(),
-        itemCount: cipherProvider.filteredCloudCiphers.length,
+        itemCount: cipherProvider.filteredCloudVersions.length,
         itemBuilder: (context, index) {
           // Add bounds checking
-          if (index >= cipherProvider.filteredCloudCiphers.length) {
+          if (index >= cipherProvider.filteredCloudVersions.length) {
             return const SizedBox.shrink();
           }
 
-          final cipher = cipherProvider.filteredCloudCiphers[index];
+          final cipher = cipherProvider.filteredCloudVersions[index];
           return GestureDetector(
             onLongPress: () => {
               selectionProvider.enableSelectionMode(),
               selectionProvider.toggleItemSelection(cipher),
             },
             child: CloudCipherCard(
-              cipher: cipher,
+              version: cipher,
               onTap: () {
                 selectionProvider.toggleItemSelection(cipher);
-              },
-              onDownload: () async {
-                final navigator = Navigator.of(context);
-                await cipherProvider.downloadFullCipher(cipher);
-                widget.changeTab();
-
-                navigator.push(
-                  MaterialPageRoute(
-                    builder: (context) => CipherViewer(
-                      cipherId: cipherProvider.currentCipher.id!,
-                      versionId: cipherProvider.currentCipher.versions.last.id!,
-                    ),
-                  ),
-                );
               },
             ),
           );
@@ -135,13 +120,7 @@ class _CloudCipherListState extends State<CloudCipherList> {
                     }),
                   ),
                   onPressed: () async {
-                    // Handle bulk download
-                    final selectedCiphers = selectionProvider.selectedItems;
-                    for (var cipher in selectedCiphers) {
-                      await cipherProvider.downloadFullCipher(cipher);
-                    }
-                    selectionProvider.disableSelectionMode();
-                    widget.changeTab();
+                    // TODO: Implement batch selection logic
                   },
                   child: selectionProvider.selectedItems.length == 1
                       ? Text('Baixar a cifra selecionada')
@@ -186,7 +165,7 @@ class _CloudCipherListState extends State<CloudCipherList> {
           );
         }
 
-        if (cipherProvider.filteredCloudCiphers.isEmpty) {
+        if (cipherProvider.filteredCloudVersions.isEmpty) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

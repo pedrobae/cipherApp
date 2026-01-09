@@ -1,30 +1,25 @@
 import 'dart:convert';
-import 'package:cordis/models/dtos/cipher_dto.dart';
+import 'package:cordis/models/dtos/version_dto.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class CloudCipherCache {
-  static const _cacheKey = 'cloudCiphers';
+class CloudVersionsCache {
+  static const _cacheKey = 'cloudVersions';
   static const _lastLoadKey = 'lastCloudLoad';
 
-  Future<void> saveCloudCiphers(List<CipherDto> ciphers) async {
+  Future<void> saveCloudVersions(List<VersionDto> versions) async {
     final prefs = await SharedPreferences.getInstance();
-    final jsonList = ciphers.map((c) => c.toPersist()).toList();
+    final jsonList = versions.map((v) => v.toFirestore()).toList();
     await prefs.setString(_cacheKey, json.encode(jsonList));
   }
 
-  Future<List<CipherDto>> loadCloudCiphers() async {
+  Future<List<VersionDto>> loadCloudVersions() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final jsonString = prefs.getString(_cacheKey);
       if (jsonString == null) return [];
       final List<dynamic> jsonList = json.decode(jsonString);
       return jsonList
-          .map(
-            (j) => CipherDto.fromFirestore(
-              j,
-              documentId: j['firebaseId'] as String,
-            ),
-          )
+          .map((j) => VersionDto.fromFirestore(j, j['firebaseId'] as String))
           .toList();
     } catch (e) {
       // If there's an error (e.g., corrupted data), return empty list

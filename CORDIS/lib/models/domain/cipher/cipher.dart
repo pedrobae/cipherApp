@@ -1,10 +1,8 @@
 import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:cordis/helpers/datetime.dart';
-import 'package:cordis/models/dtos/cipher_dto.dart';
 
 class Cipher {
   final int? id;
-  final String? firebaseId;
   final String title;
   final String author;
   final String tempo;
@@ -18,7 +16,6 @@ class Cipher {
 
   const Cipher({
     this.id,
-    this.firebaseId,
     required this.title,
     required this.author,
     required this.tempo,
@@ -35,7 +32,6 @@ class Cipher {
   factory Cipher.fromSqLite(Map<String, dynamic> json) {
     return Cipher(
       id: json['id'] as int?,
-      firebaseId: json['firebase_id'] as String?,
       title: json['title'] as String? ?? '',
       author: json['author'] as String? ?? '',
       tempo: json['tempo'] as String? ?? '',
@@ -71,7 +67,6 @@ class Cipher {
   Map<String, dynamic> toSqLite({bool isNew = false}) {
     return {
       'id': isNew ? null : id,
-      'firebase_id': firebaseId,
       'title': title,
       'author': author,
       'tempo': tempo,
@@ -86,7 +81,6 @@ class Cipher {
   Map<String, dynamic> toCache() {
     return {
       'id': id,
-      'firebase_id': firebaseId,
       'title': title,
       'author': author,
       'tempo': tempo,
@@ -100,17 +94,16 @@ class Cipher {
     };
   }
 
-  CipherDto toDto() {
-    return CipherDto(
-      firebaseId: firebaseId,
-      title: title,
-      author: author,
-      tempo: tempo,
-      musicKey: musicKey,
-      language: language,
-      updatedAt: updatedAt,
-      tags: tags,
-    );
+  Map<String, dynamic> toMetadata() {
+    return {
+      'title': title,
+      'author': author,
+      'tempo': tempo,
+      'originalKey': musicKey,
+      'language': language,
+      'updatedAt': updatedAt,
+      'tags': tags,
+    };
   }
 
   Cipher copyWith({
@@ -129,7 +122,6 @@ class Cipher {
   }) {
     return Cipher(
       id: id ?? this.id,
-      firebaseId: firebaseId ?? this.firebaseId,
       title: title ?? this.title,
       author: author ?? this.author,
       tempo: tempo ?? this.tempo,

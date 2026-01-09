@@ -5,7 +5,6 @@ import 'package:cordis/helpers/firestore_timestamp_helper.dart';
 /// DTO para metadados de version (camada de separação entre a nuvem e o armazenamento local).
 class VersionDto {
   final String? firebaseId; // ID na nuvem (Firebase)
-  final String? firebaseCipherId; // ID do cipher na nuvem (Firebase)
   final String title;
   final String author;
   final String? tempo;
@@ -21,7 +20,6 @@ class VersionDto {
 
   VersionDto({
     this.firebaseId,
-    this.firebaseCipherId,
     required this.versionName,
     this.transposedKey,
     required this.songStructure,
@@ -39,7 +37,6 @@ class VersionDto {
   factory VersionDto.fromFirestore(Map<String, dynamic> map, String id) {
     return VersionDto(
       firebaseId: id,
-      firebaseCipherId: map['cipherId'] as String,
       author: map['author'] as String,
       title: map['title'] as String,
       tempo: map['tempo'] as String?,
@@ -61,7 +58,25 @@ class VersionDto {
 
   Map<String, dynamic> toFirestore() {
     return {
-      'cipherId': firebaseCipherId,
+      'author': author,
+      'title': title,
+      'tempo': tempo,
+      'bpm': bpm,
+      'language': language,
+      'versionName': versionName,
+      'originalKey': originalKey,
+      'transposedKey': transposedKey,
+      'tags': tags,
+      'songStructure': songStructure.split(',').map((s) => s.trim()).toList(),
+      'updatedAt': FirestoreTimestampHelper.fromDateTime(updatedAt),
+      'sections': sections,
+    };
+  }
+
+  /// To JSON for caching (weekly public versions)
+  Map<String, dynamic> toCache() {
+    return {
+      'firebaseId': firebaseId,
       'author': author,
       'title': title,
       'tempo': tempo,
@@ -80,7 +95,6 @@ class VersionDto {
   Version toDomain({int? cipherId}) {
     return Version(
       firebaseId: firebaseId,
-      firebaseCipherId: firebaseCipherId,
       versionName: versionName,
       transposedKey: transposedKey,
       songStructure: songStructure.split(',').map((s) => s.trim()).toList(),

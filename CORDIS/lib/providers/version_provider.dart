@@ -46,12 +46,12 @@ class VersionProvider extends ChangeNotifier {
     // cipherFirebaseId:versionFirebaseId
     for (var v in _versions) {
       if (v.id == localId) {
-        return '${v.firebaseCipherId}:${v.firebaseId}';
+        return '${v.firebaseId}';
       }
     }
     // Not in cache, query repository
     final version = await _cipherRepository.getVersionWithId(localId);
-    return '${version?.firebaseCipherId}:${version?.firebaseId}';
+    return version?.firebaseId;
   }
 
   /// ===== CREATE - new version to an existing cipher =====

@@ -1,18 +1,16 @@
+import 'package:cordis/models/dtos/version_dto.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cordis/models/dtos/cipher_dto.dart';
 import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/widgets/ciphers/tag_chip.dart';
 
 class CloudCipherCard extends StatelessWidget {
-  final CipherDto cipher;
-  final VoidCallback onDownload;
+  final VersionDto version;
   final VoidCallback onTap;
 
   const CloudCipherCard({
     super.key,
-    required this.cipher,
-    required this.onDownload,
+    required this.version,
     required this.onTap,
   });
 
@@ -52,22 +50,24 @@ class CloudCipherCard extends StatelessWidget {
                   alignment: WrapAlignment.spaceBetween,
                   crossAxisAlignment: WrapCrossAlignment.end,
                   children: [
-                    Text(cipher.title, style: theme.textTheme.titleLarge),
-                    Text(cipher.author),
+                    Text(version.title, style: theme.textTheme.titleLarge),
+                    Text(version.author),
                   ],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Tom: ${cipher.musicKey}'),
-                    Text('Tempo: ${cipher.tempo}'),
+                    Text(
+                      'Tom: ${version.transposedKey ?? version.originalKey}',
+                    ),
+                    Text('Tempo: ${version.tempo}'),
                   ],
                 ),
                 Wrap(
                   alignment: WrapAlignment.center,
                   spacing: 4,
                   runSpacing: 4,
-                  children: cipher.tags
+                  children: version.tags
                       .map((tag) => TagChip(tag: tag))
                       .toList(),
                 ),
@@ -75,15 +75,12 @@ class CloudCipherCard extends StatelessWidget {
             ),
             trailing: selectionProvider.isSelectionMode
                 ? Checkbox(
-                    value: selectionProvider.selectedItems.contains(cipher),
+                    value: selectionProvider.selectedItems.contains(version),
                     onChanged: (value) {
-                      selectionProvider.toggleItemSelection(cipher);
+                      selectionProvider.toggleItemSelection(version);
                     },
                   )
-                : IconButton(
-                    icon: const Icon(Icons.download_for_offline),
-                    onPressed: onDownload,
-                  ),
+                : null,
           ),
         );
       },

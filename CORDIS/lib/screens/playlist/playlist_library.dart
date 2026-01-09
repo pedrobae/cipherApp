@@ -1,4 +1,4 @@
-import 'package:cordis/models/dtos/cipher_dto.dart';
+import 'package:cordis/models/domain/cipher/cipher.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -230,25 +230,22 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
       /// Upsert Ciphers
       for (final versionDto in playlistDto.versions) {
         await cipherProvider.upsertCipher(
-          CipherDto.fromFirestore({
-            'id': versionDto.firebaseCipherId,
-            'title': versionDto.title,
-            'author': versionDto.author,
-            'language': versionDto.language,
-            'originalKey': versionDto.originalKey,
-            'tags': versionDto.tags,
-            'updatedAt': versionDto.updatedAt,
-          }).toDomain([]),
+          Cipher(
+            title: versionDto.title,
+            author: versionDto.author,
+            language: versionDto.language,
+            musicKey: versionDto.originalKey,
+            tags: versionDto.tags,
+            updatedAt: versionDto.updatedAt,
+            tempo: versionDto.tempo ?? '',
+            isLocal: false,
+          ),
         );
-      }
-
-      /// Upsert Versions
-      for (final versionDto in playlistDto.versions) {
-        final existingCipherId = cipherProvider.getCachedCipherIdByFirebaseId(
-          versionDto.firebaseCipherId!,
+        final cipherId = cipherProvider.getCachedCipherIdByTitle(
+          versionDto.title,
         );
         await versionProvider.upsertVersion(
-          versionDto.toDomain(cipherId: existingCipherId),
+          versionDto.toDomain(cipherId: cipherId),
         );
       }
 

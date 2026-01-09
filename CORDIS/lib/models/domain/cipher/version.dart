@@ -6,7 +6,6 @@ class Version {
   final int? id;
   final String? firebaseId;
   final int cipherId;
-  final String? firebaseCipherId;
   final String versionName;
   final String? transposedKey;
   final List<String> songStructure; // Changed from String to List<String>
@@ -17,7 +16,6 @@ class Version {
     this.id,
     this.firebaseId,
     required this.cipherId,
-    this.firebaseCipherId,
     this.versionName = 'Original',
     this.transposedKey,
     this.songStructure = const [],
@@ -36,7 +34,6 @@ class Version {
       id: json['id'] as int?,
       firebaseId: json['firebase_id'] as String?,
       cipherId: json['cipher_id'] as int,
-      firebaseCipherId: json['firebase_cipher_id'] as String?,
       songStructure: json['song_structure'] as List<String>,
       transposedKey: json['transposed_key'] as String?,
       versionName: json['version_name'] as String,
@@ -63,7 +60,6 @@ class Version {
       id: row['id'] as int?,
       firebaseId: row['firebase_id'] as String?,
       cipherId: row['cipher_id'] as int,
-      firebaseCipherId: row['firebase_cipher_id'] as String?,
       songStructure: songStructure,
       transposedKey: row['transposed_key'] as String?,
       versionName: row['version_name'] as String,
@@ -78,7 +74,6 @@ class Version {
   Map<String, dynamic> toSqLite() {
     return {
       'firebase_id': firebaseId,
-      'firebase_cipher_id': firebaseCipherId,
       'cipher_id': cipherId,
       'song_structure': songStructure.join(','),
       'transposed_key': transposedKey,
@@ -94,7 +89,6 @@ class Version {
   VersionDto toDto(Cipher cipher) {
     return VersionDto(
       firebaseId: firebaseId,
-      firebaseCipherId: firebaseCipherId,
       versionName: versionName,
       transposedKey: transposedKey,
       songStructure: songStructure.join(','),
@@ -136,7 +130,6 @@ class Version {
       id: id ?? this.id,
       firebaseId: firebaseId ?? this.firebaseId,
       cipherId: cipherId ?? this.cipherId,
-      firebaseCipherId: firebaseCipherId ?? this.firebaseCipherId,
       songStructure: songStructure ?? this.songStructure,
       transposedKey: transposedKey ?? this.transposedKey,
       versionName: versionName ?? this.versionName,

@@ -1,17 +1,17 @@
 import 'dart:async';
-import 'package:cordis/models/domain/cipher/version.dart';
+import 'package:cordis/models/dtos/version_dto.dart';
 import 'package:flutter/foundation.dart';
-import 'package:cordis/models/dtos/cipher_dto.dart';
-import 'package:cordis/helpers/cloud_cipher_cache.dart';
+import 'package:cordis/helpers/cloud_versions_cache.dart';
 import 'package:cordis/models/domain/cipher/cipher.dart';
-import 'package:cordis/repositories/cloud_cipher_repository.dart';
+import 'package:cordis/repositories/cloud_version_repository.dart';
 import 'package:cordis/repositories/local_cipher_repository.dart';
 
 class CipherProvider extends ChangeNotifier {
   final LocalCipherRepository _cipherRepository = LocalCipherRepository();
-  final CloudCipherRepository _cloudCipherRepository = CloudCipherRepository();
+  final CloudVersionRepository _cloudVersionRepository =
+      CloudVersionRepository();
 
-  final CloudCipherCache _cloudCache = CloudCipherCache();
+  final CloudVersionsCache _cloudCache = CloudVersionsCache();
 
   CipherProvider() {
     _initializeCloudCache();
@@ -20,20 +20,19 @@ class CipherProvider extends ChangeNotifier {
 
   Future<void> _initializeCloudCache() async {
     _lastCloudLoad = await _cloudCache.loadLastCloudLoad();
-    _cloudCiphers = await _cloudCache.loadCloudCiphers();
+    _cloudVersions = await _cloudCache.loadCloudVersions();
     _filterCloudCiphers();
     notifyListeners();
   }
 
   List<Cipher> _localCiphers = [];
-  List<CipherDto> _cloudCiphers = [];
+  List<VersionDto> _cloudVersions = [];
   List<Cipher> _filteredLocalCiphers = [];
-  List<CipherDto> _filteredCloudCiphers = [];
+  List<VersionDto> _filteredCloudVersions = [];
   Cipher _currentCipher = Cipher.empty();
   bool _isLoading = false;
   bool _isLoadingCloud = false;
   bool _isSaving = false;
-  bool _isSavingToCloud = false;
   String? _error;
   String _searchTerm = '';
   bool _hasLoadedCiphers = false;
@@ -50,17 +49,16 @@ class CipherProvider extends ChangeNotifier {
   bool get isSaving => _isSaving;
   bool get hasLoadedCiphers => _hasLoadedCiphers;
 
-  List<CipherDto> get cloudCiphers => _cloudCiphers;
-  List<CipherDto> get filteredCloudCiphers => _filteredCloudCiphers;
+  List<VersionDto> get cloudVersions => _cloudVersions;
+  List<VersionDto> get filteredCloudVersions => _filteredCloudVersions;
   bool get isLoadingCloud => _isLoadingCloud;
-  bool get isSavingToCloud => _isSavingToCloud;
 
   String? get error => _error;
 
-  int? getCachedCipherIdByFirebaseId(String firebaseId) {
+  int? getCachedCipherIdByTitle(String title) {
     return _localCiphers
         .firstWhere(
-          (cipher) => cipher.firebaseId == firebaseId,
+          (cipher) => cipher.title == title,
           orElse: () => Cipher.empty(),
         )
         .id;
@@ -110,7 +108,7 @@ class CipherProvider extends ChangeNotifier {
     final now = DateTime.now();
     if (_lastCloudLoad != null &&
         now.difference(_lastCloudLoad!).inDays < 7 &&
-        _cloudCiphers.isNotEmpty &&
+        _cloudVersions.isNotEmpty &&
         !forceReload) {
       return;
     }
@@ -121,15 +119,15 @@ class CipherProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _cloudCiphers = await _cloudCipherRepository.getCipherIndex();
+      _cloudVersions = await _cloudVersionRepository.getPublicVersions();
       _lastCloudLoad = now;
-      await _cloudCache.saveCloudCiphers(_cloudCiphers);
+      await _cloudCache.saveCloudVersions(_cloudVersions);
       await _cloudCache.saveLastCloudLoad(now);
       _filterCloudCiphers();
 
       if (kDebugMode) {
         print(
-          'LOADED ${_cloudCiphers.length} PUBLIC CIPHERS FROM FIRESTORE - $_lastCloudLoad',
+          'LOADED ${_cloudVersions.length} PUBLIC CIPHERS FROM FIRESTORE - $_lastCloudLoad',
         );
       }
     } catch (e) {
@@ -208,9 +206,9 @@ class CipherProvider extends ChangeNotifier {
 
   void _filterCloudCiphers() {
     if (_searchTerm.isEmpty) {
-      _filteredCloudCiphers = List.from(cloudCiphers);
+      _filteredCloudVersions = List.from(cloudVersions);
     } else {
-      _filteredCloudCiphers = cloudCiphers
+      _filteredCloudVersions = cloudVersions
           .where(
             (cipher) =>
                 cipher.title.toLowerCase().contains(_searchTerm) ||
@@ -243,7 +241,7 @@ class CipherProvider extends ChangeNotifier {
 
   void clearSearch() {
     _searchTerm = '';
-    _filteredCloudCiphers = List.from(cloudCiphers);
+    _filteredCloudVersions = List.from(cloudVersions);
     _filteredLocalCiphers = List.from(localCiphers);
   }
 
@@ -280,53 +278,9 @@ class CipherProvider extends ChangeNotifier {
     return cipherId;
   }
 
-  /// Downloads cipher from cloud and inserts into local database
-  Future<void> downloadFullCipher(CipherDto cipherDTO) async {
-    if (_isSaving) {
-      _error = 'Já está salvando uma cifra, aguarde...';
-      if (kDebugMode) {
-        print('Already saving a cipher, aborting download.');
-      }
-      return;
-    }
-
-    _isSaving = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      final versionDTOs = await _cloudCipherRepository.getVersionsOfCipher(
-        cipherDTO.firebaseId!,
-      );
-      if (versionDTOs.isEmpty) {
-        throw Exception('Cipher versions not found in cloud');
-      }
-
-      List<Version> versions = [];
-      for (var versionDTO in versionDTOs) {
-        versions.add(versionDTO.toDomain());
-      }
-
-      final cipher = cipherDTO.toDomain(versions);
-
-      final cipherLocalId = await _cipherRepository.insertWholeCipher(cipher);
-
-      // Load the new ID into the cache
-      await loadCipher(cipherLocalId);
-      updateCurrentCipherInList();
-    } catch (e) {
-      _error = 'Downloading and inserting cipher: ${e.toString()}';
-      if (kDebugMode) {
-        print('Error downloading and inserting cipher: $e');
-      }
-    } finally {
-      _isSaving = false;
-      notifyListeners();
-    }
-  }
-
   // ===== UPSERT =====
   /// Upsert a cipher into the database used when syncing a playlist
+  /// Returns the local cipher ID
   Future<void> upsertCipher(Cipher cipher) async {
     if (_isSaving) return;
 
@@ -338,7 +292,9 @@ class CipherProvider extends ChangeNotifier {
       // Check if cipher exists on the cache
       final existingId = _localCiphers
           .firstWhere(
-            (cachedCipher) => cachedCipher.firebaseId == cipher.firebaseId,
+            (cachedCipher) =>
+                (cachedCipher.title == cipher.title &&
+                cachedCipher.author == cipher.author),
             orElse: () => Cipher.empty(),
           )
           .id;
@@ -353,7 +309,7 @@ class CipherProvider extends ChangeNotifier {
 
       if (kDebugMode) {
         print(
-          'Upserted cipher with Firebase ID ${cipher.firebaseId} - Existing Cipher ID: $existingId',
+          'Upserted cipher with Title ${cipher.title} - Existing Cipher ID: $existingId',
         );
       }
 
@@ -392,31 +348,6 @@ class CipherProvider extends ChangeNotifier {
       _isSaving = false;
       // Reload manually to ensure UI reflects all changes
       updateCurrentCipherInList();
-      notifyListeners();
-    }
-  }
-
-  /// Save current cipher changes to cloud
-  Future<void> saveCipherInCloud() async {
-    if (_isSavingToCloud) return;
-
-    _isSavingToCloud = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      if (currentCipher.firebaseId == null) {
-        throw Exception('Cipher has no firebaseId, cannot update in cloud');
-      }
-      await _cloudCipherRepository.updatePublicCipher(currentCipher);
-      await saveCipher();
-    } catch (e) {
-      _error = 'Saving cipher to cloud: ${e.toString()}';
-      if (kDebugMode) {
-        print('Error saving cipher to cloud: $e');
-      }
-    } finally {
-      _isSavingToCloud = false;
       notifyListeners();
     }
   }
@@ -478,9 +409,9 @@ class CipherProvider extends ChangeNotifier {
   /// Clear cached data and reset state for debugging
   void clearCache() {
     _localCiphers.clear();
-    _cloudCiphers.clear();
+    _cloudVersions.clear();
     _currentCipher = Cipher.empty();
-    _filteredCloudCiphers.clear();
+    _filteredCloudVersions.clear();
     _filteredLocalCiphers.clear();
     _isLoading = false;
     _isSaving = false;

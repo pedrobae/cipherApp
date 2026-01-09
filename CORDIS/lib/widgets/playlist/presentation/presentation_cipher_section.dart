@@ -66,7 +66,7 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
 
         return Consumer<CipherProvider>(
           builder: (context, cipherProvider, child) {
-            final cipher = cipherProvider.getCachedCipher(version.cipherId);
+            final cipher = cipherProvider.getCipherFromCache(version.cipherId);
 
             // If cipher is not cached yet, show loading indicator
             if (cipher == null) {

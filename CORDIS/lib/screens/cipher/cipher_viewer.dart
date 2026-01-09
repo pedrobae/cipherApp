@@ -48,25 +48,20 @@ class _CipherViewerState extends State<CipherViewer>
   }
 
   void _addNewVersion() {
-    final cipherProvider = context.read<CipherProvider>();
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) =>
-            EditCipher(cipherId: cipherProvider.currentCipher.id),
+            EditCipher(cipherId: widget.cipherId, versionId: -1),
       ),
     );
   }
 
   void _editCurrentVersion() {
-    final cipherProvider = context.read<CipherProvider>();
-    final versionProvider = context.read<VersionProvider>();
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => EditCipher(
-          cipherId: cipherProvider.currentCipher.id,
-          versionId: versionProvider.currentVersion.id,
-        ),
+        builder: (context) =>
+            EditCipher(cipherId: widget.cipherId, versionId: widget.versionId),
       ),
     );
   }
@@ -87,7 +82,7 @@ class _CipherViewerState extends State<CipherViewer>
       context: context,
       builder: (context) => VersionSelectorBottomSheet(
         currentVersion: versionProvider.currentVersion,
-        versions: cipherProvider.currentCipher.versions,
+        versions: cipherProvider.getCipherFromCache(widget.cipherId)!.versions,
         onVersionSelected: _selectVersion,
         onNewVersion: _addNewVersion,
       ),
@@ -174,15 +169,15 @@ class _CipherViewerState extends State<CipherViewer>
               );
             }
 
-            final currentCipher = cipherProvider.currentCipher;
+            final cipher = cipherProvider.getCipherFromCache(widget.cipherId);
             final currentVersion = versionProvider.currentVersion;
-            final hasVersions = currentCipher.versions.isNotEmpty;
+            final hasVersions = cipher!.versions.isNotEmpty;
 
             // Set original key for transposer
-            if (!_hasSetOriginalKey && currentCipher.musicKey.isNotEmpty) {
+            if (!_hasSetOriginalKey && cipher.musicKey.isNotEmpty) {
               _hasSetOriginalKey = true;
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                settings.setOriginalKey(currentCipher.musicKey);
+                settings.setOriginalKey(cipher.musicKey);
               });
             }
 
@@ -191,12 +186,12 @@ class _CipherViewerState extends State<CipherViewer>
                 title: Column(
                   children: [
                     Text(
-                      currentCipher.title,
+                      cipher.title,
                       style: Theme.of(context).textTheme.headlineSmall
                           ?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      'por ${currentCipher.author}',
+                      'por ${cipher.author}',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: Colors.grey[600],
                       ),

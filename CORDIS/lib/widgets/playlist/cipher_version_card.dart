@@ -90,7 +90,7 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
 
         return Consumer2<CipherProvider, PlaylistProvider>(
           builder: (context, cipherProvider, playlistProvider, child) {
-            final cipher = cipherProvider.getCachedCipher(version.cipherId);
+            final cipher = cipherProvider.getCipherFromCache(version.cipherId);
 
             // If cipher is not cached yet, show loading indicator
             if (cipher == null) {

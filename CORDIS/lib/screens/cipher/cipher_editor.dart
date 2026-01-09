@@ -67,28 +67,23 @@ class _EditCipherState extends State<EditCipher>
     final sectionProvider = context.read<SectionProvider>();
 
     if (_isNewCipher) {
-      // For new cipher, clear any existing data
-      cipherProvider.clearCurrentCipher();
-      versionProvider.clearCache();
-      sectionProvider.clearCache();
-
       if (widget.importedCipher) {
         // Load imported cipher data
         final cipher = parserProvider.parsedCipher;
 
         if (cipher != null) {
-          cipherProvider.setCurrentCipher(cipher);
+          cipherProvider.setNewCipherInCache(cipher);
+
+          // Load imported version data
+          final version = cipher.versions.first;
+          versionProvider.setCurrentVersion(version);
+
+          // Load sections
+          sectionProvider.setNewSectionsInCache(
+            -1,
+            version.sections!,
+          ); // -1 for new/imported versions
         }
-
-        // Load imported version data
-        final version = cipher!.versions.first;
-        versionProvider.setCurrentVersion(version);
-
-        // Load sections
-        sectionProvider.cacheAddSections(
-          -1,
-          version.sections!,
-        ); // -1 for new/imported versions
       }
     } else {
       // Load the cipher
@@ -160,7 +155,7 @@ class _EditCipherState extends State<EditCipher>
                 child: Column(
                   children: [
                     // Basic cipher info
-                    CipherForm(),
+                    CipherForm(cipherId: widget.cipherId ?? -1),
                   ],
                 ),
               ),
@@ -181,7 +176,11 @@ class _EditCipherState extends State<EditCipher>
             verticalDirection: VerticalDirection.up,
             children: [
               if (paletteIsOpen) ...[
-                ChordPalette(onClose: _togglePalette),
+                ChordPalette(
+                  cipherId: widget.cipherId ?? -1,
+                  versionId: widget.versionId ?? -1,
+                  onClose: _togglePalette,
+                ),
               ] else ...[
                 Row(
                   spacing: 8,
@@ -225,7 +224,7 @@ class _EditCipherState extends State<EditCipher>
                           }
                         } else {
                           if (_tabController.index == 0) {
-                            _saveCipher();
+                            _saveCipher(widget.cipherId!);
                           } else {
                             _saveVersion();
                             _saveSections();
@@ -324,9 +323,9 @@ class _EditCipherState extends State<EditCipher>
     }
   }
 
-  void _saveCipher() async {
+  void _saveCipher(int cipherId) async {
     try {
-      await context.read<CipherProvider>().saveCipher();
+      await context.read<CipherProvider>().saveCipher(cipherId);
       if (mounted) {
         Navigator.pop(context, true); // Close screen
         ScaffoldMessenger.of(context).showSnackBar(

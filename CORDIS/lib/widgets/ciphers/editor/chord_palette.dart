@@ -9,10 +9,16 @@ import 'package:cordis/widgets/ciphers/editor/sections/chord_token.dart';
 double _fontSize = 20;
 
 class ChordPalette extends StatefulWidget {
+  final int cipherId;
+  final int versionId;
   final VoidCallback onClose;
 
-  const ChordPalette({super.key, required this.onClose});
-
+  const ChordPalette({
+    super.key,
+    required this.cipherId,
+    required this.versionId,
+    required this.onClose,
+  });
   @override
   State<ChordPalette> createState() => _ChordPaletteState();
 }
@@ -52,7 +58,7 @@ class _ChordPaletteState extends State<ChordPalette> {
         final colorScheme = theme.colorScheme;
         final musicKey =
             versionProvider.currentVersion.transposedKey ??
-            cipherProvider.currentCipher.musicKey;
+            cipherProvider.getCipherFromCache(widget.cipherId)!.musicKey;
         final chords = ChordHelper().getChordsForKey(musicKey);
 
         return Container(

@@ -196,11 +196,8 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
 
       // Clear cloud playlists only after successful processing
       playlistProvider.clearCloudPlaylists();
-
       // Clear versions and current cipher after sync
       versionProvider.clearVersions();
-
-      cipherProvider.clearCurrentCipher();
     } catch (generalError) {
       if (kDebugMode) {
         print('Critical sync error: $generalError');
@@ -241,7 +238,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
             isLocal: false,
           ),
         );
-        final cipherId = cipherProvider.getCachedCipherIdByTitle(
+        final cipherId = cipherProvider.getLocalCipherIdByTitle(
           versionDto.title,
         );
         await versionProvider.upsertVersion(

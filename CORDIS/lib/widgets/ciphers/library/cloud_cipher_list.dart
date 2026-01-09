@@ -57,16 +57,17 @@ class _CloudCipherListState extends State<CloudCipherList> {
             return const SizedBox.shrink();
           }
 
-          final cipher = cipherProvider.filteredCloudVersions[index];
+          final versionDto = cipherProvider.filteredCloudVersions.values
+              .elementAt(index);
           return GestureDetector(
             onLongPress: () => {
               selectionProvider.enableSelectionMode(),
-              selectionProvider.toggleItemSelection(cipher),
+              selectionProvider.toggleItemSelection(versionDto),
             },
             child: CloudCipherCard(
-              version: cipher,
+              version: versionDto,
               onTap: () {
-                selectionProvider.toggleItemSelection(cipher);
+                selectionProvider.toggleItemSelection(versionDto);
               },
             ),
           );

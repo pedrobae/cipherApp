@@ -61,7 +61,11 @@ class SectionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void cacheAddSections(dynamic versionKey, Map<String, Section> sections) {
+  // Set new sections in cache (used when importing)
+  void setNewSectionsInCache(
+    dynamic versionKey,
+    Map<String, Section> sections,
+  ) {
     _sections[versionKey] = sections;
     notifyListeners();
   }

@@ -1,11 +1,11 @@
-import 'dart:async';
-import 'package:cordis/models/domain/cipher/cipher.dart';
 import 'package:cordis/providers/cipher_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class CipherForm extends StatefulWidget {
-  const CipherForm({super.key});
+  final int cipherId;
+
+  const CipherForm({super.key, required this.cipherId});
 
   @override
   State<CipherForm> createState() => _CipherFormState();
@@ -19,11 +19,6 @@ class _CipherFormState extends State<CipherForm> {
   final languageController = TextEditingController();
   final tagsController = TextEditingController();
 
-  Timer? _debounceTimer;
-
-  Cipher? _lastSyncedCipher;
-  bool _hasInitialized = false;
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -33,25 +28,21 @@ class _CipherFormState extends State<CipherForm> {
   void _syncWithProviderData() {
     if (mounted) {
       final cipherProvider = context.read<CipherProvider>();
-      final cipher = cipherProvider.currentCipher;
+      final cipher = cipherProvider.getCipherFromCache(widget.cipherId);
 
       // Only sync if cipher has changed or if we haven't initialized yet
-      if (!_hasInitialized || _lastSyncedCipher?.id != cipher.id) {
-        titleController.text = cipher.title;
-        authorController.text = cipher.author;
-        tempoController.text = cipher.tempo;
-        musicKeyController.text = cipher.musicKey;
-        languageController.text = cipher.language;
-        tagsController.text = cipher.tags.join(', ');
-        _hasInitialized = true;
-        _lastSyncedCipher = cipher;
-      }
+
+      titleController.text = cipher?.title ?? '';
+      authorController.text = cipher?.author ?? '';
+      tempoController.text = cipher?.tempo ?? '';
+      musicKeyController.text = cipher?.musicKey ?? '';
+      languageController.text = cipher?.language ?? '';
+      tagsController.text = cipher?.tags.join(', ') ?? '';
     }
   }
 
   @override
   void dispose() {
-    _debounceTimer?.cancel();
     titleController.dispose();
     authorController.dispose();
     tempoController.dispose();
@@ -171,14 +162,11 @@ class _CipherFormState extends State<CipherForm> {
 
     return TextFormField(
       onChanged: (value) {
-        _debounceTimer?.cancel();
-        _debounceTimer = Timer(const Duration(milliseconds: 300), () {
-          if (field != 'tags') {
-            cipherProvider.cacheCipherUpdates(field, value);
-          } else {
-            cipherProvider.cacheCipherTagUpdates(value);
-          }
-        });
+        if (field != 'tags') {
+          cipherProvider.cacheCipherUpdates(widget.cipherId, field, value);
+        } else {
+          cipherProvider.cacheCipherTagUpdates(widget.cipherId, value);
+        }
       },
       controller: controller,
       validator: validator,

@@ -164,7 +164,7 @@ class _LocalCipherListState extends State<LocalCipherList> {
 
           final cipher = cipherProvider.filteredLocalCiphers[index];
           return CipherCard(
-            cipher: cipher,
+            cipher: cipher!,
             onTap: widget.onTap,
             onLongPress: widget.onLongPress,
           );

@@ -1,3 +1,5 @@
+import 'package:cordis/helpers/codes.dart';
+
 class TextSection {
   final int? id;
   final String firebaseId;
@@ -22,7 +24,7 @@ class TextSection {
     required int position,
   }) {
     return TextSection(
-      firebaseId: _randomFirebaseId(),
+      firebaseId: generateFirebaseId(),
       playlistId: playlistId,
       title: title,
       contentText: contentText,
@@ -34,7 +36,7 @@ class TextSection {
     return TextSection(
       id: json['id'],
       playlistId: json['playlist_id'],
-      firebaseId: json['firebase_id'] ?? _randomFirebaseId(),
+      firebaseId: json['firebase_id'] ?? generateFirebaseId(),
       title: json['title'],
       contentText: json['content'],
       position: json['position'] ?? 0,
@@ -55,9 +57,4 @@ class TextSection {
   Map<String, String> toFirestore() {
     return {'title': title, 'content': contentText, 'id': firebaseId};
   }
-}
-
-String _randomFirebaseId() {
-  // TODO
-  return DateTime.now().millisecondsSinceEpoch.toString();
 }

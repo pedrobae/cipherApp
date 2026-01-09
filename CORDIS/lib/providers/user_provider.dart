@@ -11,7 +11,7 @@ class UserProvider extends ChangeNotifier {
   UserProvider();
 
   List<User> _knownUsers = [];
-  List<User> _searchResults = [];
+  List<User> _filteredUsers = [];
   String? _error;
   bool _hasInitialized = false;
   bool _isLoading = false;
@@ -19,7 +19,7 @@ class UserProvider extends ChangeNotifier {
 
   // Getters
   List<User> get knownUsers => _knownUsers;
-  List<User> get searchResults => _searchResults;
+  List<User> get searchResults => _filteredUsers;
   String? get error => _error;
   bool get hasInitialized => _hasInitialized;
   bool get isLoading => _isLoading;
@@ -105,9 +105,9 @@ class UserProvider extends ChangeNotifier {
   void searchUsers(String value) async {
     String searchValue = value.toLowerCase();
     if (searchValue.isEmpty) {
-      _searchResults = _knownUsers;
+      _filteredUsers = _knownUsers;
     } else {
-      _searchResults = _knownUsers
+      _filteredUsers = _knownUsers
           .where(
             (user) =>
                 user.username.toLowerCase().contains(searchValue) ||
@@ -156,12 +156,12 @@ class UserProvider extends ChangeNotifier {
 
   // Clears search users
   void clearSearchResults() async {
-    _searchResults = _knownUsers;
+    _filteredUsers = _knownUsers;
   }
 
   void clearCache() {
     _knownUsers = [];
-    _searchResults = [];
+    _filteredUsers = [];
     _error = null;
     _hasInitialized = false;
     _isLoading = false;

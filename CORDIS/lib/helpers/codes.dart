@@ -9,3 +9,8 @@ String generateShareCode() {
     (index) => chars[random.nextInt(chars.length)],
   ).join();
 }
+
+String generateFirebaseId() {
+  // TODO
+  return DateTime.now().millisecondsSinceEpoch.toString();
+}

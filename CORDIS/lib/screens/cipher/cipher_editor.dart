@@ -85,7 +85,10 @@ class _EditCipherState extends State<EditCipher>
         versionProvider.setCurrentVersion(version);
 
         // Load sections
-        sectionProvider.setSections(version.sections!);
+        sectionProvider.cacheAddSections(
+          -1,
+          version.sections!,
+        ); // -1 for new/imported versions
       }
     } else {
       // Load the cipher
@@ -131,120 +134,129 @@ class _EditCipherState extends State<EditCipher>
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(_getAppBarTitle()),
-        backgroundColor: colorScheme.surface,
-        foregroundColor: colorScheme.onSurface,
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: [
-            const Tab(text: 'Cifra', icon: Icon(Icons.info_outline)),
-            if (!_isNewCipher || widget.importedCipher) ...[
-              const Tab(text: 'Versão', icon: Icon(Icons.music_note)),
-            ],
-          ],
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          // Basic Info Tab
-          SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                // Basic cipher info
-                CipherForm(),
+    return Consumer<SectionProvider>(
+      builder: (context, sectionProvider, child) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(_getAppBarTitle()),
+            backgroundColor: colorScheme.surface,
+            foregroundColor: colorScheme.onSurface,
+            bottom: TabBar(
+              controller: _tabController,
+              tabs: [
+                const Tab(text: 'Cifra', icon: Icon(Icons.info_outline)),
+                if (!_isNewCipher || widget.importedCipher) ...[
+                  const Tab(text: 'Versão', icon: Icon(Icons.music_note)),
+                ],
               ],
             ),
           ),
-          if (!_isNewCipher || widget.importedCipher) ...[
-            // Content Tab
-            SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: VersionForm(),
-            ),
-          ],
-        ],
-      ),
-      floatingActionButton: Column(
-        spacing: 8,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        verticalDirection: VerticalDirection.up,
-        children: [
-          if (paletteIsOpen) ...[
-            ChordPalette(onClose: _togglePalette),
-          ] else ...[
-            Row(
-              spacing: 8,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (!_isNewCipher)
-                  FloatingActionButton(
-                    heroTag: 'delete',
-                    onPressed: () {
-                      if (_tabController.index == 0) {
-                        _showDeleteDialog(true);
-                      } else {
-                        _showDeleteDialog(false);
-                      }
-                    },
-                    backgroundColor: colorScheme.errorContainer,
-                    child: Icon(
-                      Icons.delete,
-                      color: colorScheme.onErrorContainer,
-                    ),
+          body: TabBarView(
+            controller: _tabController,
+            children: [
+              // Basic Info Tab
+              SingleChildScrollView(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    // Basic cipher info
+                    CipherForm(),
+                  ],
+                ),
+              ),
+              if (!_isNewCipher || widget.importedCipher) ...[
+                // Content Tab
+                SingleChildScrollView(
+                  padding: const EdgeInsets.all(16.0),
+                  child: VersionForm(
+                    versionId: _isNewCipher ? -1 : widget.versionId,
                   ),
-                FloatingActionButton.extended(
-                  heroTag: 'save',
-                  onPressed: () async {
-                    if (widget.importedCipher) {
-                      final cipherId = await _createCipher();
-                      if (cipherId != null) {
-                        final versionId = await _createVersion(cipherId);
-                        if (versionId != null) {
-                          await _createSections(versionId);
-                        }
-                      }
-                    } else if (_isNewCipher) {
-                      _createCipher();
-                    } else if (_isNewVersion) {
-                      final versionId = await _createVersion(widget.cipherId!);
-                      if (versionId != null) {
-                        await _createSections(versionId);
-                      }
-                    } else {
-                      if (_tabController.index == 0) {
-                        _saveCipher();
-                      } else {
-                        _saveVersion();
-                        _saveSections();
-                      }
-                    }
-                  },
-                  backgroundColor: colorScheme.primary,
-                  label: Text(
-                    'Salvar',
-                    style: theme.textTheme.labelLarge!.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.onPrimary,
-                    ),
-                  ),
-                  icon: Icon(Icons.save, color: colorScheme.onPrimary),
                 ),
               ],
-            ),
-          ],
-          // Palette FAB
-          if (_tabController.index == 1 && !_tabController.indexIsChanging) ...[
-            FloatingActionButton(
-              onPressed: _togglePalette,
-              child: Icon(Icons.palette),
-            ),
-          ],
-        ],
-      ),
+            ],
+          ),
+          floatingActionButton: Column(
+            spacing: 8,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            verticalDirection: VerticalDirection.up,
+            children: [
+              if (paletteIsOpen) ...[
+                ChordPalette(onClose: _togglePalette),
+              ] else ...[
+                Row(
+                  spacing: 8,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (!_isNewCipher)
+                      FloatingActionButton(
+                        heroTag: 'delete',
+                        onPressed: () {
+                          if (_tabController.index == 0) {
+                            _showDeleteDialog(true);
+                          } else {
+                            _showDeleteDialog(false);
+                          }
+                        },
+                        backgroundColor: colorScheme.errorContainer,
+                        child: Icon(
+                          Icons.delete,
+                          color: colorScheme.onErrorContainer,
+                        ),
+                      ),
+                    FloatingActionButton.extended(
+                      heroTag: 'save',
+                      onPressed: () async {
+                        if (widget.importedCipher) {
+                          final cipherId = await _createCipher();
+                          if (cipherId != null) {
+                            final versionId = await _createVersion(cipherId);
+                            if (versionId != null) {
+                              await _createSections(versionId, sectionProvider);
+                            }
+                          }
+                        } else if (_isNewCipher) {
+                          _createCipher();
+                        } else if (_isNewVersion) {
+                          final versionId = await _createVersion(
+                            widget.cipherId!,
+                          );
+                          if (versionId != null) {
+                            await _createSections(versionId, sectionProvider);
+                          }
+                        } else {
+                          if (_tabController.index == 0) {
+                            _saveCipher();
+                          } else {
+                            _saveVersion();
+                            _saveSections();
+                          }
+                        }
+                      },
+                      backgroundColor: colorScheme.primary,
+                      label: Text(
+                        'Salvar',
+                        style: theme.textTheme.labelLarge!.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onPrimary,
+                        ),
+                      ),
+                      icon: Icon(Icons.save, color: colorScheme.onPrimary),
+                    ),
+                  ],
+                ),
+              ],
+              // Palette FAB
+              if (_tabController.index == 1 &&
+                  !_tabController.indexIsChanging) ...[
+                FloatingActionButton(
+                  onPressed: _togglePalette,
+                  child: Icon(Icons.palette),
+                ),
+              ],
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -294,10 +306,12 @@ class _EditCipherState extends State<EditCipher>
     return versionId;
   }
 
-  Future<void> _createSections(int versionId) async {
+  Future<void> _createSections(
+    int versionId,
+    SectionProvider sectionProvider,
+  ) async {
     try {
-      context.read<SectionProvider>().setCurrentVersionId(versionId);
-      await context.read<SectionProvider>().saveSections();
+      await sectionProvider.saveSections(versionId);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -354,7 +368,9 @@ class _EditCipherState extends State<EditCipher>
 
   void _saveSections() async {
     try {
-      await context.read<SectionProvider>().saveSections();
+      await context.read<SectionProvider>().saveSections(
+        _isNewCipher ? -1 : widget.versionId,
+      );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Seções salvas com sucesso!')),

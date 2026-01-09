@@ -11,7 +11,9 @@ import 'package:cordis/widgets/ciphers/editor/sections/token_content_editor.dart
 import 'package:cordis/utils/section_constants.dart';
 
 class VersionForm extends StatefulWidget {
-  const VersionForm({super.key});
+  final dynamic versionId;
+
+  const VersionForm({super.key, required this.versionId});
 
   @override
   State<VersionForm> createState() => _VersionFormState();
@@ -21,13 +23,16 @@ class _VersionFormState extends State<VersionForm> {
   Timer? _debounceTimer;
 
   void _addSection(
+    dynamic versionId,
     String sectionCode,
     SectionProvider sectionProvider,
     VersionProvider versionProvider, {
     String? sectionType,
     Color? customColor,
   }) {
-    final isNewSection = !sectionProvider.sections.containsKey(sectionCode);
+    final isNewSection = !sectionProvider
+        .getSections(versionId)
+        .containsKey(sectionCode);
 
     // Add section to song structure
     versionProvider.addSectionToStruct(sectionCode);
@@ -35,6 +40,7 @@ class _VersionFormState extends State<VersionForm> {
     // Add section to sections map if it's new
     if (isNewSection) {
       sectionProvider.cacheAddSection(
+        versionId,
         sectionCode,
         sectionType: sectionType,
         color: customColor,
@@ -54,6 +60,7 @@ class _VersionFormState extends State<VersionForm> {
       return;
     }
     sectionProvider.cacheDeleteSection(
+      widget.versionId,
       versionProvider.currentVersion.songStructure[index],
     );
   }
@@ -66,8 +73,12 @@ class _VersionFormState extends State<VersionForm> {
       context: context,
       builder: (context) => PresetSectionsDialog(
         sectionTypes: predefinedSectionTypes,
-        onAdd: (sectionKey) =>
-            _addSection(sectionKey, sectionProvider, versionProvider),
+        onAdd: (sectionKey) => _addSection(
+          widget.versionId,
+          sectionKey,
+          sectionProvider,
+          versionProvider,
+        ),
       ),
     );
   }
@@ -80,6 +91,7 @@ class _VersionFormState extends State<VersionForm> {
       context: context,
       builder: (context) => CustomSectionDialog(
         onAdd: (sectionKey, name, color) => _addSection(
+          widget.versionId,
           sectionKey,
           sectionProvider,
           versionProvider,
@@ -217,7 +229,9 @@ class _VersionFormState extends State<VersionForm> {
                         // Draggable Section Chips
                         ReorderableStructureChips(
                           songStructure: version.songStructure,
-                          sections: sectionProvider.sections,
+                          sections: sectionProvider.getSections(
+                            widget.versionId,
+                          ),
                           onReorder: (int oldIndex, int newIndex) {
                             versionProvider.cacheReorderedStructure(
                               oldIndex,
@@ -248,7 +262,10 @@ class _VersionFormState extends State<VersionForm> {
                   )
                 else
                   ...uniqueSections.map((sectionCode) {
-                    final section = sectionProvider.sections[sectionCode];
+                    final section = sectionProvider.getSection(
+                      widget.versionId,
+                      sectionCode,
+                    );
                     return TokenContentEditor(
                       section: section!,
                       onContentChanged: (newContent) {
@@ -257,6 +274,7 @@ class _VersionFormState extends State<VersionForm> {
                           const Duration(milliseconds: 300),
                           () {
                             sectionProvider.cacheUpdatedSection(
+                              widget.versionId,
                               sectionCode,
                               newContentText: newContent,
                             );

@@ -15,9 +15,8 @@ class CipherContentSection extends StatelessWidget {
     return Consumer3<VersionProvider, SectionProvider, LayoutSettingsProvider>(
       builder:
           (context, versionProvider, sectionProvider, layoutSettings, child) {
-            final filteredStructure = versionProvider
-                .currentVersion
-                .songStructure
+            final versionId = versionProvider.currentVersion.id;
+            final filteredStructure = versionProvider.currentSongStructure
                 .where(
                   (sectionCode) =>
                       ((layoutSettings.showAnnotations ||
@@ -27,15 +26,18 @@ class CipherContentSection extends StatelessWidget {
                 );
             final sectionCardList = filteredStructure.map((sectionCode) {
               String trimmedCode = sectionCode.trim();
-              if (!sectionProvider.sections.containsKey(trimmedCode)) {
+              final section = sectionProvider.getSection(
+                versionId,
+                trimmedCode,
+              );
+              if (section == null) {
                 return const SizedBox.shrink();
               }
               return CipherSectionCard(
-                sectionType: sectionProvider.sections[trimmedCode]!.contentType,
+                sectionType: section.contentType,
                 sectionCode: trimmedCode,
-                sectionText: sectionProvider.sections[trimmedCode]!.contentText,
-                sectionColor:
-                    sectionProvider.sections[trimmedCode]!.contentColor,
+                sectionText: section.contentText,
+                sectionColor: section.contentColor,
               );
             }).toList();
             return Card(

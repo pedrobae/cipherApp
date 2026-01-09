@@ -23,6 +23,8 @@ class VersionProvider extends ChangeNotifier {
   bool get isSaving => _isSaving;
   String? get error => _error;
 
+  List<String> get currentSongStructure => _currentVersion.songStructure;
+
   /// Checks if a version exists locally by its Firebase ID
   /// Returns the local id if found, otherwise null
   Future<int?> getLocalIdByFirebaseId(String firebaseId) async {

@@ -7,9 +7,14 @@ import 'package:cordis/utils/section_constants.dart';
 import 'package:provider/provider.dart';
 
 class EditSectionDialog extends StatefulWidget {
-  final Section section;
+  final dynamic versionId;
+  final String sectionCode;
 
-  const EditSectionDialog({super.key, required this.section});
+  const EditSectionDialog({
+    super.key,
+    required this.sectionCode,
+    required this.versionId,
+  });
 
   @override
   State<EditSectionDialog> createState() => _EditSectionDialogState();
@@ -21,23 +26,24 @@ class _EditSectionDialogState extends State<EditSectionDialog> {
   late TextEditingController contentTextController;
   late Color contentColor;
   late Song _song;
+  late Section? section;
   Map<String, Color> availableColors = {};
 
   @override
   void initState() {
-    _song = Song.fromChordPro(widget.section.contentText);
-
-    contentCodeController = TextEditingController(
-      text: widget.section.contentCode,
+    section = context.read<SectionProvider>().getSection(
+      widget.versionId,
+      widget.sectionCode,
     );
+    _song = Song.fromChordPro(section!.contentText);
 
-    contentTypeController = TextEditingController(
-      text: widget.section.contentType,
-    );
+    contentCodeController = TextEditingController(text: widget.sectionCode);
+
+    contentTypeController = TextEditingController(text: section!.contentType);
 
     contentTextController = TextEditingController(text: _song.generateLyrics());
 
-    contentColor = widget.section.contentColor;
+    contentColor = section!.contentColor;
 
     List<Color> presetColors = [];
     for (var entry in defaultSectionColors.entries) {
@@ -174,16 +180,17 @@ class _EditSectionDialogState extends State<EditSectionDialog> {
 
     // Update the section with new values
     context.read<SectionProvider>().cacheUpdatedSection(
-      widget.section.contentCode,
+      widget.versionId,
+      widget.sectionCode,
       newContentCode: code,
       newContentType: type,
       newContentText: newContent,
       newColor: color,
     );
     // If the content code has changed, update the song structure accordingly
-    if (code != null && code != widget.section.contentCode) {
+    if (code != null && code != widget.sectionCode) {
       context.read<VersionProvider>().updateSectionCodeInStruct(
-        oldCode: widget.section.contentCode,
+        oldCode: widget.sectionCode,
         newCode: code,
       );
     }
@@ -191,10 +198,11 @@ class _EditSectionDialogState extends State<EditSectionDialog> {
 
   void _deleteSection() {
     context.read<SectionProvider>().cacheDeleteSection(
-      widget.section.contentCode,
+      widget.versionId,
+      widget.sectionCode,
     );
     context.read<VersionProvider>().removeSectionFromStructByCode(
-      widget.section.contentCode,
+      widget.sectionCode,
     );
   }
 }

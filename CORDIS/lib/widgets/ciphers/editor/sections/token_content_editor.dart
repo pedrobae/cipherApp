@@ -120,7 +120,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
                             )
                           : const SizedBox.shrink(),
                       IconButton(
-                        onPressed: () => _openEditSectionDialog(widget.section),
+                        onPressed: () => _openEditSectionDialog(),
                         icon: const Icon(Icons.edit),
                         tooltip: 'Editar seção',
                       ),
@@ -624,10 +624,13 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
     return wordOffsetX;
   }
 
-  void _openEditSectionDialog(Section section) {
+  void _openEditSectionDialog() {
     showDialog(
       context: context,
-      builder: (context) => EditSectionDialog(section: section),
+      builder: (context) => EditSectionDialog(
+        versionId: widget.section.versionId,
+        sectionCode: widget.section.contentCode,
+      ),
     );
   }
 

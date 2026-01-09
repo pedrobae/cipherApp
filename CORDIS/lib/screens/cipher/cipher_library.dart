@@ -151,7 +151,7 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen>
                       onSearchChanged: (value) {
                         _tabController.index == 0
                             ? cipherProvider.searchLocalCiphers(value)
-                            : cipherProvider.searchCachedCloudCiphers(value);
+                            : cipherProvider.searchCachedCloudVersions(value);
                       },
                       hint: 'Procure Cifras...',
                       title: widget.selectionMode
@@ -187,7 +187,7 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen>
   }
 
   void _searchCloudCiphers() {
-    _cipherProvider.searchCachedCloudCiphers(_searchController.text);
+    _cipherProvider.searchCachedCloudVersions(_searchController.text);
   }
 
   void onTapCipherVersion(

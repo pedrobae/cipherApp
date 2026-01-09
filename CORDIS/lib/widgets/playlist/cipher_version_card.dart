@@ -37,7 +37,7 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
       final sectionProvider = context.read<SectionProvider>();
 
       // Ensure the cipher is loaded (loads all ciphers if not already loaded)
-      cipherProvider.loadCiphers();
+      cipherProvider.loadLocalCiphers();
 
       // Ensure the specific version is loaded
       if (!versionProvider.isVersionCached(widget.versionId)) {
@@ -71,7 +71,7 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
   Widget build(BuildContext context) {
     return Consumer<VersionProvider>(
       builder: (context, versionProvider, child) {
-        final version = versionProvider.getCachedVersion(widget.versionId);
+        final version = versionProvider.getVersionById(widget.versionId);
 
         // If version is not cached yet, show loading indicator
         if (version == null) {

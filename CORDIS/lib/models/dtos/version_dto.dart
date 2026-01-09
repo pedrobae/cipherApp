@@ -106,4 +106,36 @@ class VersionDto {
       cipherId: cipherId ?? -1,
     );
   }
+
+  VersionDto copyWith({
+    String? firebaseId,
+    String? title,
+    String? author,
+    String? tempo,
+    String? bpm,
+    String? language,
+    List<String>? tags,
+    String? versionName,
+    String? originalKey,
+    String? transposedKey,
+    String? songStructure,
+    DateTime? updatedAt,
+    Map<String, Map<String, String>>? sections,
+  }) {
+    return VersionDto(
+      firebaseId: firebaseId ?? this.firebaseId,
+      title: title ?? this.title,
+      author: author ?? this.author,
+      tempo: tempo ?? this.tempo,
+      bpm: bpm ?? this.bpm,
+      language: language ?? this.language,
+      tags: tags ?? this.tags,
+      versionName: versionName ?? this.versionName,
+      originalKey: originalKey ?? this.originalKey,
+      transposedKey: transposedKey ?? this.transposedKey,
+      songStructure: songStructure ?? this.songStructure,
+      updatedAt: updatedAt ?? this.updatedAt,
+      sections: sections ?? this.sections,
+    );
+  }
 }

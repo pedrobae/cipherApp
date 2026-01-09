@@ -1,9 +1,10 @@
-import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
+import 'package:cordis/providers/version_provider.dart';
 import 'package:cordis/widgets/ciphers/library/cloud_cipher_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+// TODO: REFACTOR THIS WIDGET - VERSION PROVIDER USAGE, ETC.
 class CloudCipherList extends StatefulWidget {
   final bool isAddingToPlaylist;
   final int? playlistId;
@@ -30,35 +31,34 @@ class _CloudCipherListState extends State<CloudCipherList> {
   }
 
   void _ensureDataLoad() {
-    final cipherProvider = Provider.of<CipherProvider>(context, listen: false);
+    final vp = Provider.of<VersionProvider>(context, listen: false);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        cipherProvider.loadCloudCiphers();
+        vp.loadCloudVersions();
       }
     });
   }
 
   Widget _buildCiphersList(
-    CipherProvider cipherProvider,
+    VersionProvider vp,
     SelectionProvider selectionProvider,
   ) {
     return RefreshIndicator(
       onRefresh: () async {
-        await cipherProvider.loadCloudCiphers(forceReload: true);
+        await vp.loadCloudVersions(forceReload: true);
       },
       child: ListView.builder(
         padding: const EdgeInsets.all(4),
         cacheExtent: 200,
         physics: const AlwaysScrollableScrollPhysics(),
-        itemCount: cipherProvider.filteredCloudVersions.length,
+        itemCount: vp.filteredCloudVersions.length,
         itemBuilder: (context, index) {
           // Add bounds checking
-          if (index >= cipherProvider.filteredCloudVersions.length) {
+          if (index >= vp.filteredCloudVersions.length) {
             return const SizedBox.shrink();
           }
 
-          final versionDto = cipherProvider.filteredCloudVersions.values
-              .elementAt(index);
+          final versionDto = vp.filteredCloudVersions.values.elementAt(index);
           return GestureDetector(
             onLongPress: () => {
               selectionProvider.enableSelectionMode(),
@@ -76,10 +76,7 @@ class _CloudCipherListState extends State<CloudCipherList> {
     );
   }
 
-  Widget _buildBatchDownloadButton(
-    SelectionProvider selectionProvider,
-    CipherProvider cipherProvider,
-  ) {
+  Widget _buildBatchDownloadButton(SelectionProvider selectionProvider) {
     return Positioned(
       bottom: 4,
       left: 8,
@@ -140,25 +137,24 @@ class _CloudCipherListState extends State<CloudCipherList> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Consumer2<CipherProvider, SelectionProvider>(
-      builder: (context, cipherProvider, selectionProvider, child) {
+    return Consumer2<VersionProvider, SelectionProvider>(
+      builder: (context, vp, selectionProvider, child) {
         // Handle loading state
-        if (cipherProvider.isLoadingCloud) {
+        if (vp.isLoadingCloud) {
           return const Center(child: CircularProgressIndicator());
         }
         // Handle error state
-        if (cipherProvider.error != null) {
+        if (vp.error != null) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(Icons.error_outline, size: 64, color: colorScheme.error),
                 const SizedBox(height: 16),
-                Text('${cipherProvider.error}'),
+                Text('${vp.error}'),
                 const SizedBox(height: 16),
                 ElevatedButton(
-                  onPressed: () =>
-                      cipherProvider.loadCloudCiphers(forceReload: true),
+                  onPressed: () => vp.loadCloudVersions(forceReload: true),
                   child: const Text('Tentar Novamente'),
                 ),
               ],
@@ -166,7 +162,7 @@ class _CloudCipherListState extends State<CloudCipherList> {
           );
         }
 
-        if (cipherProvider.filteredCloudVersions.isEmpty) {
+        if (vp.filteredCloudVersions.isEmpty) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -211,9 +207,9 @@ class _CloudCipherListState extends State<CloudCipherList> {
         // Display cipher list
         return Stack(
           children: [
-            _buildCiphersList(cipherProvider, selectionProvider),
+            _buildCiphersList(vp, selectionProvider),
             // Always show the button for animation to work
-            _buildBatchDownloadButton(selectionProvider, cipherProvider),
+            _buildBatchDownloadButton(selectionProvider),
           ],
         );
       },

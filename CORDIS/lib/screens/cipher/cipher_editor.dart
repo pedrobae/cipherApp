@@ -76,7 +76,7 @@ class _EditCipherState extends State<EditCipher>
 
           // Load imported version data
           final version = cipher.versions.first;
-          versionProvider.setCurrentVersion(version);
+          versionProvider.setNewVersionInCache(version);
 
           // Load sections
           sectionProvider.setNewSectionsInCache(
@@ -88,15 +88,11 @@ class _EditCipherState extends State<EditCipher>
     } else {
       // Load the cipher
       await cipherProvider.loadCipher(widget.cipherId!);
-      if (_isNewVersion) {
-        // For new version, clear any existing data
-        versionProvider.clearCache();
-      } else {
-        // Load the version
-        await versionProvider.loadCurrentVersion(widget.versionId!);
-        // Load sections
-        await sectionProvider.loadSections(widget.versionId!);
-      }
+
+      // Load the version
+      await versionProvider.loadCurrentVersion(widget.versionId!);
+      // Load sections
+      await sectionProvider.loadSections(widget.versionId!);
     }
   }
 

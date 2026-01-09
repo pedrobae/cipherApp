@@ -190,6 +190,7 @@ class _EditSectionDialogState extends State<EditSectionDialog> {
     // If the content code has changed, update the song structure accordingly
     if (code != null && code != widget.sectionCode) {
       context.read<VersionProvider>().updateSectionCodeInStruct(
+        widget.versionId,
         oldCode: widget.sectionCode,
         newCode: code,
       );
@@ -202,6 +203,7 @@ class _EditSectionDialogState extends State<EditSectionDialog> {
       widget.sectionCode,
     );
     context.read<VersionProvider>().removeSectionFromStructByCode(
+      widget.versionId,
       widget.sectionCode,
     );
   }

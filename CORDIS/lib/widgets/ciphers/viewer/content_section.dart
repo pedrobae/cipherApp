@@ -8,15 +8,16 @@ import 'package:cordis/utils/section_helper.dart';
 import 'section_card.dart';
 
 class CipherContentSection extends StatelessWidget {
-  const CipherContentSection({super.key});
+  final int versionId;
+  const CipherContentSection({super.key, required this.versionId});
 
   @override
   Widget build(BuildContext context) {
     return Consumer3<VersionProvider, SectionProvider, LayoutSettingsProvider>(
       builder:
           (context, versionProvider, sectionProvider, layoutSettings, child) {
-            final versionId = versionProvider.currentVersion.id;
-            final filteredStructure = versionProvider.currentSongStructure
+            final filteredStructure = versionProvider
+                .getSongStructure(versionId)
                 .where(
                   (sectionCode) =>
                       ((layoutSettings.showAnnotations ||
@@ -36,8 +37,12 @@ class CipherContentSection extends StatelessWidget {
               return CipherSectionCard(
                 sectionType: section.contentType,
                 sectionCode: trimmedCode,
-                sectionText: section.contentText,
-                sectionColor: section.contentColor,
+                sectionText: sectionProvider
+                    .getSections(versionId)[trimmedCode]!
+                    .contentText,
+                sectionColor: sectionProvider
+                    .getSections(versionId)[trimmedCode]!
+                    .contentColor,
               );
             }).toList();
             return Card(

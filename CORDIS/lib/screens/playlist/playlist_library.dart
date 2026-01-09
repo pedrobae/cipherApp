@@ -196,8 +196,6 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
 
       // Clear cloud playlists only after successful processing
       playlistProvider.clearCloudPlaylists();
-      // Clear versions and current cipher after sync
-      versionProvider.clearVersions();
     } catch (generalError) {
       if (kDebugMode) {
         print('Critical sync error: $generalError');

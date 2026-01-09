@@ -225,7 +225,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       await dbHelper.resetDatabase();
 
       // Check if widget is still mounted before using context
-      if (mounted) await context.read<CipherProvider>().loadCiphers();
+      if (mounted) await context.read<CipherProvider>().loadLocalCiphers();
 
       if (mounted) await context.read<PlaylistProvider>().loadLocalPlaylists();
 
@@ -273,7 +273,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       // Force reload all providers from database
       await Future.wait([
-        context.read<CipherProvider>().loadCiphers(forceReload: true),
+        context.read<CipherProvider>().loadLocalCiphers(forceReload: true),
         context.read<PlaylistProvider>().loadLocalPlaylists(),
         context.read<UserProvider>().loadUsers(),
       ]);

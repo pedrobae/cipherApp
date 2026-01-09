@@ -50,7 +50,7 @@ class _PlaylistPresentationScreenState
       );
 
       // Ensure all ciphers are loaded (loads all ciphers if not already loaded)
-      await cipherProvider.loadCiphers();
+      await cipherProvider.loadLocalCiphers();
 
       // Scroll to initial section if provided
       if (widget.initialSectionIndex != null) {

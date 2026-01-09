@@ -65,7 +65,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
       );
 
       // Ensure all ciphers are loaded (loads all ciphers if not already loaded)
-      await cipherProvider.loadCiphers();
+      await cipherProvider.loadLocalCiphers();
     });
   }
 
@@ -448,7 +448,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
     for (final item in playlist.items) {
       switch (item.type) {
         case 'cipher_version':
-          final version = versionProvider.getCachedVersion(item.contentId!);
+          final version = versionProvider.getVersionById(item.contentId!);
           final cipher = cipherProvider.getCipherFromCache(
             version?.cipherId ?? -1,
           );

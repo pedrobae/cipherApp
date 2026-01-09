@@ -81,7 +81,7 @@ class _CipherViewerState extends State<CipherViewer>
     showModalBottomSheet(
       context: context,
       builder: (context) => VersionSelectorBottomSheet(
-        currentVersion: versionProvider.currentVersion,
+        currentVersion: versionProvider.getVersionById(widget.versionId)!,
         versions: cipherProvider.getCipherFromCache(widget.cipherId)!.versions,
         onVersionSelected: _selectVersion,
         onNewVersion: _addNewVersion,
@@ -170,7 +170,9 @@ class _CipherViewerState extends State<CipherViewer>
             }
 
             final cipher = cipherProvider.getCipherFromCache(widget.cipherId);
-            final currentVersion = versionProvider.currentVersion;
+            final currentVersion = versionProvider.getVersionById(
+              widget.versionId,
+            )!;
             final hasVersions = cipher!.versions.isNotEmpty;
 
             // Set original key for transposer
@@ -236,7 +238,11 @@ class _CipherViewerState extends State<CipherViewer>
                         ),
                         // Cipher content section
                         if (currentVersion.songStructure.isNotEmpty) ...[
-                          Expanded(child: CipherContentSection()),
+                          Expanded(
+                            child: CipherContentSection(
+                              versionId: currentVersion.id!,
+                            ),
+                          ),
                         ],
                       ],
                     )

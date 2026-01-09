@@ -37,7 +37,7 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
       final cipherProvider = context.read<CipherProvider>();
 
       // Ensure all ciphers are loaded (loads all ciphers if not already loaded)
-      cipherProvider.loadCiphers();
+      cipherProvider.loadLocalCiphers();
     });
   }
 
@@ -45,7 +45,7 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
   Widget build(BuildContext context) {
     return Consumer<VersionProvider>(
       builder: (context, versionProvider, child) {
-        final version = versionProvider.getCachedVersion(widget.versionId);
+        final version = versionProvider.getVersionById(widget.versionId);
 
         // If version is not cached yet, show loading indicator
         if (version == null) {

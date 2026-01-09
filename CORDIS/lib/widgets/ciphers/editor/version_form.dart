@@ -35,7 +35,7 @@ class _VersionFormState extends State<VersionForm> {
         .containsKey(sectionCode);
 
     // Add section to song structure
-    versionProvider.addSectionToStruct(sectionCode);
+    versionProvider.addSectionToStruct(versionId, sectionCode);
 
     // Add section to sections map if it's new
     if (isNewSection) {
@@ -53,15 +53,20 @@ class _VersionFormState extends State<VersionForm> {
     VersionProvider versionProvider,
     SectionProvider sectionProvider,
   ) {
-    versionProvider.removeSectionFromStruct(index);
-    if (versionProvider.currentVersion.songStructure.contains(
-      versionProvider.currentVersion.songStructure[index],
-    )) {
+    versionProvider.removeSectionFromStruct(widget.versionId, index);
+    if (versionProvider
+        .getVersionById(widget.versionId)!
+        .songStructure
+        .contains(
+          versionProvider
+              .getVersionById(widget.versionId)!
+              .songStructure[index],
+        )) {
       return;
     }
     sectionProvider.cacheDeleteSection(
       widget.versionId,
-      versionProvider.currentVersion.songStructure[index],
+      versionProvider.getVersionById(widget.versionId)!.songStructure[index],
     );
   }
 
@@ -108,7 +113,7 @@ class _VersionFormState extends State<VersionForm> {
     return Consumer3<SectionProvider, VersionProvider, CipherProvider>(
       builder:
           (context, sectionProvider, versionProvider, cipherProvider, child) {
-            final version = versionProvider.currentVersion;
+            final version = versionProvider.getVersionById(widget.versionId)!;
 
             final uniqueSections = version.songStructure.toSet().toList();
 
@@ -141,8 +146,11 @@ class _VersionFormState extends State<VersionForm> {
                                   border: OutlineInputBorder(),
                                   prefixIcon: Icon(Icons.queue_music),
                                 ),
-                                onChanged: (name) => versionProvider
-                                    .cacheUpdatedVersion(newVersionName: name),
+                                onChanged: (name) =>
+                                    versionProvider.cacheUpdatedVersion(
+                                      widget.versionId,
+                                      newVersionName: name,
+                                    ),
                                 validator: (value) {
                                   if (value == null || value.trim().isEmpty) {
                                     return 'Nome da versão é obrigatório';
@@ -158,8 +166,11 @@ class _VersionFormState extends State<VersionForm> {
                                   labelText: 'Tom',
                                   border: OutlineInputBorder(),
                                 ),
-                                onChanged: (key) => versionProvider
-                                    .cacheUpdatedVersion(newTransposedKey: key),
+                                onChanged: (key) =>
+                                    versionProvider.cacheUpdatedVersion(
+                                      widget.versionId,
+                                      newTransposedKey: key,
+                                    ),
                               ),
                             ),
                           ],
@@ -234,6 +245,7 @@ class _VersionFormState extends State<VersionForm> {
                           ),
                           onReorder: (int oldIndex, int newIndex) {
                             versionProvider.cacheReorderedStructure(
+                              widget.versionId,
                               oldIndex,
                               newIndex,
                             );

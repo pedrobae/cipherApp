@@ -29,7 +29,8 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen>
     with TickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
-  late CipherProvider _cipherProvider;
+  late CipherProvider _cipherProvider; // To clear search on dispose
+  late VersionProvider _versionProvider;
 
   @override
   void initState() {
@@ -41,6 +42,7 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen>
   void didChangeDependencies() {
     super.didChangeDependencies();
     _cipherProvider = Provider.of<CipherProvider>(context, listen: false);
+    _versionProvider = Provider.of<VersionProvider>(context, listen: false);
   }
 
   @override
@@ -151,7 +153,7 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen>
                       onSearchChanged: (value) {
                         _tabController.index == 0
                             ? cipherProvider.searchLocalCiphers(value)
-                            : cipherProvider.searchCachedCloudVersions(value);
+                            : versionProvider.searchCachedCloudVersions(value);
                       },
                       hint: 'Procure Cifras...',
                       title: widget.selectionMode
@@ -187,7 +189,7 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen>
   }
 
   void _searchCloudCiphers() {
-    _cipherProvider.searchCachedCloudVersions(_searchController.text);
+    _versionProvider.searchCachedCloudVersions(_searchController.text);
   }
 
   void onTapCipherVersion(

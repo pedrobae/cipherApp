@@ -1,49 +1,22 @@
 import 'dart:async';
-import 'package:cordis/models/dtos/version_dto.dart';
 import 'package:flutter/foundation.dart';
-import 'package:cordis/helpers/cloud_versions_cache.dart';
 import 'package:cordis/models/domain/cipher/cipher.dart';
-import 'package:cordis/repositories/cloud_version_repository.dart';
 import 'package:cordis/repositories/local_cipher_repository.dart';
 
 class CipherProvider extends ChangeNotifier {
   final LocalCipherRepository _cipherRepository = LocalCipherRepository();
-  final CloudVersionRepository _cloudVersionRepository =
-      CloudVersionRepository();
-
-  final CloudVersionsCache _cloudCache = CloudVersionsCache();
 
   CipherProvider() {
-    _initializeCloudCache();
     clearSearch();
-  }
-
-  Future<void> _initializeCloudCache() async {
-    _lastCloudLoad = await _cloudCache.loadLastCloudLoad();
-    _cloudVersions = Map.fromEntries(
-      (await _cloudCache.loadCloudVersions()).map(
-        (version) => MapEntry(version.firebaseId!, version),
-      ),
-    );
-    _filterCloudVersions();
-    notifyListeners();
   }
 
   Map<int, Cipher> _localCiphers = {};
   Map<int, Cipher> _filteredLocalCiphers = {};
-
-  Map<String, VersionDto> _cloudVersions = {};
-  Map<String, VersionDto> _filteredCloudVersions = {};
   bool _isLoading = false;
-  bool _isLoadingCloud = false;
   bool _isSaving = false;
   String? _error;
   String _searchTerm = '';
   bool _hasLoadedCiphers = false;
-  DateTime? _lastCloudLoad;
-
-  // Add debouncing for rapid calls
-  Timer? _loadTimer;
 
   // Getters
   Map<int, Cipher> get localCiphers => _localCiphers;
@@ -51,10 +24,6 @@ class CipherProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get isSaving => _isSaving;
   bool get hasLoadedCiphers => _hasLoadedCiphers;
-
-  Map<String, VersionDto> get cloudVersions => _cloudVersions;
-  Map<String, VersionDto> get filteredCloudVersions => _filteredCloudVersions;
-  bool get isLoadingCloud => _isLoadingCloud;
 
   String? get error => _error;
 
@@ -67,17 +36,7 @@ class CipherProvider extends ChangeNotifier {
         .id;
   }
 
-  VersionDto? getCloudVersionByFirebaseId(String firebaseId) {
-    return _cloudVersions[firebaseId];
-  }
-
   // ===== READ =====
-  /// Load all ciphers (local and cloud)
-  Future<void> loadCiphers({bool forceReload = false}) async {
-    await loadLocalCiphers(forceReload: forceReload);
-    await loadCloudCiphers(forceReload: forceReload);
-  }
-
   /// Load ciphers from local SQLite
   Future<void> loadLocalCiphers({bool forceReload = false}) async {
     if (_hasLoadedCiphers && !forceReload) return;
@@ -106,50 +65,6 @@ class CipherProvider extends ChangeNotifier {
     } finally {
       _isLoading = false;
       _hasLoadedCiphers = true;
-      notifyListeners();
-    }
-  }
-
-  /// Load public versions from Firestore
-  Future<void> loadCloudCiphers({bool forceReload = false}) async {
-    final now = DateTime.now();
-    if (_lastCloudLoad != null &&
-        now.difference(_lastCloudLoad!).inDays < 7 &&
-        _cloudVersions.isNotEmpty &&
-        !forceReload) {
-      return;
-    }
-    if (_isLoadingCloud) return;
-
-    _isLoadingCloud = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      _cloudVersions = Map.fromEntries(
-        (await _cloudVersionRepository.getPublicVersions()).map(
-          (version) => MapEntry(version.firebaseId!, version),
-        ),
-      );
-      _lastCloudLoad = now;
-      await _cloudCache.saveCloudVersions(
-        _cloudVersions.values.map((v) => v).toList(),
-      );
-      await _cloudCache.saveLastCloudLoad(now);
-      _filterCloudVersions();
-
-      if (kDebugMode) {
-        print(
-          'LOADED ${_cloudVersions.length} PUBLIC CIPHERS FROM FIRESTORE - $_lastCloudLoad',
-        );
-      }
-    } catch (e) {
-      _error = e.toString();
-      if (kDebugMode) {
-        print('Error loading cloud ciphers: $e');
-      }
-    } finally {
-      _isLoadingCloud = false;
       notifyListeners();
     }
   }
@@ -208,32 +123,6 @@ class CipherProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Search cached cloud versions
-  Future<void> searchCachedCloudVersions(String term) async {
-    _searchTerm = term.toLowerCase();
-    _filterCloudVersions();
-    notifyListeners();
-  }
-
-  void _filterCloudVersions() {
-    if (_searchTerm.isEmpty) {
-      _filteredCloudVersions = _cloudVersions;
-    } else {
-      _filteredCloudVersions = Map.fromEntries(
-        _cloudVersions.entries
-            .where(
-              (e) =>
-                  e.value.title.toLowerCase().contains(_searchTerm) ||
-                  e.value.author.toLowerCase().contains(_searchTerm) ||
-                  e.value.tags.any(
-                    (tag) => tag.toLowerCase().contains(_searchTerm),
-                  ),
-            )
-            .toList(),
-      );
-    }
-  }
-
   void _filterLocalCiphers() {
     if (_searchTerm.isEmpty) {
       _filteredLocalCiphers = _localCiphers;
@@ -255,7 +144,6 @@ class CipherProvider extends ChangeNotifier {
 
   void clearSearch() {
     _searchTerm = '';
-    _filteredCloudVersions = _cloudVersions;
     _filteredLocalCiphers = _localCiphers;
   }
 
@@ -299,6 +187,7 @@ class CipherProvider extends ChangeNotifier {
 
   void setNewCipherInCache(Cipher cipher) {
     _localCiphers[-1] = cipher;
+    notifyListeners();
   }
 
   // ===== UPSERT =====
@@ -437,8 +326,6 @@ class CipherProvider extends ChangeNotifier {
   /// Clear cached data and reset state for debugging
   void clearCache() {
     _localCiphers.clear();
-    _cloudVersions.clear();
-    _filteredCloudVersions.clear();
     _filteredLocalCiphers.clear();
     _isLoading = false;
     _isSaving = false;
@@ -471,11 +358,5 @@ class CipherProvider extends ChangeNotifier {
       return null;
     }
     return result.id;
-  }
-
-  @override
-  void dispose() {
-    _loadTimer?.cancel();
-    super.dispose();
   }
 }

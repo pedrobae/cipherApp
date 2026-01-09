@@ -7,20 +7,12 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:626503496187:android:191ccca7f6cfb78c70db5e",
+        "mobilesdk_app_id": "1:626503496187:android:b76dc321241c32cd70db5e",
         "android_client_info": {
-          "package_name": "com.newHeartBrasil.cordis"
+          "package_name": "org.newheartbrasil.cordis"
         }
       },
       "oauth_client": [
-        {
-          "client_id": "626503496187-1511c7inestoffbedm2dbpi6f8geh3bu.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.newHeartBrasil.cordis",
-            "certificate_hash": "c67bf5f40b5d192ee55b63dbe276f04986833a34"
-          }
-        },
         {
           "client_id": "626503496187-vgc1h886893dqh26dgbrhnpb1obepipv.apps.googleusercontent.com",
           "client_type": 3
@@ -39,10 +31,10 @@
               "client_type": 3
             },
             {
-              "client_id": "626503496187-pneti15mm653acbbaqinq5n4bqib0qkb.apps.googleusercontent.com",
+              "client_id": "626503496187-6l578k83fq6t68qifpmss2kk0jm3rrcu.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.newHeartBrasil.cordis"
+                "bundle_id": "org.newheartbrasil.cordis"
               }
             }
           ]

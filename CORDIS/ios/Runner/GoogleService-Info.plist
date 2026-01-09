@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>626503496187-pneti15mm653acbbaqinq5n4bqib0qkb.apps.googleusercontent.com</string>
+	<string>626503496187-6l578k83fq6t68qifpmss2kk0jm3rrcu.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.626503496187-pneti15mm653acbbaqinq5n4bqib0qkb</string>
+	<string>com.googleusercontent.apps.626503496187-6l578k83fq6t68qifpmss2kk0jm3rrcu</string>
 	<key>ANDROID_CLIENT_ID</key>
-	<string>626503496187-97o5d9ki4dpeou4712al5f18lpohn0ke.apps.googleusercontent.com</string>
+	<string>626503496187-1511c7inestoffbedm2dbpi6f8geh3bu.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyC_RPRjXXa86lmFsiQ7nj2jSx_yPAQV110</string>
 	<key>GCM_SENDER_ID</key>
@@ -15,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.newHeartBrasil.cordis</string>
+	<string>org.newheartbrasil.cordis</string>
 	<key>PROJECT_ID</key>
 	<string>cipherapp-8c2ee</string>
 	<key>STORAGE_BUCKET</key>
@@ -31,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:626503496187:ios:aea6925f495bfa0e70db5e</string>
+	<string>1:626503496187:ios:f63f0c3c1f3ec23d70db5e</string>
 </dict>
 </plist>

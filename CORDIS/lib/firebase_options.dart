@@ -43,7 +43,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBlb5ok06zm1yIW5KcqqtiQk59yCFvM2jQ',
-    appId: '1:626503496187:android:191ccca7f6cfb78c70db5e',
+    appId: '1:626503496187:android:b76dc321241c32cd70db5e',
     messagingSenderId: '626503496187',
     projectId: 'cipherapp-8c2ee',
     storageBucket: 'cipherapp-8c2ee.firebasestorage.app',
@@ -51,14 +51,13 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyC_RPRjXXa86lmFsiQ7nj2jSx_yPAQV110',
-    appId: '1:626503496187:ios:aea6925f495bfa0e70db5e',
+    appId: '1:626503496187:ios:f63f0c3c1f3ec23d70db5e',
     messagingSenderId: '626503496187',
     projectId: 'cipherapp-8c2ee',
     storageBucket: 'cipherapp-8c2ee.firebasestorage.app',
-    androidClientId:
-        '626503496187-97o5d9ki4dpeou4712al5f18lpohn0ke.apps.googleusercontent.com',
-    iosClientId:
-        '626503496187-pneti15mm653acbbaqinq5n4bqib0qkb.apps.googleusercontent.com',
-    iosBundleId: 'com.newHeartBrasil.cordis',
+    androidClientId: '626503496187-1511c7inestoffbedm2dbpi6f8geh3bu.apps.googleusercontent.com',
+    iosClientId: '626503496187-6l578k83fq6t68qifpmss2kk0jm3rrcu.apps.googleusercontent.com',
+    iosBundleId: 'org.newheartbrasil.cordis',
   );
+
 }

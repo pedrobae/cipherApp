@@ -1,5 +1,5 @@
+import 'package:cordis/models/domain/playlist/playlist_text_section.dart';
 import 'package:cordis/models/dtos/playlist_dto.dart';
-import 'package:cordis/models/dtos/text_section_dto.dart';
 import 'package:cordis/helpers/codes.dart';
 import 'package:cordis/helpers/datetime.dart';
 import 'package:cordis/models/dtos/version_dto.dart';
@@ -94,7 +94,7 @@ class Playlist {
     String ownerFirebaseId,
     List<String> collaborators,
     List<VersionDto> versions,
-    List<TextSectionDto> textSections,
+    List<TextSection> textSections,
   ) {
     return PlaylistDto(
       firebaseId: firebaseId,
@@ -112,7 +112,9 @@ class Playlist {
           )
           .toList(),
       versions: versions,
-      textSections: textSections,
+      textSections: textSections
+          .map((section) => section.toFirestore())
+          .toList(),
     );
   }
 

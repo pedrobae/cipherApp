@@ -158,19 +158,19 @@ class PlaylistProvider extends ChangeNotifier {
   }
 
   /// Load Single Playlist by Share Code
-  Future<void> loadCloudPlaylistByCode(String code) async {
+  Future<void> loadCloudPlaylistById(String playlistId) async {
     try {
-      final playlistDto = await _cloudPlaylistRepository.fetchPlaylistByCode(
-        code,
+      final playlistDto = await _cloudPlaylistRepository.fetchPlaylistById(
+        playlistId,
       );
 
       if (playlistDto == null) {
-        throw Exception('Playlist not found with code $code.');
+        throw Exception('Playlist not found with ID $playlistId.');
       }
 
       _currentCloudPlaylist = playlistDto;
     } catch (e) {
-      throw Exception('Error loading playlist by code: $e');
+      throw Exception('Error loading playlist by ID: $e');
     }
   }
 
@@ -258,14 +258,6 @@ class PlaylistProvider extends ChangeNotifier {
     await loadPlaylist(playlistId);
 
     return playlistId;
-  }
-
-  /// Add a collaborator to a cloud playlist
-  Future<void> addCollaboratorToPlaylist(
-    String playlistId,
-    String userId,
-  ) async {
-    await _cloudPlaylistRepository.addCollaborator(playlistId, userId);
   }
 
   // Update a Playlist with a version
@@ -649,11 +641,7 @@ class PlaylistProvider extends ChangeNotifier {
       }
 
       if (changes.containsKey('textSections')) {
-        updatePayload['textSections'] = [
-          for (final textSection in playlistDto.textSections) ...[
-            textSection.toFirestore(),
-          ],
-        ];
+        updatePayload['textSections'] = playlistDto.textSections;
       }
 
       // Add collaborators if changed

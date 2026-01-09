@@ -1,3 +1,4 @@
+import 'package:cordis/models/dtos/cipher_dto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -227,8 +228,18 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
       final ownerId = userProvider.getLocalIdByFirebaseId(playlistDto.ownerId);
 
       /// Upsert Ciphers
-      for (final cipherDto in playlistDto.ciphers) {
-        await cipherProvider.upsertCipher(cipherDto.toDomain([]));
+      for (final versionDto in playlistDto.versions) {
+        await cipherProvider.upsertCipher(
+          CipherDto.fromFirestore({
+            'id': versionDto.firebaseCipherId,
+            'title': versionDto.title,
+            'author': versionDto.author,
+            'language': versionDto.language,
+            'originalKey': versionDto.originalKey,
+            'tags': versionDto.tags,
+            'updatedAt': versionDto.updatedAt,
+          }).toDomain([]),
+        );
       }
 
       /// Upsert Versions
@@ -252,18 +263,18 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
 
         if (typeId[0] == 't') {
           // Upsert TextSection and build PlaylistItem
-          final textSectionDto = playlistDto.textSections.firstWhere(
-            (section) => section.firebaseId == typeId[1],
+          final textSection = playlistDto.textSections.firstWhere(
+            (ts) => ts['id'] as String == typeId[1],
           );
 
           if (mounted) {
             context.read<TextSectionProvider>().upsertTextSection(
               TextSection(
-                contentText: textSectionDto.content,
+                contentText: textSection['content'] ?? '',
                 playlistId: playlistId,
                 position: index,
-                title: textSectionDto.title,
-                firebaseId: textSectionDto.firebaseId!,
+                title: textSection['title'] ?? '',
+                firebaseId: textSection['firebaseId'] ?? '',
                 id: -1, // Temporary ID, will be set in upsert
               ),
             );

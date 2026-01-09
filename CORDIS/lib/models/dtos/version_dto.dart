@@ -6,11 +6,18 @@ import 'package:cordis/helpers/firestore_timestamp_helper.dart';
 class VersionDto {
   final String? firebaseId; // ID na nuvem (Firebase)
   final String? firebaseCipherId; // ID do cipher na nuvem (Firebase)
+  final String title;
+  final String author;
+  final String? tempo;
+  final String? bpm;
+  final String language;
+  final List<String> tags;
   final String versionName;
+  final String originalKey;
   final String? transposedKey;
   final String songStructure;
   final DateTime? updatedAt;
-  final Map<String, Map<String, dynamic>>? sections;
+  final Map<String, Map<String, String>> sections;
 
   VersionDto({
     this.firebaseId,
@@ -19,45 +26,54 @@ class VersionDto {
     this.transposedKey,
     required this.songStructure,
     this.updatedAt,
-    this.sections,
+    required this.sections,
+    required this.title,
+    required this.author,
+    this.tempo,
+    this.bpm,
+    required this.language,
+    this.tags = const [],
+    required this.originalKey,
   });
 
-  factory VersionDto.fromFirestore(
-    Map<String, dynamic> map, {
-    String? id,
-    String? cipherId,
-  }) {
+  factory VersionDto.fromFirestore(Map<String, dynamic> map, String id) {
     return VersionDto(
-      firebaseId: id ?? map['id'] as String? ?? '',
-      firebaseCipherId: cipherId ?? map['cipherId'] as String? ?? '',
-      versionName: map['versionName'] as String? ?? '',
-      transposedKey: map['transposedKey'] as String? ?? '',
+      firebaseId: id,
+      firebaseCipherId: map['cipherId'] as String,
+      author: map['author'] as String,
+      title: map['title'] as String,
+      tempo: map['tempo'] as String?,
+      bpm: map['bpm'] as String?,
+      language: map['language'] as String,
+      versionName: map['versionName'] as String,
+      originalKey: map['originalKey'] as String,
+      transposedKey: map['transposedKey'] as String?,
+      tags: map['tags'] as List<String>,
       songStructure:
           (map['songStructure'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .join(',') ??
           '',
       updatedAt: FirestoreTimestampHelper.toDateTime(map['updatedAt']),
-      sections: (map['sections'] as Map<String, dynamic>).map(
-        (sectionCode, section) => MapEntry(sectionCode, section),
-      ),
+      sections: map['sections'] as Map<String, Map<String, String>>,
     );
   }
 
   Map<String, dynamic> toFirestore() {
     return {
+      'cipherId': firebaseCipherId,
+      'author': author,
+      'title': title,
+      'tempo': tempo,
+      'bpm': bpm,
+      'language': language,
       'versionName': versionName,
+      'originalKey': originalKey,
       'transposedKey': transposedKey,
+      'tags': tags,
       'songStructure': songStructure.split(',').map((s) => s.trim()).toList(),
       'updatedAt': FirestoreTimestampHelper.fromDateTime(updatedAt),
-      'sections': sections?.map(
-        (sectionCode, section) => MapEntry(sectionCode, {
-          'contentType': section['contentType'],
-          'contentText': section['contentText'],
-          'contentCode': section['contentCode'],
-          'contentColor': section['contentColor'],
-        }),
-      ),
+      'sections': sections,
     };
   }
 
@@ -69,11 +85,11 @@ class VersionDto {
       transposedKey: transposedKey,
       songStructure: songStructure.split(',').map((s) => s.trim()).toList(),
       createdAt: updatedAt,
-      sections: sections?.map(
+      sections: sections.map(
         (sectionsCode, section) =>
             MapEntry(sectionsCode, Section.fromFirestore(section)),
       ),
-      cipherId: cipherId ?? 0,
+      cipherId: cipherId ?? -1,
     );
   }
 }

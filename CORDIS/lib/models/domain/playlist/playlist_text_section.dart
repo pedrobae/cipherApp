@@ -1,8 +1,6 @@
-import 'package:cordis/models/dtos/text_section_dto.dart';
-
 class TextSection {
   final int? id;
-  final String? firebaseId;
+  final String firebaseId;
   final int playlistId;
   final String title;
   String contentText;
@@ -10,18 +8,33 @@ class TextSection {
 
   TextSection({
     this.id,
-    this.firebaseId,
+    required this.firebaseId,
     required this.playlistId,
     required this.title,
     required this.contentText,
     required this.position,
   });
 
+  factory TextSection.local({
+    required int playlistId,
+    required String title,
+    required String contentText,
+    required int position,
+  }) {
+    return TextSection(
+      firebaseId: _randomFirebaseId(),
+      playlistId: playlistId,
+      title: title,
+      contentText: contentText,
+      position: position,
+    );
+  }
+
   factory TextSection.fromJson(Map<String, dynamic> json) {
     return TextSection(
       id: json['id'],
       playlistId: json['playlist_id'],
-      firebaseId: json['firebase_id'],
+      firebaseId: json['firebase_id'] ?? _randomFirebaseId(),
       title: json['title'],
       contentText: json['content'],
       position: json['position'] ?? 0,
@@ -39,11 +52,12 @@ class TextSection {
     };
   }
 
-  TextSectionDto toDto() {
-    return TextSectionDto(
-      firebaseId: firebaseId,
-      title: title,
-      content: contentText,
-    );
+  Map<String, String> toFirestore() {
+    return {'title': title, 'content': contentText, 'id': firebaseId};
   }
+}
+
+String _randomFirebaseId() {
+  // TODO
+  return DateTime.now().millisecondsSinceEpoch.toString();
 }

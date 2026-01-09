@@ -1,6 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:cordis/models/dtos/text_section_dto.dart';
+import 'package:cordis/models/domain/playlist/playlist_text_section.dart';
 import 'package:cordis/models/dtos/version_dto.dart';
 import 'package:cordis/providers/text_section_provider.dart';
 import 'package:flutter/foundation.dart';
@@ -447,13 +447,16 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
     final users = userProvider.getUsersByIds(userLocalIds);
 
     List<VersionDto> versions = [];
-    List<TextSectionDto> textSections = [];
+    List<TextSection> textSections = [];
     for (final item in playlist.items) {
       switch (item.type) {
         case 'cipher_version':
           final version = versionProvider.getCachedVersion(item.contentId!);
+          final cipher = cipherProvider.getCachedCipher(
+            version?.cipherId ?? -1,
+          );
           if (version != null) {
-            versions.add(version.toDto());
+            versions.add(version.toDto(cipher!));
           }
           break;
         case 'text_section':
@@ -461,7 +464,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
             item.contentId!,
           );
           if (textSection != null) {
-            textSections.add(textSection.toDto());
+            textSections.add(textSection);
           }
           break;
         default:

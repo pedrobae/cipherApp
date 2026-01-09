@@ -78,39 +78,19 @@ class _JoinPlaylistDialogState extends State<JoinPlaylistDialog> {
     Function syncPlaylist,
   ) async {
     try {
-      // TODO CHANGE THE FLOW - CARE WITH THE FIRESTORE RULES
-      // Fetch playlist data from cloud repository using the code
-      await playlistProvider.loadCloudPlaylistByCode(shareCodeController.text);
-      final playlistDto = playlistProvider.currentCloudPlaylist;
-      if (playlistDto == null) {
-        throw Exception(
-          'Playlist not found with code - ${shareCodeController.text}',
-        );
-      }
-
-      // Sync Playlist
-      await widget.syncPlaylist(playlistDto);
-
-      final currentUserId = authProvider.id;
-
-      // Add current user as collaborator to the cloud database
-      await playlistProvider.addCollaboratorToPlaylist(
-        playlistDto.firebaseId!,
-        currentUserId!,
-      );
-
-      // final playlist = playlistProvider.getPlaylistByFirebaseId(
-      //   playlistDto.firebaseId!,
+      // TODO Trigger Cloud function to add collaborator
+      // final currentUserId = authProvider.id;
+      //
+      // playlistId = await playlistProvider.enterPlaylist(
+      //   shareCodeController.text.trim(),
+      //   currentUserId,
       // );
 
-      // Add current user as collaborator to the local database
-      /// TODO: Reimplement on playlist provider refactor
-      // await collaboratorProvider.addCollaborator(
-      //   playlist!.id,
-      //   userProvider.getLocalIdByFirebaseId(currentUserId)!,
-      //   roleController.text,
-      //   userProvider.getLocalIdByFirebaseId(playlistDto.ownerId)!,
-      // );
+      // // Load the playlist data
+      // await playlistProvider.loadCloudPlaylistById(playlistId);
+
+      // // Sync the playlist data locally
+      // widget.syncPlaylist(playlistProvider.currentCloudPlaylist!);
 
       // Close Dialog
       if (mounted) {

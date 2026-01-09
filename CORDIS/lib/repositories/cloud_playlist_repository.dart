@@ -1,6 +1,6 @@
 import 'package:cordis/helpers/guard.dart';
 import 'package:cordis/models/dtos/playlist_dto.dart';
-import 'package:cordis/models/dtos/text_section_dto.dart';
+import 'package:cordis/models/dtos/version_dto.dart';
 import 'package:cordis/services/firestore_service.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
@@ -23,7 +23,9 @@ class CloudPlaylistRepository {
   CloudPlaylistRepository();
 
   // ===== CREATE =====
+
   /// Publish a new playlist to Firestore
+  /// Returns the generated document ID
   Future<String> publishPlaylist(PlaylistDto playlistDto) async {
     return await _withErrorHandling('publish playlist', () async {
       await _guardHelper.requireAuth();
@@ -44,7 +46,9 @@ class CloudPlaylistRepository {
   }
 
   // ===== READ =====
+
   /// Fetch playlists of a specific user ID
+  /// Used when fetching playlists for a user
   Future<List<PlaylistDto>> fetchPlaylistsByUserId(String userId) async {
     return await _withErrorHandling('fetch playlists by user ID', () async {
       final querySnapshot = await _firestoreService
@@ -66,36 +70,38 @@ class CloudPlaylistRepository {
     });
   }
 
-  /// Fetch a playlist by its ID
-  Future<PlaylistDto?> fetchPlaylistById(String playlistId) async {
+  /// Fetch a playlist's versions by its ID
+  Future<List<VersionDto>> fetchPlaylistVersions(String playlistId) async {
     return await _withErrorHandling('fetch playlist by ID', () async {
+      final docSnapshot = await _firestoreService.fetchSubCollectionDocuments(
+        parentCollectionPath: 'playlists',
+        parentDocumentId: playlistId,
+        subCollectionPath: 'versions',
+      );
+
+      return docSnapshot
+          .map(
+            (doc) => VersionDto.fromFirestore(
+              doc.data() as Map<String, dynamic>,
+              doc.id,
+            ),
+          )
+          .toList();
+    });
+  }
+
+  /// Fetches a playlist by its ID
+  /// Returns null if not found
+  /// Used after successfully inserting a share code
+  Future<PlaylistDto?> fetchPlaylistById(String playlistId) async {
+    return await _withErrorHandling('fetch_playlist_by_id', () async {
       final docSnapshot = await _firestoreService.fetchDocumentById(
         collectionPath: 'playlists',
         documentId: playlistId,
       );
 
-      if (docSnapshot == null || !docSnapshot.exists) {
-        return null;
-      }
-
-      return PlaylistDto.fromFirestore(
-        docSnapshot.data() as Map<String, dynamic>,
-        docSnapshot.id,
-      );
-    });
-  }
-
-  /// Fetches a playlist by its invite code
-  Future<PlaylistDto?> fetchPlaylistByCode(String code) async {
-    return await _withErrorHandling('fetch_playlist_by_invite_code', () async {
-      final docSnapshot = await _firestoreService.fetchDocumentByField(
-        collectionPath: 'playlists',
-        fieldName: 'shareCode',
-        fieldValue: code,
-      );
-
       if (docSnapshot == null) {
-        throw Exception('No playlist found with the provided invite code.');
+        throw Exception('No playlist found with the provided playlist ID.');
       }
 
       return PlaylistDto.fromFirestore(
@@ -106,6 +112,7 @@ class CloudPlaylistRepository {
   }
 
   // ===== UPDATE =====
+
   /// Update an existing playlist in Firestore on the changes map
   Future<void> updatePlaylist(
     String firebaseId,
@@ -129,37 +136,34 @@ class CloudPlaylistRepository {
     });
   }
 
-  Future<void> updateTextSection(TextSectionDto textSectionDto) async {
-    return await _withErrorHandling('update text section', () async {
+  /// Enter Playlist via Share Code by adding the user as a collaborator
+  Future<void> enterPlaylist(String shareCode, String userId) async {
+    return await _withErrorHandling('enter playlist via share code', () async {
       await _guardHelper.requireAuth();
 
-      await _firestoreService.updateDocument(
-        collectionPath: 'textSections',
-        documentId: textSectionDto.firebaseId!,
-        data: textSectionDto.toFirestore(),
-      );
-
-      await FirebaseAnalytics.instance.logEvent(
-        name: 'updated_text_section',
-        parameters: {'textSectionId': textSectionDto.firebaseId!},
-      );
+      // TODO - HANDLED BY CLOUD FUNCTION INSTEAD
     });
   }
 
-  Future<void> addCollaborator(String playlistId, String userId) async {
-    return await _withErrorHandling('add collaborator to playlist', () async {
+  Future<void> updatePlaylistVersion(
+    String playlistId,
+    String versionId,
+    Map<String, dynamic> changes,
+  ) async {
+    return await _withErrorHandling('update playlist version', () async {
       await _guardHelper.requireAuth();
 
-      await _firestoreService.addToArrayField(
-        collectionPath: 'playlists',
-        documentId: playlistId,
-        arrayField: 'collaborators',
-        value: userId,
+      await _firestoreService.updateSubCollectionDocument(
+        parentCollectionPath: 'playlists',
+        parentDocumentId: playlistId,
+        subCollectionPath: 'versions',
+        documentId: versionId,
+        data: changes,
       );
 
       await FirebaseAnalytics.instance.logEvent(
-        name: 'included_collaborator',
-        parameters: {'playlistId': playlistId, 'userId': userId},
+        name: 'updated_playlist_version',
+        parameters: {'playlistId': playlistId, 'versionId': versionId},
       );
     });
   }
@@ -179,6 +183,28 @@ class CloudPlaylistRepository {
       await FirebaseAnalytics.instance.logEvent(
         name: 'deleted_playlist',
         parameters: {'playlistId': firebaseId},
+      );
+    });
+  }
+
+  /// Delete a specific version of a playlist
+  Future<void> deletePlaylistVersion(
+    String playlistId,
+    String versionId,
+  ) async {
+    return await _withErrorHandling('delete playlist version', () async {
+      await _guardHelper.requireAuth();
+
+      await _firestoreService.deleteSubCollectionDocument(
+        parentCollectionPath: 'playlists',
+        parentDocumentId: playlistId,
+        subCollectionPath: 'versions',
+        documentId: versionId,
+      );
+
+      await FirebaseAnalytics.instance.logEvent(
+        name: 'deleted_playlist_version',
+        parameters: {'playlistId': playlistId, 'versionId': versionId},
       );
     });
   }

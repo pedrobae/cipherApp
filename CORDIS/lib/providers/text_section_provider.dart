@@ -1,21 +1,16 @@
 import 'package:cordis/models/domain/playlist/playlist_text_section.dart';
-import 'package:cordis/models/dtos/text_section_dto.dart';
 import 'package:cordis/repositories/text_section_repository.dart';
-import 'package:cordis/repositories/cloud_playlist_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:async';
 
 class TextSectionProvider extends ChangeNotifier {
   final TextSectionRepository _textSectionRepo = TextSectionRepository();
-  final CloudPlaylistRepository _cloudPlaylistRepository =
-      CloudPlaylistRepository();
 
   TextSectionProvider();
 
   Map<int, TextSection> _textSections = {};
   bool _isLoading = false;
   bool _isSaving = false;
-  bool _isCloudSaving = false;
   bool _isDeleting = false;
   String? _error;
 
@@ -23,7 +18,6 @@ class TextSectionProvider extends ChangeNotifier {
   Map<int, TextSection> get textSections => _textSections;
   bool get isLoading => _isLoading;
   bool get isSaving => _isSaving;
-  bool get isCloudSaving => _isCloudSaving;
   bool get isDeleting => _isDeleting;
   String? get error => _error;
 
@@ -158,7 +152,7 @@ class TextSectionProvider extends ChangeNotifier {
 
     try {
       // Check if exists
-      final localId = await getLocalIdByFirebaseId(textSection.firebaseId!);
+      final localId = await getLocalIdByFirebaseId(textSection.firebaseId);
 
       if (localId == null) {
         // Create new
@@ -222,26 +216,6 @@ class TextSectionProvider extends ChangeNotifier {
       rethrow;
     } finally {
       _isSaving = false;
-      notifyListeners();
-    }
-  }
-
-  Future<void> updateCloudTextSection(TextSectionDto textSectionDto) async {
-    if (_isCloudSaving) return;
-
-    _isCloudSaving = true;
-    _error = null;
-
-    try {
-      await _cloudPlaylistRepository.updateTextSection(textSectionDto);
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error updating cloud text section: $e');
-      }
-      _error = e.toString();
-      rethrow;
-    } finally {
-      _isCloudSaving = false;
       notifyListeners();
     }
   }

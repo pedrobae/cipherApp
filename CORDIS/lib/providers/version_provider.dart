@@ -1,12 +1,10 @@
 import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:cordis/models/domain/playlist/playlist_item.dart';
-import 'package:cordis/repositories/cloud_cipher_repository.dart';
 import 'package:cordis/repositories/local_cipher_repository.dart';
 import 'package:flutter/foundation.dart';
 
 class VersionProvider extends ChangeNotifier {
   final LocalCipherRepository _cipherRepository = LocalCipherRepository();
-  final CloudCipherRepository _cloudCipherRepository = CloudCipherRepository();
 
   VersionProvider();
 
@@ -396,30 +394,6 @@ class VersionProvider extends ChangeNotifier {
       _error = e.toString();
       if (kDebugMode) {
         print('Error updating cipher version: $e');
-      }
-    } finally {
-      _isSaving = false;
-      notifyListeners();
-    }
-  }
-
-  Future<void> saveVersionInCloud() async {
-    if (_isSaving) return;
-
-    _isSaving = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      await _cloudCipherRepository.updateVersionOfCipher(currentVersion);
-
-      if (kDebugMode) {
-        print('Saved cloud version with id ${currentVersion.firebaseId}');
-      }
-    } catch (e) {
-      _error = e.toString();
-      if (kDebugMode) {
-        print('Error updating cloud cipher version: $e');
       }
     } finally {
       _isSaving = false;

@@ -191,24 +191,6 @@ class FirestoreService {
     }
   }
 
-  /// Update an array field in a document by adding a value.
-  Future<void> addToArrayField({
-    required String collectionPath,
-    required String documentId,
-    required String arrayField,
-    required dynamic value,
-  }) async {
-    try {
-      await _firestore.collection(collectionPath).doc(documentId).update({
-        arrayField: FieldValue.arrayUnion([value]),
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
-    } catch (e) {
-      FirebaseService.logError('Failed to add to array field', e);
-      rethrow;
-    }
-  }
-
   // ===== DELETE METHODS =====
   /// Delete a document from a specified collection.
   Future<void> deleteDocument({

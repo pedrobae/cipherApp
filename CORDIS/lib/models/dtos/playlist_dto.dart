@@ -1,8 +1,6 @@
 import 'package:cordis/models/domain/playlist/playlist.dart';
 import 'package:cordis/models/domain/playlist/playlist_item.dart';
-import 'package:cordis/models/dtos/cipher_dto.dart';
 import 'package:cordis/models/dtos/version_dto.dart';
-import 'package:cordis/models/dtos/text_section_dto.dart';
 import 'package:cordis/helpers/firestore_timestamp_helper.dart';
 
 class PlaylistDto {
@@ -14,11 +12,10 @@ class PlaylistDto {
   final DateTime updatedAt;
   final DateTime createdAt;
   final List<String> collaborators; // [userId1, userId2, ...]
-  final String shareCode;
+  final String? shareCode;
   final List<String> itemOrder;
-  final List<TextSectionDto> textSections;
+  final List<Map<String, String>> textSections;
   final List<VersionDto> versions;
-  final List<CipherDto> ciphers;
 
   const PlaylistDto({
     this.firebaseId,
@@ -29,19 +26,18 @@ class PlaylistDto {
     required this.updatedAt,
     required this.createdAt,
     this.collaborators = const [],
-    required this.shareCode,
+    this.shareCode,
     this.itemOrder = const [],
     this.textSections = const [],
     this.versions = const [],
-    this.ciphers = const [],
   });
 
   factory PlaylistDto.fromFirestore(Map<String, dynamic> json, String id) {
     return PlaylistDto(
       firebaseId: id,
-      name: json['name'] as String? ?? '',
+      name: json['name'] as String,
       description: json['description'] as String? ?? '',
-      ownerId: json['ownerId'] as String? ?? '',
+      ownerId: json['ownerId'] as String,
       updatedAt:
           FirestoreTimestampHelper.toDateTime(json['updatedAt']) ??
           DateTime.now(),
@@ -49,21 +45,13 @@ class PlaylistDto {
           FirestoreTimestampHelper.toDateTime(json['createdAt']) ??
           DateTime.now(),
       collaborators: List<String>.from(json['collaborators'] ?? []),
-      shareCode: json['shareCode'] as String,
+      shareCode: json['shareCode'] as String?,
       itemOrder:
           (json['itemOrder'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
           [],
-      textSections: (json['textSections'] as List<dynamic>)
-          .map((section) => TextSectionDto.fromFirestore(section))
-          .toList(),
-      versions: (json['versions'] as List<dynamic>)
-          .map((version) => VersionDto.fromFirestore(version))
-          .toList(),
-      ciphers: (json['versions'] as List<dynamic>)
-          .map((version) => CipherDto.fromFirestore(version))
-          .toList(),
+      textSections: json['textSections'] as List<Map<String, String>>,
     );
   }
 
@@ -77,9 +65,7 @@ class PlaylistDto {
       'collaborators': collaborators,
       'shareCode': shareCode,
       'itemOrder': itemOrder,
-      'textSections': textSections
-          .map((section) => section.toFirestore())
-          .toList(),
+      'textSections': textSections,
       'versions': versions.map((version) => version.toFirestore()).toList(),
     };
   }
@@ -99,5 +85,13 @@ class PlaylistDto {
       items: items,
       firebaseId: firebaseId,
     );
+  }
+
+  void addVersions(List<VersionDto> newVersions) {
+    versions.addAll(newVersions);
+  }
+
+  void removeVersionByFirebaseId(String versionFirebaseId) {
+    versions.removeWhere((v) => v.firebaseId == versionFirebaseId);
   }
 }

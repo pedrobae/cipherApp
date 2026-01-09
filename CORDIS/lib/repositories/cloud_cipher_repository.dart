@@ -1,6 +1,5 @@
 import 'package:cordis/helpers/guard.dart';
 import 'package:cordis/models/domain/cipher/cipher.dart';
-import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:cordis/models/dtos/cipher_dto.dart';
 import 'package:cordis/models/dtos/version_dto.dart';
 import 'package:cordis/services/firestore_service.dart';
@@ -67,8 +66,7 @@ class CloudCipherRepository {
         .map(
           (version) => VersionDto.fromFirestore(
             version.data() as Map<String, dynamic>,
-            id: version.id,
-            cipherId: cipherId,
+            version.id,
           ),
         )
         .toList();
@@ -96,7 +94,7 @@ class CloudCipherRepository {
   }
 
   /// Update an existing version of a public cipher (admin only)
-  Future<void> updateVersionOfCipher(Version version) async {
+  Future<void> updateVersionOfCipher(VersionDto version) async {
     await _guardHelper.requireAdmin();
 
     await _firestoreService.updateSubCollectionDocument(
@@ -104,7 +102,7 @@ class CloudCipherRepository {
       parentDocumentId: version.firebaseCipherId!,
       subCollectionPath: 'versions',
       documentId: version.firebaseId!,
-      data: version.toDto().toFirestore(),
+      data: version.toFirestore(),
     );
 
     FirebaseAnalytics.instance.logEvent(

@@ -1,3 +1,4 @@
+import 'package:cordis/models/domain/cipher/cipher.dart';
 import 'package:cordis/models/domain/cipher/section.dart';
 import 'package:cordis/models/dtos/version_dto.dart';
 
@@ -90,16 +91,21 @@ class Version {
     return (sections ?? {}).values.toList();
   }
 
-  VersionDto toDto() {
+  VersionDto toDto(Cipher cipher) {
     return VersionDto(
       firebaseId: firebaseId,
       firebaseCipherId: firebaseCipherId,
       versionName: versionName,
       transposedKey: transposedKey,
       songStructure: songStructure.join(','),
-      sections: sections?.map(
-        (sectionCode, section) => MapEntry(sectionCode, section.toFirestore()),
+      sections: sections!.map(
+        (sectionCode, section) =>
+            MapEntry(sectionCode, section.toMap() as Map<String, String>),
       ),
+      title: cipher.title,
+      author: cipher.author,
+      language: cipher.language,
+      originalKey: cipher.musicKey,
     );
   }
 

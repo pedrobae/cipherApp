@@ -41,21 +41,14 @@ class Section {
     );
   }
 
-  Map<String, dynamic> toSqLite() {
+  /// Converts to a map suitable for SQLite storage
+  /// Later the version Id (int) gets assigned
+  Map<String, dynamic> toMap() {
     return {
       'content_type': contentType,
       'content_code': contentCode,
       'content_text': contentText,
       'content_color': c.colorToHex(contentColor),
-    };
-  }
-
-  Map<String, dynamic> toFirestore() {
-    return {
-      'contentType': contentType,
-      'contentCode': contentCode,
-      'contentText': contentText,
-      'contentColor': c.colorToHex(contentColor),
     };
   }
 

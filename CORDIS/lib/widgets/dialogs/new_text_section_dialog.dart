@@ -44,80 +44,84 @@ class _TextSectionDialogState extends State<NewTextSectionDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.9,
-        height: MediaQuery.of(context).size.height * 0.8,
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+    return Consumer<PlaylistProvider>(
+      builder: (context, playlistProvider, child) {
+        return Dialog(
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.9,
+            height: MediaQuery.of(context).size.height * 0.8,
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Text(
-                    'Nova Seção de Texto',
-                    style: Theme.of(context).textTheme.headlineSmall,
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Nova Seção de Texto',
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.close),
+                      tooltip: 'Fechar',
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                // Title field
+                TextField(
+                  controller: titleController,
+                  decoration: const InputDecoration(
+                    labelText: 'Título',
+                    border: OutlineInputBorder(),
                   ),
                 ),
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close),
-                  tooltip: 'Fechar',
+                const SizedBox(height: 16),
+
+                // Content field with more space
+                Expanded(
+                  child: TextField(
+                    controller: contentController,
+                    decoration: const InputDecoration(
+                      labelText: 'Conteúdo',
+                      border: OutlineInputBorder(),
+                      alignLabelWithHint: true,
+                    ),
+                    maxLines: null,
+                    expands: true,
+                    textAlignVertical: TextAlignVertical.top,
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Action buttons
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Cancelar'),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: () => _saveChanges(playlistProvider),
+                      child: const Text('Salvar'),
+                    ),
+                  ],
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-
-            // Title field
-            TextField(
-              controller: titleController,
-              decoration: const InputDecoration(
-                labelText: 'Título',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Content field with more space
-            Expanded(
-              child: TextField(
-                controller: contentController,
-                decoration: const InputDecoration(
-                  labelText: 'Conteúdo',
-                  border: OutlineInputBorder(),
-                  alignLabelWithHint: true,
-                ),
-                maxLines: null,
-                expands: true,
-                textAlignVertical: TextAlignVertical.top,
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Action buttons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancelar'),
-                ),
-                const SizedBox(width: 8),
-                ElevatedButton(
-                  onPressed: _saveChanges,
-                  child: const Text('Salvar'),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
   /// Saves changes to the text section
-  void _saveChanges() async {
+  void _saveChanges(PlaylistProvider playlistProvider) async {
     final newTitle = titleController.text.trim();
     final newContent = contentController.text.trim();
 
@@ -140,15 +144,13 @@ class _TextSectionDialogState extends State<NewTextSectionDialog> {
           contentText: newContent,
           position: nextPosition,
         ),
-        onPlaylistRefreshNeeded: () {
-          // Refresh the playlist to show updated text section
-          context.read<PlaylistProvider>().trackChange(
-            'textSections',
-            playlistId: widget.playlist.id,
-          );
-          context.read<PlaylistProvider>().loadPlaylist(widget.playlist.id);
-        },
       );
+      // Refresh the playlist to show updated text section
+      playlistProvider.trackChange(
+        'textSections',
+        playlistId: widget.playlist.id,
+      );
+      playlistProvider.loadPlaylist(widget.playlist.id);
 
       if (mounted) {
         Navigator.pop(context);

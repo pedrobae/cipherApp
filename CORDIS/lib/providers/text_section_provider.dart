@@ -8,7 +8,7 @@ class TextSectionProvider extends ChangeNotifier {
 
   TextSectionProvider();
 
-  Map<int, TextSection> _textSections = {};
+  final Map<int, TextSection> _textSections = {};
   bool _isLoading = false;
   bool _isSaving = false;
   bool _isDeleting = false;
@@ -22,28 +22,8 @@ class TextSectionProvider extends ChangeNotifier {
   String? get error => _error;
 
   // ===== READ =====
-  // Load TextSections from local SQLite database
-  Future<void> loadTextSections(List<int> textSectionsIds) async {
-    if (_isLoading) return;
-
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      _textSections = await _textSectionRepo.getTextSectionsByIds(
-        textSectionsIds,
-      );
-    } catch (e) {
-      _error = e.toString();
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
   // Load single textSection
-  Future<void> loadTextSection(
+  Future<void> _loadTextSection(
     int textSectionId, {
     bool forceReload = false,
   }) async {
@@ -111,10 +91,7 @@ class TextSectionProvider extends ChangeNotifier {
 
   // ===== CREATE =====
   // Create a new TextSection from scratch
-  Future<void> createTextSection(
-    TextSection textSection, {
-    VoidCallback? onPlaylistRefreshNeeded,
-  }) async {
+  Future<void> createTextSection(TextSection textSection) async {
     if (_isSaving) return;
 
     _isSaving = true;
@@ -129,10 +106,7 @@ class TextSectionProvider extends ChangeNotifier {
         textSection.contentText,
         textSection.position,
       );
-      await loadTextSection(id, forceReload: true);
-
-      // Notify that playlist needs refresh due to item adjustments
-      onPlaylistRefreshNeeded?.call();
+      await _loadTextSection(id, forceReload: true);
     } catch (e) {
       _error = e.toString();
       rethrow;
@@ -173,7 +147,7 @@ class TextSectionProvider extends ChangeNotifier {
         );
       }
 
-      await loadTextSection(textSection.id!, forceReload: true);
+      await _loadTextSection(textSection.id!, forceReload: true);
     } catch (e) {
       _error = e.toString();
       rethrow;
@@ -189,9 +163,8 @@ class TextSectionProvider extends ChangeNotifier {
     int id,
     String? title,
     String? content,
-    int? position, {
-    VoidCallback? onPlaylistRefreshNeeded,
-  }) async {
+    int? position,
+  ) async {
     if (_isSaving) return;
 
     _isSaving = true;
@@ -207,10 +180,7 @@ class TextSectionProvider extends ChangeNotifier {
       );
 
       // Force reload the updated text section to get fresh data
-      await loadTextSection(id, forceReload: true);
-
-      // Notify that playlist needs refresh
-      onPlaylistRefreshNeeded?.call();
+      await _loadTextSection(id, forceReload: true);
     } catch (e) {
       _error = e.toString();
       rethrow;
@@ -222,10 +192,7 @@ class TextSectionProvider extends ChangeNotifier {
 
   // ===== DELETE =====
   // Delete a text section
-  Future<void> deleteTextSection(
-    int id, {
-    VoidCallback? onPlaylistRefreshNeeded,
-  }) async {
+  Future<void> deleteTextSection(int id) async {
     if (_isDeleting) return;
 
     _isDeleting = true;
@@ -235,9 +202,6 @@ class TextSectionProvider extends ChangeNotifier {
     try {
       await _textSectionRepo.deletePlaylistText(id);
       _textSections.remove(id); // Remove from local cache
-
-      // Notify that playlist needs refresh due to position adjustments
-      onPlaylistRefreshNeeded?.call();
     } catch (e) {
       _error = e.toString();
       rethrow;

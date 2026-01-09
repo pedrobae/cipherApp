@@ -5,27 +5,14 @@ import 'package:provider/provider.dart';
 
 class TextSectionCard extends StatefulWidget {
   final int textSectionId;
-  final int playlistId;
 
-  const TextSectionCard({
-    super.key,
-    required this.textSectionId,
-    required this.playlistId,
-  });
+  const TextSectionCard({super.key, required this.textSectionId});
 
   @override
   State<TextSectionCard> createState() => _TextSectionCardState();
 }
 
 class _TextSectionCardState extends State<TextSectionCard> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<TextSectionProvider>().loadTextSection(widget.textSectionId);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final textSectionProvider = context.watch<TextSectionProvider>();

@@ -326,10 +326,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
           ),
         );
       case 'text_section':
-        return TextSectionCard(
-          textSectionId: item.contentId!,
-          playlistId: widget.playlistId,
-        );
+        return TextSectionCard(textSectionId: item.contentId!);
       default:
         return Card(
           child: ListTile(

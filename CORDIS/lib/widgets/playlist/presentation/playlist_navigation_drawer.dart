@@ -194,8 +194,9 @@ class PlaylistNavigationDrawer extends StatelessWidget {
         return cipher!.title;
 
       case 'text_section':
-        await textSectionProvider.loadTextSection(item.contentId!);
-        final textSection = textSectionProvider.textSections[item.contentId];
+        final textSection = await textSectionProvider.getTextSectionById(
+          item.contentId!,
+        );
         if (textSection != null && textSection.title.isNotEmpty) {
           return textSection.title;
         }

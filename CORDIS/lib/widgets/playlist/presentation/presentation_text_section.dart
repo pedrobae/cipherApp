@@ -12,13 +12,6 @@ class PresentationTextSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer2<TextSectionProvider, LayoutSettingsProvider>(
       builder: (context, textSectionProvider, layoutProvider, child) {
-        // Load the text section if not already loaded
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (!textSectionProvider.textSections.containsKey(textSectionId)) {
-            textSectionProvider.loadTextSection(textSectionId);
-          }
-        });
-
         if (textSectionProvider.isLoading) {
           return const Card(
             child: Padding(

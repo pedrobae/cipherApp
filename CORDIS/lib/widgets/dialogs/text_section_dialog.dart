@@ -49,30 +49,7 @@ class _TextSectionDialogState extends State<TextSectionDialog> {
       contentController.text = textSection.contentText;
     } else {
       // Only load if data is not available, defer to avoid setState during build
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _loadTextSectionData();
-      });
-    }
-  }
-
-  void _loadTextSectionData() async {
-    if (_disposed) return;
-
-    // Load the text section data
-    await context.read<TextSectionProvider>().loadTextSection(
-      widget.textSectionId,
-    );
-
-    if (!_disposed && mounted) {
-      // Set the text values after loading
-      final textSection = context
-          .read<TextSectionProvider>()
-          .textSections[widget.textSectionId];
-
-      if (textSection != null) {
-        titleController.text = textSection.title;
-        contentController.text = textSection.contentText;
-      }
+      throw Exception('Load text section data');
     }
   }
 
@@ -86,87 +63,92 @@ class _TextSectionDialogState extends State<TextSectionDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.9,
-        height: MediaQuery.of(context).size.height * 0.8,
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header with title and delete button
-            Row(
+    return Consumer<PlaylistProvider>(
+      builder: (context, playlistProvider, child) {
+        return Dialog(
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.9,
+            height: MediaQuery.of(context).size.height * 0.8,
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Text(
-                    'Editar Seção de Texto',
-                    style: Theme.of(context).textTheme.headlineSmall,
+                // Header with title and delete button
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Editar Seção de Texto',
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () =>
+                          _showDeleteConfirmation(playlistProvider),
+                      icon: const Icon(Icons.delete),
+                      color: Colors.red,
+                      tooltip: 'Excluir seção',
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.close),
+                      tooltip: 'Fechar',
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                // Title field
+                TextField(
+                  controller: titleController,
+                  decoration: const InputDecoration(
+                    labelText: 'Título',
+                    border: OutlineInputBorder(),
                   ),
                 ),
-                IconButton(
-                  onPressed: _showDeleteConfirmation,
-                  icon: const Icon(Icons.delete),
-                  color: Colors.red,
-                  tooltip: 'Excluir seção',
+                const SizedBox(height: 16),
+
+                // Content field with more space
+                Expanded(
+                  child: TextField(
+                    controller: contentController,
+                    decoration: const InputDecoration(
+                      labelText: 'Conteúdo',
+                      border: OutlineInputBorder(),
+                      alignLabelWithHint: true,
+                    ),
+                    maxLines: null,
+                    expands: true,
+                    textAlignVertical: TextAlignVertical.top,
+                  ),
                 ),
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close),
-                  tooltip: 'Fechar',
+                const SizedBox(height: 16),
+
+                // Action buttons
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Cancelar'),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: () => _saveChanges(playlistProvider),
+                      child: const Text('Salvar'),
+                    ),
+                  ],
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-
-            // Title field
-            TextField(
-              controller: titleController,
-              decoration: const InputDecoration(
-                labelText: 'Título',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Content field with more space
-            Expanded(
-              child: TextField(
-                controller: contentController,
-                decoration: const InputDecoration(
-                  labelText: 'Conteúdo',
-                  border: OutlineInputBorder(),
-                  alignLabelWithHint: true,
-                ),
-                maxLines: null,
-                expands: true,
-                textAlignVertical: TextAlignVertical.top,
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Action buttons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancelar'),
-                ),
-                const SizedBox(width: 8),
-                ElevatedButton(
-                  onPressed: _saveChanges,
-                  child: const Text('Salvar'),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
   /// Saves changes to the text section
-  void _saveChanges() async {
+  void _saveChanges(PlaylistProvider playlistProvider) async {
     // Check if widget is disposed before accessing controllers
     if (!mounted) return;
 
@@ -191,12 +173,10 @@ class _TextSectionDialogState extends State<TextSectionDialog> {
         widget.textSectionId,
         newTitle,
         newContent,
-        null, // Keep current position
-        onPlaylistRefreshNeeded: () {
-          // Refresh the playlist to show updated text section
-          context.read<PlaylistProvider>().loadLocalPlaylists();
-        },
+        null,
       );
+      // Refresh the playlist to show updated text section
+      playlistProvider.loadLocalPlaylists();
 
       if (mounted) {
         Navigator.pop(context);
@@ -221,7 +201,7 @@ class _TextSectionDialogState extends State<TextSectionDialog> {
   }
 
   /// Shows delete confirmation dialog
-  void _showDeleteConfirmation() {
+  void _showDeleteConfirmation(PlaylistProvider playlistProvider) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -235,7 +215,7 @@ class _TextSectionDialogState extends State<TextSectionDialog> {
             child: const Text('Cancelar'),
           ),
           TextButton(
-            onPressed: _confirmDelete,
+            onPressed: () => _confirmDelete(playlistProvider),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: const Text('Excluir'),
           ),
@@ -245,25 +225,18 @@ class _TextSectionDialogState extends State<TextSectionDialog> {
   }
 
   /// Confirms and executes the delete operation
-  void _confirmDelete() async {
-    Navigator.pop(context); // Close confirmation dialog
-
-    // Check if widget is disposed before proceeding
-    if (!mounted) return;
-
+  void _confirmDelete(PlaylistProvider playlistProvider) async {
     try {
       await context.read<TextSectionProvider>().deleteTextSection(
         widget.textSectionId,
-        onPlaylistRefreshNeeded: () {
-          // Refresh the playlist to reflect position adjustments
-          context.read<PlaylistProvider>().loadLocalPlaylists();
-        },
       );
 
-      if (mounted) {
-        Navigator.pop(context); // Close main dialog
+      playlistProvider.trackChange('textSections');
+      playlistProvider.loadLocalPlaylists();
 
-        context.read<PlaylistProvider>().trackChange('textSections');
+      if (mounted) {
+        Navigator.pop(context); // Close confirmation dialog
+        Navigator.pop(context); // Close main dialog
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

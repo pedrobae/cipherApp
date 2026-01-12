@@ -9,6 +9,7 @@
 
 const {setGlobalOptions} = require("firebase-functions");
 const {onCall} = require("firebase-functions/v2/https");
+const {beforeUserCreated} = require("firebase-functions/v2/identity");
 // running at the same time. This helps mitigate the impact of unexpected
 // traffic spikes by instead downgrading performance. This limit is a
 // per-function limit. You can override the limit for each function using the
@@ -21,38 +22,10 @@ const {onCall} = require("firebase-functions/v2/https");
 setGlobalOptions({maxInstances: 5});
 
 const functions = require("firebase-functions");
-const {onSchedule} = require("firebase-functions/v2/scheduler");
 const admin = require("firebase-admin");
 
 admin.initializeApp();
 
-exports.indexPublicCiphers = onSchedule({
-  schedule: "0 0 * * 1",
-  memory: "256MB",
-  timeoutSeconds: 360,
-  maxInstances: 1,
-}, async (event) => {
-  try {
-    console.log("Starting scheduled indexing of public ciphers.");
-    const ciphersRef = admin.firestore().collection("publicCiphers");
-    const snapshot = await ciphersRef
-        .orderBy("title", "desc")
-        .get();
-
-    const publicCiphers = snapshot.docs.map((doc) => ({
-      firebaseId: doc.id,
-      ...doc.data(),
-    }));
-    console.log("Fetched public ciphers:", publicCiphers);
-    await admin.firestore().doc("indexes/publicCiphers").set({
-      ciphers: publicCiphers,
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
-  } catch (error) {
-    console.error("Error updating public ciphers:", error);
-    throw error;
-  }
-});
 
 // === ADMIN FUNCTIONS ===
 
@@ -155,6 +128,124 @@ exports.revokeAdminRole = functions.https.onCall(async (data, context) => {
     throw new functions.https.HttpsError(
         "internal",
         "Failed to revoke admin role",
+        error,
+    );
+  }
+});
+
+
+// === USER INITIALIZATION ===
+
+// Create user document in Firestore when a new user signs up
+exports.createUserDocument = beforeUserCreated(async (event) => {
+  const {uid, email, displayName} = event.data;
+
+  try {
+    await admin.firestore().collection("users").doc(uid).set({
+      uid: uid,
+      email: email || "",
+      displayName: displayName || "",
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    console.log(`User document created for ${uid} (${email})`);
+    return {success: true};
+  } catch (error) {
+    console.error("Error creating user document:", error);
+    // Note: beforeUserCreated cannot throw HttpsError
+    // Log the error and continue
+    return {success: false, error: error.message};
+  }
+});
+
+
+// === PLAYLIST SHARING ===
+
+// Callable function to join a playlist using a share code
+exports.joinPlaylistWithCode = onCall(async (request) => {
+  // Authentication required
+  if (!request.auth) {
+    throw new functions.https.HttpsError(
+        "unauthenticated",
+        "Must be authenticated to join a playlist.",
+    );
+  }
+
+  const {shareCode} = request.data;
+  const userId = request.auth.uid;
+
+  if (!shareCode || typeof shareCode !== "string") {
+    throw new functions.https.HttpsError(
+        "invalid-argument",
+        "Valid share code is required.",
+    );
+  }
+
+  try {
+    const db = admin.firestore();
+
+    // Find the share code document
+    const shareCodeSnap = await db.collection("shareLinks")
+        .where("shareCode", "==", shareCode)
+        .limit(1)
+        .get();
+
+    if (shareCodeSnap.empty) {
+      throw new functions.https.HttpsError(
+          "not-found",
+          "Invalid or expired share code.",
+      );
+    }
+
+    const shareCodeDoc = shareCodeSnap.docs[0];
+    const {playlistId} = shareCodeDoc.data();
+
+    // Get the playlist to verify it exists
+    const playlistSnap = await db.collection("playlists").doc(playlistId).get();
+    if (!playlistSnap.exists) {
+      throw new functions.https.HttpsError(
+          "not-found",
+          "Playlist not found.",
+      );
+    }
+
+    const playlistData = playlistSnap.data();
+
+    // Check if user is already a collaborator
+    const currentCollaborators = playlistData.collaborators || [];
+    if (currentCollaborators.includes(userId)) {
+      throw new functions.https.HttpsError(
+          "already-exists",
+          "You are already a collaborator on this playlist.",
+      );
+    }
+
+    // Add user as collaborator to the playlist
+    await db.collection("playlists").doc(playlistId).update({
+      collaborators: admin.firestore.FieldValue.arrayUnion([userId]),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    console.log(`User ${userId} joined playlist ${playlistId} via share code`);
+
+    return {
+      success: true,
+      message: "Successfully joined playlist",
+      playlistId: playlistId,
+      playlistName: playlistData.name,
+    };
+  } catch (error) {
+    console.error("Error in joinPlaylistWithCode:", error);
+
+    // Re-throw if it's already an HttpsError
+    if (error instanceof functions.https.HttpsError) {
+      throw error;
+    }
+
+    throw new functions.https.HttpsError(
+        "internal",
+        "Failed to join playlist",
         error,
     );
   }

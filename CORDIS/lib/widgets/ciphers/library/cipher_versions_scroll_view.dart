@@ -35,6 +35,7 @@ class _CipherVersionsScrollViewState extends State<CipherVersionsScrollView> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         context.read<CipherProvider>().loadLocalCiphers();
+        context.read<VersionProvider>().loadCloudVersions();
       }
     });
   }
@@ -79,32 +80,8 @@ class _CipherVersionsScrollViewState extends State<CipherVersionsScrollView> {
 
             return Stack(
               children: [
-                // Handle empty state
-                if (cipherProvider.filteredLocalCiphers.isEmpty) ...[
-                  Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.music_note_outlined,
-                          size: 64,
-                          color: colorScheme.primary,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          AppLocalizations.of(context)!.noCiphersFound,
-                          style: theme.textTheme.bodyLarge!.copyWith(
-                            color: colorScheme.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ] else ...[
-                  // Display cipher list
-                  _buildCiphersList(cipherProvider, versionProvider),
-                ],
+                // Display cipher list
+                _buildCiphersList(cipherProvider, versionProvider),
 
                 if (!widget.selectionMode) ...[
                   // TODO: ASK for design
@@ -152,29 +129,55 @@ class _CipherVersionsScrollViewState extends State<CipherVersionsScrollView> {
     CipherProvider cipherProvider,
     VersionProvider versionProvider,
   ) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     return RefreshIndicator(
       onRefresh: () async {
         await cipherProvider.loadLocalCiphers(forceReload: true);
+        await versionProvider.loadCloudVersions(forceReload: true);
       },
-      child: ListView.builder(
-        cacheExtent: 500,
-        physics: const AlwaysScrollableScrollPhysics(),
-        itemCount:
-            (cipherProvider.filteredLocalCiphers.length +
-            versionProvider.filteredCloudVersions.length),
-        itemBuilder: (context, index) {
-          if (index >= cipherProvider.filteredLocalCiphers.length) {
-            final cloudIndex =
-                index - cipherProvider.filteredLocalCiphers.length;
-            final version = versionProvider.filteredCloudVersions.values
-                .toList()[cloudIndex];
-            return CloudCipherCard(version: version);
-          }
+      child:
+          (cipherProvider.filteredLocalCiphers.isEmpty &&
+              versionProvider.filteredCloudVersions.isEmpty)
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.music_note_outlined,
+                    size: 64,
+                    color: colorScheme.primary,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    AppLocalizations.of(context)!.noCiphersFound,
+                    style: theme.textTheme.bodyLarge!.copyWith(
+                      color: colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : ListView.builder(
+              cacheExtent: 500,
+              physics: const AlwaysScrollableScrollPhysics(),
+              itemCount:
+                  (cipherProvider.filteredLocalCiphers.length +
+                  versionProvider.filteredCloudVersions.length),
+              itemBuilder: (context, index) {
+                if (index >= cipherProvider.filteredLocalCiphers.length) {
+                  final cloudIndex =
+                      index - cipherProvider.filteredLocalCiphers.length;
+                  final version = versionProvider.filteredCloudVersions.values
+                      .toList()[cloudIndex];
+                  return CloudCipherCard(version: version);
+                }
 
-          final cipher = cipherProvider.filteredLocalCiphers[index];
-          return CipherWithVersionsList(cipherId: cipher!.id!);
-        },
-      ),
+                final cipher = cipherProvider.filteredLocalCiphers[index];
+                return CipherWithVersionsList(cipherId: cipher!.id!);
+              },
+            ),
     );
   }
 

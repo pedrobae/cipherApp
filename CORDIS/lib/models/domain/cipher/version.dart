@@ -100,6 +100,8 @@ class Version {
       author: cipher.author,
       language: cipher.language,
       originalKey: cipher.musicKey,
+      bpm: '',
+      tempo: cipher.tempo,
     );
   }
 

@@ -7,8 +7,8 @@ class VersionDto {
   final String? firebaseId; // ID na nuvem (Firebase)
   final String title;
   final String author;
-  final String? tempo;
-  final String? bpm;
+  final String tempo;
+  final String bpm;
   final String language;
   final List<String> tags;
   final String versionName;
@@ -27,8 +27,8 @@ class VersionDto {
     required this.sections,
     required this.title,
     required this.author,
-    this.tempo,
-    this.bpm,
+    required this.tempo,
+    required this.bpm,
     required this.language,
     this.tags = const [],
     required this.originalKey,
@@ -39,8 +39,8 @@ class VersionDto {
       firebaseId: id,
       author: map['author'] as String,
       title: map['title'] as String,
-      tempo: map['tempo'] as String?,
-      bpm: map['bpm'] as String?,
+      tempo: map['tempo'] as String? ?? '',
+      bpm: map['bpm'] as String? ?? '',
       language: map['language'] as String,
       versionName: map['versionName'] as String,
       originalKey: map['originalKey'] as String,

@@ -1,25 +1,14 @@
-<<<<<<<< HEAD:CORDIS/lib/widgets/ciphers/library/local_cipher_list.dart
 import 'package:cordis/providers/auth_provider.dart';
 import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/screens/cipher/cipher_editor.dart';
-import 'package:cordis/widgets/ciphers/library/expandible_cipher_card.dart';
 import 'package:cordis/widgets/ciphers/library/import_bottom_sheet.dart';
-========
-import 'package:cipher_app/l10n/app_localizations.dart';
-import 'package:cipher_app/providers/auth_provider.dart';
-import 'package:cipher_app/providers/cipher_provider.dart';
-import 'package:cipher_app/providers/playlist_provider.dart';
-import 'package:cipher_app/providers/selection_provider.dart';
-import 'package:cipher_app/providers/user_provider.dart';
-import 'package:cipher_app/providers/version_provider.dart';
-import 'package:cipher_app/screens/cipher/cipher_editor.dart';
-import 'package:cipher_app/widgets/ciphers/library/cipher_with_version_list.dart';
-import 'package:cipher_app/widgets/ciphers/library/cloud_cipher_card.dart';
-import 'package:cipher_app/widgets/ciphers/library/import_bottom_sheet.dart';
->>>>>>>> dydBuild:CORDIS/lib/widgets/ciphers/library/cipher_versions_scroll_view.dart
+import 'package:cordis/l10n/app_localizations.dart';
+import 'package:cordis/providers/version_provider.dart';
+import 'package:cordis/widgets/ciphers/library/cipher_with_version_list.dart';
+import 'package:cordis/widgets/ciphers/library/cloud_cipher_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -164,32 +153,25 @@ class _CipherVersionsScrollViewState extends State<CipherVersionsScrollView> {
   ) {
     return RefreshIndicator(
       onRefresh: () async {
-        await cipherProvider.loadCiphers(forceReload: true);
+        await cipherProvider.loadLocalCiphers(forceReload: true);
       },
       child: ListView.builder(
         cacheExtent: 500,
         physics: const AlwaysScrollableScrollPhysics(),
         itemCount:
             cipherProvider.filteredLocalCiphers.length +
-            cipherProvider.filteredCloudCiphers.length,
+            versionProvider.filteredCloudVersions.length,
         itemBuilder: (context, index) {
           if (index >= cipherProvider.filteredLocalCiphers.length) {
             final cloudIndex =
                 index - cipherProvider.filteredLocalCiphers.length;
-            final cipher = cipherProvider.filteredCloudCiphers[cloudIndex];
-            return CloudCipherCard(cipher: cipher);
+            final version = versionProvider.filteredCloudVersions.values
+                .toList()[cloudIndex];
+            return CloudCipherCard(version: version);
           }
 
           final cipher = cipherProvider.filteredLocalCiphers[index];
-<<<<<<<< HEAD:CORDIS/lib/widgets/ciphers/library/local_cipher_list.dart
-          return CipherCard(
-            cipher: cipher!,
-            onTap: widget.onTap,
-            onLongPress: widget.onLongPress,
-          );
-========
-          return CipherWithVersionsList(cipherId: cipher.id!);
->>>>>>>> dydBuild:CORDIS/lib/widgets/ciphers/library/cipher_versions_scroll_view.dart
+          return CipherWithVersionsList(cipherId: cipher!.id!);
         },
       ),
     );

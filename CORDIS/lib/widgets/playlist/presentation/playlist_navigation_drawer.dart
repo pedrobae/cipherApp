@@ -189,15 +189,9 @@ class PlaylistNavigationDrawer extends StatelessWidget {
   ) async {
     switch (item.type) {
       case 'cipher_version':
-<<<<<<< HEAD:CORDIS/lib/widgets/playlist/presentation/playlist_navigation_drawer.dart
-        final version = versionProvider.getVersionById(item.contentId!);
-        final cipher = cipherProvider.getCipherFromCache(version!.cipherId);
-        return cipher!.title;
-=======
-        final version = versionProvider.getCachedVersionById(item.contentId!);
-        final cipher = cipherProvider.getCachedCipherById(version.cipherId);
+        final version = versionProvider.getVersionById(item.contentId!)!;
+        final cipher = cipherProvider.getCipherFromCache(version.cipherId)!;
         return cipher.title;
->>>>>>> dydBuild:cipher_app/lib/widgets/playlist/presentation/playlist_navigation_drawer.dart
 
       case 'text_section':
         final textSection = await textSectionProvider.getTextSectionById(

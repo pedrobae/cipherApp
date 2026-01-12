@@ -45,54 +45,11 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
   Widget build(BuildContext context) {
     return Consumer<VersionProvider>(
       builder: (context, versionProvider, child) {
-<<<<<<< HEAD:CORDIS/lib/widgets/playlist/presentation/presentation_cipher_section.dart
-        final version = versionProvider.getVersionById(widget.versionId);
-
-        // If version is not cached yet, show loading indicator
-        if (version == null) {
-          return Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  const CircularProgressIndicator(),
-                  const SizedBox(height: 8),
-                  Text('Carregando cifra...'),
-                  Text('ID: ${widget.versionId}'),
-                ],
-              ),
-            ),
-          );
-        }
+        final version = versionProvider.getVersionById(widget.versionId)!;
 
         return Consumer<CipherProvider>(
           builder: (context, cipherProvider, child) {
-            final cipher = cipherProvider.getCipherFromCache(version.cipherId);
-
-            // If cipher is not cached yet, show loading indicator
-            if (cipher == null) {
-              return Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      const CircularProgressIndicator(),
-                      const SizedBox(height: 8),
-                      Text('Carregando dados da cifra...'),
-                      Text('Cipher ID: ${version.cipherId}'),
-                    ],
-                  ),
-                ),
-              );
-            }
-=======
-        final version = versionProvider.getCachedVersionById(widget.versionId);
-
-        return Consumer<CipherProvider>(
-          builder: (context, cipherProvider, child) {
-            final cipher = cipherProvider.getCachedCipherById(version.cipherId);
->>>>>>> dydBuild:cipher_app/lib/widgets/playlist/presentation/presentation_cipher_section.dart
-
+            final cipher = cipherProvider.getCipherFromCache(version.cipherId)!;
             return Consumer<LayoutSettingsProvider>(
               builder: (context, layoutProvider, child) {
                 return _buildCipherContent(cipher, version, layoutProvider);

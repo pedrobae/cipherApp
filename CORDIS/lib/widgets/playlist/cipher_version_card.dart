@@ -73,11 +73,7 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
   Widget build(BuildContext context) {
     return Consumer<VersionProvider>(
       builder: (context, versionProvider, child) {
-<<<<<<< HEAD:CORDIS/lib/widgets/playlist/cipher_version_card.dart
-        final version = versionProvider.getVersionById(widget.versionId);
-=======
-        final version = versionProvider.getCachedVersionById(widget.versionId);
->>>>>>> dydBuild:cipher_app/lib/widgets/playlist/cipher_version_card.dart
+        final version = versionProvider.getVersionById(widget.versionId)!;
 
         // If version is not cached yet, show loading indicator
         final songStructure = version.songStructure
@@ -87,21 +83,7 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
 
         return Consumer2<CipherProvider, PlaylistProvider>(
           builder: (context, cipherProvider, playlistProvider, child) {
-<<<<<<< HEAD:CORDIS/lib/widgets/playlist/cipher_version_card.dart
-            final cipher = cipherProvider.getCipherFromCache(version.cipherId);
-
-            // If cipher is not cached yet, show loading indicator
-            if (cipher == null) {
-              return const Card(
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-              );
-            }
-=======
-            final cipher = cipherProvider.getCachedCipherById(version.cipherId);
->>>>>>> dydBuild:cipher_app/lib/widgets/playlist/cipher_version_card.dart
+            final cipher = cipherProvider.getCipherFromCache(version.cipherId)!;
 
             return InkWell(
               onTap: () {

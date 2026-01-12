@@ -6,13 +6,8 @@ import 'package:cordis/providers/selection_provider.dart';
 
 class CloudCipherCard extends StatelessWidget {
   final VersionDto version;
-  final VoidCallback onTap;
 
-  const CloudCipherCard({
-    super.key,
-    required this.version,
-    required this.onTap,
-  });
+  const CloudCipherCard({super.key, required this.version});
 
   @override
   Widget build(BuildContext context) {

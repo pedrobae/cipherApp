@@ -154,7 +154,7 @@ class _CipherVersionsScrollViewState extends State<CipherVersionsScrollView> {
   ) {
     return RefreshIndicator(
       onRefresh: () async {
-        await cipherProvider.loadCiphers(forceReload: true);
+        await cipherProvider.loadLocalCiphers(forceReload: true);
       },
       child: ListView.builder(
         cacheExtent: 500,
@@ -166,8 +166,9 @@ class _CipherVersionsScrollViewState extends State<CipherVersionsScrollView> {
           if (index >= cipherProvider.filteredLocalCiphers.length) {
             final cloudIndex =
                 index - cipherProvider.filteredLocalCiphers.length;
-            final version = versionProvider.filteredCloudVersions[cloudIndex];
-            return CloudCipherCard(cipher: cipher);
+            final version = versionProvider.filteredCloudVersions.values
+                .toList()[cloudIndex];
+            return CloudCipherCard(version: version);
           }
 
           final cipher = cipherProvider.filteredLocalCiphers[index];

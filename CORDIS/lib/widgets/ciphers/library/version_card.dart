@@ -1,6 +1,6 @@
-import 'package:cipher_app/l10n/app_localizations.dart';
-import 'package:cipher_app/providers/cipher_provider.dart';
-import 'package:cipher_app/providers/version_provider.dart';
+import 'package:cordis/l10n/app_localizations.dart';
+import 'package:cordis/providers/cipher_provider.dart';
+import 'package:cordis/providers/version_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -20,8 +20,8 @@ class VersionCard extends StatelessWidget {
 
     return Consumer2<CipherProvider, VersionProvider>(
       builder: (context, cipherProvider, versionProvider, child) {
-        final version = versionProvider.getCachedVersionById(versionId);
-        final cipher = cipherProvider.getCachedCipherById(cipherId);
+        final version = versionProvider.getVersionById(versionId);
+        final cipher = cipherProvider.getCipherFromCache(cipherId)!;
         // Error handling
         if (cipherProvider.error != null || versionProvider.error != null) {
           return Container(
@@ -52,7 +52,7 @@ class VersionCard extends StatelessWidget {
                       spacing: 16.0,
                       children: [
                         Text(
-                          '${AppLocalizations.of(context)!.musicKey}: ${version.transposedKey ?? cipher.musicKey}',
+                          '${AppLocalizations.of(context)!.musicKey}: ${version!.transposedKey ?? cipher.musicKey}',
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                         cipher.tempo != ''

@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:cordis/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cordis/providers/navigation_provider.dart';
@@ -17,84 +18,137 @@ class AppDrawer extends StatelessWidget {
         return Drawer(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadiusGeometry.horizontal(
-              right: Radius.circular(50),
+              right: Radius.circular(0),
             ),
           ),
           width: math.min(
-            math.max(MediaQuery.of(context).size.width * (2 / 3), 224),
+            math.max(MediaQuery.of(context).size.width * (3 / 4), 224),
             320,
           ),
-          backgroundColor: colorScheme.surfaceContainerHighest,
+          backgroundColor: colorScheme.surface,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              DrawerHeader(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [colorScheme.primary, colorScheme.tertiary],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.symmetric(
+                        vertical: 16.0,
+                        horizontal: 16.0,
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 16.0,
+                        horizontal: 16.0,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surfaceContainerHigh,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: SizedBox(), //TODO: User info here
+                    ),
+                    Divider(
+                      color: colorScheme.surfaceContainerLowest,
+                      height: 1,
+                    ),
+                    ...navigationProvider
+                        .getNavigationItems(context, iconSize: 24)
+                        .map(
+                          (navItem) => Container(
+                            decoration: BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: colorScheme.surfaceContainerLowest,
+                                  width: 1,
+                                ),
+                              ),
+                            ),
+                            child: ListTile(
+                              leading: navItem.icon,
+                              title: Text(navItem.title),
+                              selected:
+                                  navigationProvider.currentRoute ==
+                                  navItem.route,
+                              onTap: () {
+                                navigationProvider.navigateToRoute(
+                                  navItem.route,
+                                );
+                                Navigator.of(context).pop();
+                              },
+                              trailing: Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                size: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: colorScheme.surfaceContainerLowest,
+                            width: 1,
+                          ),
+                        ),
+                      ),
+                      child: ListTile(
+                        leading: const Icon(Icons.info_outline),
+                        title: Text(AppLocalizations.of(context)!.about),
+                        onTap: () {
+                          // TODO: Show about
+                        },
+                        trailing: Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          size: 16,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: colorScheme.surfaceContainerLowest,
+                            width: 1,
+                          ),
+                        ),
+                      ),
+                      child: ListTile(
+                        leading: const Icon(Icons.settings),
+                        title: Text(AppLocalizations.of(context)!.settings),
+                        onTap: () {
+                          Navigator.of(context).popAndPushNamed('/settings');
+                        },
+                        trailing: Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          size: 16,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                child: Text(
-                  'App de Cifras',
-                  style: TextStyle(
-                    color: colorScheme.onPrimary,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
               ),
-              ListTile(
-                leading: const Icon(Icons.library_books),
-                title: const Text('Biblioteca'),
-                selected: navigationProvider.selectedIndex == 0,
-                onTap: () {
-                  navigationProvider.navigateToLibrary();
-                  Navigator.pop(context); // Close drawer
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.featured_play_list_outlined),
-                title: const Text('Playlists'),
-                selected: navigationProvider.selectedIndex == 1,
-                onTap: () {
-                  navigationProvider.navigateToPlaylists();
-                  Navigator.pop(context); // Close drawer
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.settings),
-                title: const Text('Configurações'),
-                selected: navigationProvider.selectedIndex == 2,
-                onTap: () {
-                  navigationProvider.navigateToSettings();
-                  Navigator.pop(context); // Close drawer
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.info),
-                title: const Text('Informações'),
-                selected: navigationProvider.selectedIndex == 3,
-                onTap: () {
-                  navigationProvider.navigateToInfo();
-                  Navigator.pop(context); // Close drawer
-                },
-              ),
-              // Push admin to bottom
-              const Spacer(),
-              if (authProvider.isAdmin) ...[
-                const Divider(),
-                ListTile(
-                  leading: const Icon(Icons.admin_panel_settings),
-                  title: const Text('Administração'),
-                  selected: navigationProvider.selectedIndex == 4,
+              // LOGOUT BUTTON
+              Padding(
+                padding: const EdgeInsets.only(left: 16.0, bottom: 32.0),
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
                   onTap: () {
-                    navigationProvider.navigateToAdmin();
-                    Navigator.pop(context); // Close drawer
+                    Navigator.of(context).pop();
+                    authProvider.logOut();
                   },
+                  child: Row(
+                    spacing: 16,
+                    children: [
+                      Icon(Icons.logout),
+                      Text(
+                        AppLocalizations.of(context)!.logOut,
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                    ],
+                  ),
                 ),
-              ],
+              ),
             ],
           ),
         );

@@ -1,28 +1,37 @@
-import 'package:cordis/models/dtos/version_dto.dart';
-import 'package:cordis/l10n/app_localizations.dart';
+import 'package:cipher_app/l10n/app_localizations.dart';
+import 'package:cipher_app/providers/cipher_provider.dart';
+import 'package:cipher_app/providers/version_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cordis/providers/selection_provider.dart';
 
-class CloudCipherCard extends StatelessWidget {
-  final VersionDto version;
-  final VoidCallback onTap;
-
-  const CloudCipherCard({
+class VersionCard extends StatelessWidget {
+  const VersionCard({
     super.key,
-    required this.version,
-    required this.onTap,
+    required this.versionId,
+    required this.cipherId,
   });
+  final int versionId;
+  final int cipherId;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Consumer<SelectionProvider>(
-      builder: (context, selectionProvider, child) {
+    return Consumer2<CipherProvider, VersionProvider>(
+      builder: (context, cipherProvider, versionProvider, child) {
+        final version = versionProvider.getCachedVersionById(versionId);
+        final cipher = cipherProvider.getCachedCipherById(cipherId);
+        // Error handling
+        if (cipherProvider.error != null || versionProvider.error != null) {
+          return Container(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              '${AppLocalizations.of(context)!.errorPrefix}${cipherProvider.error ?? versionProvider.error}',
+            ),
+          );
+        }
         return Container(
-          margin: const EdgeInsets.only(top: 8.0),
           decoration: BoxDecoration(
             border: Border.all(color: colorScheme.surfaceContainerHigh),
           ),
@@ -36,32 +45,32 @@ class CloudCipherCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      version.title,
+                      cipher.title,
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     Row(
                       spacing: 16.0,
                       children: [
                         Text(
-                          '${AppLocalizations.of(context)!.musicKey}: ${version.transposedKey ?? version.originalKey}',
+                          '${AppLocalizations.of(context)!.musicKey}: ${version.transposedKey ?? cipher.musicKey}',
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
-                        version.tempo != ''
+                        cipher.tempo != ''
                             ? Text(
-                                version.tempo!,
+                                cipher.tempo,
                                 style: Theme.of(context).textTheme.bodyMedium,
                               )
                             : Text('-'),
-                        version.bpm != null
+                        cipher.duration != null
                             ? Text(
-                                version.bpm!,
+                                cipher.duration!,
                                 style: Theme.of(context).textTheme.bodyMedium,
                               )
                             : Text('-'),
                       ],
                     ),
                     Text(
-                      AppLocalizations.of(context)!.cloudCipher,
+                      version.versionName,
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                         color: Theme.of(
                           context,
@@ -72,7 +81,7 @@ class CloudCipherCard extends StatelessWidget {
                 ),
               ),
               // ACTIONS
-              IconButton(onPressed: () {}, icon: Icon(Icons.cloud_download)),
+              IconButton(onPressed: () {}, icon: Icon(Icons.more_vert)),
             ],
           ),
         );

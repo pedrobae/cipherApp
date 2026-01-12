@@ -72,6 +72,13 @@ class VersionProvider extends ChangeNotifier {
     return version?.firebaseId;
   }
 
+  List<int> getVersionsByCipherId(int cipherId) {
+    return _versions.values
+        .where((version) => version.cipherId == cipherId)
+        .map((version) => version.id!)
+        .toList();
+  }
+
   // ===== CREATE =====
   /// Creates a new version to an existing cipher =====
   Future<int?> createVersion(int cipherId) async {
@@ -199,6 +206,9 @@ class VersionProvider extends ChangeNotifier {
       if (kDebugMode) {
         print('Loaded ${_versions.length} versions of cipher $cipherId');
       }
+      for (var version in versionList) {
+        _versions[version.id!] = version;
+      }
     } catch (e) {
       _error = e.toString();
       if (kDebugMode) {
@@ -224,6 +234,7 @@ class VersionProvider extends ChangeNotifier {
         throw Exception('Version with id $versionId not found locally');
       }
 
+      _versions[versionId] = version;
       _versions[versionId] = version;
       if (kDebugMode) {
         print(

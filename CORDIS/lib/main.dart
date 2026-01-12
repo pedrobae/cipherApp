@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+
+import 'package:cordis/l10n/app_localizations.dart';
 
 import 'package:cordis/providers/admin_provider.dart';
 import 'package:cordis/providers/auth_provider.dart';
@@ -62,11 +65,21 @@ class MyApp extends StatelessWidget {
         builder: (context, settingsProvider, child) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            title: 'CORDIS',
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en', ''), // English
+              Locale('pt', ''), // Portuguese
+            ],
+            title: AppLocalizations.of(context)?.appName,
             theme: settingsProvider.lightTheme,
             darkTheme: settingsProvider.darkTheme,
             themeMode: settingsProvider.themeMode,
-            initialRoute: AppRoutes.login,
+            initialRoute: AppRoutes.main,
             routes: AppRoutes.routes,
           );
         },

@@ -45,6 +45,7 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
   Widget build(BuildContext context) {
     return Consumer<VersionProvider>(
       builder: (context, versionProvider, child) {
+<<<<<<< HEAD:CORDIS/lib/widgets/playlist/presentation/presentation_cipher_section.dart
         final version = versionProvider.getVersionById(widget.versionId);
 
         // If version is not cached yet, show loading indicator
@@ -84,6 +85,13 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
                 ),
               );
             }
+=======
+        final version = versionProvider.getCachedVersionById(widget.versionId);
+
+        return Consumer<CipherProvider>(
+          builder: (context, cipherProvider, child) {
+            final cipher = cipherProvider.getCachedCipherById(version.cipherId);
+>>>>>>> dydBuild:cipher_app/lib/widgets/playlist/presentation/presentation_cipher_section.dart
 
             return Consumer<LayoutSettingsProvider>(
               builder: (context, layoutProvider, child) {

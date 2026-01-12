@@ -21,7 +21,7 @@ class DatabaseHelper {
 
       final db = await openDatabase(
         path,
-        version: 1,
+        version: 2,
         onCreate: _onCreate,
         onUpgrade: _onUpgrade, // Handle migrations
       );
@@ -49,6 +49,7 @@ class DatabaseHelper {
         title TEXT NOT NULL,
         author TEXT,
         tempo TEXT,
+        duration TEXT,
         music_key TEXT,
         language TEXT DEFAULT 'por',
         firebase_id TEXT,
@@ -228,8 +229,9 @@ class DatabaseHelper {
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     // Handle migrations between database versions
-    // if (oldVersion < 2) {
-    // }
+    if (oldVersion < 2) {
+      await db.execute('ALTER TABLE cipher ADD COLUMN duration TEXT');
+    }
   }
 
   Future<void> close() async {

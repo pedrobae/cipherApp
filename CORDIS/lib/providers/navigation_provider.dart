@@ -1,77 +1,41 @@
-import 'package:cordis/utils/design_constants.dart';
+import 'package:cordis/l10n/app_localizations.dart';
+import 'package:cordis/screens/home_screen.dart';
+import 'package:cordis/screens/cipher/cipher_library.dart';
+import 'package:cordis/screens/playlist/playlist_library.dart';
 import 'package:flutter/material.dart';
 
-class NavigationProvider extends ChangeNotifier {
-  static const String libraryRoute = '/library';
-  static const String playlistsRoute = '/playlists';
-  static const String settingsRoute = '/settings';
-  static const String infoRoute = '/info';
-  static const String homeRoute = '/home';
-  static const String admin = '/admin';
-  static const String bulkImportRoute = '/bulk_import';
-  static const String userManagementRoute = '/user_management';
+enum NavigationRoute { home, library, playlists }
 
-  int _selectedIndex = 0;
-  String _currentRoute = homeRoute;
-  String _previousRoute = '';
-  String _routeTitle = appName;
+class NavigationProvider extends ChangeNotifier {
+  NavigationRoute _currentRoute = NavigationRoute.home;
   bool _isLoading = false;
   String? _error;
 
   // Getters
-  String get currentRoute => _currentRoute;
-  String get previousRoute => _previousRoute;
-  int get selectedIndex => _selectedIndex;
-  String get routeTitle => _routeTitle;
+  NavigationRoute get currentRoute => _currentRoute;
+  int get currentIndex => _currentRoute.index;
   bool get isLoading => _isLoading;
   String? get error => _error;
-
-  /// USED BY THE MAIN SCREEN TO NAVIGATE BETWEEN CONTENT SCREENS
-
-  // Navigation methods following your provider pattern
-  void navigateToHome() {
-    _navigateToRoute(0, homeRoute);
-  }
-
-  void navigateToLibrary() {
-    _navigateToRoute(0, libraryRoute);
-  }
-
-  void navigateToPlaylists() {
-    _navigateToRoute(1, playlistsRoute);
-  }
-
-  void navigateToSettings() {
-    _navigateToRoute(2, settingsRoute);
-  }
-
-  void navigateToInfo() {
-    _navigateToRoute(3, infoRoute);
-  }
-
-  void navigateToAdmin() {
-    _navigateToRoute(4, admin);
-  }
-
-  void _navigateToRoute(int index, String route) {
-    if (_selectedIndex != index || _currentRoute != route) {
-      _previousRoute = _currentRoute;
-      _selectedIndex = index;
-      _currentRoute = route;
-      _routeTitle = _getTitleFromRoute(route);
-      _error = null; // Clear any previous errors
-      notifyListeners();
+  Widget get currentScreen {
+    switch (_currentRoute) {
+      case NavigationRoute.home:
+        return const HomeScreen();
+      case NavigationRoute.library:
+        return const CipherLibraryScreen();
+      case NavigationRoute.playlists:
+        return const PlaylistLibraryScreen();
     }
   }
 
-  // Legacy method for backward compatibility
-  void navigateTo(int index, String route) {
-    _navigateToRoute(index, route);
-  }
+  /// USED BY THE MAIN SCREEN TO NAVIGATE BETWEEN CONTENT TABS
 
-  void setCurrentRoute(String route) {
-    final index = _getIndexFromRoute(route);
-    _navigateToRoute(index, route);
+  // Navigation methods following your provider pattern
+  void navigateToRoute(NavigationRoute route) {
+    if (_currentRoute != route) {
+      _currentRoute = route;
+      _error = null; // Clear any previous errors
+      notifyListeners();
+    }
   }
 
   // Error handling following your provider pattern
@@ -95,139 +59,67 @@ class NavigationProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  int _getIndexFromRoute(String route) {
+  NavigationItem getNavigationItem(
+    BuildContext context,
+    NavigationRoute route, {
+    Color? iconColor,
+    double iconSize = 64,
+  }) {
+    return NavigationItem(
+      route: route,
+      title: _getTitleForRoute(context, route),
+      icon: _getIconForRoute(route, iconColor: iconColor, iconSize: iconSize),
+      index: route.index,
+    );
+  }
+
+  String _getTitleForRoute(BuildContext context, NavigationRoute route) {
     switch (route) {
-      case homeRoute:
-      case libraryRoute:
-        return 0;
-      case playlistsRoute:
-        return 1;
-      case settingsRoute:
-        return 2;
-      case infoRoute:
-        return 3;
-      case admin:
-        return 4;
-      default:
-        return -1;
+      case NavigationRoute.home:
+        return AppLocalizations.of(context)!.home;
+      case NavigationRoute.library:
+        return AppLocalizations.of(context)!.library;
+      case NavigationRoute.playlists:
+        return AppLocalizations.of(context)!.playlists;
     }
   }
 
-  String _getTitleFromRoute(String route) {
+  Icon _getIconForRoute(
+    NavigationRoute route, {
+    Color? iconColor,
+    double iconSize = 64,
+  }) {
     switch (route) {
-      case libraryRoute:
-        return 'Biblioteca';
-      case playlistsRoute:
-        return 'Playlists';
-      case settingsRoute:
-        return 'Configurações';
-      case infoRoute:
-        return 'Informações';
-      case homeRoute:
-        return appName;
-      case admin:
-        return 'Administração';
-      case bulkImportRoute:
-        return 'Importação em Massa';
-      case userManagementRoute:
-        return 'Gerenciamento de Usuários';
-      default:
-        return 'App de Cifras';
+      case NavigationRoute.home:
+        return Icon(Icons.home, color: iconColor, size: iconSize);
+      case NavigationRoute.library:
+        return Icon(Icons.library_music, color: iconColor, size: iconSize);
+      case NavigationRoute.playlists:
+        return Icon(Icons.playlist_play, color: iconColor, size: iconSize);
     }
-  }
-
-  // Get available navigation items for bottom navigation
-  NavigationItem getLibraryItem({Color? iconColor, double iconSize = 64}) {
-    return NavigationItem(
-      route: libraryRoute,
-      title: 'Biblioteca',
-      icon: Icon(Icons.library_music, color: iconColor, size: iconSize),
-      index: 0,
-    );
-  }
-
-  NavigationItem getPlaylistItem({Color? iconColor, double iconSize = 64}) {
-    return NavigationItem(
-      route: playlistsRoute,
-      title: 'Playlists',
-      icon: Icon(Icons.playlist_play, color: iconColor, size: iconSize),
-      index: 1,
-    );
-  }
-
-  NavigationItem getSettingsItem({Color? iconColor, double iconSize = 64}) {
-    return NavigationItem(
-      route: settingsRoute,
-      title: 'Configurações',
-      icon: Icon(Icons.settings, color: iconColor, size: iconSize),
-      index: 2,
-    );
-  }
-
-  NavigationItem getInfoItem({Color? iconColor, double iconSize = 64}) {
-    return NavigationItem(
-      route: infoRoute,
-      title: 'Informações',
-      icon: Icon(Icons.info, color: iconColor, size: iconSize),
-      index: 3,
-    );
-  }
-
-  NavigationItem getAdminItem({Color? iconColor, double iconSize = 64}) {
-    return NavigationItem(
-      route: admin,
-      title: 'Administração',
-      icon: Icon(Icons.admin_panel_settings, color: iconColor, size: iconSize),
-      index: 4,
-    );
-  }
-
-  AdminItem getBulkImportItem({Color? iconColor, double iconSize = 64}) {
-    return AdminItem(
-      route: bulkImportRoute,
-      title: 'Importação em Massa',
-      icon: Icon(Icons.upload_file, color: iconColor, size: iconSize),
-      index: 5,
-    );
-  }
-
-  AdminItem getUserManagementItem({Color? iconColor, double iconSize = 64}) {
-    return AdminItem(
-      route: '/user_management',
-      title: 'Gerenciamento de Usuários',
-      icon: Icon(
-        Icons.supervised_user_circle,
-        color: iconColor,
-        size: iconSize,
-      ),
-      index: 6,
-    );
   }
 
   // Compose navigation lists as needed
-  List<NavigationItem> getNavigationItems({
+  List<NavigationItem> getNavigationItems(
+    BuildContext context, {
     Color? iconColor,
     double iconSize = 64,
   }) {
     return [
-      getLibraryItem(iconColor: iconColor, iconSize: iconSize),
-      getPlaylistItem(iconColor: iconColor, iconSize: iconSize),
-      getSettingsItem(iconColor: iconColor, iconSize: iconSize),
-      getInfoItem(iconColor: iconColor, iconSize: iconSize),
-    ];
-  }
-
-  List<AdminItem> getAdminItems({Color? iconColor, double iconSize = 64}) {
-    return [
-      getBulkImportItem(iconColor: iconColor, iconSize: iconSize),
-      getUserManagementItem(iconColor: iconColor, iconSize: iconSize),
+      for (var route in NavigationRoute.values)
+        getNavigationItem(
+          context,
+          route,
+          iconColor: iconColor,
+          iconSize: iconSize,
+        ),
     ];
   }
 }
 
 // Helper class for navigation items
 class NavigationItem {
-  final String route;
+  final NavigationRoute route;
   final String title;
   final Icon icon;
   final int index;
@@ -240,17 +132,24 @@ class NavigationItem {
   });
 }
 
-// Helper class for admin items
-class AdminItem {
-  final String route;
+class AdminNavigationItem {
   final String title;
   final Icon icon;
-  final int index;
 
-  AdminItem({
-    required this.route,
-    required this.title,
-    required this.icon,
-    required this.index,
-  });
+  AdminNavigationItem({required this.title, required this.icon});
+}
+
+extension NavigationProviderAdmin on NavigationProvider {
+  List<AdminNavigationItem> getAdminItems({
+    Color? iconColor,
+    double iconSize = 64,
+  }) {
+    return [
+      AdminNavigationItem(
+        title: 'Gerenciamento de Usuários',
+        icon: Icon(Icons.manage_accounts, color: iconColor, size: iconSize),
+      ),
+      // Add more admin items here as needed
+    ];
+  }
 }

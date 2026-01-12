@@ -1,8 +1,10 @@
-import 'package:cordis/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
 import 'package:cordis/providers/navigation_provider.dart';
-import 'package:cordis/routes/app_routes.dart';
+import 'package:cordis/providers/auth_provider.dart';
+
 import 'package:cordis/widgets/app_drawer.dart';
 
 class MainScreen extends StatefulWidget {
@@ -15,66 +17,69 @@ class MainScreen extends StatefulWidget {
 class MainScreenState extends State<MainScreen> {
   @override
   void initState() {
-    // If somehow the currentRoute is empty, default to info
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final navigationProvider = context.read<NavigationProvider>();
-      if (navigationProvider.currentRoute.isEmpty) {
-        navigationProvider.navigateToInfo();
-      }
-    });
     super.initState();
+    context.read<AuthProvider>().addListener(_authListener);
+  }
+
+  void _authListener() {
+    final authProvider = context.read<AuthProvider>();
+    if (!authProvider.isAuthenticated) {
+      Navigator.of(context).pushNamed('/login');
+    }
+  }
+
+  @override
+  void dispose() {
+    context.read<AuthProvider>().removeListener(_authListener);
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<NavigationProvider, AuthProvider>(
-      builder: (context, navigationProvider, authProvider, child) {
-        if (navigationProvider.isLoading) {
-          return const Scaffold(
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text('Carregando...'), // Portuguese UI
-                ],
-              ),
-            ),
-          );
-        }
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
-        if (navigationProvider.error != null) {
-          return Scaffold(
-            appBar: AppBar(title: const Text('App de Cifras')),
-            drawer: const AppDrawer(),
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error, size: 64, color: Colors.red),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Erro: ${navigationProvider.error}',
-                    style: const TextStyle(color: Colors.red),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () => navigationProvider.clearError(),
-                    child: const Text('Tentar Novamente'),
-                  ),
-                ],
+    return Consumer2<AuthProvider, NavigationProvider>(
+      builder: (context, authProvider, navigationProvider, child) {
+        return Scaffold(
+          appBar: AppBar(
+            backgroundColor: colorScheme.surfaceContainer,
+            centerTitle: true,
+            title: SvgPicture.asset(
+              'assets/logos/v2_simple_color_white.svg',
+              width: 80,
+            ),
+          ),
+          drawer: AppDrawer(),
+          bottomNavigationBar: Container(
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(
+                  color: colorScheme.surfaceContainerLowest,
+                  width: 0.1,
+                ),
               ),
             ),
-          );
-        }
-        return Scaffold(
-          appBar: AppBar(title: Text(navigationProvider.routeTitle)),
-          drawer: const AppDrawer(),
-          body: AppRoutes.contentRoutes(
-            authProvider.isAdmin,
-          )[navigationProvider.currentRoute],
+            child: BottomNavigationBar(
+              currentIndex: navigationProvider.currentIndex,
+              elevation: 2,
+              onTap: (index) {
+                navigationProvider.navigateToRoute(
+                  NavigationRoute.values[index],
+                );
+              },
+              items: navigationProvider
+                  .getNavigationItems(context, iconSize: 24)
+                  .map(
+                    (navItem) => BottomNavigationBarItem(
+                      icon: navItem.icon,
+                      label: navItem.title,
+                    ),
+                  )
+                  .toList(),
+            ),
+          ),
+          body: navigationProvider.currentScreen,
         );
       },
     );

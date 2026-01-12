@@ -1,3 +1,4 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:cordis/helpers/guard.dart';
 import 'package:cordis/models/dtos/playlist_dto.dart';
 import 'package:cordis/models/dtos/version_dto.dart';
@@ -137,11 +138,25 @@ class CloudPlaylistRepository {
   }
 
   /// Enter Playlist via Share Code by adding the user as a collaborator
-  Future<void> enterPlaylist(String shareCode, String userId) async {
+  Future<String> enterPlaylist(String shareCode) async {
     return await _withErrorHandling('enter playlist via share code', () async {
       await _guardHelper.requireAuth();
 
-      // TODO - HANDLED BY CLOUD FUNCTION INSTEAD
+      final functions = FirebaseFunctions.instance;
+
+      final result = await functions.httpsCallable('joinPlaylistWithCode').call(
+        <String, dynamic>{'shareCode': shareCode},
+      );
+
+      // After successfully joining load the playlist
+      if (result.data['success'] == true) {
+        final String playlistId = result.data['playlistId'];
+        return playlistId;
+      } else {
+        throw Exception(
+          'Failed to join playlist with the provided share code.',
+        );
+      }
     });
   }
 

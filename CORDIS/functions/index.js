@@ -144,7 +144,7 @@ exports.createUserDocument = beforeUserCreated(async (event) => {
     await admin.firestore().collection("users").doc(uid).set({
       uid: uid,
       email: email || "",
-      displayName: displayName || "",
+      userName: displayName || "",
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
@@ -233,7 +233,6 @@ exports.joinPlaylistWithCode = onCall(async (request) => {
       success: true,
       message: "Successfully joined playlist",
       playlistId: playlistId,
-      playlistName: playlistData.name,
     };
   } catch (error) {
     console.error("Error in joinPlaylistWithCode:", error);

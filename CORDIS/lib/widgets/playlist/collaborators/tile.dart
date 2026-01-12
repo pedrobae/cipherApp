@@ -74,7 +74,7 @@ class CollaboratorTile extends StatelessWidget {
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () {
-              // TODO: Implement remove collaborator logic when playlistProvider Refactor
+              // TODO: Implement remove collaborator logic on layout refactor
               // playlistProvider.removeCollaborator(
               //   playlistId,
               //   user.userId,

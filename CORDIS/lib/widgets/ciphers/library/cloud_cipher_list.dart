@@ -1,5 +1,8 @@
+import 'package:cordis/models/domain/cipher/section.dart';
+import 'package:cordis/providers/section_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/providers/version_provider.dart';
+import 'package:cordis/screens/cipher/cloud_version_viewer.dart';
 import 'package:cordis/widgets/ciphers/library/cloud_cipher_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -42,6 +45,7 @@ class _CloudCipherListState extends State<CloudCipherList> {
   Widget _buildCiphersList(
     VersionProvider vp,
     SelectionProvider selectionProvider,
+    SectionProvider sectionProvider,
   ) {
     return RefreshIndicator(
       onRefresh: () async {
@@ -67,7 +71,24 @@ class _CloudCipherListState extends State<CloudCipherList> {
             child: CloudCipherCard(
               version: versionDto,
               onTap: () {
-                selectionProvider.toggleItemSelection(versionDto);
+                if (selectionProvider.isSelectionMode) {
+                  selectionProvider.toggleItemSelection(versionDto);
+                  return;
+                }
+                // Normal tap action
+                sectionProvider.setNewSectionsInCache(
+                  versionDto.firebaseId,
+                  versionDto.sections.map(
+                    (code, content) =>
+                        MapEntry(code, Section.fromFirestore(content)),
+                  ),
+                );
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        CloudVersionViewer(versionId: versionDto.firebaseId!),
+                  ),
+                );
               },
             ),
           );
@@ -137,8 +158,8 @@ class _CloudCipherListState extends State<CloudCipherList> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Consumer2<VersionProvider, SelectionProvider>(
-      builder: (context, vp, selectionProvider, child) {
+    return Consumer3<VersionProvider, SelectionProvider, SectionProvider>(
+      builder: (context, vp, selectionProvider, sectionProvider, child) {
         // Handle loading state
         if (vp.isLoadingCloud) {
           return const Center(child: CircularProgressIndicator());
@@ -207,7 +228,7 @@ class _CloudCipherListState extends State<CloudCipherList> {
         // Display cipher list
         return Stack(
           children: [
-            _buildCiphersList(vp, selectionProvider),
+            _buildCiphersList(vp, selectionProvider, sectionProvider),
             // Always show the button for animation to work
             _buildBatchDownloadButton(selectionProvider),
           ],

@@ -669,4 +669,23 @@ class PlaylistProvider extends ChangeNotifier {
     _pendingChanges.clear();
     notifyListeners();
   }
+
+  Future<void> joinPlaylist(String shareCode) async {
+    try {
+      final playlistId = await _cloudPlaylistRepository.enterPlaylist(
+        shareCode,
+      );
+      if (kDebugMode) {
+        print('Successfully joined playlist with ID: $playlistId');
+      }
+
+      // Load the joined playlist into local cache
+      await loadCloudPlaylist(playlistId);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error joining playlist with share code $shareCode: $e');
+      }
+      rethrow;
+    }
+  }
 }

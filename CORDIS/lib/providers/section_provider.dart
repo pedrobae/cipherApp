@@ -28,12 +28,14 @@ class SectionProvider extends ChangeNotifier {
   }
 
   Section? getSection(dynamic versionKey, String contentCode) {
-    if (versionKey != null &&
-        _sections.containsKey(versionKey) &&
-        _sections[versionKey]!.containsKey(contentCode)) {
-      return _sections[versionKey]![contentCode];
+    switch (versionKey.runtimeType) {
+      case const (String):
+        return _sections[versionKey]?[contentCode];
+      case const (int):
+        return _sections[versionKey]?[contentCode];
+      default:
+        return _sections[-1]?[contentCode]; // For new/importing versions
     }
-    return null;
   }
 
   /// ===== CREATE =====

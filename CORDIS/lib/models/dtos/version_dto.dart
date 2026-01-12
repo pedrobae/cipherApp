@@ -14,7 +14,7 @@ class VersionDto {
   final String versionName;
   final String originalKey;
   final String? transposedKey;
-  final String songStructure;
+  final List<String> songStructure;
   final DateTime? updatedAt;
   final Map<String, Map<String, String>> sections;
 
@@ -45,14 +45,15 @@ class VersionDto {
       versionName: map['versionName'] as String,
       originalKey: map['originalKey'] as String,
       transposedKey: map['transposedKey'] as String?,
-      tags: map['tags'] as List<String>,
-      songStructure:
-          (map['songStructure'] as List<dynamic>?)
-              ?.map((e) => e.toString())
-              .join(',') ??
-          '',
+      tags: (map['tags'] as List<dynamic>).map((e) => e.toString()).toList(),
+      songStructure: (map['songStructure'] as List<dynamic>)
+          .map((e) => e.toString())
+          .toList(),
       updatedAt: FirestoreTimestampHelper.toDateTime(map['updatedAt']),
-      sections: map['sections'] as Map<String, Map<String, String>>,
+      sections: (map['sections'] as Map<String, dynamic>).map(
+        (sectionsCode, section) =>
+            MapEntry(sectionsCode, Map<String, String>.from(section)),
+      ),
     );
   }
 
@@ -67,7 +68,7 @@ class VersionDto {
       'originalKey': originalKey,
       'transposedKey': transposedKey,
       'tags': tags,
-      'songStructure': songStructure.split(',').map((s) => s.trim()).toList(),
+      'songStructure': songStructure,
       'updatedAt': FirestoreTimestampHelper.fromDateTime(updatedAt),
       'sections': sections,
     };
@@ -86,7 +87,7 @@ class VersionDto {
       'originalKey': originalKey,
       'transposedKey': transposedKey,
       'tags': tags,
-      'songStructure': songStructure.split(',').map((s) => s.trim()).toList(),
+      'songStructure': songStructure,
       'updatedAt': FirestoreTimestampHelper.fromDateTime(updatedAt),
       'sections': sections,
     };
@@ -97,7 +98,7 @@ class VersionDto {
       firebaseId: firebaseId,
       versionName: versionName,
       transposedKey: transposedKey,
-      songStructure: songStructure.split(',').map((s) => s.trim()).toList(),
+      songStructure: songStructure,
       createdAt: updatedAt,
       sections: sections.map(
         (sectionsCode, section) =>
@@ -118,7 +119,7 @@ class VersionDto {
     String? versionName,
     String? originalKey,
     String? transposedKey,
-    String? songStructure,
+    List<String>? songStructure,
     DateTime? updatedAt,
     Map<String, Map<String, String>>? sections,
   }) {

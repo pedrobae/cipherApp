@@ -91,7 +91,7 @@ class Version {
       firebaseId: firebaseId,
       versionName: versionName,
       transposedKey: transposedKey,
-      songStructure: songStructure.join(','),
+      songStructure: songStructure,
       sections: sections!.map(
         (sectionCode, section) =>
             MapEntry(sectionCode, section.toMap() as Map<String, String>),

@@ -25,7 +25,6 @@ class VersionProvider extends ChangeNotifier {
   bool _isSaving = false;
 
   bool _isLoadingCloud = false;
-  bool _isSavingCloud = false;
   DateTime? _lastCloudLoad;
 
   String _searchTerm = '';
@@ -40,12 +39,12 @@ class VersionProvider extends ChangeNotifier {
   Map<String, VersionDto> get cloudVersions => _cloudVersions;
   Map<String, VersionDto> get filteredCloudVersions => _filteredCloudVersions;
   bool get isLoadingCloud => _isLoadingCloud;
-  bool get isSavingCloud => _isSavingCloud;
 
   String? get error => _error;
 
-  List<String> getSongStructure(dynamic versionKey) =>
-      versions[versionKey]?.songStructure ?? [];
+  List<String> getSongStructure(dynamic versionKey) => versionKey is int
+      ? _versions[versionKey]?.songStructure ?? []
+      : _cloudVersions[versionKey]?.songStructure ?? [];
 
   /// Checks if a version exists locally by its Firebase ID
   /// Returns the local id if found, otherwise null
@@ -251,6 +250,7 @@ class VersionProvider extends ChangeNotifier {
 
   void _filterCloudVersions() {
     if (_searchTerm.isEmpty) {
+      _filteredCloudVersions = Map.from(_cloudVersions);
     } else {
       _filteredCloudVersions = Map.fromEntries(
         _cloudVersions.entries
@@ -425,7 +425,7 @@ class VersionProvider extends ChangeNotifier {
       return;
     } else {
       _cloudVersions[versionId] = _cloudVersions[versionId]!.copyWith(
-        songStructure: songStructure.join(','),
+        songStructure: songStructure,
       );
       notifyListeners();
       return;
@@ -442,14 +442,8 @@ class VersionProvider extends ChangeNotifier {
       notifyListeners();
       return;
     } else {
-      final item = _cloudVersions[versionId]!.songStructure
-          .split(',')
-          .removeAt(oldIndex);
-      final structure = _cloudVersions[versionId]!.songStructure.split(',');
-      structure.insert(newIndex, item);
-      _cloudVersions[versionId] = _cloudVersions[versionId]!.copyWith(
-        songStructure: structure.join(','),
-      );
+      final item = _cloudVersions[versionId]!.songStructure.removeAt(oldIndex);
+      _cloudVersions[versionId]!.songStructure.insert(newIndex, item);
       notifyListeners();
       return;
     }
@@ -553,6 +547,10 @@ class VersionProvider extends ChangeNotifier {
     return _versions[versionId];
   }
 
+  VersionDto? getCloudVersionByFirebaseId(String firebaseId) {
+    return _cloudVersions[firebaseId];
+  }
+
   // Check if a version is already cached
   bool isVersionCached(int versionId) {
     return _versions.containsKey(versionId);
@@ -567,7 +565,7 @@ class VersionProvider extends ChangeNotifier {
       notifyListeners();
       return;
     } else {
-      _cloudVersions[versionId]!.songStructure.split(',').add(contentCode);
+      _cloudVersions[versionId]!.songStructure.add(contentCode);
       notifyListeners();
       return;
     }
@@ -587,26 +585,16 @@ class VersionProvider extends ChangeNotifier {
         }
       }
     } else {
-      List<String> structure = _cloudVersions[versionId]!.songStructure.split(
-        ',',
-      );
-      String newStructure = '';
-      for (int i = 0; i < structure.length; i++) {
-        if (structure[i] == oldCode) {
-          newStructure += newCode;
-        } else {
-          newStructure += structure[i];
-        }
-        if (i < structure.length - 1) {
-          newStructure += ',';
+      for (
+        int i = 0;
+        i < _cloudVersions[versionId]!.songStructure.length;
+        i++
+      ) {
+        if (_cloudVersions[versionId]!.songStructure[i] == oldCode) {
+          _cloudVersions[versionId]!.songStructure[i] = newCode;
         }
       }
-      _cloudVersions[versionId] = _cloudVersions[versionId]!.copyWith(
-        songStructure: newStructure,
-      );
-      return;
     }
-
     notifyListeners();
   }
 
@@ -616,13 +604,7 @@ class VersionProvider extends ChangeNotifier {
     if (versionId is int) {
       _versions[versionId]!.songStructure.removeAt(index);
     } else {
-      List<String> structure = _cloudVersions[versionId]!.songStructure.split(
-        ',',
-      );
-      structure.removeAt(index);
-      _cloudVersions[versionId] = _cloudVersions[versionId]!.copyWith(
-        songStructure: structure.join(','),
-      );
+      _cloudVersions[versionId]!.songStructure.removeAt(index);
     }
     notifyListeners();
   }
@@ -633,12 +615,8 @@ class VersionProvider extends ChangeNotifier {
         (code) => code == contentCode,
       );
     } else {
-      List<String> structure = _cloudVersions[versionId]!.songStructure.split(
-        ',',
-      );
-      structure.removeWhere((code) => code == contentCode);
-      _cloudVersions[versionId] = _cloudVersions[versionId]!.copyWith(
-        songStructure: structure.join(','),
+      _cloudVersions[versionId]!.songStructure.removeWhere(
+        (code) => code == contentCode,
       );
     }
     notifyListeners();

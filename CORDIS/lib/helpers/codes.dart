@@ -11,6 +11,5 @@ String generateShareCode() {
 }
 
 String generateFirebaseId() {
-  // TODO
-  return DateTime.now().millisecondsSinceEpoch.toString();
+  return DateTime.now().microsecondsSinceEpoch.toString();
 }

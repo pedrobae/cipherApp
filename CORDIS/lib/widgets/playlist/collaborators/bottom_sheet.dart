@@ -228,7 +228,7 @@ class _CollaboratorsBottomSheetState extends State<CollaboratorsBottomSheet> {
           ),
           ElevatedButton(
             onPressed: () {
-              // TODO - Implement on playilst provider refactors
+              // TODO - Implement on layout refactors
               // context.read<CollaboratorProvider>().addCollaborator(
               //   widget.playlist.id,
               //   user.id!,

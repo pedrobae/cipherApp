@@ -8,7 +8,7 @@ class CloudVersionsCache {
 
   Future<void> saveCloudVersions(List<VersionDto> versions) async {
     final prefs = await SharedPreferences.getInstance();
-    final jsonList = versions.map((v) => v.toFirestore()).toList();
+    final jsonList = versions.map((v) => v.toCache()).toList();
     await prefs.setString(_cacheKey, json.encode(jsonList));
   }
 

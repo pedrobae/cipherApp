@@ -78,21 +78,7 @@ class _JoinPlaylistDialogState extends State<JoinPlaylistDialog> {
     Function syncPlaylist,
   ) async {
     try {
-      // TODO Trigger Cloud function to add collaborator
-      // final currentUserId = authProvider.id;
-      //
-      // playlistId = await playlistProvider.enterPlaylist(
-      //   shareCodeController.text.trim(),
-      //   currentUserId,
-      // );
-
-      // // Load the playlist data
-      // await playlistProvider.loadCloudPlaylistById(playlistId);
-
-      // // Sync the playlist data locally
-      // widget.syncPlaylist(playlistProvider.currentCloudPlaylist!);
-
-      // Close Dialog
+      playlistProvider.joinPlaylist(shareCodeController.text);
       if (mounted) {
         Navigator.of(context).pop();
       }

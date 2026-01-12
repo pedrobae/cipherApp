@@ -28,7 +28,7 @@ class CloudPlaylistRepository {
   /// Publish a new playlist to Firestore
   /// Returns the generated document ID
   Future<String> publishPlaylist(PlaylistDto playlistDto) async {
-    return await _withErrorHandling('publish playlist', () async {
+    return await _withErrorHandling('publish_playlist', () async {
       await _guardHelper.requireAuth();
       await _guardHelper.requireOwnership(playlistDto.ownerId);
 
@@ -51,11 +51,11 @@ class CloudPlaylistRepository {
   /// Fetch playlists of a specific user ID
   /// Used when fetching playlists for a user
   Future<List<PlaylistDto>> fetchPlaylistsByUserId(String userId) async {
-    return await _withErrorHandling('fetch playlists by user ID', () async {
+    return await _withErrorHandling('fetch_playlists_by_user_id', () async {
       final querySnapshot = await _firestoreService
           .fetchDocumentsContainingValue(
             collectionPath: 'playlists',
-            field: 'collaboratorIds',
+            field: 'collaborators',
             orderField: 'updatedAt',
             value: userId,
           );
@@ -120,7 +120,7 @@ class CloudPlaylistRepository {
     String ownerId,
     Map<String, dynamic> changes,
   ) async {
-    return await _withErrorHandling('update playlist', () async {
+    return await _withErrorHandling('update_playlist', () async {
       await _guardHelper.requireAuth();
       await _guardHelper.requireOwnership(ownerId);
 
@@ -139,7 +139,7 @@ class CloudPlaylistRepository {
 
   /// Enter Playlist via Share Code by adding the user as a collaborator
   Future<String> enterPlaylist(String shareCode) async {
-    return await _withErrorHandling('enter playlist via share code', () async {
+    return await _withErrorHandling('enter_playlist_via_share_code', () async {
       await _guardHelper.requireAuth();
 
       final functions = FirebaseFunctions.instance;
@@ -165,7 +165,7 @@ class CloudPlaylistRepository {
     String versionId,
     Map<String, dynamic> changes,
   ) async {
-    return await _withErrorHandling('update playlist version', () async {
+    return await _withErrorHandling('update_playlist_version', () async {
       await _guardHelper.requireAuth();
 
       await _firestoreService.updateSubCollectionDocument(
@@ -186,7 +186,7 @@ class CloudPlaylistRepository {
   // ===== DELETE =====
   /// Delete a playlist from Firestore
   Future<void> deletePlaylist(String firebaseId, String ownerId) async {
-    return await _withErrorHandling('delete playlist', () async {
+    return await _withErrorHandling('delete_playlist', () async {
       await _guardHelper.requireAuth();
       await _guardHelper.requireOwnership(ownerId);
 
@@ -207,7 +207,7 @@ class CloudPlaylistRepository {
     String playlistId,
     String versionId,
   ) async {
-    return await _withErrorHandling('delete playlist version', () async {
+    return await _withErrorHandling('delete_playlist_version', () async {
       await _guardHelper.requireAuth();
 
       await _firestoreService.deleteSubCollectionDocument(

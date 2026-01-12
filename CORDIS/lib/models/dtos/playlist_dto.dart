@@ -44,7 +44,9 @@ class PlaylistDto {
       createdAt:
           FirestoreTimestampHelper.toDateTime(json['createdAt']) ??
           DateTime.now(),
-      collaborators: List<String>.from(json['collaborators'] ?? []),
+      collaborators: List<String>.from(
+        json['collaborators'] as List<dynamic>? ?? [],
+      ),
       shareCode: json['shareCode'] as String?,
       itemOrder:
           (json['itemOrder'] as List<dynamic>?)

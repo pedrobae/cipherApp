@@ -6,14 +6,26 @@ import 'package:provider/provider.dart';
 /// Dialog for text section editing and deletion
 class TextSectionDialog extends StatefulWidget {
   final int textSectionId;
+  final int playlistId;
 
-  const TextSectionDialog({super.key, required this.textSectionId});
+  const TextSectionDialog({
+    super.key,
+    required this.textSectionId,
+    required this.playlistId,
+  });
 
   /// Shows the text section dialog
-  static void show(BuildContext context, {required int textSectionId}) {
+  static void show(
+    BuildContext context, {
+    required int textSectionId,
+    required int playlistId,
+  }) {
     showDialog(
       context: context,
-      builder: (context) => TextSectionDialog(textSectionId: textSectionId),
+      builder: (context) => TextSectionDialog(
+        textSectionId: textSectionId,
+        playlistId: playlistId,
+      ),
     );
   }
 
@@ -231,8 +243,8 @@ class _TextSectionDialogState extends State<TextSectionDialog> {
         widget.textSectionId,
       );
 
-      playlistProvider.trackChange('textSections');
-      playlistProvider.loadLocalPlaylists();
+      playlistProvider.trackChange('textSections', widget.playlistId);
+      playlistProvider.loadPlaylist(widget.playlistId);
 
       if (mounted) {
         Navigator.pop(context); // Close confirmation dialog

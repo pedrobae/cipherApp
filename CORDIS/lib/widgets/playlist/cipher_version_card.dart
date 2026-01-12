@@ -9,6 +9,7 @@ import 'package:cordis/providers/version_provider.dart';
 import 'package:cordis/widgets/ciphers/editor/custom_reorderable_delayed.dart';
 
 class CipherVersionCard extends StatefulWidget {
+  final int playlistId;
   final int versionId;
   final int index;
   final VoidCallback onDelete;
@@ -16,6 +17,7 @@ class CipherVersionCard extends StatefulWidget {
 
   const CipherVersionCard({
     super.key,
+    required this.playlistId,
     required this.index,
     required this.versionId,
     required this.onDelete,
@@ -108,7 +110,7 @@ class _CipherVersionCardState extends State<CipherVersionCard> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => PlaylistPresentationScreen(
-                      playlistId: playlistProvider.currentPlaylist!.id,
+                      playlistId: widget.playlistId,
                       initialSectionIndex: widget.index,
                     ),
                   ),

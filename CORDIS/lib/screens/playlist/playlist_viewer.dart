@@ -61,7 +61,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
 
       // Load versions for playlist
       await versionProvider.loadVersionsForPlaylist(
-        playlistProvider.currentPlaylist!.items,
+        playlistProvider.getLocalPlaylistById(widget.playlistId)!.items,
       );
 
       // Ensure all ciphers are loaded (loads all ciphers if not already loaded)
@@ -90,7 +90,9 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
             child,
           ) {
             final colorScheme = Theme.of(context).colorScheme;
-            final playlist = playlistProvider.currentPlaylist;
+            final playlist = playlistProvider.getLocalPlaylistById(
+              widget.playlistId,
+            );
             // Handle loading state
             if (playlist == null) {
               return const Scaffold(
@@ -315,6 +317,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
     switch (item.type) {
       case 'cipher_version':
         return CipherVersionCard(
+          playlistId: widget.playlistId,
           versionId: item.contentId!,
           index: item.position,
           onDelete: () =>
@@ -326,7 +329,10 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
           ),
         );
       case 'text_section':
-        return TextSectionCard(textSectionId: item.contentId!);
+        return TextSectionCard(
+          textSectionId: item.contentId!,
+          playlistId: widget.playlistId,
+        );
       default:
         return Card(
           child: ListTile(

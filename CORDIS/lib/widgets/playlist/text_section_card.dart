@@ -5,8 +5,13 @@ import 'package:provider/provider.dart';
 
 class TextSectionCard extends StatefulWidget {
   final int textSectionId;
+  final int playlistId;
 
-  const TextSectionCard({super.key, required this.textSectionId});
+  const TextSectionCard({
+    super.key,
+    required this.textSectionId,
+    required this.playlistId,
+  });
 
   @override
   State<TextSectionCard> createState() => _TextSectionCardState();
@@ -58,6 +63,10 @@ class _TextSectionCardState extends State<TextSectionCard> {
   }
 
   void _ontap() {
-    TextSectionDialog.show(context, textSectionId: widget.textSectionId);
+    TextSectionDialog.show(
+      context,
+      textSectionId: widget.textSectionId,
+      playlistId: widget.playlistId,
+    );
   }
 }

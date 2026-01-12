@@ -44,9 +44,7 @@ class _PlaylistPresentationScreenState
       final playlistProvider = context.read<PlaylistProvider>();
       // Load versions for playlist
       await versionProvider.loadVersionsForPlaylist(
-        playlistProvider.playlists
-            .firstWhere((p) => p.id == widget.playlistId)
-            .items,
+        playlistProvider.getLocalPlaylistById(widget.playlistId)!.items,
       );
 
       // Ensure all ciphers are loaded (loads all ciphers if not already loaded)
@@ -82,10 +80,9 @@ class _PlaylistPresentationScreenState
     return Consumer3<PlaylistProvider, LayoutSettingsProvider, VersionProvider>(
       builder:
           (context, playlistProvider, layoutProvider, versionProvider, child) {
-            final playlist = playlistProvider.playlists.firstWhere(
-              (p) => p.id == widget.playlistId,
-              orElse: () => throw Exception('Playlist not found'),
-            );
+            final playlist = playlistProvider.getLocalPlaylistById(
+              widget.playlistId,
+            )!;
 
             // Generate keys for each item for scroll targeting
             for (int i = 0; i < playlist.items.length; i++) {

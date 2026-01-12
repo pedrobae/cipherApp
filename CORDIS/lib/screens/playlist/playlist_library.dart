@@ -100,7 +100,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                     );
                   }
                   // Handle empty state
-                  if (playlistProvider.playlists.isEmpty) {
+                  if (playlistProvider.localPlaylists.isEmpty) {
                     return const EmptyStateWidget(
                       icon: Icons.playlist_play,
                       title: 'Nenhuma playlist encontrada',
@@ -120,9 +120,10 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                     },
                     child: ListView.builder(
                       padding: const EdgeInsets.all(8),
-                      itemCount: playlistProvider.playlists.length,
+                      itemCount: playlistProvider.localPlaylists.length,
                       itemBuilder: (context, index) {
-                        final playlist = playlistProvider.playlists[index];
+                        final playlist =
+                            playlistProvider.localPlaylists[index]!;
                         return PlaylistCard(
                           playlist: playlist,
                           onTap: () => _onPlaylistTap(
@@ -181,7 +182,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
       await playlistProvider.loadCloudPlaylists(authProvider.id!);
 
       // Copy the list to avoid concurrent modification issues
-      final playlistsToSync = playlistProvider.cloudPlaylists.toList();
+      final playlistsToSync = playlistProvider.cloudPlaylists.values.toList();
 
       for (final playlistDto in playlistsToSync) {
         await _syncPlaylist(

@@ -146,10 +146,7 @@ class _TextSectionDialogState extends State<NewTextSectionDialog> {
         ),
       );
       // Refresh the playlist to show updated text section
-      playlistProvider.trackChange(
-        'textSections',
-        playlistId: widget.playlist.id,
-      );
+      playlistProvider.trackChange('textSections', widget.playlist.id);
       playlistProvider.loadPlaylist(widget.playlist.id);
 
       if (mounted) {

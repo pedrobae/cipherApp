@@ -213,7 +213,7 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen>
           userProvider.getLocalIdByFirebaseId(authProvider.id!)!,
         );
         versionProvider.loadVersionsForPlaylist(
-          playlistProvider.currentPlaylist!.items,
+          playlistProvider.getLocalPlaylistById(widget.playlistId!)!.items,
         );
         Navigator.pop(context);
       } catch (error) {

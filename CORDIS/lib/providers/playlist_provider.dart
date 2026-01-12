@@ -13,15 +13,15 @@ class PlaylistProvider extends ChangeNotifier {
 
   PlaylistProvider();
 
-  List<Playlist> _playlists = [];
-  List<PlaylistDto> _cloudPlaylists = [];
-  Playlist? _currentPlaylist;
-  PlaylistDto? _currentCloudPlaylist;
+  final Map<int, Playlist> _localPlaylists = {};
   bool _isLoading = false;
-  bool _isCloudLoading = false;
   bool _isSaving = false;
-  bool _isCloudSaving = false;
   bool _isDeleting = false;
+
+  final Map<String, PlaylistDto> _cloudPlaylists = {};
+  bool _isCloudLoading = false;
+  bool _isCloudSaving = false;
+
   String? _error;
 
   // Track changes per playlist for efficient cloud syncing
@@ -29,24 +29,32 @@ class PlaylistProvider extends ChangeNotifier {
   final Map<int, Map<String, dynamic>> _pendingChanges = {};
 
   // Getters
-  List<Playlist> get playlists => _playlists;
-  List<PlaylistDto> get cloudPlaylists => _cloudPlaylists;
-  Playlist? get currentPlaylist => _currentPlaylist;
-  PlaylistDto? get currentCloudPlaylist => _currentCloudPlaylist;
+  Map<int, Playlist> get localPlaylists => _localPlaylists;
   bool get isLoading => _isLoading;
-  bool get isCloudLoading => _isCloudLoading;
   bool get isSaving => _isSaving;
-  bool get isCloudSaving => _isCloudSaving;
   bool get isDeleting => _isDeleting;
+
+  Map<String, PlaylistDto> get cloudPlaylists => _cloudPlaylists;
+  bool get isCloudLoading => _isCloudLoading;
+  bool get isCloudSaving => _isCloudSaving;
+
   String? get error => _error;
 
-  Playlist? getPlaylistByFirebaseId(String firebaseId) {
-    for (var p in _playlists) {
+  Playlist? getLocalPlaylistByFirebaseId(String firebaseId) {
+    for (var p in _localPlaylists.values) {
       if (p.firebaseId == firebaseId) {
         return p;
       }
     }
     return null;
+  }
+
+  Playlist? getLocalPlaylistById(int id) {
+    return _localPlaylists[id];
+  }
+
+  PlaylistDto? getCloudPlaylistById(String firebaseId) {
+    return _cloudPlaylists[firebaseId];
   }
 
   // Check if a playlist has pending changes to upload
@@ -60,122 +68,8 @@ class PlaylistProvider extends ChangeNotifier {
     return _pendingChanges[playlistId];
   }
 
-  // ===== READ =====
-  // Load Playlists from local SQLite database
-  Future<void> loadLocalPlaylists() async {
-    if (_isLoading) return;
-
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      _playlists = await _playlistRepository.getAllPlaylists();
-    } catch (e) {
-      _error = e.toString();
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  // Load all cloud playlists of a specific user
-  Future<void> loadCloudPlaylists(String userId) async {
-    if (_isCloudLoading) return;
-
-    _isCloudLoading = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      final cloudPlaylists = await _cloudPlaylistRepository
-          .fetchPlaylistsByUserId(userId);
-
-      _cloudPlaylists = cloudPlaylists;
-    } catch (e) {
-      _error = e.toString();
-    } finally {
-      _isLoading = false;
-      _isCloudLoading = false;
-      notifyListeners();
-    }
-  }
-
-  // Load Single Playlist by ID
-  Future<void> loadPlaylist(int id) async {
-    if (_isLoading) return;
-
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      final Playlist playlist = (await _playlistRepository.getPlaylistById(
-        id,
-      ))!;
-      _currentPlaylist = playlist;
-
-      /// Upsert the playlist on the _playlists list
-      int existingIndex = _playlists.indexWhere((p) => p.id == playlist.id);
-      if (existingIndex != -1) {
-        _playlists[existingIndex] = playlist;
-      } else {
-        _playlists.add(playlist);
-      }
-    } catch (e) {
-      _error = e.toString();
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  // Load Single Playlist by Firebase ID
-  Future<void> loadCloudPlaylist(String firebaseId) async {
-    if (_isCloudLoading) return;
-
-    _isCloudLoading = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      final cloudDto = await _cloudPlaylistRepository.fetchPlaylistById(
-        firebaseId,
-      );
-
-      if (cloudDto == null) {
-        _error = 'Playlist não encontrada na nuvem.';
-        return;
-      }
-
-      _currentCloudPlaylist = cloudDto;
-    } catch (e) {
-      _error = e.toString();
-    } finally {
-      _isCloudLoading = false;
-      notifyListeners();
-    }
-  }
-
-  /// Load Single Playlist by Share Code
-  Future<void> loadCloudPlaylistById(String playlistId) async {
-    try {
-      final playlistDto = await _cloudPlaylistRepository.fetchPlaylistById(
-        playlistId,
-      );
-
-      if (playlistDto == null) {
-        throw Exception('Playlist not found with ID $playlistId.');
-      }
-
-      _currentCloudPlaylist = playlistDto;
-    } catch (e) {
-      throw Exception('Error loading playlist by ID: $e');
-    }
-  }
-
   // ===== CREATE =====
-  // Create a new playlist from scratch
+  // Create a new playlist from local cache
   Future<void> createPlaylist(Playlist playlist) async {
     if (_isSaving) return;
 
@@ -184,10 +78,13 @@ class PlaylistProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      if (_localPlaylists[-1] == null) {
+        throw Exception('No playlist found to create.');
+      }
       int id = await _playlistRepository.insertPlaylist(playlist);
 
-      // Add the created playlist directly to cache
-      _playlists.add(playlist.copyWith(id: id));
+      // Add the created playlist with new ID directly to cache
+      _localPlaylists[id] = _localPlaylists[id]!.copyWith(id: id);
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -216,6 +113,98 @@ class PlaylistProvider extends ChangeNotifier {
     }
   }
 
+  // ===== READ =====
+  // Load Playlists from local SQLite database
+  Future<void> loadLocalPlaylists() async {
+    if (_isLoading) return;
+
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final playlist = await _playlistRepository.getAllPlaylists();
+      for (var p in playlist) {
+        _localPlaylists[p.id] = p;
+      }
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // Load all cloud playlists of a specific user
+  Future<void> loadCloudPlaylists(String userId) async {
+    if (_isCloudLoading) return;
+
+    _isCloudLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final cloudPlaylists = await _cloudPlaylistRepository
+          .fetchPlaylistsByUserId(userId);
+      for (var p in cloudPlaylists) {
+        _cloudPlaylists[p.firebaseId!] = p;
+      }
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
+      _isCloudLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // Load Single Playlist by ID
+  Future<void> loadPlaylist(int id) async {
+    if (_isLoading) return;
+
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final Playlist playlist = (await _playlistRepository.getPlaylistById(
+        id,
+      ))!;
+      _localPlaylists[playlist.id] = playlist;
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // Load Single Playlist From Firestore by Firebase ID
+  Future<void> loadCloudPlaylist(String firebaseId) async {
+    if (_isCloudLoading) return;
+
+    _isCloudLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final cloudDto = await _cloudPlaylistRepository.fetchPlaylistById(
+        firebaseId,
+      );
+
+      if (cloudDto == null) {
+        throw Exception('Playlist não encontrada na nuvem');
+      }
+
+      _cloudPlaylists[cloudDto.firebaseId!] = cloudDto;
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isCloudLoading = false;
+      notifyListeners();
+    }
+  }
+
   // ===== UPDATE =====
   // Update a Playlist with new data (name/description)
   Future<void> updateMetadata(int id, String? name, String? description) async {
@@ -225,7 +214,7 @@ class PlaylistProvider extends ChangeNotifier {
     });
 
     // Track metadata changes
-    trackChange('metadata', playlistId: id);
+    trackChange('metadata', id);
 
     await loadPlaylist(id); // Reload just this playlist
   }
@@ -273,7 +262,7 @@ class PlaylistProvider extends ChangeNotifier {
     );
 
     // Track added version
-    trackChange('versions', playlistId: playlistId);
+    trackChange('versions', playlistId);
 
     await loadPlaylist(playlistId);
   }
@@ -336,7 +325,7 @@ class PlaylistProvider extends ChangeNotifier {
       await _playlistRepository.savePlaylistOrder(playlist.id, changedList);
 
       // Track item reordering
-      trackChange('itemsReordered', playlistId: playlist.id);
+      trackChange('itemsReordered', playlist.id);
     } catch (e) {
       _rollbackItemOrders(playlist, originalItems);
       notifyListeners();
@@ -389,8 +378,7 @@ class PlaylistProvider extends ChangeNotifier {
 
     try {
       await _playlistRepository.deletePlaylist(playlistId);
-      int i = _playlists.indexWhere((p) => p.id == playlistId);
-      _playlists.removeAt(i);
+      _localPlaylists.remove(playlistId);
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -401,17 +389,10 @@ class PlaylistProvider extends ChangeNotifier {
 
   // Remove a Cipher Map from a Playlist
   Future<void> removeVersionFromPlaylist(int itemId, int playlistId) async {
-    // Get the version ID before removing (for change tracking)
-    final playlist = _playlists.firstWhere((p) => p.id == playlistId);
-    final item = playlist.items.firstWhere((i) => i.id == itemId);
-    final versionId = item.contentId;
-
     await _playlistRepository.removeVersionFromPlaylist(itemId, playlistId);
 
     // Track removed version
-    if (versionId != null) {
-      trackChange('versions', playlistId: playlistId);
-    }
+    trackChange('versions', playlistId);
 
     await loadPlaylist(playlistId);
   }
@@ -423,7 +404,7 @@ class PlaylistProvider extends ChangeNotifier {
     List<Map<String, dynamic>> versionSectionItems,
     List<Map<String, dynamic>> textSectionItems,
   ) {
-    final playlist = _playlists.firstWhere((p) => p.id == playlistId);
+    final playlist = _localPlaylists[playlistId]!;
 
     List<int> textItemsToPrune = [];
     List<int> versionItemsToPrune = [];
@@ -471,26 +452,20 @@ class PlaylistProvider extends ChangeNotifier {
   // Sync playlist from cloud with existing local playlist
   // Assumes users and versions have already been synced/loaded beforehand
   Future<void> syncPlaylist(
-    PlaylistDto cloudDto,
+    String firebaseId,
     int ownerLocalId, {
     List<PlaylistItem>? items,
   }) async {
     // Merge cloud playlists with local ones, avoiding duplicates
-    final existingIndex = _playlists.indexWhere(
-      (p) => p.firebaseId == cloudDto.firebaseId,
-    );
-
-    final existingPlaylist = existingIndex != -1
-        ? _playlists[existingIndex]
-        : null;
-
+    final cloudDto = _cloudPlaylists[firebaseId];
+    final existingPlaylist = getLocalPlaylistByFirebaseId(firebaseId);
     if (existingPlaylist != null) {
       // Update existing playlist with cloud data
       // Compare timestamps? - only update if cloud is newer?
       try {
         // Update playlist metadata (name, description, timestamps)
         await _playlistRepository.updatePlaylist(existingPlaylist.id, {
-          'name': cloudDto.name,
+          'name': cloudDto!.name,
           'description': cloudDto.description,
           'updated_at': cloudDto.updatedAt.toIso8601String(),
           'is_public': cloudDto.isPublic ? 1 : 0,
@@ -510,7 +485,7 @@ class PlaylistProvider extends ChangeNotifier {
       }
     } else {
       await _playlistRepository.insertPlaylist(
-        cloudDto.toDomain(items!, ownerLocalId),
+        cloudDto!.toDomain(items!, ownerLocalId),
       );
     }
   }
@@ -572,7 +547,7 @@ class PlaylistProvider extends ChangeNotifier {
 
   // Clear cached data and reset state
   void clearCache() {
-    _playlists.clear();
+    _localPlaylists.clear();
     _error = null;
     _isLoading = false;
     _isSaving = false;
@@ -582,11 +557,7 @@ class PlaylistProvider extends ChangeNotifier {
 
   // ===== CHANGE TRACKING & CLOUD SYNC =====
   /// Track a change for later upload to cloud
-  void trackChange(String changeType, {int? playlistId}) {
-    playlistId ??= _currentPlaylist!.id;
-
-    _pendingChanges.putIfAbsent(playlistId, () => {});
-
+  void trackChange(String changeType, int playlistId) {
     _pendingChanges[playlistId]![changeType] = true;
 
     if (kDebugMode) {

@@ -42,7 +42,9 @@ class _CollaboratorListState extends State<CollaboratorList> {
           );
         }
 
-        final userIds = playlistProvider.currentPlaylist?.collaborators;
+        final userIds = playlistProvider
+            .getLocalPlaylistById(widget.playlistId)
+            ?.collaborators;
         final users = userProvider.getUsersByFirebaseIds(userIds ?? []);
 
         if (users.isEmpty) {

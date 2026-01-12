@@ -43,13 +43,13 @@ class CloudCipherCard extends StatelessWidget {
                         ),
                         version.tempo != ''
                             ? Text(
-                                version.tempo!,
+                                version.tempo,
                                 style: Theme.of(context).textTheme.bodyMedium,
                               )
                             : Text('-'),
-                        version.bpm != null
+                        version.bpm != ''
                             ? Text(
-                                version.bpm!,
+                                version.bpm,
                                 style: Theme.of(context).textTheme.bodyMedium,
                               )
                             : Text('-'),

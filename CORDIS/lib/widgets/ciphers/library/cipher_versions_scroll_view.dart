@@ -42,9 +42,6 @@ class _CipherVersionsScrollViewState extends State<CipherVersionsScrollView> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
     return Consumer3<CipherProvider, SelectionProvider, VersionProvider>(
       builder:
           (context, cipherProvider, selectionProvider, versionProvider, child) {

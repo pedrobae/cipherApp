@@ -233,7 +233,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
             musicKey: versionDto.originalKey,
             tags: versionDto.tags,
             updatedAt: versionDto.updatedAt,
-            tempo: versionDto.tempo ?? '',
+            tempo: versionDto.tempo,
             isLocal: false,
           ),
         );

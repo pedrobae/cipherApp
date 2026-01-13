@@ -1,6 +1,6 @@
 {
   "@@locale": "pt",
-  "appName": "Worship Link",
+  "appName": "CORDIS",
   "@appName": {},
   "email": "E-mail",
   "@email": {},
@@ -61,5 +61,7 @@
   "settings": "Configurações",
   "@settings": {},
   "logOut": "Sair",
-  "@logOut": {}
+  "@logOut": {},
+  "schedule": "Agenda",
+  "@schedule": {}
 }

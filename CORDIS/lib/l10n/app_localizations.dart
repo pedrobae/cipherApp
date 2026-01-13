@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// No description provided for @appName.
   ///
   /// In pt, this message translates to:
-  /// **'Worship Link'**
+  /// **'CORDIS'**
   String get appName;
 
   /// No description provided for @email.
@@ -259,6 +259,12 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Sair'**
   String get logOut;
+
+  /// No description provided for @schedule.
+  ///
+  /// In pt, this message translates to:
+  /// **'Agenda'**
+  String get schedule;
 }
 
 class _AppLocalizationsDelegate

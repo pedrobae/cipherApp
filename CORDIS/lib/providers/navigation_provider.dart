@@ -4,7 +4,7 @@ import 'package:cordis/screens/cipher/cipher_library.dart';
 import 'package:cordis/screens/playlist/playlist_library.dart';
 import 'package:flutter/material.dart';
 
-enum NavigationRoute { home, library, playlists }
+enum NavigationRoute { home, library, playlists, schedule }
 
 class NavigationProvider extends ChangeNotifier {
   NavigationRoute _currentRoute = NavigationRoute.home;
@@ -24,6 +24,8 @@ class NavigationProvider extends ChangeNotifier {
         return const CipherLibraryScreen();
       case NavigationRoute.playlists:
         return const PlaylistLibraryScreen();
+      case NavigationRoute.schedule:
+        return const HomeScreen(); // TODO: Replace with ScheduleScreen when implemented
     }
   }
 
@@ -62,13 +64,19 @@ class NavigationProvider extends ChangeNotifier {
   NavigationItem getNavigationItem(
     BuildContext context,
     NavigationRoute route, {
-    Color? iconColor,
+    Color? color,
+    Color? activeColor,
     double iconSize = 64,
   }) {
     return NavigationItem(
       route: route,
       title: _getTitleForRoute(context, route),
-      icon: _getIconForRoute(route, iconColor: iconColor, iconSize: iconSize),
+      icon: _getIconForRoute(route, iconColor: color, iconSize: iconSize),
+      activeIcon: _getIconForRoute(
+        route,
+        iconColor: activeColor,
+        iconSize: iconSize,
+      ),
       index: route.index,
     );
   }
@@ -81,6 +89,8 @@ class NavigationProvider extends ChangeNotifier {
         return AppLocalizations.of(context)!.library;
       case NavigationRoute.playlists:
         return AppLocalizations.of(context)!.playlists;
+      case NavigationRoute.schedule:
+        return AppLocalizations.of(context)!.schedule;
     }
   }
 
@@ -96,13 +106,16 @@ class NavigationProvider extends ChangeNotifier {
         return Icon(Icons.library_music, color: iconColor, size: iconSize);
       case NavigationRoute.playlists:
         return Icon(Icons.playlist_play, color: iconColor, size: iconSize);
+      case NavigationRoute.schedule:
+        return Icon(Icons.calendar_today, color: iconColor, size: iconSize);
     }
   }
 
   // Compose navigation lists as needed
   List<NavigationItem> getNavigationItems(
     BuildContext context, {
-    Color? iconColor,
+    Color? color,
+    Color? activeColor,
     double iconSize = 64,
   }) {
     return [
@@ -110,7 +123,8 @@ class NavigationProvider extends ChangeNotifier {
         getNavigationItem(
           context,
           route,
-          iconColor: iconColor,
+          color: color,
+          activeColor: activeColor,
           iconSize: iconSize,
         ),
     ];
@@ -122,12 +136,14 @@ class NavigationItem {
   final NavigationRoute route;
   final String title;
   final Icon icon;
+  final Icon activeIcon;
   final int index;
 
   NavigationItem({
     required this.route,
     required this.title,
     required this.icon,
+    required this.activeIcon,
     required this.index,
   });
 }

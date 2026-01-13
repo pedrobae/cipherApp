@@ -62,6 +62,17 @@ class MainScreenState extends State<MainScreen> {
             ),
             child: BottomNavigationBar(
               currentIndex: navigationProvider.currentIndex,
+              selectedLabelStyle: TextStyle(
+                color: colorScheme.primary,
+                fontSize: 12,
+              ),
+              unselectedLabelStyle: TextStyle(
+                color: colorScheme.onSurface,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+              showUnselectedLabels: true,
+              type: BottomNavigationBarType.fixed,
               elevation: 2,
               onTap: (index) {
                 navigationProvider.navigateToRoute(
@@ -69,11 +80,18 @@ class MainScreenState extends State<MainScreen> {
                 );
               },
               items: navigationProvider
-                  .getNavigationItems(context, iconSize: 24)
+                  .getNavigationItems(
+                    context,
+                    iconSize: 24,
+                    color: colorScheme.onSurface,
+                    activeColor: theme.colorScheme.primary,
+                  )
                   .map(
                     (navItem) => BottomNavigationBarItem(
                       icon: navItem.icon,
                       label: navItem.title,
+                      backgroundColor: colorScheme.surface,
+                      activeIcon: navItem.activeIcon,
                     ),
                   )
                   .toList(),

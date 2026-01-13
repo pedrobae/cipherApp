@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 import 'package:cordis/l10n/app_localizations.dart';
@@ -65,12 +64,7 @@ class MyApp extends StatelessWidget {
         builder: (context, settingsProvider, child) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
+            localizationsDelegates: const [AppLocalizations.delegate],
             supportedLocales: const [
               Locale('en', ''), // English
               Locale('pt', ''), // Portuguese

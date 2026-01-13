@@ -9,7 +9,7 @@ class AppLocalizationsPt extends AppLocalizations {
   AppLocalizationsPt([String locale = 'pt']) : super(locale);
 
   @override
-  String get appName => 'Worship Link';
+  String get appName => 'CORDIS';
 
   @override
   String get email => 'E-mail';
@@ -89,4 +89,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get logOut => 'Sair';
+
+  @override
+  String get schedule => 'Agenda';
 }

@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "appName": "Worship Link",
+  "appName": "CORDIS",
   "@appName": {},
   "email": "Email",
   "@email": {},
@@ -10,7 +10,7 @@
   "@home": {},
   "playlists": "Playlists",
   "@playlists": {},
-  "logInTitlePrefix": "Login to ",
+  "logInTitlePrefix": "Sign in to ",
   "@logInTitlePrefix": {
     "description": "Prefix to use in conjunction with appName"
   },
@@ -60,6 +60,8 @@
   "@about": {},
   "settings": "Settings",
   "@settings": {},
-  "logOut": "Log Out",
-  "@logOut": {}
+  "logOut": "Sign Out",
+  "@logOut": {},
+  "schedule": "Schedule",
+  "@schedule": {}
 }

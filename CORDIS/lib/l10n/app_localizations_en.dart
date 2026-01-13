@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appName => 'Worship Link';
+  String get appName => 'CORDIS';
 
   @override
   String get email => 'Email';
@@ -24,7 +24,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get playlists => 'Playlists';
 
   @override
-  String get logInTitlePrefix => 'Login to ';
+  String get logInTitlePrefix => 'Sign in to ';
 
   @override
   String get password => 'Password';
@@ -87,5 +87,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings => 'Settings';
 
   @override
-  String get logOut => 'Log Out';
+  String get logOut => 'Sign Out';
+
+  @override
+  String get schedule => 'Schedule';
 }

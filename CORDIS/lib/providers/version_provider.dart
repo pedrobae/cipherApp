@@ -83,6 +83,7 @@ class VersionProvider extends ChangeNotifier {
     return version?.firebaseId;
   }
 
+  // === Versions of a cipher ===
   List<int> getVersionsByCipherId(int cipherId) {
     return _localVersions.values
         .where((version) => version.cipherId == cipherId)
@@ -94,6 +95,14 @@ class VersionProvider extends ChangeNotifier {
     return _localVersions.values
         .where((version) => version.cipherId == cipherId)
         .length;
+  }
+
+  int getIdOfOldestVersionOfCipher(int cipherId) {
+    final versions = _localVersions.values
+        .where((version) => version.cipherId == cipherId)
+        .toList();
+    versions.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+    return versions.first.id!;
   }
 
   // ===== CREATE =====

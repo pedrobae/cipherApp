@@ -99,7 +99,7 @@ class VersionDto {
       versionName: versionName,
       transposedKey: transposedKey,
       songStructure: songStructure,
-      createdAt: updatedAt,
+      createdAt: updatedAt ?? DateTime.now(),
       sections: sections.map(
         (sectionsCode, section) =>
             MapEntry(sectionsCode, Section.fromFirestore(section)),

@@ -12,13 +12,9 @@ import 'package:cordis/widgets/ciphers/viewer/version_selector.dart';
 
 class CipherViewer extends StatefulWidget {
   final int cipherId;
-  final int versionId;
+  final int? versionId;
 
-  const CipherViewer({
-    super.key,
-    required this.cipherId,
-    required this.versionId,
-  });
+  const CipherViewer({super.key, required this.cipherId, this.versionId});
 
   @override
   State<CipherViewer> createState() => _CipherViewerState();
@@ -27,10 +23,16 @@ class CipherViewer extends StatefulWidget {
 class _CipherViewerState extends State<CipherViewer>
     with SingleTickerProviderStateMixin {
   bool _hasSetOriginalKey = false;
+  late int versionId;
 
   @override
   void initState() {
     super.initState();
+    versionId =
+        widget.versionId ??
+        context.read<VersionProvider>().getIdOfOldestVersionOfCipher(
+          widget.cipherId,
+        );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadData();
     });
@@ -38,13 +40,9 @@ class _CipherViewerState extends State<CipherViewer>
 
   Future<void> _loadData() async {
     if (!mounted) return;
-    final cipherProvider = context.read<CipherProvider>();
-    final versionProvider = context.read<VersionProvider>();
     final sectionProvider = context.read<SectionProvider>();
 
-    await cipherProvider.loadCipher(widget.cipherId);
-    await versionProvider.loadCurrentVersion(widget.versionId);
-    await sectionProvider.loadSections(widget.versionId);
+    await sectionProvider.loadSections(versionId);
   }
 
   void _addNewVersion() {
@@ -74,15 +72,12 @@ class _CipherViewerState extends State<CipherViewer>
     await sectionProvider.loadSections(versionId);
   }
 
-  void _showVersionSelector() {
-    final cipherProvider = context.read<CipherProvider>();
-    final versionProvider = context.read<VersionProvider>();
-
+  void _showVersionSelector(VersionProvider versionProvider) {
     showModalBottomSheet(
       context: context,
       builder: (context) => VersionSelectorBottomSheet(
-        currentVersion: versionProvider.getVersionById(widget.versionId)!,
-        versions: cipherProvider.getCipherFromCache(widget.cipherId)!.versions,
+        versionIds: versionProvider.getVersionsByCipherId(widget.cipherId),
+        currentVersionId: versionId,
         onVersionSelected: _selectVersion,
         onNewVersion: _addNewVersion,
       ),
@@ -170,9 +165,7 @@ class _CipherViewerState extends State<CipherViewer>
             }
 
             final cipher = cipherProvider.getCipherFromCache(widget.cipherId);
-            final currentVersion = versionProvider.getVersionById(
-              widget.versionId,
-            )!;
+            final currentVersion = versionProvider.getVersionById(versionId)!;
             final hasVersions = cipher!.versions.isNotEmpty;
 
             // Set original key for transposer
@@ -211,7 +204,7 @@ class _CipherViewerState extends State<CipherViewer>
                     IconButton(
                       icon: const Icon(Icons.library_music),
                       tooltip: 'Versões',
-                      onPressed: _showVersionSelector,
+                      onPressed: () => _showVersionSelector(versionProvider),
                     ),
                     IconButton(
                       icon: const Icon(Icons.edit),

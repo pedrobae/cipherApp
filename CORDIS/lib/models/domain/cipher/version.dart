@@ -9,7 +9,7 @@ class Version {
   final String versionName;
   final String? transposedKey;
   final List<String> songStructure; // Changed from String to List<String>
-  final DateTime? createdAt;
+  final DateTime createdAt;
   final Map<String, Section>? sections;
 
   const Version({
@@ -19,7 +19,7 @@ class Version {
     this.versionName = 'Original',
     this.transposedKey,
     this.songStructure = const [],
-    this.createdAt,
+    required this.createdAt,
     this.sections,
   });
 
@@ -39,7 +39,7 @@ class Version {
       versionName: json['version_name'] as String,
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'])
-          : null,
+          : DateTime.now(),
       sections: versionContentMap,
     );
   }
@@ -65,7 +65,7 @@ class Version {
       versionName: row['version_name'] as String,
       createdAt: row['created_at'] != null
           ? DateTime.parse(row['created_at'])
-          : null,
+          : DateTime.now(),
       sections: null, // Will be populated separately by repository
     );
   }
@@ -78,7 +78,7 @@ class Version {
       'song_structure': songStructure.join(','),
       'transposed_key': transposedKey,
       'version_name': versionName,
-      'created_at': createdAt?.toIso8601String(),
+      'created_at': createdAt.toIso8601String(),
     };
   }
 
@@ -148,6 +148,7 @@ class Version {
       songStructure: [],
       transposedKey: '',
       sections: {},
+      createdAt: DateTime.now(),
     );
   }
 

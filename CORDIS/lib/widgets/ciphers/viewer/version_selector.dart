@@ -1,25 +1,33 @@
-import 'package:cordis/models/domain/cipher/version.dart';
+import 'package:cordis/providers/version_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class VersionSelectorBottomSheet extends StatelessWidget {
-  final List<Version> versions;
-  final Version currentVersion;
+  final List<int> versionIds;
+  final int currentVersionId;
   final Function(int) onVersionSelected;
   final VoidCallback onNewVersion;
 
   const VersionSelectorBottomSheet({
     super.key,
-    required this.versions,
-    required this.currentVersion,
+    required this.versionIds,
+    required this.currentVersionId,
     required this.onVersionSelected,
     required this.onNewVersion,
   });
 
   @override
   Widget build(BuildContext context) {
+    final version = context.watch<VersionProvider>().getVersionById(
+      currentVersionId,
+    )!;
+
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Container(
       padding: const EdgeInsets.all(16),
-      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+      color: colorScheme.surfaceContainerHighest,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -33,9 +41,9 @@ class VersionSelectorBottomSheet extends StatelessWidget {
               ),
               Text(
                 'Versões da Cifra',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
 
               const Spacer(),
@@ -51,7 +59,7 @@ class VersionSelectorBottomSheet extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
-          if (versions.isEmpty)
+          if (versionIds.isEmpty)
             const Center(
               child: Padding(
                 padding: EdgeInsets.all(32),
@@ -64,29 +72,26 @@ class VersionSelectorBottomSheet extends StatelessWidget {
           else
             ListView.separated(
               shrinkWrap: true,
-              itemCount: versions.length,
+              itemCount: versionIds.length,
               separatorBuilder: (context, index) => const Divider(),
               itemBuilder: (context, index) {
-                final version = versions[index];
-                final isSelected = version.id == currentVersion.id;
-
+                final versionId = versionIds[index];
+                final isSelected = versionId == currentVersionId;
                 return ListTile(
                   leading: Container(
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? Theme.of(context).colorScheme.primary
-                          : Theme.of(
-                              context,
-                            ).colorScheme.surfaceContainerHighest,
+                          ? colorScheme.primary
+                          : colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
                       isSelected ? Icons.check : Icons.music_note,
                       color: isSelected
-                          ? Theme.of(context).colorScheme.onPrimary
-                          : Theme.of(context).colorScheme.onSurfaceVariant,
+                          ? colorScheme.onPrimary
+                          : colorScheme.onSurfaceVariant,
                     ),
                   ),
                   title: Text(
@@ -100,17 +105,16 @@ class VersionSelectorBottomSheet extends StatelessWidget {
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (version.createdAt != null)
-                        Text(
-                          'Criada em ${_formatDate(version.createdAt!)}',
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
+                      Text(
+                        'Criada em ${_formatDate(version.createdAt)}',
+                        style: theme.textTheme.bodySmall,
+                      ),
                     ],
                   ),
                   trailing: isSelected
                       ? Icon(
                           Icons.radio_button_checked,
-                          color: Theme.of(context).colorScheme.primary,
+                          color: colorScheme.primary,
                         )
                       : const Icon(Icons.radio_button_unchecked),
                   onTap: () {

@@ -205,6 +205,7 @@ class ParsingServiceBase {
           songStructure: result.songStructure,
           versionName: 'Imported',
           cipherId: -1,
+          createdAt: DateTime.now(),
         ),
       ],
       title: variant.metadata['title'] ?? 'Unknown Title',

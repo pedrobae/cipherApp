@@ -146,7 +146,7 @@ class LocalCipherRepository {
       // Insert new tags
       if (cipher.tags.isNotEmpty) {
         for (final tagTitle in cipher.tags) {
-          await _addTagInTransaction(txn, cipher.id!, tagTitle);
+          await _addTagInTransaction(txn, cipher.id, tagTitle);
         }
       }
     });

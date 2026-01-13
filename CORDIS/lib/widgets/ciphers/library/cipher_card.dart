@@ -55,7 +55,7 @@ class _CipherCardState extends State<CipherCard> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => CipherViewer(cipherId: cipher.id!),
+                      builder: (context) => CipherViewer(cipherId: cipher.id),
                     ),
                   );
                 },

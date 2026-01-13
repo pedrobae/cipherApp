@@ -15,7 +15,7 @@ import 'package:cordis/providers/auth_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/screens/cipher/cipher_library.dart';
 import 'package:cordis/screens/playlist/playlist_presentation.dart';
-import 'package:cordis/widgets/playlist/cipher_version_card.dart';
+import 'package:cordis/widgets/playlist/playlist_version_card.dart';
 import 'package:cordis/widgets/playlist/text_section_card.dart';
 import 'package:cordis/widgets/ciphers/editor/custom_reorderable_delayed.dart';
 import 'package:cordis/widgets/playlist/collaborators/bottom_sheet.dart';
@@ -316,7 +316,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
   ) {
     switch (item.type) {
       case 'cipher_version':
-        return CipherVersionCard(
+        return PlaylistVersionCard(
           playlistId: widget.playlistId,
           versionId: item.contentId!,
           index: item.position,

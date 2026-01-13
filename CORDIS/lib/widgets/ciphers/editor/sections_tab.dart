@@ -10,16 +10,16 @@ import 'package:cordis/widgets/ciphers/editor/reorderable_structure_chips.dart';
 import 'package:cordis/widgets/ciphers/editor/sections/token_content_editor.dart';
 import 'package:cordis/utils/section_constants.dart';
 
-class VersionForm extends StatefulWidget {
+class SectionsTab extends StatefulWidget {
   final dynamic versionId;
 
-  const VersionForm({super.key, required this.versionId});
+  const SectionsTab({super.key, required this.versionId});
 
   @override
-  State<VersionForm> createState() => _VersionFormState();
+  State<SectionsTab> createState() => _SectionsTabState();
 }
 
-class _VersionFormState extends State<VersionForm> {
+class _SectionsTabState extends State<SectionsTab> {
   Timer? _debounceTimer;
 
   void _addSection(

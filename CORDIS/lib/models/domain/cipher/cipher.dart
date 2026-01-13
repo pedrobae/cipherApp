@@ -2,13 +2,13 @@ import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:cordis/helpers/datetime.dart';
 
 class Cipher {
-  final int? id;
+  final int id;
   final String title;
   final String author;
   final String tempo;
   final String musicKey;
   final String language;
-  final DateTime? createdAt;
+  final DateTime createdAt;
   final DateTime? updatedAt;
   final bool isLocal;
   final List<String> tags;
@@ -16,14 +16,14 @@ class Cipher {
   final String? duration;
 
   const Cipher({
-    this.id,
+    required this.id,
     required this.title,
     required this.author,
     required this.tempo,
     this.tags = const [],
     required this.musicKey,
     required this.language,
-    this.createdAt,
+    required this.createdAt,
     this.updatedAt,
     required this.isLocal,
     this.duration,
@@ -33,14 +33,15 @@ class Cipher {
   // From JSON constructor for database
   factory Cipher.fromSqLite(Map<String, dynamic> json) {
     return Cipher(
-      id: json['id'] as int?,
+      id: json['id'] as int,
       title: json['title'] as String? ?? '',
       author: json['author'] as String? ?? '',
       tempo: json['tempo'] as String? ?? '',
       tags: json['tags'] != null ? List<String>.from(json['tags']) : const [],
       musicKey: json['music_key'] as String? ?? '',
       language: json['language'] as String? ?? 'por',
-      createdAt: DatetimeHelper.parseDateTime(json['created_at']),
+      createdAt:
+          DatetimeHelper.parseDateTime(json['created_at']) ?? DateTime.now(),
       updatedAt: DatetimeHelper.parseDateTime(json['updated_at']),
       isLocal: json['isLocal'] as bool? ?? true, // Default to true for local DB
       versions: json['maps'] != null
@@ -50,11 +51,12 @@ class Cipher {
     );
   }
 
-  bool get isNew => id == null;
+  bool get isNew => id == -1;
 
   // Empty Cipher factory
   factory Cipher.empty() {
     return Cipher(
+      id: -1,
       title: '',
       author: '',
       musicKey: 'C',
@@ -63,6 +65,7 @@ class Cipher {
       isLocal: true,
       tags: [],
       versions: [],
+      createdAt: DateTime.now(),
     );
   }
 
@@ -75,7 +78,7 @@ class Cipher {
       'tempo': tempo,
       'music_key': musicKey,
       'language': language,
-      'created_at': createdAt?.toIso8601String(),
+      'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
       'duration': duration,
     };
@@ -90,7 +93,7 @@ class Cipher {
       'tempo': tempo,
       'music_key': musicKey,
       'language': language,
-      'created_at': createdAt?.toIso8601String(),
+      'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
       'isLocal': false,
       'tags': tags,

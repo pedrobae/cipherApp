@@ -2,22 +2,21 @@ import 'package:cordis/providers/cipher_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class CipherForm extends StatefulWidget {
+class InfoTab extends StatefulWidget {
   final int cipherId;
 
-  const CipherForm({super.key, required this.cipherId});
+  const InfoTab({super.key, required this.cipherId});
 
   @override
-  State<CipherForm> createState() => _CipherFormState();
+  State<InfoTab> createState() => _InfoTabState();
 }
 
-class _CipherFormState extends State<CipherForm> {
+class _InfoTabState extends State<InfoTab> {
   final titleController = TextEditingController();
   final authorController = TextEditingController();
   final tempoController = TextEditingController();
   final musicKeyController = TextEditingController();
   final languageController = TextEditingController();
-  final tagsController = TextEditingController();
 
   @override
   void didChangeDependencies() {
@@ -28,16 +27,15 @@ class _CipherFormState extends State<CipherForm> {
   void _syncWithProviderData() {
     if (mounted) {
       final cipherProvider = context.read<CipherProvider>();
-      final cipher = cipherProvider.getCipherFromCache(widget.cipherId);
+      final cipher = cipherProvider.getCipherFromCache(widget.cipherId)!;
 
       // Only sync if cipher has changed or if we haven't initialized yet
 
-      titleController.text = cipher?.title ?? '';
-      authorController.text = cipher?.author ?? '';
-      tempoController.text = cipher?.tempo ?? '';
-      musicKeyController.text = cipher?.musicKey ?? '';
-      languageController.text = cipher?.language ?? '';
-      tagsController.text = cipher?.tags.join(', ') ?? '';
+      titleController.text = cipher.title;
+      authorController.text = cipher.author;
+      tempoController.text = cipher.tempo;
+      musicKeyController.text = cipher.musicKey;
+      languageController.text = cipher.language;
     }
   }
 
@@ -48,7 +46,6 @@ class _CipherFormState extends State<CipherForm> {
     tempoController.dispose();
     musicKeyController.dispose();
     languageController.dispose();
-    tagsController.dispose();
     super.dispose();
   }
 
@@ -127,18 +124,6 @@ class _CipherFormState extends State<CipherForm> {
               label: 'Idioma',
               hint: 'Ex: Português, Inglês',
               prefixIcon: Icons.language,
-            ),
-            const SizedBox(height: 16),
-
-            _buildTextField(
-              field: 'tags',
-              cipherProvider: cipherProvider,
-              context: context,
-              controller: tagsController,
-              label: 'Tags (opcional)',
-              hint: 'Separe por vírgula: louvor, adoração, natal',
-              prefixIcon: Icons.tag,
-              maxLines: 2,
             ),
           ],
         );

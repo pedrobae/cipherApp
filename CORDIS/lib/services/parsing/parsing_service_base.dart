@@ -199,6 +199,7 @@ class ParsingServiceBase {
     ImportVariant variant,
   ) {
     return Cipher(
+      id: -1, // Temporary ID, will be set in upsert
       versions: [
         Version(
           sections: result.parsedSections,
@@ -208,6 +209,7 @@ class ParsingServiceBase {
           createdAt: DateTime.now(),
         ),
       ],
+      createdAt: DateTime.now(),
       title: variant.metadata['title'] ?? 'Unknown Title',
       author: variant.metadata['artist'] ?? 'Unknown Artist',
       tempo: variant.metadata['tempo'] ?? '',

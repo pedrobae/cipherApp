@@ -227,6 +227,8 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
       for (final versionDto in playlistDto.versions) {
         await cipherProvider.upsertCipher(
           Cipher(
+            id: -1, // Temporary ID, will be set in upsert
+            createdAt: versionDto.updatedAt ?? DateTime.now(),
             title: versionDto.title,
             author: versionDto.author,
             language: versionDto.language,

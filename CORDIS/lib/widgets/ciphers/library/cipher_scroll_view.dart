@@ -171,8 +171,8 @@ class _CipherScrollViewState extends State<CipherScrollView> {
                   return CloudCipherCard(version: version);
                 }
 
-                final cipher = cipherProvider.filteredLocalCiphers[index];
-                return CipherCard(cipherId: cipher!.id!);
+                final cipher = cipherProvider.filteredLocalCiphers[index]!;
+                return CipherCard(cipherId: cipher.id);
               },
             ),
     );

@@ -63,7 +63,7 @@ class CipherProvider extends ChangeNotifier {
     try {
       _localCiphers = Map.fromEntries(
         (await _cipherRepository.getAllCiphersPruned()).map(
-          (cipher) => MapEntry(cipher.id!, cipher),
+          (cipher) => MapEntry(cipher.id, cipher),
         ),
       );
       _filterLocalCiphers();
@@ -118,7 +118,7 @@ class CipherProvider extends ChangeNotifier {
       final cipher = (await _cipherRepository.getCipherWithVersionId(
         versionId,
       ))!;
-      _localCiphers[cipher.id!] = cipher;
+      _localCiphers[cipher.id] = cipher;
     } catch (e) {
       _error = e.toString();
       if (kDebugMode) {
@@ -226,7 +226,7 @@ class CipherProvider extends ChangeNotifier {
           .id;
 
       int cipherId;
-      if (existingId != null) {
+      if (existingId != -1) {
         await _cipherRepository.updateCipher(cipher.copyWith(id: existingId));
         cipherId = existingId;
       } else {

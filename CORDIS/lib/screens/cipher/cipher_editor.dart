@@ -7,8 +7,8 @@ import 'package:provider/provider.dart';
 import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/version_provider.dart';
 import 'package:cordis/providers/section_provider.dart';
-import 'package:cordis/widgets/ciphers/editor/cipher_form.dart';
-import 'package:cordis/widgets/ciphers/editor/version_form.dart';
+import 'package:cordis/widgets/ciphers/editor/info_tab.dart';
+import 'package:cordis/widgets/ciphers/editor/sections_tab.dart';
 
 class EditCipher extends StatefulWidget {
   final int? cipherId; // Null for new cipher
@@ -134,14 +134,14 @@ class _EditCipherState extends State<EditCipher>
                 child: Column(
                   children: [
                     // Basic cipher info
-                    CipherForm(cipherId: widget.cipherId ?? -1),
+                    InfoTab(cipherId: widget.cipherId ?? -1),
                   ],
                 ),
               ),
               // Content Tab
               SingleChildScrollView(
                 padding: const EdgeInsets.all(16.0),
-                child: VersionForm(versionId: widget.versionId),
+                child: SectionsTab(versionId: widget.versionId),
               ),
             ],
           ),

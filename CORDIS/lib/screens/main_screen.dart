@@ -75,9 +75,11 @@ class MainScreenState extends State<MainScreen> {
               type: BottomNavigationBarType.fixed,
               elevation: 2,
               onTap: (index) {
-                navigationProvider.navigateToRoute(
-                  NavigationRoute.values[index],
-                );
+                if (mounted) {
+                  navigationProvider.navigateToRoute(
+                    NavigationRoute.values[index],
+                  );
+                }
               },
               items: navigationProvider
                   .getNavigationItems(

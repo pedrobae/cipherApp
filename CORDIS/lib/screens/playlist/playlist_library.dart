@@ -235,8 +235,9 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
             musicKey: versionDto.originalKey,
             tags: versionDto.tags,
             updatedAt: versionDto.updatedAt,
-            tempo: versionDto.tempo,
+            duration: versionDto.duration,
             isLocal: false,
+            bpm: versionDto.bpm,
           ),
         );
         final cipherId = cipherProvider.getLocalCipherIdByTitle(

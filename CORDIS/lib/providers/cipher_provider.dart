@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cordis/widgets/ciphers/editor/info_tab.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cordis/models/domain/cipher/cipher.dart';
 import 'package:cordis/repositories/local_cipher_repository.dart';
@@ -275,31 +276,43 @@ class CipherProvider extends ChangeNotifier {
   }
 
   /// Update cache with non tag changes
-  void cacheCipherUpdates(int cipherId, String field, String change) {
+  void cacheCipherUpdates(int cipherId, InfoField field, String change) {
     if (kDebugMode) {
       print('Caching change for field $field: $change');
     }
-    if (field == 'title') {
-      _localCiphers[cipherId] = _localCiphers[cipherId]!.copyWith(
-        title: change,
-      );
-    } else if (field == 'author') {
-      _localCiphers[cipherId] = _localCiphers[cipherId]!.copyWith(
-        author: change,
-      );
-    } else if (field == 'tempo') {
-      _localCiphers[cipherId] = _localCiphers[cipherId]!.copyWith(
-        tempo: change,
-      );
-    } else if (field == 'musicKey') {
-      _localCiphers[cipherId] = _localCiphers[cipherId]!.copyWith(
-        musicKey: change,
-      );
-    } else if (field == 'language') {
-      _localCiphers[cipherId] = _localCiphers[cipherId]!.copyWith(
-        language: change,
-      );
+    switch (field) {
+      case InfoField.title:
+        _localCiphers[cipherId] = _localCiphers[cipherId]!.copyWith(
+          title: change,
+        );
+        break;
+      case InfoField.author:
+        _localCiphers[cipherId] = _localCiphers[cipherId]!.copyWith(
+          author: change,
+        );
+        break;
+      case InfoField.bpm:
+        _localCiphers[cipherId] = _localCiphers[cipherId]!.copyWith(
+          bpm: change,
+        );
+        break;
+      case InfoField.musicKey:
+        _localCiphers[cipherId] = _localCiphers[cipherId]!.copyWith(
+          musicKey: change,
+        );
+        break;
+      case InfoField.language:
+        _localCiphers[cipherId] = _localCiphers[cipherId]!.copyWith(
+          language: change,
+        );
+        break;
+      case InfoField.duration:
+        _localCiphers[cipherId] = _localCiphers[cipherId]!.copyWith(
+          duration: change,
+        );
+        break;
     }
+    notifyListeners();
   }
 
   /// Update cache with tag changes

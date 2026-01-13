@@ -69,9 +69,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get musicKey => 'Key';
 
   @override
-  String get musicTempo => 'Tempo';
-
-  @override
   String get noCiphersFound => 'No Song Map found';
 
   @override
@@ -103,4 +100,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sections => 'Sections';
+
+  @override
+  String get title => 'Title';
+
+  @override
+  String get author => 'Author';
+
+  @override
+  String get bpm => 'BPM';
+
+  @override
+  String get language => 'Language';
+
+  @override
+  String get duration => 'Duration';
 }

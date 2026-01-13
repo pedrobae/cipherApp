@@ -48,8 +48,6 @@
   "@sort": {},
   "musicKey": "Key",
   "@musicKey": {},
-  "musicTempo": "Tempo",
-  "@musicTempo": {},
   "noCiphersFound": "No Song Map found",
   "@noCiphersFound": {  "description": "Message displayed when no ciphers are found"  },
   "addToPlaylist": "Add to Playlist",
@@ -73,5 +71,15 @@
   "info": "Info",
   "@info": {},
   "sections": "Sections",
-  "@sections": {}
+  "@sections": {},
+  "title": "Title",
+  "@title": {},
+  "author": "Author",
+  "@author": {},
+  "bpm": "BPM",
+  "@bpm": {},
+  "language": "Language",
+  "@language": {},
+  "duration": "Duration",
+  "@duration": {}
 }

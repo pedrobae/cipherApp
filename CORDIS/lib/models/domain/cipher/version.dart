@@ -101,7 +101,8 @@ class Version {
       language: cipher.language,
       originalKey: cipher.musicKey,
       bpm: '',
-      tempo: cipher.tempo,
+      duration: cipher.duration,
+      tags: cipher.tags,
     );
   }
 

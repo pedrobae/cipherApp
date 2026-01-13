@@ -218,12 +218,6 @@ abstract class AppLocalizations {
   /// **'Tom'**
   String get musicKey;
 
-  /// No description provided for @musicTempo.
-  ///
-  /// In pt, this message translates to:
-  /// **'Andamento'**
-  String get musicTempo;
-
   /// Message displayed when no ciphers are found
   ///
   /// In pt, this message translates to:
@@ -289,6 +283,36 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Seções'**
   String get sections;
+
+  /// No description provided for @title.
+  ///
+  /// In pt, this message translates to:
+  /// **'Título'**
+  String get title;
+
+  /// No description provided for @author.
+  ///
+  /// In pt, this message translates to:
+  /// **'Autor'**
+  String get author;
+
+  /// No description provided for @bpm.
+  ///
+  /// In pt, this message translates to:
+  /// **'BPM'**
+  String get bpm;
+
+  /// No description provided for @language.
+  ///
+  /// In pt, this message translates to:
+  /// **'Idioma'**
+  String get language;
+
+  /// No description provided for @duration.
+  ///
+  /// In pt, this message translates to:
+  /// **'Duração'**
+  String get duration;
 }
 
 class _AppLocalizationsDelegate

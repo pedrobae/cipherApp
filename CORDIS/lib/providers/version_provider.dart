@@ -4,6 +4,7 @@ import 'package:cordis/models/domain/playlist/playlist_item.dart';
 import 'package:cordis/models/dtos/version_dto.dart';
 import 'package:cordis/repositories/cloud_version_repository.dart';
 import 'package:cordis/repositories/local_cipher_repository.dart';
+import 'package:cordis/widgets/ciphers/editor/info_tab.dart';
 import 'package:flutter/foundation.dart';
 
 class VersionProvider extends ChangeNotifier {
@@ -486,6 +487,50 @@ class VersionProvider extends ChangeNotifier {
       notifyListeners();
       return;
     }
+  }
+
+  /// Cache a change to the cloud version metadata
+  void cacheCloudMetadataUpdate(
+    String versionFirebaseId,
+    InfoField field,
+    String newValue,
+  ) {
+    if (!_cloudVersions.containsKey(versionFirebaseId)) {
+      if (kDebugMode) {
+        print(
+          'Cannot cache update for cloud version $versionFirebaseId: not in cache',
+        );
+      }
+      return;
+    }
+
+    switch (field) {
+      case InfoField.title:
+        _cloudVersions[versionFirebaseId] = _cloudVersions[versionFirebaseId]!
+            .copyWith(title: newValue);
+        break;
+      case InfoField.author:
+        _cloudVersions[versionFirebaseId] = _cloudVersions[versionFirebaseId]!
+            .copyWith(author: newValue);
+        break;
+      case InfoField.bpm:
+        _cloudVersions[versionFirebaseId] = _cloudVersions[versionFirebaseId]!
+            .copyWith(bpm: newValue);
+        break;
+      case InfoField.musicKey:
+        _cloudVersions[versionFirebaseId] = _cloudVersions[versionFirebaseId]!
+            .copyWith(transposedKey: newValue);
+        break;
+      case InfoField.language:
+        _cloudVersions[versionFirebaseId] = _cloudVersions[versionFirebaseId]!
+            .copyWith(language: newValue);
+        break;
+      case InfoField.duration:
+        _cloudVersions[versionFirebaseId] = _cloudVersions[versionFirebaseId]!
+            .copyWith(duration: newValue);
+        break;
+    }
+    notifyListeners();
   }
 
   /// ===== DELETE - cipher version =====

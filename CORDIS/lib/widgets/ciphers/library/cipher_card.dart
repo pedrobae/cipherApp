@@ -77,17 +77,17 @@ class _CipherCardState extends State<CipherCard> {
                                 '${AppLocalizations.of(context)!.musicKey}: ${cipher.musicKey}',
                                 style: Theme.of(context).textTheme.bodyMedium,
                               ),
-                              cipher.tempo != ''
+                              cipher.bpm != ''
                                   ? Text(
-                                      cipher.tempo,
+                                      cipher.bpm,
                                       style: Theme.of(
                                         context,
                                       ).textTheme.bodyMedium,
                                     )
                                   : Text('-'),
-                              cipher.duration != null
+                              cipher.duration != ''
                                   ? Text(
-                                      cipher.duration!,
+                                      cipher.duration,
                                       style: Theme.of(
                                         context,
                                       ).textTheme.bodyMedium,

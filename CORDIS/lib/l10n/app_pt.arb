@@ -48,8 +48,6 @@
   "@sort": {},
   "musicKey": "Tom",
   "@musicKey": {},
-  "musicTempo": "Andamento",
-  "@musicTempo": {},
   "noCiphersFound": "Nenhuma cifra encontrada",
   "@noCiphersFound": {  "description": "Message displayed when no ciphers are found"  },
   "addToPlaylist": "Adicionar à Playlist",
@@ -73,5 +71,15 @@
   "info": "Informações",
   "@info": {},
   "sections": "Seções",
-  "@sections": {}
+  "@sections": {},
+  "title": "Título",
+  "@title": {},
+  "author": "Autor",
+  "@author": {},
+  "bpm": "BPM",
+  "@bpm": {},
+  "language": "Idioma",
+  "@language": {},
+  "duration": "Duração",
+  "@duration": {}
 }

@@ -7,8 +7,8 @@ class VersionDto {
   final String? firebaseId; // ID na nuvem (Firebase)
   final String title;
   final String author;
-  final String tempo;
   final String bpm;
+  final String duration;
   final String language;
   final List<String> tags;
   final String versionName;
@@ -21,17 +21,17 @@ class VersionDto {
   VersionDto({
     this.firebaseId,
     required this.versionName,
-    this.transposedKey,
     required this.songStructure,
     this.updatedAt,
     required this.sections,
     required this.title,
     required this.author,
-    required this.tempo,
     required this.bpm,
+    required this.duration,
     required this.language,
     this.tags = const [],
     required this.originalKey,
+    this.transposedKey,
   });
 
   factory VersionDto.fromFirestore(Map<String, dynamic> map, String id) {
@@ -39,7 +39,7 @@ class VersionDto {
       firebaseId: id,
       author: map['author'] as String,
       title: map['title'] as String,
-      tempo: map['tempo'] as String? ?? '',
+      duration: map['duration'] as String? ?? '',
       bpm: map['bpm'] as String? ?? '',
       language: map['language'] as String,
       versionName: map['versionName'] as String,
@@ -61,7 +61,7 @@ class VersionDto {
     return {
       'author': author,
       'title': title,
-      'tempo': tempo,
+      'duration': duration,
       'bpm': bpm,
       'language': language,
       'versionName': versionName,
@@ -80,7 +80,7 @@ class VersionDto {
       'firebaseId': firebaseId,
       'author': author,
       'title': title,
-      'tempo': tempo,
+      'duration': duration,
       'bpm': bpm,
       'language': language,
       'versionName': versionName,
@@ -112,7 +112,7 @@ class VersionDto {
     String? firebaseId,
     String? title,
     String? author,
-    String? tempo,
+    String? duration,
     String? bpm,
     String? language,
     List<String>? tags,
@@ -127,7 +127,7 @@ class VersionDto {
       firebaseId: firebaseId ?? this.firebaseId,
       title: title ?? this.title,
       author: author ?? this.author,
-      tempo: tempo ?? this.tempo,
+      duration: duration ?? this.duration,
       bpm: bpm ?? this.bpm,
       language: language ?? this.language,
       tags: tags ?? this.tags,

@@ -5,7 +5,8 @@ class Cipher {
   final int id;
   final String title;
   final String author;
-  final String tempo;
+  final String bpm;
+  final String duration;
   final String musicKey;
   final String language;
   final DateTime createdAt;
@@ -13,20 +14,19 @@ class Cipher {
   final bool isLocal;
   final List<String> tags;
   final List<Version> versions;
-  final String? duration;
 
   const Cipher({
     required this.id,
     required this.title,
     required this.author,
-    required this.tempo,
+    required this.bpm,
     this.tags = const [],
     required this.musicKey,
     required this.language,
     required this.createdAt,
     this.updatedAt,
     required this.isLocal,
-    this.duration,
+    required this.duration,
     this.versions = const [],
   });
 
@@ -36,7 +36,7 @@ class Cipher {
       id: json['id'] as int,
       title: json['title'] as String? ?? '',
       author: json['author'] as String? ?? '',
-      tempo: json['tempo'] as String? ?? '',
+      bpm: json['bpm'] as String? ?? '',
       tags: json['tags'] != null ? List<String>.from(json['tags']) : const [],
       musicKey: json['music_key'] as String? ?? '',
       language: json['language'] as String? ?? 'por',
@@ -47,7 +47,7 @@ class Cipher {
       versions: json['maps'] != null
           ? (json['maps'] as List).map((m) => Version.fromSqLite(m)).toList()
           : const [],
-      duration: json['duration'] as String?,
+      duration: json['duration'] as String? ?? '',
     );
   }
 
@@ -61,7 +61,8 @@ class Cipher {
       author: '',
       musicKey: 'C',
       language: 'pt-BR',
-      tempo: '',
+      bpm: '',
+      duration: '',
       isLocal: true,
       tags: [],
       versions: [],
@@ -75,7 +76,7 @@ class Cipher {
       'id': isNew ? null : id,
       'title': title,
       'author': author,
-      'tempo': tempo,
+      'bpm': bpm,
       'music_key': musicKey,
       'language': language,
       'created_at': createdAt.toIso8601String(),
@@ -90,7 +91,7 @@ class Cipher {
       'id': id,
       'title': title,
       'author': author,
-      'tempo': tempo,
+      'bpm': bpm,
       'music_key': musicKey,
       'language': language,
       'created_at': createdAt.toIso8601String(),
@@ -106,7 +107,8 @@ class Cipher {
     return {
       'title': title,
       'author': author,
-      'tempo': tempo,
+      'bpm': bpm,
+      'duration': duration,
       'originalKey': musicKey,
       'language': language,
       'updatedAt': updatedAt,
@@ -119,7 +121,7 @@ class Cipher {
     String? firebaseId,
     String? title,
     String? author,
-    String? tempo,
+    String? bpm,
     List<String>? tags,
     String? musicKey,
     String? language,
@@ -133,7 +135,7 @@ class Cipher {
       id: id ?? this.id,
       title: title ?? this.title,
       author: author ?? this.author,
-      tempo: tempo ?? this.tempo,
+      bpm: bpm ?? this.bpm,
       tags: tags ?? this.tags,
       musicKey: musicKey ?? this.musicKey,
       language: language ?? this.language,

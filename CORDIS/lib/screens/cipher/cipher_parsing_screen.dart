@@ -208,8 +208,7 @@ class _CipherParsingScreenState extends State<CipherParsingScreen>
                       children: [
                         Text('Título: ${cipher.title}'),
                         Text('Artista: ${cipher.author}'),
-                        if (cipher.tempo.isNotEmpty)
-                          Text('Tempo: ${cipher.tempo}'),
+                        if (cipher.bpm.isNotEmpty) Text('Tempo: ${cipher.bpm}'),
                         if (cipher.musicKey.isNotEmpty)
                           Text('Tom: ${cipher.musicKey}'),
                       ],

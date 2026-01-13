@@ -70,9 +70,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get musicKey => 'Tom';
 
   @override
-  String get musicTempo => 'Andamento';
-
-  @override
   String get noCiphersFound => 'Nenhuma cifra encontrada';
 
   @override
@@ -104,4 +101,19 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get sections => 'Seções';
+
+  @override
+  String get title => 'Título';
+
+  @override
+  String get author => 'Autor';
+
+  @override
+  String get bpm => 'BPM';
+
+  @override
+  String get language => 'Idioma';
+
+  @override
+  String get duration => 'Duração';
 }

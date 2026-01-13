@@ -12,31 +12,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appName => 'CORDIS';
 
   @override
-  String get email => 'Email';
+  String get home => 'Home';
 
   @override
   String get library => 'Library';
 
   @override
-  String get home => 'Home';
-
-  @override
   String get playlists => 'Playlists';
 
   @override
-  String get logInTitlePrefix => 'Sign in to ';
+  String get settings => 'Settings';
+
+  @override
+  String get about => 'About';
+
+  @override
+  String get schedule => 'Schedule';
+
+  @override
+  String get email => 'Email';
 
   @override
   String get password => 'Password';
 
   @override
-  String get forgotPassword => 'Forgot Password?';
-
-  @override
-  String get forgotPasswordSuffix => 'Please try again or Request a new one.';
-
-  @override
   String get login => 'Log In';
+
+  @override
+  String get logInTitlePrefix => 'Sign in to ';
+
+  @override
+  String get logOut => 'Sign Out';
 
   @override
   String get accountCreationPrefix => 'New User? ';
@@ -45,13 +51,49 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accountCreationSuffix => 'Sign Up';
 
   @override
-  String get loading => 'Loading...';
+  String get forgotPassword => 'Forgot Password?';
 
   @override
-  String get errorPrefix => 'Error: ';
+  String get forgotPasswordSuffix => 'Please try again or Request a new one.';
 
   @override
-  String get tryAgain => 'Try Again';
+  String get title => 'Song Title';
+
+  @override
+  String get author => 'Author';
+
+  @override
+  String get versionName => 'Version Name';
+
+  @override
+  String get musicKey => 'Key';
+
+  @override
+  String get bpm => 'BPM';
+
+  @override
+  String get duration => 'Duration';
+
+  @override
+  String get language => 'Language';
+
+  @override
+  String get sections => 'Sections';
+
+  @override
+  String get versions => ' versions';
+
+  @override
+  String get cipherEditorTitle => 'Song Editor';
+
+  @override
+  String get info => 'Info';
+
+  @override
+  String get cloudCipher => 'Cloud Song Map';
+
+  @override
+  String get addToPlaylist => 'Add to Playlist';
 
   @override
   String get searchCiphers => 'Search title, author...';
@@ -66,53 +108,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sort => 'Sort';
 
   @override
-  String get musicKey => 'Key';
-
-  @override
   String get noCiphersFound => 'No Song Map found';
 
   @override
-  String get addToPlaylist => 'Add to Playlist';
+  String get loading => 'Loading...';
 
   @override
-  String get cloudCipher => 'Cloud Song Map';
+  String get errorPrefix => 'Error: ';
 
   @override
-  String get about => 'About';
+  String get tryAgain => 'Try Again';
 
   @override
-  String get settings => 'Settings';
+  String get save => 'Save';
 
   @override
-  String get logOut => 'Sign Out';
+  String get cancel => 'Cancel';
 
   @override
-  String get schedule => 'Schedule';
+  String get delete => 'Delete';
 
   @override
-  String get versions => ' versions';
+  String get hintPrefixO => 'Enter your ';
 
   @override
-  String get cipherEditorTitle => 'Song Editor';
+  String get hintPrefixA => 'Enter your ';
 
   @override
-  String get info => 'Info';
-
-  @override
-  String get sections => 'Sections';
-
-  @override
-  String get title => 'Title';
-
-  @override
-  String get author => 'Author';
-
-  @override
-  String get bpm => 'BPM';
-
-  @override
-  String get language => 'Language';
-
-  @override
-  String get duration => 'Duration';
+  String get hintSuffix => ' here...';
 }

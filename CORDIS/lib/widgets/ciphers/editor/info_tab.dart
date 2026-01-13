@@ -1,85 +1,118 @@
 import 'package:cordis/l10n/app_localizations.dart';
+import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/version_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-enum InfoField { title, author, bpm, musicKey, language, duration }
+enum InfoField { title, author, versionName, bpm, musicKey, language, duration }
 
 class InfoTab extends StatefulWidget {
   final int? cipherId;
   final String? versionId;
+  final VersionType versionType;
 
-  const InfoTab({super.key, this.cipherId, this.versionId});
+  const InfoTab({
+    super.key,
+    this.cipherId,
+    this.versionId,
+    required this.versionType,
+  });
 
   @override
   State<InfoTab> createState() => _InfoTabState();
 }
 
 class _InfoTabState extends State<InfoTab> {
-  final titleController = TextEditingController();
-  final authorController = TextEditingController();
-  final bpmController = TextEditingController();
-  final musicKeyController = TextEditingController();
-  final languageController = TextEditingController();
-  final durationController = TextEditingController();
-
-  late bool isCloud;
+  Map<InfoField, TextEditingController> controllers = {};
 
   @override
   void initState() {
     super.initState();
-    if (widget.versionId != null) {
-      isCloud = true;
-    } else {
-      isCloud = false;
+    for (var i = 0; i < InfoField.values.length; i++) {
+      controllers[InfoField.values[i]] = TextEditingController();
     }
     _syncWithProviderData();
   }
 
   void _syncWithProviderData() {
     if (mounted) {
-      if (isCloud) {
-        final versionProvider = context.read<VersionProvider>();
-        final version = versionProvider.getCloudVersionByFirebaseId(
-          widget.versionId!,
-        )!;
+      switch (widget.versionType) {
+        case VersionType.cloud:
+          final versionProvider = context.read<VersionProvider>();
+          final version = versionProvider.getCloudVersionByFirebaseId(
+            widget.versionId!,
+          )!;
 
-        titleController.text = version.title;
-        authorController.text = version.author;
-        bpmController.text = version.bpm;
-        musicKeyController.text = version.transposedKey ?? version.originalKey;
-        languageController.text = version.language;
-        durationController.text = version.duration;
-      } else {
-        final cipherProvider = context.read<CipherProvider>();
-        final cipher = cipherProvider.getCipherFromCache(widget.cipherId!)!;
+          for (var field in InfoField.values) {
+            switch (field) {
+              case InfoField.title:
+                controllers[field]!.text = version.title;
+                break;
+              case InfoField.author:
+                controllers[field]!.text = version.author;
+                break;
+              case InfoField.versionName:
+                controllers[field]!.text = version.versionName;
+                break;
+              case InfoField.bpm:
+                controllers[field]!.text = version.bpm;
+                break;
+              case InfoField.musicKey:
+                controllers[field]!.text =
+                    version.transposedKey ?? version.originalKey;
+                break;
+              case InfoField.language:
+                controllers[field]!.text = version.language;
+                break;
+              case InfoField.duration:
+                controllers[field]!.text = version.duration;
+                break;
+            }
+          }
+        case VersionType.local:
+        case VersionType.import:
+          final cipherProvider = context.read<CipherProvider>();
+          final cipher = cipherProvider.getCipherById(-1)!;
 
-        titleController.text = cipher.title;
-        authorController.text = cipher.author;
-        bpmController.text = cipher.bpm;
-        musicKeyController.text = cipher.musicKey;
-        languageController.text = cipher.language;
-        durationController.text = cipher.duration;
+          final versionProvider = context.read<VersionProvider>();
+          final version = versionProvider.getVersionById(-1)!;
+
+          for (var field in InfoField.values) {
+            switch (field) {
+              case InfoField.title:
+                controllers[field]!.text = cipher.title;
+                break;
+              case InfoField.author:
+                controllers[field]!.text = cipher.author;
+                break;
+              case InfoField.versionName:
+                controllers[field]!.text = version.versionName;
+                break;
+              case InfoField.bpm:
+                controllers[field]!.text = cipher.bpm;
+                break;
+              case InfoField.musicKey:
+                controllers[field]!.text =
+                    version.transposedKey ?? cipher.musicKey;
+                break;
+              case InfoField.language:
+                controllers[field]!.text = cipher.language;
+                break;
+              case InfoField.duration:
+                controllers[field]!.text = cipher.duration;
+                break;
+            }
+          }
+        case VersionType.brandNew:
+          // Do nothing for brand new versions
+          break;
       }
     }
   }
 
   TextEditingController _getController(InfoField field) {
-    switch (field) {
-      case InfoField.title:
-        return titleController;
-      case InfoField.author:
-        return authorController;
-      case InfoField.bpm:
-        return bpmController;
-      case InfoField.musicKey:
-        return musicKeyController;
-      case InfoField.language:
-        return languageController;
-      case InfoField.duration:
-        return durationController;
-    }
+    return controllers[field]!;
   }
 
   String _getLabel(InfoField field) {
@@ -88,6 +121,8 @@ class _InfoTabState extends State<InfoTab> {
         return AppLocalizations.of(context)!.title;
       case InfoField.author:
         return AppLocalizations.of(context)!.author;
+      case InfoField.versionName:
+        return AppLocalizations.of(context)!.versionName;
       case InfoField.bpm:
         return AppLocalizations.of(context)!.bpm;
       case InfoField.musicKey:
@@ -101,12 +136,9 @@ class _InfoTabState extends State<InfoTab> {
 
   @override
   void dispose() {
-    titleController.dispose();
-    authorController.dispose();
-    bpmController.dispose();
-    musicKeyController.dispose();
-    languageController.dispose();
-    durationController.dispose();
+    for (var controller in controllers.values) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
@@ -119,15 +151,12 @@ class _InfoTabState extends State<InfoTab> {
           spacing: 16.0,
           children: [
             for (var field in InfoField.values)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: _buildTextField(
-                  context: context,
-                  cipherProvider: cipherProvider,
-                  versionProvider: versionProvider,
-                  field: field,
-                  maxLines: 1,
-                ),
+              _buildTextField(
+                context: context,
+                cipherProvider: cipherProvider,
+                versionProvider: versionProvider,
+                field: field,
+                maxLines: 1,
               ),
           ],
         );
@@ -145,29 +174,54 @@ class _InfoTabState extends State<InfoTab> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return TextFormField(
-      onChanged: (value) {
-        if (isCloud) {
-          versionProvider.cacheCloudMetadataUpdate(
-            widget.versionId!,
-            field,
-            value,
-          );
-        } else {
-          cipherProvider.cacheCipherUpdates(widget.cipherId!, field, value);
-        }
-      },
-      controller: _getController(field),
-      maxLines: maxLines,
-      decoration: InputDecoration(
-        labelText: _getLabel(field),
-        hintText: '${_getLabel(field)}...',
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: colorScheme.primary, width: 2),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 8,
+      children: [
+        Text(
+          _getLabel(field),
+          style: theme.textTheme.bodyLarge?.copyWith(
+            color: colorScheme.onSurface,
+          ),
         ),
-      ),
+        TextFormField(
+          onChanged: (value) {
+            switch (widget.versionType) {
+              case VersionType.cloud:
+                versionProvider.cacheCloudMetadataUpdate(
+                  widget.versionId!,
+                  field,
+                  value,
+                );
+                break;
+              case VersionType.local:
+              case VersionType.brandNew:
+              case VersionType.import:
+                cipherProvider.cacheCipherUpdates(-1, field, value);
+                break;
+            }
+          },
+          controller: _getController(field),
+          maxLines: maxLines,
+          decoration: InputDecoration(
+            visualDensity: VisualDensity.compact,
+            hintText:
+                '${AppLocalizations.of(context)!.hintPrefixO}${_getLabel(field)}${AppLocalizations.of(context)!.hintSuffix}',
+            hintStyle: TextStyle(color: colorScheme.surfaceContainerLowest),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(0),
+              borderSide: BorderSide(
+                color: colorScheme.surfaceContainerLowest,
+                width: 1,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(0),
+              borderSide: BorderSide(color: colorScheme.primary, width: 2),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

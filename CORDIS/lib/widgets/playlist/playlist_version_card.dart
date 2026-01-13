@@ -1,3 +1,4 @@
+import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/section_provider.dart';
 import 'package:cordis/screens/playlist/playlist_presentation.dart';
@@ -83,7 +84,7 @@ class _PlaylistVersionCardState extends State<PlaylistVersionCard> {
 
         return Consumer2<CipherProvider, PlaylistProvider>(
           builder: (context, cipherProvider, playlistProvider, child) {
-            final cipher = cipherProvider.getCipherFromCache(version.cipherId)!;
+            final cipher = cipherProvider.getCipherById(version.cipherId)!;
 
             return InkWell(
               onTap: () {
@@ -198,6 +199,7 @@ class _PlaylistVersionCardState extends State<PlaylistVersionCard> {
                                   builder: (context) => CipherViewer(
                                     cipherId: cipher.id,
                                     versionId: version.id!,
+                                    versionType: VersionType.local,
                                   ),
                                 ),
                               );

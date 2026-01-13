@@ -1,4 +1,5 @@
 import 'package:cordis/models/domain/cipher/cipher.dart';
+import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:cordis/models/domain/parsing_cipher.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -83,7 +84,8 @@ class _CipherParsingScreenState extends State<CipherParsingScreen>
                     // Confirm parsing and navigate to editor
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => EditCipher(importedCipher: true),
+                        builder: (context) =>
+                            CipherEditor(versionType: VersionType.import),
                       ),
                     );
                   },

@@ -2,6 +2,8 @@ import 'package:cordis/models/domain/cipher/cipher.dart';
 import 'package:cordis/models/domain/cipher/section.dart';
 import 'package:cordis/models/dtos/version_dto.dart';
 
+enum VersionType { import, brandNew, cloud, local }
+
 class Version {
   final int? id;
   final String? firebaseId;

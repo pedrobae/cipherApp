@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 
 class SelectionProvider extends ChangeNotifier {
   bool _isSelectionMode = false;
+  dynamic targetId = null;
   final List<dynamic> _selectedItems = [];
 
   bool get isSelectionMode => _isSelectionMode;
@@ -28,6 +29,10 @@ class SelectionProvider extends ChangeNotifier {
       _selectedItems.add(item);
     }
     notifyListeners();
+  }
+
+  set target(dynamic id) {
+    targetId = id;
   }
 
   bool isItemSelected(dynamic item) {

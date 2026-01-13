@@ -179,11 +179,7 @@ class PlaylistRepository {
 
   // ===== VERSION MANAGEMENT =====
   /// Adds a version to the end of the playlist
-  Future<void> addVersionToPlaylist(
-    int playlistId,
-    int cipherMapId,
-    int currentUserId,
-  ) async {
+  Future<void> addVersionToPlaylist(int playlistId, int cipherMapId) async {
     final db = await _databaseHelper.database;
 
     await db.transaction((txn) async {

@@ -219,6 +219,29 @@ class VersionProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> ensureCloudVersionIsLoaded(String firebaseId) async {
+    if (_cloudVersions.containsKey(firebaseId)) {
+      return;
+    }
+
+    _isLoadingCloud = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final version = await _cloudVersionRepository.getVersionById(firebaseId);
+      if (version != null) {
+        _cloudVersions[firebaseId] = version;
+        _filterCloudVersions();
+        notifyListeners();
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error ensuring cloud version in cache: $e');
+      }
+    }
+  }
+
   // Load all versions of a cipher into cache, used for version selector and cipher expansion
   Future<void> loadVersionsOfCipher(int cipherId) async {
     if (_isLoading) return;
@@ -516,6 +539,10 @@ class VersionProvider extends ChangeNotifier {
       case InfoField.bpm:
         _cloudVersions[versionFirebaseId] = _cloudVersions[versionFirebaseId]!
             .copyWith(bpm: newValue);
+        break;
+      case InfoField.versionName:
+        _cloudVersions[versionFirebaseId] = _cloudVersions[versionFirebaseId]!
+            .copyWith(versionName: newValue);
         break;
       case InfoField.musicKey:
         _cloudVersions[versionFirebaseId] = _cloudVersions[versionFirebaseId]!

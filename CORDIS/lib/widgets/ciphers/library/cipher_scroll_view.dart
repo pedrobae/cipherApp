@@ -1,8 +1,7 @@
-import 'package:cordis/providers/auth_provider.dart';
+import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
-import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/screens/cipher/cipher_editor.dart';
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/version_provider.dart';
@@ -95,7 +94,9 @@ class _CipherScrollViewState extends State<CipherScrollView> {
                           onPressed: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) => const EditCipher(),
+                                builder: (context) => const CipherEditor(
+                                  versionType: VersionType.brandNew,
+                                ),
                               ),
                             );
                           },
@@ -223,19 +224,11 @@ class _CipherScrollViewState extends State<CipherScrollView> {
                     }),
                   ),
                   onPressed: () async {
-                    final authProvider = context.read<AuthProvider>();
-                    final userProvider = context.read<UserProvider>();
                     // Handle adding selected versions to playlist
                     for (var versionId in selectionProvider.selectedItems) {
                       await context
                           .read<PlaylistProvider>()
-                          .addVersionToPlaylist(
-                            widget.playlistId!,
-                            versionId,
-                            userProvider.getLocalIdByFirebaseId(
-                              authProvider.id!,
-                            )!,
-                          );
+                          .addVersionToPlaylist(widget.playlistId!, versionId);
                     }
                     selectionProvider.disableSelectionMode();
                   },

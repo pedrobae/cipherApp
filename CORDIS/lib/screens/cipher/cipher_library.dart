@@ -9,7 +9,6 @@ import 'package:provider/provider.dart';
 import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/widgets/ciphers/library/cipher_scroll_view.dart';
-import 'package:cordis/screens/cipher/cipher_viewer.dart';
 
 class CipherLibraryScreen extends StatefulWidget {
   final bool selectionMode;
@@ -140,69 +139,5 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
             );
           },
     );
-  }
-
-  void onTapCipherVersion(
-    int versionId,
-    int cipherId,
-    PlaylistProvider playlistProvider,
-    UserProvider userProvider,
-    AuthProvider authProvider,
-    VersionProvider versionProvider,
-    SelectionProvider selectionProvider,
-  ) {
-    if (widget.selectionMode) {
-      try {
-        if (selectionProvider.isSelectionMode) {
-          selectionProvider.toggleItemSelection(versionId);
-          return;
-        }
-        playlistProvider.addVersionToPlaylist(
-          widget.playlistId!,
-          versionId,
-          userProvider.getLocalIdByFirebaseId(authProvider.id!)!,
-        );
-        versionProvider.loadVersionsForPlaylist(
-          playlistProvider.getLocalPlaylistById(widget.playlistId!)!.items,
-        );
-        Navigator.pop(context);
-      } catch (error) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${AppLocalizations.of(context)!.errorPrefix}$error'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
-      }
-    } else {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) =>
-              CipherViewer(cipherId: cipherId, versionId: versionId),
-        ),
-      );
-    }
-  }
-
-  Future<void> onLongPressCipherVersion(
-    int versionId,
-    int cipherId,
-    PlaylistProvider playlistProvider,
-    UserProvider userProvider,
-    AuthProvider authProvider,
-    VersionProvider versionProvider,
-    SelectionProvider selectionProvider,
-  ) async {
-    if (!widget.selectionMode) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) =>
-              CipherViewer(cipherId: cipherId, versionId: versionId),
-        ),
-      );
-    } else {
-      selectionProvider.enableSelectionMode();
-      selectionProvider.toggleItemSelection(versionId);
-    }
   }
 }

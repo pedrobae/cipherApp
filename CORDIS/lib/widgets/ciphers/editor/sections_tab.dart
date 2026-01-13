@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cordis/providers/cipher_provider.dart';
@@ -12,8 +13,9 @@ import 'package:cordis/utils/section_constants.dart';
 
 class SectionsTab extends StatefulWidget {
   final dynamic versionId;
+  final VersionType versionType;
 
-  const SectionsTab({super.key, required this.versionId});
+  const SectionsTab({super.key, this.versionId, required this.versionType});
 
   @override
   State<SectionsTab> createState() => _SectionsTabState();
@@ -21,6 +23,11 @@ class SectionsTab extends StatefulWidget {
 
 class _SectionsTabState extends State<SectionsTab> {
   Timer? _debounceTimer;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   void _addSection(
     dynamic versionId,
@@ -113,73 +120,29 @@ class _SectionsTabState extends State<SectionsTab> {
     return Consumer3<SectionProvider, VersionProvider, CipherProvider>(
       builder:
           (context, sectionProvider, versionProvider, cipherProvider, child) {
-            final version = versionProvider.getVersionById(widget.versionId)!;
-
-            final uniqueSections = version.songStructure.toSet().toList();
+            List<String> uniqueSections;
+            dynamic version; // Version or VersionDto
+            switch (widget.versionType) {
+              case VersionType.local:
+              case VersionType.brandNew:
+                version = versionProvider.getVersionById(widget.versionId)!;
+                uniqueSections = version.songStructure.toSet().toList();
+                break;
+              case VersionType.cloud:
+                version = versionProvider.getCloudVersionByFirebaseId(
+                  widget.versionId,
+                )!;
+                uniqueSections = version.songStructure.toSet().toList();
+                break;
+              case VersionType.import:
+                version = versionProvider.getVersionById(-1)!;
+                uniqueSections = version.songStructure.toSet().toList();
+                break;
+            }
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Card(
-                  color: colorScheme.surfaceContainerHigh,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Column(
-                      spacing: 8,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Informações da Versão',
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                        ),
-                        Row(
-                          spacing: 8,
-                          children: [
-                            Expanded(
-                              flex: 3,
-                              child: TextFormField(
-                                initialValue: version.versionName,
-                                decoration: const InputDecoration(
-                                  labelText: 'Nome da Versão',
-                                  hintText: 'Ex: Original, Acústica',
-                                  border: OutlineInputBorder(),
-                                  prefixIcon: Icon(Icons.queue_music),
-                                ),
-                                onChanged: (name) =>
-                                    versionProvider.cacheUpdatedVersion(
-                                      widget.versionId,
-                                      newVersionName: name,
-                                    ),
-                                validator: (value) {
-                                  if (value == null || value.trim().isEmpty) {
-                                    return 'Nome da versão é obrigatório';
-                                  }
-                                  return null;
-                                },
-                              ),
-                            ),
-                            Expanded(
-                              child: TextFormField(
-                                initialValue: version.transposedKey ?? '',
-                                decoration: const InputDecoration(
-                                  labelText: 'Tom',
-                                  border: OutlineInputBorder(),
-                                ),
-                                onChanged: (key) =>
-                                    versionProvider.cacheUpdatedVersion(
-                                      widget.versionId,
-                                      newTransposedKey: key,
-                                    ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
                 // Song Structure Section
                 Card(
                   color: colorScheme.surfaceContainerHigh,

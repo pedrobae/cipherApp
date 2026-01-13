@@ -1,3 +1,4 @@
+import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:cordis/providers/section_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -11,10 +12,16 @@ import 'package:cordis/widgets/ciphers/viewer/version_header.dart';
 import 'package:cordis/widgets/ciphers/viewer/version_selector.dart';
 
 class CipherViewer extends StatefulWidget {
-  final int cipherId;
+  final int? cipherId;
   final int? versionId;
+  final VersionType versionType;
 
-  const CipherViewer({super.key, required this.cipherId, this.versionId});
+  const CipherViewer({
+    super.key,
+    required this.cipherId,
+    this.versionId,
+    required this.versionType,
+  });
 
   @override
   State<CipherViewer> createState() => _CipherViewerState();
@@ -28,10 +35,11 @@ class _CipherViewerState extends State<CipherViewer>
   @override
   void initState() {
     super.initState();
+    // TODO switch on version type
     versionId =
         widget.versionId ??
         context.read<VersionProvider>().getIdOfOldestVersionOfCipher(
-          widget.cipherId,
+          widget.cipherId!,
         );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadData();
@@ -48,8 +56,11 @@ class _CipherViewerState extends State<CipherViewer>
   void _addNewVersion() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) =>
-            EditCipher(cipherId: widget.cipherId, versionId: -1),
+        builder: (context) => CipherEditor(
+          cipherId: widget.cipherId,
+          versionId: -1,
+          versionType: VersionType.brandNew,
+        ),
       ),
     );
   }
@@ -58,8 +69,11 @@ class _CipherViewerState extends State<CipherViewer>
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            EditCipher(cipherId: widget.cipherId, versionId: widget.versionId),
+        builder: (context) => CipherEditor(
+          cipherId: widget.cipherId,
+          versionId: widget.versionId,
+          versionType: widget.versionType,
+        ),
       ),
     );
   }
@@ -76,7 +90,9 @@ class _CipherViewerState extends State<CipherViewer>
     showModalBottomSheet(
       context: context,
       builder: (context) => VersionSelectorBottomSheet(
-        versionIds: versionProvider.getVersionsByCipherId(widget.cipherId),
+        versionIds: versionProvider.getVersionsByCipherId(
+          widget.cipherId!,
+        ), // TODO switch on version type
         currentVersionId: versionId,
         onVersionSelected: _selectVersion,
         onNewVersion: _addNewVersion,
@@ -164,7 +180,9 @@ class _CipherViewerState extends State<CipherViewer>
               );
             }
 
-            final cipher = cipherProvider.getCipherFromCache(widget.cipherId);
+            final cipher = cipherProvider.getCipherById(
+              widget.cipherId!,
+            ); // TODO switch on version type
             final currentVersion = versionProvider.getVersionById(versionId)!;
             final hasVersions = cipher!.versions.isNotEmpty;
 

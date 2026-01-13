@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../utils/string_utils.dart';
+import 'package:cordis/utils/string_utils.dart';
 
 class ColorHelpers {
   /// Generates theme-appropriate colors for tags based on string hash

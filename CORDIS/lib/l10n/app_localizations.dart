@@ -104,11 +104,11 @@ abstract class AppLocalizations {
   /// **'CORDIS'**
   String get appName;
 
-  /// No description provided for @email.
+  /// No description provided for @home.
   ///
   /// In pt, this message translates to:
-  /// **'E-mail'**
-  String get email;
+  /// **'Home'**
+  String get home;
 
   /// No description provided for @library.
   ///
@@ -116,23 +116,35 @@ abstract class AppLocalizations {
   /// **'Biblioteca'**
   String get library;
 
-  /// No description provided for @home.
-  ///
-  /// In pt, this message translates to:
-  /// **'Home'**
-  String get home;
-
   /// No description provided for @playlists.
   ///
   /// In pt, this message translates to:
   /// **'Playlists'**
   String get playlists;
 
-  /// Prefix to use in conjunction with appName
+  /// No description provided for @settings.
   ///
   /// In pt, this message translates to:
-  /// **'Login no '**
-  String get logInTitlePrefix;
+  /// **'Configurações'**
+  String get settings;
+
+  /// No description provided for @about.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sobre'**
+  String get about;
+
+  /// No description provided for @schedule.
+  ///
+  /// In pt, this message translates to:
+  /// **'Agenda'**
+  String get schedule;
+
+  /// No description provided for @email.
+  ///
+  /// In pt, this message translates to:
+  /// **'E-mail'**
+  String get email;
 
   /// No description provided for @password.
   ///
@@ -140,23 +152,23 @@ abstract class AppLocalizations {
   /// **'Senha'**
   String get password;
 
-  /// No description provided for @forgotPassword.
-  ///
-  /// In pt, this message translates to:
-  /// **'Esqueceu a Senha?'**
-  String get forgotPassword;
-
-  /// Suffix text for forgot password message
-  ///
-  /// In pt, this message translates to:
-  /// **'Por favor, tente novamente ou solicite uma nova.'**
-  String get forgotPasswordSuffix;
-
   /// No description provided for @login.
   ///
   /// In pt, this message translates to:
   /// **'Entrar'**
   String get login;
+
+  /// Prefix to use in conjunction with appName
+  ///
+  /// In pt, this message translates to:
+  /// **'Login no '**
+  String get logInTitlePrefix;
+
+  /// No description provided for @logOut.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sair'**
+  String get logOut;
 
   /// Prefix text for account creation prompt
   ///
@@ -170,23 +182,95 @@ abstract class AppLocalizations {
   /// **'Registre-se.'**
   String get accountCreationSuffix;
 
-  /// No description provided for @loading.
+  /// No description provided for @forgotPassword.
   ///
   /// In pt, this message translates to:
-  /// **'Carregando...'**
-  String get loading;
+  /// **'Esqueceu a Senha?'**
+  String get forgotPassword;
 
-  /// Prefix to be used with the relevant error message
+  /// Suffix text for forgot password message
   ///
   /// In pt, this message translates to:
-  /// **'Erro: '**
-  String get errorPrefix;
+  /// **'Por favor, tente novamente ou solicite uma nova.'**
+  String get forgotPasswordSuffix;
 
-  /// No description provided for @tryAgain.
+  /// No description provided for @title.
   ///
   /// In pt, this message translates to:
-  /// **'Tentar Novamente'**
-  String get tryAgain;
+  /// **'Título'**
+  String get title;
+
+  /// No description provided for @author.
+  ///
+  /// In pt, this message translates to:
+  /// **'Autor'**
+  String get author;
+
+  /// No description provided for @versionName.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nome da Versão'**
+  String get versionName;
+
+  /// No description provided for @musicKey.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tom'**
+  String get musicKey;
+
+  /// No description provided for @bpm.
+  ///
+  /// In pt, this message translates to:
+  /// **'BPM'**
+  String get bpm;
+
+  /// No description provided for @duration.
+  ///
+  /// In pt, this message translates to:
+  /// **'Duração'**
+  String get duration;
+
+  /// No description provided for @language.
+  ///
+  /// In pt, this message translates to:
+  /// **'Idioma'**
+  String get language;
+
+  /// No description provided for @sections.
+  ///
+  /// In pt, this message translates to:
+  /// **'Seções'**
+  String get sections;
+
+  /// Label for number of versions of a cipher (lowercase 'v')
+  ///
+  /// In pt, this message translates to:
+  /// **' versões'**
+  String get versions;
+
+  /// No description provided for @cipherEditorTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editor de Cifras'**
+  String get cipherEditorTitle;
+
+  /// No description provided for @info.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informações'**
+  String get info;
+
+  /// No description provided for @cloudCipher.
+  ///
+  /// In pt, this message translates to:
+  /// **'Cifra na Nuvem'**
+  String get cloudCipher;
+
+  /// No description provided for @addToPlaylist.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicionar à Playlist'**
+  String get addToPlaylist;
 
   /// No description provided for @searchCiphers.
   ///
@@ -212,107 +296,65 @@ abstract class AppLocalizations {
   /// **'Ordenar'**
   String get sort;
 
-  /// No description provided for @musicKey.
-  ///
-  /// In pt, this message translates to:
-  /// **'Tom'**
-  String get musicKey;
-
   /// Message displayed when no ciphers are found
   ///
   /// In pt, this message translates to:
   /// **'Nenhuma cifra encontrada'**
   String get noCiphersFound;
 
-  /// No description provided for @addToPlaylist.
+  /// No description provided for @loading.
   ///
   /// In pt, this message translates to:
-  /// **'Adicionar à Playlist'**
-  String get addToPlaylist;
+  /// **'Carregando...'**
+  String get loading;
 
-  /// No description provided for @cloudCipher.
+  /// Prefix to be used with the relevant error message
   ///
   /// In pt, this message translates to:
-  /// **'Cifra na Nuvem'**
-  String get cloudCipher;
+  /// **'Erro: '**
+  String get errorPrefix;
 
-  /// No description provided for @about.
+  /// No description provided for @tryAgain.
   ///
   /// In pt, this message translates to:
-  /// **'Sobre'**
-  String get about;
+  /// **'Tentar Novamente'**
+  String get tryAgain;
 
-  /// No description provided for @settings.
+  /// No description provided for @save.
   ///
   /// In pt, this message translates to:
-  /// **'Configurações'**
-  String get settings;
+  /// **'Salvar'**
+  String get save;
 
-  /// No description provided for @logOut.
+  /// No description provided for @cancel.
   ///
   /// In pt, this message translates to:
-  /// **'Sair'**
-  String get logOut;
+  /// **'Cancelar'**
+  String get cancel;
 
-  /// No description provided for @schedule.
+  /// No description provided for @delete.
   ///
   /// In pt, this message translates to:
-  /// **'Agenda'**
-  String get schedule;
+  /// **'Excluir'**
+  String get delete;
 
-  /// Label for number of versions of a cipher (lowercase 'v')
+  /// Prefix to be used on text fields with masculine nouns
   ///
   /// In pt, this message translates to:
-  /// **' versões'**
-  String get versions;
+  /// **'Insira seu '**
+  String get hintPrefixO;
 
-  /// No description provided for @cipherEditorTitle.
+  /// Prefix to be used on text fields with feminine nouns
   ///
   /// In pt, this message translates to:
-  /// **'Editor de Cifras'**
-  String get cipherEditorTitle;
+  /// **'Insira sua '**
+  String get hintPrefixA;
 
-  /// No description provided for @info.
+  /// Suffix to be used on text fields
   ///
   /// In pt, this message translates to:
-  /// **'Informações'**
-  String get info;
-
-  /// No description provided for @sections.
-  ///
-  /// In pt, this message translates to:
-  /// **'Seções'**
-  String get sections;
-
-  /// No description provided for @title.
-  ///
-  /// In pt, this message translates to:
-  /// **'Título'**
-  String get title;
-
-  /// No description provided for @author.
-  ///
-  /// In pt, this message translates to:
-  /// **'Autor'**
-  String get author;
-
-  /// No description provided for @bpm.
-  ///
-  /// In pt, this message translates to:
-  /// **'BPM'**
-  String get bpm;
-
-  /// No description provided for @language.
-  ///
-  /// In pt, this message translates to:
-  /// **'Idioma'**
-  String get language;
-
-  /// No description provided for @duration.
-  ///
-  /// In pt, this message translates to:
-  /// **'Duração'**
-  String get duration;
+  /// **' aqui...'**
+  String get hintSuffix;
 }
 
 class _AppLocalizationsDelegate

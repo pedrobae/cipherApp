@@ -113,6 +113,38 @@ class CloudVersionRepository {
         .toList();
   }
 
+  /// Fetch a specific version by its ID (requires authentication)
+  Future<VersionDto?> getVersionById(String versionId) async {
+    await _guardHelper.requireAuth();
+
+    var doc = await _firestoreService.fetchDocumentById(
+      collectionPath: 'publicVersions',
+      documentId: versionId,
+    );
+
+    doc ??= await _firestoreService.fetchSubCollectionDocumentById(
+      parentCollectionPath: 'users/',
+      parentDocumentId: _authService.currentUser!.uid,
+      subCollectionPath: 'versions',
+      documentId: versionId,
+    );
+
+    if (doc == null) {
+      return null;
+    }
+
+    FirebaseAnalytics.instance.logEvent(
+      name: 'fetched_version',
+      parameters: {
+        'version_id': versionId,
+        'user_id': _authService.currentUser!.uid,
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
+      },
+    );
+
+    return VersionDto.fromFirestore(doc.data() as Map<String, dynamic>, doc.id);
+  }
+
   // ===== UPDATE =====
   /// Update a public version (admin only)
   Future<void> updatePublicVersion(VersionDto version) async {

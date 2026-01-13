@@ -301,6 +301,9 @@ class CipherProvider extends ChangeNotifier {
           musicKey: change,
         );
         break;
+      case InfoField.versionName:
+        // Version name is not stored in Cipher, so no action here
+        break;
       case InfoField.language:
         _localCiphers[cipherId] = _localCiphers[cipherId]!.copyWith(
           language: change,
@@ -363,7 +366,7 @@ class CipherProvider extends ChangeNotifier {
 
   // ===== CIPHER CACHING =====
   /// Get cipher from cache
-  Cipher? getCipherFromCache(int cipherId) {
+  Cipher? getCipherById(int cipherId) {
     return _localCiphers[cipherId];
   }
 

@@ -455,9 +455,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
       switch (item.type) {
         case 'cipher_version':
           final version = versionProvider.getVersionById(item.contentId!);
-          final cipher = cipherProvider.getCipherFromCache(
-            version?.cipherId ?? -1,
-          );
+          final cipher = cipherProvider.getCipherById(version?.cipherId ?? -1);
           if (version != null) {
             versions.add(version.toDto(cipher!));
           }

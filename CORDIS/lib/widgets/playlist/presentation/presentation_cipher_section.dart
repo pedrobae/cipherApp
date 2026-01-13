@@ -49,7 +49,7 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
 
         return Consumer<CipherProvider>(
           builder: (context, cipherProvider, child) {
-            final cipher = cipherProvider.getCipherFromCache(version.cipherId)!;
+            final cipher = cipherProvider.getCipherById(version.cipherId)!;
             return Consumer<LayoutSettingsProvider>(
               builder: (context, layoutProvider, child) {
                 return _buildCipherContent(cipher, version, layoutProvider);

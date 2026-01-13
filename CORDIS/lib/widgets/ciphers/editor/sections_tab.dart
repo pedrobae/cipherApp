@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -55,28 +56,6 @@ class _SectionsTabState extends State<SectionsTab> {
     }
   }
 
-  void _removeSection(
-    int index,
-    VersionProvider versionProvider,
-    SectionProvider sectionProvider,
-  ) {
-    versionProvider.removeSectionFromStruct(widget.versionId, index);
-    if (versionProvider
-        .getVersionById(widget.versionId)!
-        .songStructure
-        .contains(
-          versionProvider
-              .getVersionById(widget.versionId)!
-              .songStructure[index],
-        )) {
-      return;
-    }
-    sectionProvider.cacheDeleteSection(
-      widget.versionId,
-      versionProvider.getVersionById(widget.versionId)!.songStructure[index],
-    );
-  }
-
   void _showPresetSectionsDialog(
     VersionProvider versionProvider,
     SectionProvider sectionProvider,
@@ -129,14 +108,16 @@ class _SectionsTabState extends State<SectionsTab> {
                 uniqueSections = version.songStructure.toSet().toList();
                 break;
               case VersionType.cloud:
-                version = versionProvider.getCloudVersionByFirebaseId(
-                  widget.versionId,
-                )!;
-                uniqueSections = version.songStructure.toSet().toList();
+                uniqueSections = versionProvider
+                    .getSongStructure(widget.versionId)
+                    .toSet()
+                    .toList();
                 break;
               case VersionType.import:
-                version = versionProvider.getVersionById(-1)!;
-                uniqueSections = version.songStructure.toSet().toList();
+                uniqueSections = versionProvider
+                    .getSongStructure(-1)
+                    .toSet()
+                    .toList();
                 break;
             }
 
@@ -144,86 +125,28 @@ class _SectionsTabState extends State<SectionsTab> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // Song Structure Section
-                Card(
-                  color: colorScheme.surfaceContainerHigh,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Estrutura da Versão',
+                          AppLocalizations.of(context)!.songStructure,
                           style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(fontWeight: FontWeight.bold),
+                              ?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
                         ),
 
-                        // Quick Add Buttons Row
-                        Row(
-                          children: [
-                            Expanded(
-                              child: OutlinedButton.icon(
-                                onPressed: () => _showPresetSectionsDialog(
-                                  versionProvider,
-                                  sectionProvider,
-                                ),
-                                icon: const Icon(Icons.library_music),
-                                label: const Text('Seções Predefinidas'),
-                                style: OutlinedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadiusGeometry.all(
-                                      Radius.circular(24),
-                                    ),
-                                  ),
-                                  padding: const EdgeInsets.all(6),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: FilledButton.icon(
-                                onPressed: () => _showCustomSectionDialog(
-                                  versionProvider,
-                                  sectionProvider,
-                                ),
-                                icon: const Icon(Icons.add),
-                                label: const Text('Seção Personalizada'),
-                                style: FilledButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadiusGeometry.all(
-                                      Radius.circular(24),
-                                    ),
-                                  ),
-                                  padding: const EdgeInsets.all(6),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        // Draggable Section Chips
-                        ReorderableStructureChips(
-                          songStructure: version.songStructure,
-                          sections: sectionProvider.getSections(
-                            widget.versionId,
-                          ),
-                          onReorder: (int oldIndex, int newIndex) {
-                            versionProvider.cacheReorderedStructure(
-                              widget.versionId,
-                              oldIndex,
-                              newIndex,
-                            );
-                          },
-                          onRemoveSection: (int index) {
-                            _removeSection(
-                              index,
-                              versionProvider,
-                              sectionProvider,
-                            );
-                          },
-                        ),
+                        // Add Section Button
                       ],
                     ),
-                  ),
+
+                    // Draggable Section Chips
+                    ReorderableStructureChips(versionId: widget.versionId),
+                  ],
                 ),
                 // CONTENT SECTION
                 if (uniqueSections.isEmpty)

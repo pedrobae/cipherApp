@@ -101,5 +101,9 @@
   "hintSuffix": " aqui...",
   "@hintSuffix": {
     "description": "Suffix to be used on text fields"
-  }
+  },
+  "noSectionsInStructurePrompt": "Nenhuma seção na estrutura. Use o botão acima para adicionar seções.",
+  "@noSectionsInStructurePrompt": {  "description": "Prompt displayed when there are no sections in the song structure"  },
+  "songStructure": "Mapa da Música",
+  "@songStructure": {}
 }

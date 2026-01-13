@@ -137,4 +137,11 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get hintSuffix => ' aqui...';
+
+  @override
+  String get noSectionsInStructurePrompt =>
+      'Nenhuma seção na estrutura. Use o botão acima para adicionar seções.';
+
+  @override
+  String get songStructure => 'Mapa da Música';
 }

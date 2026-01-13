@@ -136,4 +136,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hintSuffix => ' here...';
+
+  @override
+  String get noSectionsInStructurePrompt =>
+      'No sections in structure. Use the button above to add sections.';
+
+  @override
+  String get songStructure => 'Song Structure';
 }

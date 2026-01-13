@@ -355,6 +355,18 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **' aqui...'**
   String get hintSuffix;
+
+  /// Prompt displayed when there are no sections in the song structure
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma seção na estrutura. Use o botão acima para adicionar seções.'**
+  String get noSectionsInStructurePrompt;
+
+  /// No description provided for @songStructure.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mapa da Música'**
+  String get songStructure;
 }
 
 class _AppLocalizationsDelegate

@@ -80,9 +80,7 @@ class _CipherParsingScreenState extends State<CipherParsingScreen>
                     // Set chosen cipher in parser provider
                     context.read<ParserProvider>().parsedCipher =
                         doc.candidates[_tabController!.index].cipher;
-                    // Confirm parsing and navigate back
-                    Navigator.of(context).pop(); // Close the parsing screen
-                    Navigator.of(context).pop(); // Close the import screen
+                    // Confirm parsing and navigate to editor
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => EditCipher(importedCipher: true),

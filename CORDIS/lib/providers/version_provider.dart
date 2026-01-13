@@ -149,7 +149,7 @@ class VersionProvider extends ChangeNotifier {
   }
 
   /// ===== READ - Load version from versionId =====
-  Future<void> loadCurrentVersion(int versionId) async {
+  Future<void> loadVersion(int versionId) async {
     if (_isLoading) return;
 
     _isLoading = true;

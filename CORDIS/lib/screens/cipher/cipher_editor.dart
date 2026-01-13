@@ -1,3 +1,4 @@
+import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/parser_provider.dart';
 import 'package:cordis/widgets/ciphers/editor/chord_palette.dart';
 import 'package:cordis/widgets/ciphers/editor/delete_dialog.dart';
@@ -10,16 +11,14 @@ import 'package:cordis/widgets/ciphers/editor/cipher_form.dart';
 import 'package:cordis/widgets/ciphers/editor/version_form.dart';
 
 class EditCipher extends StatefulWidget {
-  final int? cipherId; // Null for new cipher, populated for edit
-  final int? versionId; // Null for new version, populated for edit
-  final bool editCipher;
+  final int? cipherId; // Null for new cipher
+  final int? versionId; // Null for new version
   final bool importedCipher;
 
   const EditCipher({
     super.key,
     this.cipherId,
     this.versionId,
-    this.editCipher = false,
     this.importedCipher = false,
   });
 
@@ -31,20 +30,16 @@ class _EditCipherState extends State<EditCipher>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  // Basic info controllers
-  bool get _isNewCipher => widget.cipherId == null;
-  bool get _isNewVersion => widget.versionId == null;
+  late bool isEdit;
 
   bool paletteIsOpen = false;
 
   @override
   void initState() {
     super.initState();
-    if (_isNewCipher && !widget.importedCipher) {
-      _tabController = TabController(length: 1, vsync: this);
-    } else {
-      _tabController = TabController(length: 2, vsync: this);
-    }
+    _tabController = TabController(length: 2, vsync: this);
+
+    isEdit = (widget.cipherId == null && widget.versionId == null);
 
     // Load data after the widget is built
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -53,7 +48,7 @@ class _EditCipherState extends State<EditCipher>
     });
 
     _tabController.addListener(() {
-      // Setting state tp trigger rebuild
+      // Setting state to trigger rebuild
       setState(() {
         paletteIsOpen = false;
       });
@@ -66,48 +61,32 @@ class _EditCipherState extends State<EditCipher>
     final parserProvider = context.read<ParserProvider>();
     final sectionProvider = context.read<SectionProvider>();
 
-    if (_isNewCipher) {
-      if (widget.importedCipher) {
-        // Load imported cipher data
-        final cipher = parserProvider.parsedCipher;
-
-        if (cipher != null) {
-          cipherProvider.setNewCipherInCache(cipher);
-
-          // Load imported version data
-          final version = cipher.versions.first;
-          versionProvider.setNewVersionInCache(version);
-
-          // Load sections
-          sectionProvider.setNewSectionsInCache(
-            -1,
-            version.sections!,
-          ); // -1 for new/imported versions
-        }
+    if (widget.importedCipher) {
+      // Load imported cipher data
+      final cipher = parserProvider.parsedCipher;
+      if (cipher != null) {
+        cipherProvider.setNewCipherInCache(cipher);
+        // Load imported version data
+        final version = cipher.versions.first;
+        versionProvider.setNewVersionInCache(version);
+        // Load sections
+        sectionProvider.setNewSectionsInCache(
+          -1,
+          version.sections!,
+        ); // -1 for new/imported versions
       }
     } else {
       // Load the cipher
       await cipherProvider.loadCipher(widget.cipherId!);
-
       // Load the version
-      await versionProvider.loadCurrentVersion(widget.versionId!);
+      await versionProvider.loadVersion(widget.versionId!);
       // Load sections
       await sectionProvider.loadSections(widget.versionId!);
     }
   }
 
-  String _getAppBarTitle() {
-    if (_isNewVersion) {
-      return 'Nova Versão';
-    } else if (_isNewCipher) {
-      return 'Nova Cifra';
-    } else {
-      return 'Editar Cifra';
-    }
-  }
-
   void _navigateStartTab() {
-    if (_isNewCipher || widget.editCipher) {
+    if (isEdit) {
       _tabController.animateTo(0);
     } else {
       _tabController.animateTo(1);
@@ -129,16 +108,20 @@ class _EditCipherState extends State<EditCipher>
       builder: (context, sectionProvider, child) {
         return Scaffold(
           appBar: AppBar(
-            title: Text(_getAppBarTitle()),
+            title: Text(AppLocalizations.of(context)!.cipherEditorTitle),
             backgroundColor: colorScheme.surface,
             foregroundColor: colorScheme.onSurface,
             bottom: TabBar(
               controller: _tabController,
               tabs: [
-                const Tab(text: 'Cifra', icon: Icon(Icons.info_outline)),
-                if (!_isNewCipher || widget.importedCipher) ...[
-                  const Tab(text: 'Versão', icon: Icon(Icons.music_note)),
-                ],
+                Tab(
+                  text: AppLocalizations.of(context)!.info,
+                  icon: const Icon(Icons.info_outline),
+                ),
+                Tab(
+                  text: AppLocalizations.of(context)!.sections,
+                  icon: const Icon(Icons.music_note),
+                ),
               ],
             ),
           ),
@@ -155,15 +138,11 @@ class _EditCipherState extends State<EditCipher>
                   ],
                 ),
               ),
-              if (!_isNewCipher || widget.importedCipher) ...[
-                // Content Tab
-                SingleChildScrollView(
-                  padding: const EdgeInsets.all(16.0),
-                  child: VersionForm(
-                    versionId: _isNewCipher ? -1 : widget.versionId,
-                  ),
-                ),
-              ],
+              // Content Tab
+              SingleChildScrollView(
+                padding: const EdgeInsets.all(16.0),
+                child: VersionForm(versionId: widget.versionId),
+              ),
             ],
           ),
           floatingActionButton: Column(
@@ -177,69 +156,8 @@ class _EditCipherState extends State<EditCipher>
                   versionId: widget.versionId ?? -1,
                   onClose: _togglePalette,
                 ),
-              ] else ...[
-                Row(
-                  spacing: 8,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (!_isNewCipher)
-                      FloatingActionButton(
-                        heroTag: 'delete',
-                        onPressed: () {
-                          if (_tabController.index == 0) {
-                            _showDeleteDialog(true);
-                          } else {
-                            _showDeleteDialog(false);
-                          }
-                        },
-                        backgroundColor: colorScheme.errorContainer,
-                        child: Icon(
-                          Icons.delete,
-                          color: colorScheme.onErrorContainer,
-                        ),
-                      ),
-                    FloatingActionButton.extended(
-                      heroTag: 'save',
-                      onPressed: () async {
-                        if (widget.importedCipher) {
-                          final cipherId = await _createCipher();
-                          if (cipherId != null) {
-                            final versionId = await _createVersion(cipherId);
-                            if (versionId != null) {
-                              await _createSections(versionId, sectionProvider);
-                            }
-                          }
-                        } else if (_isNewCipher) {
-                          _createCipher();
-                        } else if (_isNewVersion) {
-                          final versionId = await _createVersion(
-                            widget.cipherId!,
-                          );
-                          if (versionId != null) {
-                            await _createSections(versionId, sectionProvider);
-                          }
-                        } else {
-                          if (_tabController.index == 0) {
-                            _saveCipher(widget.cipherId!);
-                          } else {
-                            _saveVersion();
-                            _saveSections();
-                          }
-                        }
-                      },
-                      backgroundColor: colorScheme.primary,
-                      label: Text(
-                        'Salvar',
-                        style: theme.textTheme.labelLarge!.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.onPrimary,
-                        ),
-                      ),
-                      icon: Icon(Icons.save, color: colorScheme.onPrimary),
-                    ),
-                  ],
-                ),
-              ],
+              ] else
+                ...[],
               // Palette FAB
               if (_tabController.index == 1 &&
                   !_tabController.indexIsChanging) ...[
@@ -363,9 +281,7 @@ class _EditCipherState extends State<EditCipher>
 
   void _saveSections() async {
     try {
-      await context.read<SectionProvider>().saveSections(
-        _isNewCipher ? -1 : widget.versionId,
-      );
+      await context.read<SectionProvider>().saveSections(widget.versionId);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Seções salvas com sucesso!')),

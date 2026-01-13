@@ -95,4 +95,13 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get versions => ' versões';
+
+  @override
+  String get cipherEditorTitle => 'Editor de Cifras';
+
+  @override
+  String get info => 'Informações';
+
+  @override
+  String get sections => 'Seções';
 }

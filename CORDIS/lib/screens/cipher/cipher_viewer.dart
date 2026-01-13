@@ -68,7 +68,7 @@ class _CipherViewerState extends State<CipherViewer>
     if (!mounted) return;
     final versionProvider = context.read<VersionProvider>();
     final sectionProvider = context.read<SectionProvider>();
-    await versionProvider.loadCurrentVersion(versionId);
+    await versionProvider.loadVersion(versionId);
     await sectionProvider.loadSections(versionId);
   }
 

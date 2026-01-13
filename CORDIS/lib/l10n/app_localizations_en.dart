@@ -94,4 +94,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get versions => ' versions';
+
+  @override
+  String get cipherEditorTitle => 'Song Editor';
+
+  @override
+  String get info => 'Info';
+
+  @override
+  String get sections => 'Sections';
 }

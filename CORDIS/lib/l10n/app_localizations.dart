@@ -271,6 +271,24 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **' versões'**
   String get versions;
+
+  /// No description provided for @cipherEditorTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editor de Cifras'**
+  String get cipherEditorTitle;
+
+  /// No description provided for @info.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informações'**
+  String get info;
+
+  /// No description provided for @sections.
+  ///
+  /// In pt, this message translates to:
+  /// **'Seções'**
+  String get sections;
 }
 
 class _AppLocalizationsDelegate

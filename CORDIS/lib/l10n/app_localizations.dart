@@ -265,6 +265,12 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Agenda'**
   String get schedule;
+
+  /// Label for number of versions of a cipher (lowercase 'v')
+  ///
+  /// In pt, this message translates to:
+  /// **' versões'**
+  String get versions;
 }
 
 class _AppLocalizationsDelegate

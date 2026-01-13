@@ -92,4 +92,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get schedule => 'Agenda';
+
+  @override
+  String get versions => ' versões';
 }

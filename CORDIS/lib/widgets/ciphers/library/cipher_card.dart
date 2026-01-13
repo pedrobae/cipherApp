@@ -4,14 +4,21 @@ import 'package:cordis/providers/version_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class VersionCard extends StatelessWidget {
-  const VersionCard({
-    super.key,
-    required this.versionId,
-    required this.cipherId,
-  });
-  final int versionId;
+class CipherCard extends StatefulWidget {
   final int cipherId;
+
+  const CipherCard({super.key, required this.cipherId});
+
+  @override
+  State<CipherCard> createState() => _CipherCardState();
+}
+
+class _CipherCardState extends State<CipherCard> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<VersionProvider>().loadVersionsOfCipher(widget.cipherId);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,8 +27,10 @@ class VersionCard extends StatelessWidget {
 
     return Consumer2<CipherProvider, VersionProvider>(
       builder: (context, cipherProvider, versionProvider, child) {
-        final version = versionProvider.getVersionById(versionId);
-        final cipher = cipherProvider.getCipherFromCache(cipherId)!;
+        final cipher = cipherProvider.getCipherFromCache(widget.cipherId)!;
+        final versionCount = versionProvider.getVersionsOfCipherCount(
+          widget.cipherId,
+        );
         // Error handling
         if (cipherProvider.error != null || versionProvider.error != null) {
           return Container(
@@ -31,6 +40,8 @@ class VersionCard extends StatelessWidget {
             ),
           );
         }
+
+        // Card content
         return Container(
           decoration: BoxDecoration(
             border: Border.all(color: colorScheme.surfaceContainerHigh),
@@ -52,7 +63,7 @@ class VersionCard extends StatelessWidget {
                       spacing: 16.0,
                       children: [
                         Text(
-                          '${AppLocalizations.of(context)!.musicKey}: ${version!.transposedKey ?? cipher.musicKey}',
+                          '${AppLocalizations.of(context)!.musicKey}: ${cipher.musicKey}',
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                         cipher.tempo != ''
@@ -70,7 +81,7 @@ class VersionCard extends StatelessWidget {
                       ],
                     ),
                     Text(
-                      version.versionName,
+                      '$versionCount${AppLocalizations.of(context)!.versions}',
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                         color: Theme.of(
                           context,

@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
-import 'package:cordis/widgets/ciphers/library/cipher_versions_scroll_view.dart';
+import 'package:cordis/widgets/ciphers/library/cipher_scroll_view.dart';
 import 'package:cordis/screens/cipher/cipher_viewer.dart';
 
 class CipherLibraryScreen extends StatefulWidget {
@@ -132,10 +132,7 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
                       ],
                     ),
                     Expanded(
-                      child: CipherVersionsScrollView(
-                        selectionMode: widget.selectionMode,
-                        playlistId: widget.playlistId,
-                      ),
+                      child: CipherScrollView(playlistId: widget.playlistId),
                     ),
                   ],
                 ),

@@ -63,5 +63,9 @@
   "logOut": "Sair",
   "@logOut": {},
   "schedule": "Agenda",
-  "@schedule": {}
+  "@schedule": {},
+  "versions": " versões",
+  "@versions": {
+    "description": "Label for number of versions of a cipher (lowercase 'v')"
+  }
 }

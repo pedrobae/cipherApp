@@ -17,7 +17,7 @@ class VersionProvider extends ChangeNotifier {
     _initializeCloudCache();
   }
 
-  Map<int, Version> _versions = {}; // Cached versions localID -> Version
+  Map<int, Version> _localVersions = {}; // Cached versions localID -> Version
   Map<String, VersionDto> _cloudVersions =
       {}; // Cached cloud versions firebaseID -> Version
   Map<String, VersionDto> _filteredCloudVersions = {};
@@ -32,7 +32,7 @@ class VersionProvider extends ChangeNotifier {
   String? _error;
 
   // Getters
-  Map<dynamic, Version> get versions => _versions;
+  Map<int, Version> get localVersions => _localVersions;
   bool get isLoading => _isLoading;
   bool get isSaving => _isSaving;
 
@@ -42,14 +42,25 @@ class VersionProvider extends ChangeNotifier {
 
   String? get error => _error;
 
+  int get localVersionCount {
+    if (_localVersions[-1] != null) {
+      return _localVersions.length - 1;
+    }
+    return _localVersions.length;
+  }
+
+  int get filteredCloudVersionCount {
+    return _filteredCloudVersions.length;
+  }
+
   List<String> getSongStructure(dynamic versionKey) => versionKey is int
-      ? _versions[versionKey]?.songStructure ?? []
+      ? _localVersions[versionKey]?.songStructure ?? []
       : _cloudVersions[versionKey]?.songStructure ?? [];
 
   /// Checks if a version exists locally by its Firebase ID
   /// Returns the local id if found, otherwise null
   Future<int?> getLocalIdByFirebaseId(String firebaseId) async {
-    for (var v in _versions.values) {
+    for (var v in _localVersions.values) {
       if (v.firebaseId == firebaseId && v.id != null) {
         return v.id;
       }
@@ -63,7 +74,7 @@ class VersionProvider extends ChangeNotifier {
   }
 
   Future<String?> getFirebaseIdByLocalId(int localId) async {
-    final id = _versions[localId]?.firebaseId;
+    final id = _localVersions[localId]?.firebaseId;
     if (id != null) {
       return id;
     }
@@ -73,10 +84,16 @@ class VersionProvider extends ChangeNotifier {
   }
 
   List<int> getVersionsByCipherId(int cipherId) {
-    return _versions.values
+    return _localVersions.values
         .where((version) => version.cipherId == cipherId)
         .map((version) => version.id!)
         .toList();
+  }
+
+  int getVersionsOfCipherCount(int cipherId) {
+    return _localVersions.values
+        .where((version) => version.cipherId == cipherId)
+        .length;
   }
 
   // ===== CREATE =====
@@ -90,15 +107,17 @@ class VersionProvider extends ChangeNotifier {
 
     int? versionId;
     try {
-      if (!_versions.containsKey(-1)) {
+      if (!_localVersions.containsKey(-1)) {
         throw Exception('No version cached to create a new version from.');
       }
       // Create version with the correct cipher ID
-      final versionWithCipherId = _versions[-1]!.copyWith(cipherId: cipherId);
+      final versionWithCipherId = _localVersions[-1]!.copyWith(
+        cipherId: cipherId,
+      );
 
       versionId = await _cipherRepository.insertVersion(versionWithCipherId);
 
-      _versions[versionId] = versionWithCipherId.copyWith(id: versionId);
+      _localVersions[versionId] = versionWithCipherId.copyWith(id: versionId);
 
       if (kDebugMode) {
         print('Created a new version with id $versionId, for cipher $cipherId');
@@ -116,7 +135,7 @@ class VersionProvider extends ChangeNotifier {
   }
 
   void setNewVersionInCache(Version version) {
-    _versions[-1] = version;
+    _localVersions[-1] = version;
     notifyListeners();
   }
 
@@ -129,12 +148,12 @@ class VersionProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _versions[versionId] = (await _cipherRepository.getVersionWithId(
+      _localVersions[versionId] = (await _cipherRepository.getVersionWithId(
         versionId,
       ))!;
       if (kDebugMode) {
         print(
-          '===== Loaded the version: ${_versions[versionId]?.versionName} into cache =====',
+          '===== Loaded the version: ${_localVersions[versionId]?.versionName} into cache =====',
         );
       }
     } catch (e) {
@@ -153,7 +172,7 @@ class VersionProvider extends ChangeNotifier {
     final now = DateTime.now();
     if (_lastCloudLoad != null &&
         now.difference(_lastCloudLoad!).inDays < 7 &&
-        _versions.keys.any((key) => key is String) &&
+        _localVersions.keys.any((key) => key is String) &&
         !forceReload) {
       return;
     }
@@ -201,13 +220,13 @@ class VersionProvider extends ChangeNotifier {
     try {
       final versionList = await _cipherRepository.getVersions(cipherId);
       for (final version in versionList) {
-        _versions[version.id!] = version;
+        _localVersions[version.id!] = version;
       }
       if (kDebugMode) {
-        print('Loaded ${_versions.length} versions of cipher $cipherId');
+        print('Loaded ${_localVersions.length} versions of cipher $cipherId');
       }
       for (var version in versionList) {
-        _versions[version.id!] = version;
+        _localVersions[version.id!] = version;
       }
     } catch (e) {
       _error = e.toString();
@@ -234,11 +253,11 @@ class VersionProvider extends ChangeNotifier {
         throw Exception('Version with id $versionId not found locally');
       }
 
-      _versions[versionId] = version;
-      _versions[versionId] = version;
+      _localVersions[versionId] = version;
+      _localVersions[versionId] = version;
       if (kDebugMode) {
         print(
-          'Loaded the version: ${_versions[versionId]?.versionName} into cache',
+          'Loaded the version: ${_localVersions[versionId]?.versionName} into cache',
         );
       }
     } catch (e) {
@@ -373,7 +392,7 @@ class VersionProvider extends ChangeNotifier {
       });
 
       // Update cached version if it exists
-      _versions[versionId] = _versions[versionId]!.copyWith(
+      _localVersions[versionId] = _localVersions[versionId]!.copyWith(
         songStructure: songStructure,
       );
 
@@ -399,12 +418,12 @@ class VersionProvider extends ChangeNotifier {
   }) {
     if (versionId is int) {
       if (newVersionName != null) {
-        _versions[versionId] = _versions[versionId]!.copyWith(
+        _localVersions[versionId] = _localVersions[versionId]!.copyWith(
           versionName: newVersionName,
         );
       }
       if (newTransposedKey != null) {
-        _versions[versionId] = _versions[versionId]!.copyWith(
+        _localVersions[versionId] = _localVersions[versionId]!.copyWith(
           transposedKey: newTransposedKey,
         );
       }
@@ -429,7 +448,7 @@ class VersionProvider extends ChangeNotifier {
     List<String> songStructure,
   ) {
     if (versionId is int) {
-      _versions[versionId] = _versions[versionId]!.copyWith(
+      _localVersions[versionId] = _localVersions[versionId]!.copyWith(
         songStructure: songStructure,
       );
       notifyListeners();
@@ -448,8 +467,8 @@ class VersionProvider extends ChangeNotifier {
     if (newIndex > oldIndex) newIndex--;
 
     if (versionId is int) {
-      final item = _versions[versionId]!.songStructure.removeAt(oldIndex);
-      _versions[versionId]!.songStructure.insert(newIndex, item);
+      final item = _localVersions[versionId]!.songStructure.removeAt(oldIndex);
+      _localVersions[versionId]!.songStructure.insert(newIndex, item);
       notifyListeners();
       return;
     } else {
@@ -498,7 +517,7 @@ class VersionProvider extends ChangeNotifier {
       }
 
       if (versionId is int) {
-        await _cipherRepository.updateVersion(_versions[versionId]!);
+        await _cipherRepository.updateVersion(_localVersions[versionId]!);
       } else {
         // Cloud version saving not implemented
         throw Exception('Saving cloud versions is not supported yet.');
@@ -534,13 +553,13 @@ class VersionProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _versions = Map.fromEntries(
+      _localVersions = Map.fromEntries(
         (await _cipherRepository.getVersionsByIds(
           versionIds,
         )).map((version) => MapEntry(version.id!, version)),
       );
       if (kDebugMode) {
-        print('Loaded ${_versions.length} versions for playlist');
+        print('Loaded ${_localVersions.length} versions for playlist');
       }
     } catch (e) {
       _error = e.toString();
@@ -555,7 +574,7 @@ class VersionProvider extends ChangeNotifier {
 
   // Get cached version by ID (returns null if not in cache)
   Version? getVersionById(int versionId) {
-    return _versions[versionId];
+    return _localVersions[versionId];
   }
 
   VersionDto? getCloudVersionByFirebaseId(String firebaseId) {
@@ -564,7 +583,7 @@ class VersionProvider extends ChangeNotifier {
 
   // Check if a version is already cached
   bool isVersionCached(int versionId) {
-    return _versions.containsKey(versionId);
+    return _localVersions.containsKey(versionId);
   }
 
   /// ===== SONG STRUCTURE =====
@@ -572,7 +591,7 @@ class VersionProvider extends ChangeNotifier {
   // Add a new section
   void addSectionToStruct(dynamic versionId, String contentCode) {
     if (versionId is int) {
-      _versions[versionId]!.songStructure.add(contentCode);
+      _localVersions[versionId]!.songStructure.add(contentCode);
       notifyListeners();
       return;
     } else {
@@ -590,9 +609,13 @@ class VersionProvider extends ChangeNotifier {
     required String newCode,
   }) {
     if (versionId is int) {
-      for (int i = 0; i < _versions[versionId]!.songStructure.length; i++) {
-        if (_versions[versionId]!.songStructure[i] == oldCode) {
-          _versions[versionId]!.songStructure[i] = newCode;
+      for (
+        int i = 0;
+        i < _localVersions[versionId]!.songStructure.length;
+        i++
+      ) {
+        if (_localVersions[versionId]!.songStructure[i] == oldCode) {
+          _localVersions[versionId]!.songStructure[i] = newCode;
         }
       }
     } else {
@@ -613,7 +636,7 @@ class VersionProvider extends ChangeNotifier {
   // Remove a section from cache
   void removeSectionFromStruct(dynamic versionId, int index) {
     if (versionId is int) {
-      _versions[versionId]!.songStructure.removeAt(index);
+      _localVersions[versionId]!.songStructure.removeAt(index);
     } else {
       _cloudVersions[versionId]!.songStructure.removeAt(index);
     }
@@ -622,7 +645,7 @@ class VersionProvider extends ChangeNotifier {
 
   void removeSectionFromStructByCode(dynamic versionId, String contentCode) {
     if (versionId is int) {
-      _versions[versionId]!.songStructure.removeWhere(
+      _localVersions[versionId]!.songStructure.removeWhere(
         (code) => code == contentCode,
       );
     } else {
@@ -645,7 +668,7 @@ class VersionProvider extends ChangeNotifier {
   }
 
   void clearCache() {
-    _versions.clear();
+    _localVersions.clear();
     _cloudVersions.clear();
     _filteredCloudVersions.clear();
     notifyListeners();

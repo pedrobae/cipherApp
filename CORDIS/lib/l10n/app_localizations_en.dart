@@ -91,4 +91,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get schedule => 'Schedule';
+
+  @override
+  String get versions => ' versions';
 }

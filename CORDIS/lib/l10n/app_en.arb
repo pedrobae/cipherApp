@@ -63,5 +63,9 @@
   "logOut": "Sign Out",
   "@logOut": {},
   "schedule": "Schedule",
-  "@schedule": {}
+  "@schedule": {},
+  "versions": " versions",
+  "@versions": {
+    "description": "Label for number of versions of a cipher (lowercase 'v')"
+  }
 }

@@ -27,6 +27,20 @@ class CipherProvider extends ChangeNotifier {
 
   String? get error => _error;
 
+  int get localCipherCount {
+    if (_localCiphers[-1] != null) {
+      return _localCiphers.length - 1;
+    }
+    return _localCiphers.length;
+  }
+
+  int get filteredLocalCipherCount {
+    if (_filteredLocalCiphers[-1] != null) {
+      return _filteredLocalCiphers.length - 1;
+    }
+    return _filteredLocalCiphers.length;
+  }
+
   int? getLocalCipherIdByTitle(String title) {
     return _localCiphers.values
         .firstWhere(

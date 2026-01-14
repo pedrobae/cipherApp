@@ -144,4 +144,10 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get songStructure => 'Mapa da Música';
+
+  @override
+  String get addSection => 'Adicionar Seção';
+
+  @override
+  String get lyrics => 'Letras';
 }

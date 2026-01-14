@@ -105,5 +105,9 @@
   "noSectionsInStructurePrompt": "No sections in structure. Use the button above to add sections.",
   "@noSectionsInStructurePrompt": {  "description": "Prompt displayed when there are no sections in the song structure"  },
   "songStructure": "Song Structure",
-  "@songStructure": {}
+  "@songStructure": {},
+  "addSection": "Add Section",
+  "@addSection": {},
+  "lyrics": "Lyrics",
+  "@lyrics": {}
 }

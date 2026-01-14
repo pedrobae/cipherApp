@@ -18,7 +18,7 @@ class ReorderableStructureChips extends StatefulWidget {
 class _ReorderableStructureChipsState extends State<ReorderableStructureChips> {
   void _reorder(int oldIndex, int newIndex, VersionProvider versionProvider) {
     versionProvider.cacheReorderedStructure(
-      widget.versionId,
+      widget.versionId ?? -1,
       oldIndex,
       newIndex,
     );
@@ -29,20 +29,17 @@ class _ReorderableStructureChipsState extends State<ReorderableStructureChips> {
     VersionProvider versionProvider,
     SectionProvider sectionProvider,
   ) {
-    versionProvider.removeSectionFromStruct(widget.versionId, index);
+    versionProvider.removeSectionFromStruct(widget.versionId ?? -1, index);
     if (versionProvider
-        .getVersionById(widget.versionId)!
-        .songStructure
+        .getSongStructure(widget.versionId ?? -1)
         .contains(
-          versionProvider
-              .getVersionById(widget.versionId)!
-              .songStructure[index],
+          versionProvider.getSongStructure(widget.versionId ?? -1)[index],
         )) {
       return;
     }
     sectionProvider.cacheDeleteSection(
-      widget.versionId,
-      versionProvider.getVersionById(widget.versionId)!.songStructure[index],
+      widget.versionId ?? -1,
+      versionProvider.getSongStructure(widget.versionId ?? -1)[index],
     );
   }
 
@@ -96,32 +93,26 @@ class _ReorderableStructureChipsState extends State<ReorderableStructureChips> {
                         child: Stack(
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
-                              ),
+                              height: 44,
+                              width: 44,
                               decoration: BoxDecoration(
                                 color: color.withValues(alpha: .8),
                                 borderRadius: BorderRadius.circular(0),
                                 border: Border.all(
-                                  color: colorScheme.onSurface,
+                                  color: colorScheme.shadow,
                                   width: 1,
                                 ),
                               ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    sectionCode,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
-                                    ),
-                                    textAlign: TextAlign.center,
+                              child: Center(
+                                child: Text(
+                                  sectionCode,
+                                  style: TextStyle(
+                                    color: colorScheme.onSurface,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 14,
                                   ),
-                                ],
+                                  textAlign: TextAlign.center,
+                                ),
                               ),
                             ),
                             Positioned(
@@ -134,15 +125,15 @@ class _ReorderableStructureChipsState extends State<ReorderableStructureChips> {
                                   sectionProvider,
                                 ),
                                 child: Container(
-                                  width: 20,
-                                  height: 20,
+                                  width: 22,
+                                  height: 22,
                                   decoration: const BoxDecoration(
                                     color: Colors.transparent,
                                     shape: BoxShape.circle,
                                   ),
-                                  child: const Icon(
+                                  child: Icon(
                                     Icons.close,
-                                    color: Colors.white,
+                                    color: colorScheme.onSurface,
                                     size: 12,
                                   ),
                                 ),

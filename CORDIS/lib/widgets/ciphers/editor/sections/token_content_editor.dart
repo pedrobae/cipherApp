@@ -1,9 +1,10 @@
-import 'package:cordis/models/domain/cipher/section.dart';
+import 'package:cordis/providers/section_provider.dart';
 import 'package:cordis/widgets/ciphers/editor/sections/chord_token.dart';
 import 'package:cordis/widgets/ciphers/editor/sections/edit_section_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:cordis/models/ui/content_token.dart';
 import 'package:cordis/services/tokenization_service.dart';
+import 'package:provider/provider.dart';
 
 final double _fontSize = 18;
 
@@ -28,13 +29,13 @@ class _ContentTokenized {
 }
 
 class TokenContentEditor extends StatefulWidget {
-  final Section section;
-  final Function(String) onContentChanged;
+  final dynamic versionId;
+  final String sectionCode;
 
   const TokenContentEditor({
     super.key,
-    required this.onContentChanged,
-    required this.section,
+    required this.versionId,
+    required this.sectionCode,
   });
 
   @override
@@ -43,122 +44,140 @@ class TokenContentEditor extends StatefulWidget {
 
 class _TokenContentEditorState extends State<TokenContentEditor> {
   final TokenizationService _tokenizer = TokenizationService();
-  List<ContentToken> _tokens = [];
+
   bool _isDragging = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _tokens = _tokenizer.tokenize(widget.section.contentText);
-  }
-
-  @override
-  void didUpdateWidget(TokenContentEditor oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    // Re-tokenize if content changed externally
-    if (oldWidget.section.contentText != widget.section.contentText) {
-      _tokens = _tokenizer.tokenize(widget.section.contentText);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Card(
-      color: colorScheme.surfaceContainerHigh,
-      margin: const EdgeInsets.only(bottom: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Row(
-                    spacing: 8,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: widget.section.contentColor,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          widget.section.contentCode,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          widget.section.contentType,
-                          style: Theme.of(context).textTheme.titleSmall
-                              ?.copyWith(fontWeight: FontWeight.w600),
-                        ),
-                      ),
-                      _isDragging
-                          ? DragTarget<ContentToken>(
-                              onAcceptWithDetails: (details) => {
-                                _removeChord(details.data),
-                              },
-                              builder: (context, candidateData, rejectedData) {
-                                if (candidateData.isNotEmpty) {
-                                  return Icon(Icons.delete, color: Colors.red);
-                                }
-                                return Icon(Icons.delete, color: Colors.grey);
-                              },
-                            )
-                          : const SizedBox.shrink(),
-                      IconButton(
-                        onPressed: () => _openEditSectionDialog(),
-                        icon: const Icon(Icons.edit),
-                        tooltip: 'Editar seção',
-                      ),
-                    ],
+    return Consumer<SectionProvider>(
+      builder: (context, sectionProvider, child) {
+        final section = sectionProvider.getSection(
+          widget.versionId,
+          widget.sectionCode,
+        )!;
+
+        // Tokenize content text
+        final tokens = _tokenizer.tokenize(section.contentText);
+
+        return Container(
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            borderRadius: BorderRadius.circular(0),
+            border: Border.all(color: colorScheme.shadow, width: 1),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              /// HEADER
+              Row(
+                spacing: 8,
+                children: [
+                  /// Drag Handle icon
+                  Icon(
+                    Icons.drag_indicator,
+                    size: 32,
+                    color: colorScheme.shadow,
                   ),
-                ),
-              ],
-            ),
-            Builder(
-              builder: (context) {
-                final content = _buildTokenWidgets(
-                  context,
-                  _tokens,
-                  lineSpacing: 8,
-                  letterSpacing: 0,
-                );
-                return Container(
-                  padding: const EdgeInsets.all(8),
-                  width: double.infinity,
-                  height: content.contentHeight,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade300),
-                    borderRadius: BorderRadius.circular(8),
+
+                  /// Section Code badge
+                  Container(
+                    height: 30,
+                    width: 40,
+                    decoration: BoxDecoration(
+                      color: section.contentColor,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Center(
+                      child: Text(
+                        section.contentCode,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: colorScheme.onSurface,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
                   ),
-                  child: Stack(children: [SizedBox(), ...content.tokens]),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
+
+                  /// Section Type label
+                  Expanded(
+                    child: Text(
+                      section.contentType,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
+
+                  /// Delete icon (only visible when dragging)
+                  _isDragging
+                      ? DragTarget<ContentToken>(
+                          onAcceptWithDetails: (details) => {
+                            _removeChordAt(
+                              details.data.position!,
+                              sectionProvider,
+                              tokens,
+                            ),
+                          },
+                          builder: (context, candidateData, rejectedData) {
+                            if (candidateData.isNotEmpty) {
+                              return Icon(Icons.delete, color: Colors.red);
+                            }
+                            return Icon(Icons.delete, color: Colors.grey);
+                          },
+                        )
+                      : const SizedBox.shrink(),
+
+                  /// Edit Section button
+                  IconButton(
+                    onPressed: () => _openEditSectionDialog(),
+                    icon: const Icon(Icons.edit),
+                    tooltip: 'Editar seção',
+                  ),
+                ],
+              ),
+
+              Divider(height: 2, color: colorScheme.shadow),
+
+              /// CONTENT
+              Builder(
+                builder: (context) {
+                  final content = _buildTokenWidgets(
+                    sectionProvider,
+                    context,
+                    tokens,
+                    section.contentColor,
+                    lineSpacing: 8,
+                    letterSpacing: 0,
+                  );
+                  return Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: content.contentHeight,
+                      child: Stack(children: [...content.tokens]),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
   /// Builds the list of positioned widgets, with token widgets as draggable and drag targets
   _ContentTokenized _buildTokenWidgets(
+    SectionProvider sectionProvider,
     BuildContext context,
-    List<ContentToken> tokens, {
+    List<ContentToken> tokens,
+    Color contentColor, {
     double lineSpacing = 8,
     double letterSpacing = 1,
   }) {
@@ -182,7 +201,12 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
         Positioned(
           left: currentX,
           top: currentY,
-          child: _buildPrecedingChordDragTarget(0),
+          child: _buildPrecedingChordDragTarget(
+            0,
+            sectionProvider,
+            tokens,
+            contentColor,
+          ),
         ),
       );
       currentX += 24; // Width of the preceding chord drag target
@@ -207,7 +231,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
           // Save chord widget to be positioned once lyrics are positioned
           wordWidgets.add(
             _WidgetWithSize(
-              widget: _buildDraggableChord(token, position),
+              widget: _buildDraggableChord(token, position, contentColor),
               width: chordWidth,
               type: TokenType.chord,
             ),
@@ -259,7 +283,13 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
           // Save token widget with its width, to be added once a space or newline is encountered
           wordWidgets.add(
             _WidgetWithSize(
-              widget: _buildLyricDragTarget(token, position),
+              widget: _buildLyricDragTarget(
+                token,
+                position,
+                sectionProvider,
+                tokens,
+                contentColor,
+              ),
               width: tokenWidth,
               type: TokenType.lyric,
             ),
@@ -311,8 +341,11 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
                 top: currentY,
                 child: _buildSpaceDragTarget(
                   token,
+                  tokens,
                   position,
                   maxWidth - currentX,
+                  sectionProvider,
+                  contentColor,
                 ),
               ),
             );
@@ -328,8 +361,11 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
                 top: currentY,
                 child: _buildSpaceDragTarget(
                   token,
+                  tokens,
                   tokenWidgets.length + wordWidgets.length,
                   tokenWidth,
+                  sectionProvider,
+                  contentColor,
                 ),
               ),
             );
@@ -366,8 +402,11 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
               top: currentY,
               child: _buildSpaceDragTarget(
                 token,
+                tokens,
                 position,
                 maxWidth - currentX,
+                sectionProvider,
+                contentColor,
               ),
             ),
           );
@@ -388,6 +427,9 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
                 top: currentY,
                 child: _buildPrecedingChordDragTarget(
                   tokenWidgets.length + wordWidgets.length + 1,
+                  sectionProvider,
+                  tokens,
+                  contentColor,
                 ),
               ),
             );
@@ -420,7 +462,11 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
     return _ContentTokenized(tokenWidgets, currentY + _fontSize + lineSpacing);
   }
 
-  Widget _buildDraggableChord(ContentToken token, int position) {
+  Widget _buildDraggableChord(
+    ContentToken token,
+    int position,
+    Color contentColor,
+  ) {
     // Assign position to token for reference
     token.position = position;
 
@@ -433,36 +479,41 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
         color: Colors.transparent,
         child: ChordToken(
           token: token,
-          sectionColor: widget.section.contentColor.withValues(alpha: .5),
+          sectionColor: contentColor.withValues(alpha: .5),
           textStyle: TextStyle(fontSize: _fontSize, color: Colors.white),
         ),
       ),
       childWhenDragging: SizedBox.shrink(),
       child: ChordToken(
         token: token,
-        sectionColor: widget.section.contentColor,
+        sectionColor: contentColor,
         textStyle: TextStyle(fontSize: _fontSize, color: Colors.white),
       ),
     );
   }
 
-  DragTarget<ContentToken> _buildPrecedingChordDragTarget(int position) {
+  DragTarget<ContentToken> _buildPrecedingChordDragTarget(
+    int position,
+    SectionProvider sectionProvider,
+    List<ContentToken> tokens,
+    Color contentColor,
+  ) {
     return DragTarget<ContentToken>(
       onAcceptWithDetails: (details) {
-        _addPrecedingChord(details.data, position);
+        _addPrecedingChord(details.data, position, sectionProvider, tokens);
         if (details.data.position != null) {
           int index = details.data.position!;
           if (index > position) {
             index += 2; // Adjust for two insertions (Chord + Space)
           }
-          _removeChordAt(index);
+          _removeChordAt(index, sectionProvider, tokens);
         }
       },
       builder: (context, candidateData, rejectedData) {
         if (candidateData.isNotEmpty) {
           return ChordToken(
             token: candidateData.first!,
-            sectionColor: widget.section.contentColor,
+            sectionColor: contentColor,
             textStyle: TextStyle(fontSize: _fontSize, color: Colors.white),
           );
         } else {
@@ -480,19 +531,25 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
     );
   }
 
-  Widget _buildLyricDragTarget(ContentToken token, int position) {
+  Widget _buildLyricDragTarget(
+    ContentToken token,
+    int position,
+    SectionProvider sectionProvider,
+    List<ContentToken> tokens,
+    Color contentColor,
+  ) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     // Container that contains the lyric drag target
     return DragTarget<ContentToken>(
       onAcceptWithDetails: (details) {
-        _addChord(details.data, position);
+        _addChord(details.data, position, sectionProvider, tokens);
         if (details.data.position != null) {
           int index = details.data.position!;
           if (index > position) {
             index += 1;
           }
-          _removeChordAt(index);
+          _removeChordAt(index, sectionProvider, tokens);
         }
       },
       builder: (context, candidateData, rejectedData) {
@@ -511,7 +568,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
                 top: -_fontSize,
                 child: ChordToken(
                   token: candidateData.first!,
-                  sectionColor: widget.section.contentColor,
+                  sectionColor: contentColor,
                   textStyle: TextStyle(
                     fontSize: _fontSize,
                     color: Colors.white,
@@ -529,17 +586,24 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
     );
   }
 
-  Widget _buildSpaceDragTarget(ContentToken token, int position, double width) {
+  Widget _buildSpaceDragTarget(
+    ContentToken token,
+    List<ContentToken> tokens,
+    int position,
+    double width,
+    SectionProvider sectionProvider,
+    Color contentColor,
+  ) {
     // Container that is sized to the lowest between space or remainder of the line
     return DragTarget<ContentToken>(
       onAcceptWithDetails: (details) {
-        _addChord(details.data, position);
+        _addChord(details.data, position, sectionProvider, tokens);
         if (details.data.position != null) {
           int index = details.data.position!;
           if (index > position) {
-            index;
+            index++;
           }
-          _removeChordAt(index);
+          _removeChordAt(index, sectionProvider, tokens);
         }
       },
       builder: (context, candidateData, rejectedData) {
@@ -552,7 +616,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
                 top: -_fontSize,
                 child: ChordToken(
                   token: candidateData.first!,
-                  sectionColor: widget.section.contentColor,
+                  sectionColor: contentColor,
                   textStyle: TextStyle(
                     fontSize: _fontSize,
                     color: Colors.white,
@@ -628,8 +692,8 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
     showDialog(
       context: context,
       builder: (context) => EditSectionDialog(
-        versionId: widget.section.versionId,
-        sectionCode: widget.section.contentCode,
+        versionId: widget.versionId,
+        sectionCode: widget.sectionCode,
       ),
     );
   }
@@ -640,44 +704,53 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
     });
   }
 
-  void _notifyContentChanged() {
+  void _notifyContentChanged(
+    SectionProvider sectionProvider,
+    List<ContentToken> tokens,
+  ) {
     final newContent = _tokenizer.reconstructContent(
-      _tokens, // Exclude the last newline token
+      tokens, // Exclude the last newline token
     );
-    widget.onContentChanged(newContent);
+
+    sectionProvider.cacheUpdatedSection(
+      widget.versionId,
+      widget.sectionCode,
+      newContentText: newContent,
+    );
   }
 
-  void _addChord(ContentToken token, int position) {
-    setState(() {
-      _tokens.insert(position, token);
-    });
-    _notifyContentChanged();
+  void _addChord(
+    ContentToken token,
+    int position,
+    SectionProvider sectionProvider,
+    List<ContentToken> tokens,
+  ) {
+    tokens.insert(position, token);
+    _notifyContentChanged(sectionProvider, tokens);
   }
 
-  void _addPrecedingChord(ContentToken token, int position) {
+  void _addPrecedingChord(
+    ContentToken token,
+    int position,
+    SectionProvider sectionProvider,
+    List<ContentToken> tokens,
+  ) {
     final emptySpaceToken = ContentToken(text: ' ', type: TokenType.space);
     final newToken = ContentToken(text: token.text, type: token.type);
 
-    setState(() {
-      _tokens.insert(position, emptySpaceToken);
-      _tokens.insert(position, newToken);
-    });
+    tokens.insert(position, emptySpaceToken);
+    tokens.insert(position, newToken);
 
-    _notifyContentChanged();
+    _notifyContentChanged(sectionProvider, tokens);
   }
 
-  void _removeChord(ContentToken token) {
-    setState(() {
-      _tokens.remove(token);
-    });
-    _notifyContentChanged();
-  }
-
-  void _removeChordAt(int position) {
-    setState(() {
-      _tokens.removeAt(position);
-    });
-    _notifyContentChanged();
+  void _removeChordAt(
+    int position,
+    SectionProvider sectionProvider,
+    List<ContentToken> tokens,
+  ) {
+    tokens.removeAt(position);
+    _notifyContentChanged(sectionProvider, tokens);
   }
 
   bool _spaceBeforeLyric(int position, List<ContentToken> tokens) {

@@ -3,11 +3,11 @@ import 'package:flutter/cupertino.dart';
 
 class Section {
   final int? id;
-  final int versionId;
-  final String contentType;
-  final String contentCode;
+  int versionId;
+  String contentType;
+  String contentCode;
   String contentText;
-  final Color contentColor;
+  Color contentColor;
 
   Section({
     this.id,

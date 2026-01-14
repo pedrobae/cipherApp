@@ -6,8 +6,6 @@ import 'package:provider/provider.dart';
 import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/section_provider.dart';
 import 'package:cordis/providers/version_provider.dart';
-import 'package:cordis/widgets/ciphers/editor/sections/custom_section_dialog.dart';
-import 'package:cordis/widgets/ciphers/editor/sections/preset_section_dialog.dart';
 import 'package:cordis/widgets/ciphers/editor/reorderable_structure_chips.dart';
 import 'package:cordis/widgets/ciphers/editor/sections/token_content_editor.dart';
 import 'package:cordis/utils/section_constants.dart';
@@ -23,8 +21,6 @@ class SectionsTab extends StatefulWidget {
 }
 
 class _SectionsTabState extends State<SectionsTab> {
-  Timer? _debounceTimer;
-
   @override
   void initState() {
     super.initState();
@@ -54,43 +50,6 @@ class _SectionsTabState extends State<SectionsTab> {
         color: customColor,
       );
     }
-  }
-
-  void _showPresetSectionsDialog(
-    VersionProvider versionProvider,
-    SectionProvider sectionProvider,
-  ) {
-    showDialog(
-      context: context,
-      builder: (context) => PresetSectionsDialog(
-        sectionTypes: predefinedSectionTypes,
-        onAdd: (sectionKey) => _addSection(
-          widget.versionId,
-          sectionKey,
-          sectionProvider,
-          versionProvider,
-        ),
-      ),
-    );
-  }
-
-  void _showCustomSectionDialog(
-    VersionProvider versionProvider,
-    SectionProvider sectionProvider,
-  ) {
-    showDialog(
-      context: context,
-      builder: (context) => CustomSectionDialog(
-        onAdd: (sectionKey, name, color) => _addSection(
-          widget.versionId,
-          sectionKey,
-          sectionProvider,
-          versionProvider,
-          sectionType: name,
-          customColor: color,
-        ),
-      ),
-    );
   }
 
   @override
@@ -123,14 +82,17 @@ class _SectionsTabState extends State<SectionsTab> {
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: 32,
               children: [
-                // Song Structure Section
+                // STRUCTURE SECTION
                 Column(
+                  spacing: 4,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        // LABEL
                         Text(
                           AppLocalizations.of(context)!.songStructure,
                           style: Theme.of(context).textTheme.titleMedium
@@ -140,47 +102,52 @@ class _SectionsTabState extends State<SectionsTab> {
                               ),
                         ),
 
-                        // Add Section Button
+                        // ADD SECTION BUTTON
+                        IconButton(
+                          tooltip: AppLocalizations.of(context)!.addSection,
+                          icon: const Icon(Icons.add),
+                          color: colorScheme.shadow,
+                          onPressed: () {},
+                        ),
                       ],
                     ),
 
-                    // Draggable Section Chips
+                    // DRAGGABLE CHIPS
                     ReorderableStructureChips(versionId: widget.versionId),
                   ],
                 ),
                 // CONTENT SECTION
-                if (uniqueSections.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.all(24),
-                    child: Text(
-                      'Adicione seções para começar a criar o conteúdo',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.grey),
+                Column(
+                  spacing: 8,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // LABEL
+                    Text(
+                      AppLocalizations.of(context)!.lyrics,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
                     ),
-                  )
-                else
-                  ...uniqueSections.map((sectionCode) {
-                    final section = sectionProvider.getSection(
-                      widget.versionId,
-                      sectionCode,
-                    );
-                    return TokenContentEditor(
-                      section: section!,
-                      onContentChanged: (newContent) {
-                        _debounceTimer?.cancel();
-                        _debounceTimer = Timer(
-                          const Duration(milliseconds: 300),
-                          () {
-                            sectionProvider.cacheUpdatedSection(
-                              widget.versionId,
-                              sectionCode,
-                              newContentText: newContent,
-                            );
-                          },
+
+                    // SECTIONS
+                    if (uniqueSections.isEmpty)
+                      Text(
+                        AppLocalizations.of(
+                          context,
+                        )!.noSectionsInStructurePrompt,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: colorScheme.onSurface),
+                      )
+                    else
+                      ...uniqueSections.map((sectionCode) {
+                        return TokenContentEditor(
+                          versionId: widget.versionId,
+                          sectionCode: sectionCode,
                         );
-                      },
-                    );
-                  }),
+                      }),
+                  ],
+                ),
               ],
             );
           },

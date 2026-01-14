@@ -103,21 +103,15 @@ class SectionProvider extends ChangeNotifier {
     String? newContentText,
     Color? newColor,
   }) {
-    final newSection = Section(
-      versionId: versionKey ?? -1,
-      contentCode:
-          newContentCode ?? _sections[versionKey]![contentCode]!.contentCode,
-      contentColor:
-          newColor ?? _sections[versionKey]![contentCode]!.contentColor,
-      contentType:
-          newContentType ?? _sections[versionKey]![contentCode]!.contentType,
-      contentText:
-          newContentText ?? _sections[versionKey]![contentCode]!.contentText,
-    );
+    final section = _sections[versionKey]![contentCode];
+    if (section == null) return;
+
+    section.contentType = newContentType ?? section.contentType;
+    section.contentText = newContentText ?? section.contentText;
+    section.contentCode = newContentCode ?? section.contentCode;
+    section.contentColor = newColor ?? section.contentColor;
 
     // Update the section in the sections map
-    _sections[versionKey]!.remove(contentCode);
-    _sections[versionKey]![newSection.contentCode] = newSection;
     notifyListeners();
   }
 

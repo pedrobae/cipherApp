@@ -143,4 +143,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get songStructure => 'Song Structure';
+
+  @override
+  String get addSection => 'Add Section';
+
+  @override
+  String get lyrics => 'Lyrics';
 }

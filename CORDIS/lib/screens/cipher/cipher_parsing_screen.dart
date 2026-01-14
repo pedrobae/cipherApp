@@ -84,8 +84,10 @@ class _CipherParsingScreenState extends State<CipherParsingScreen>
                     // Confirm parsing and navigate to editor
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) =>
-                            CipherEditor(versionType: VersionType.import),
+                        builder: (context) => CipherEditor(
+                          versionType: VersionType.import,
+                          versionId: -1,
+                        ),
                       ),
                     );
                   },

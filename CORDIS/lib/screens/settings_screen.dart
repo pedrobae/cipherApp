@@ -325,7 +325,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         'user',
         'playlist',
         'playlist_text',
-        'app_info',
       ];
       final Map<String, int> tableCounts = {};
 

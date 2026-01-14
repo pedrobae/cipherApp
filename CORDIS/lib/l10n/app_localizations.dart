@@ -367,6 +367,18 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Mapa da Música'**
   String get songStructure;
+
+  /// No description provided for @addSection.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicionar Seção'**
+  String get addSection;
+
+  /// No description provided for @lyrics.
+  ///
+  /// In pt, this message translates to:
+  /// **'Letras'**
+  String get lyrics;
 }
 
 class _AppLocalizationsDelegate

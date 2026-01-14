@@ -149,4 +149,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get lyrics => 'Lyrics';
+
+  @override
+  String get failedToCreateCipher => 'Failed to create cipher.';
+
+  @override
+  String get failedToCreateVersion => 'Failed to create version.';
+
+  @override
+  String get cipherCreatedSuccessfully => 'Cipher created successfully!';
+
+  @override
+  String get errorCreating => 'Error creating: ';
+
+  @override
+  String get cipherSavedSuccessfully => 'Cipher saved successfully!';
+
+  @override
+  String get cannotCreateCipherExistingCipher =>
+      'Could not create cipher: existing cipher found.';
 }

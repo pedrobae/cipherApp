@@ -379,6 +379,42 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Letras'**
   String get lyrics;
+
+  /// No description provided for @failedToCreateCipher.
+  ///
+  /// In pt, this message translates to:
+  /// **'Falha ao criar cifra.'**
+  String get failedToCreateCipher;
+
+  /// No description provided for @failedToCreateVersion.
+  ///
+  /// In pt, this message translates to:
+  /// **'Falha ao criar versão.'**
+  String get failedToCreateVersion;
+
+  /// No description provided for @cipherCreatedSuccessfully.
+  ///
+  /// In pt, this message translates to:
+  /// **'Cifra criada com sucesso!'**
+  String get cipherCreatedSuccessfully;
+
+  /// Prefix to be used with the relevant error message when creating a cipher
+  ///
+  /// In pt, this message translates to:
+  /// **'Erro ao criar: '**
+  String get errorCreating;
+
+  /// No description provided for @cipherSavedSuccessfully.
+  ///
+  /// In pt, this message translates to:
+  /// **'Cifra salva com sucesso!'**
+  String get cipherSavedSuccessfully;
+
+  /// No description provided for @cannotCreateCipherExistingCipher.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não fio possível criar a cifra porque uma cifra com o mesmo ID já existe.'**
+  String get cannotCreateCipherExistingCipher;
 }
 
 class _AppLocalizationsDelegate

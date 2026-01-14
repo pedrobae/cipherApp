@@ -119,259 +119,253 @@ class _CipherEditorState extends State<CipherEditor>
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Consumer<SectionProvider>(
-      builder: (context, sectionProvider, child) {
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(
-              AppLocalizations.of(context)!.cipherEditorTitle,
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-          body: Column(
-            spacing: 16,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: colorScheme.surfaceContainerHighest,
-                    border: Border.all(
-                      width: 1,
-                      color: colorScheme.surfaceContainerHigh,
-                    ),
-                    borderRadius: const BorderRadius.all(Radius.circular(4)),
-                  ),
-                  child: TabBar(
-                    labelPadding: const EdgeInsets.all(0),
-                    dividerHeight: 0,
-                    labelColor: colorScheme.onSurface,
-                    indicatorSize: TabBarIndicatorSize.label,
-                    indicator: BoxDecoration(
-                      color: colorScheme.surface,
-                      border: Border.all(
-                        width: 0.5,
-                        color: colorScheme.surfaceContainerHigh,
-                      ),
-                      borderRadius: const BorderRadius.all(Radius.circular(4)),
-                    ),
-                    controller: _tabController,
-                    tabs: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          spacing: 8,
-                          children: [
-                            const Icon(Icons.info_outline),
-                            Text(AppLocalizations.of(context)!.info),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          spacing: 8,
-                          children: [
-                            const Icon(Icons.music_note),
-                            Text(AppLocalizations.of(context)!.sections),
-                          ],
-                        ),
-                      ),
-                    ],
+    return Consumer3<CipherProvider, VersionProvider, SectionProvider>(
+      builder:
+          (context, cipherProvider, versionProvider, sectionProvider, child) {
+            return Scaffold(
+              appBar: AppBar(
+                title: Text(
+                  AppLocalizations.of(context)!.cipherEditorTitle,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
-              Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    // Basic Info Tab
-                    SingleChildScrollView(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        children: [
-                          // Basic cipher info
-                          InfoTab(
-                            cipherId: widget.cipherId,
-                            versionType: widget.versionType,
+              body: Column(
+                spacing: 16,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: colorScheme.surfaceContainerHighest,
+                        border: Border.all(
+                          width: 1,
+                          color: colorScheme.surfaceContainerHigh,
+                        ),
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(4),
+                        ),
+                      ),
+                      child: TabBar(
+                        labelPadding: const EdgeInsets.all(0),
+                        dividerHeight: 0,
+                        labelColor: colorScheme.onSurface,
+                        indicatorSize: TabBarIndicatorSize.label,
+                        indicator: BoxDecoration(
+                          color: colorScheme.surface,
+                          border: Border.all(
+                            width: 0.5,
+                            color: colorScheme.surfaceContainerHigh,
+                          ),
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(4),
+                          ),
+                        ),
+                        controller: _tabController,
+                        tabs: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              spacing: 8,
+                              children: [
+                                const Icon(Icons.info_outline),
+                                Text(AppLocalizations.of(context)!.info),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              spacing: 8,
+                              children: [
+                                const Icon(Icons.music_note),
+                                Text(AppLocalizations.of(context)!.sections),
+                              ],
+                            ),
                           ),
                         ],
                       ),
                     ),
-                    // Content Tab
-                    SingleChildScrollView(
-                      padding: const EdgeInsets.all(16.0),
-                      child: SectionsTab(
-                        versionId: widget.versionId,
-                        versionType: widget.versionType,
-                      ),
+                  ),
+                  Expanded(
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        // Basic Info Tab
+                        SingleChildScrollView(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            children: [
+                              // Basic cipher info
+                              InfoTab(
+                                cipherId: widget.cipherId,
+                                versionType: widget.versionType,
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Content Tab
+                        SingleChildScrollView(
+                          padding: const EdgeInsets.all(16.0),
+                          child: SectionsTab(
+                            versionId: widget.versionId,
+                            versionType: widget.versionType,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Save and Delete/Cancel Buttons
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: 16.0,
+                      right: 16.0,
+                      bottom: 16.0,
+                    ),
+                    child: Column(
+                      spacing: 16,
+                      children: [
+                        FilledButton(
+                          style: FilledButton.styleFrom(
+                            minimumSize: const Size.fromHeight(50),
+                            backgroundColor: colorScheme.onSurface,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(0),
+                            ),
+                            textStyle: const TextStyle(fontSize: 16),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                          onPressed: () {
+                            if (widget.versionType == VersionType.import ||
+                                widget.versionType == VersionType.brandNew) {
+                              _createCipher(
+                                cipherProvider,
+                                versionProvider,
+                                sectionProvider,
+                              );
+                            } else {
+                              _saveCipher(
+                                cipherProvider,
+                                versionProvider,
+                                sectionProvider,
+                              );
+                            }
+                          },
+                          child: Text(AppLocalizations.of(context)!.save),
+                        ),
+                        FilledButton(
+                          style: FilledButton.styleFrom(
+                            minimumSize: const Size.fromHeight(50),
+                            backgroundColor: colorScheme.surface,
+                            side: BorderSide(color: colorScheme.onSurface),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(0),
+                            ),
+                            textStyle: const TextStyle(fontSize: 16),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                          onPressed: () {
+                            if (widget.versionType == VersionType.import ||
+                                widget.versionType == VersionType.brandNew) {
+                              Navigator.pop(context);
+                            } else {
+                              _showDeleteDialog(widget.cipherId != null);
+                            }
+                          },
+                          child: Text(
+                            (widget.versionType == VersionType.import ||
+                                    widget.versionType == VersionType.brandNew)
+                                ? AppLocalizations.of(context)!.cancel
+                                : AppLocalizations.of(context)!.delete,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                              color: colorScheme.onSurface,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              floatingActionButton: Column(
+                spacing: 8,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                verticalDirection: VerticalDirection.up,
+                children: [
+                  if (paletteIsOpen) ...[
+                    ChordPalette(
+                      cipherId: widget.cipherId ?? -1,
+                      versionId: widget.versionId ?? -1,
+                      onClose: _togglePalette,
                     ),
                   ],
-                ),
-              ),
-              // Save and Delete/Cancel Buttons
-              Padding(
-                padding: const EdgeInsets.only(
-                  left: 16.0,
-                  right: 16.0,
-                  bottom: 16.0,
-                ),
-                child: Column(
-                  spacing: 16,
-                  children: [
-                    FilledButton(
-                      style: FilledButton.styleFrom(
-                        minimumSize: const Size.fromHeight(50),
-                        backgroundColor: colorScheme.onSurface,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(0),
-                        ),
-                        textStyle: const TextStyle(fontSize: 16),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                      onPressed: () => _saveCipher(widget.cipherId ?? -1),
-                      child: Text(AppLocalizations.of(context)!.save),
-                    ),
-                    FilledButton(
-                      style: FilledButton.styleFrom(
-                        minimumSize: const Size.fromHeight(50),
-                        backgroundColor: colorScheme.surface,
-                        side: BorderSide(color: colorScheme.onSurface),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(0),
-                        ),
-                        textStyle: const TextStyle(fontSize: 16),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                      onPressed: () => _showDeleteDialog(false),
-                      child: Text(
-                        (widget.versionType == VersionType.import ||
-                                widget.versionType == VersionType.brandNew)
-                            ? AppLocalizations.of(context)!.cancel
-                            : AppLocalizations.of(context)!.delete,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                          color: colorScheme.onSurface,
-                        ),
-                      ),
+                  // Palette FAB
+                  if (_tabController.index == 1 &&
+                      !_tabController.indexIsChanging) ...[
+                    FloatingActionButton(
+                      onPressed: _togglePalette,
+                      child: Icon(Icons.palette),
                     ),
                   ],
-                ),
+                ],
               ),
-            ],
-          ),
-          floatingActionButton: Column(
-            spacing: 8,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            verticalDirection: VerticalDirection.up,
-            children: [
-              if (paletteIsOpen) ...[
-                ChordPalette(
-                  cipherId: widget.cipherId ?? -1,
-                  versionId: widget.versionId ?? -1,
-                  onClose: _togglePalette,
-                ),
-              ],
-              // Palette FAB
-              if (_tabController.index == 1 &&
-                  !_tabController.indexIsChanging) ...[
-                FloatingActionButton(
-                  onPressed: _togglePalette,
-                  child: Icon(Icons.palette),
-                ),
-              ],
-            ],
-          ),
-        );
-      },
+            );
+          },
     );
   }
 
-  Future<int?> _createCipher() async {
-    int? cipherId;
-    try {
-      cipherId = await context.read<CipherProvider>().createCipher();
-      if (mounted) {
-        Navigator.pop(context, true); // Close screen
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Cifra criada com sucesso!')),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erro ao criar: ${e.toString()}'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
-      }
-    }
-    return cipherId;
-  }
-
-  Future<int?> _createVersion(int cipherId) async {
-    int? versionId;
-    try {
-      versionId = await context.read<VersionProvider>().createVersion(cipherId);
-      if (mounted) {
-        Navigator.pop(context, true); // Close screen
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Versão criada com sucesso!')),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erro ao criar: ${e.toString()}'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
-      }
-    }
-    return versionId;
-  }
-
-  Future<void> _createSections(
-    int versionId,
+  void _createCipher(
+    CipherProvider cipherProvider,
+    VersionProvider versionProvider,
     SectionProvider sectionProvider,
   ) async {
     try {
+      if (widget.cipherId != null) {
+        throw Exception(
+          AppLocalizations.of(context)!.cannotCreateCipherExistingCipher,
+        );
+      }
+
+      final cipherId = await cipherProvider.createCipher();
+      if (mounted) {
+        if (cipherId == null) {
+          throw Exception(AppLocalizations.of(context)!.failedToCreateCipher);
+        }
+      }
+
+      final versionId = await versionProvider.createVersion(cipherId!);
+      if (mounted) {
+        if (versionId == null) {
+          throw Exception(AppLocalizations.of(context)!.failedToCreateVersion);
+        }
+      }
+
       await sectionProvider.saveSections(versionId);
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erro ao criar: ${e.toString()}'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
-      }
-    }
-  }
 
-  void _saveCipher(int cipherId) async {
-    try {
-      await context.read<CipherProvider>().saveCipher(cipherId);
       if (mounted) {
         Navigator.pop(context, true); // Close screen
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Cifra salva com sucesso!')),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.cipherCreatedSuccessfully,
+            ),
+          ),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erro ao salvar: ${e.toString()}'),
+            content: Text(
+              '${AppLocalizations.of(context)!.errorCreating}${e.toString()}',
+            ),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -379,33 +373,26 @@ class _CipherEditorState extends State<CipherEditor>
     }
   }
 
-  void _saveVersion() async {
+  void _saveCipher(
+    CipherProvider cipherProvider,
+    VersionProvider versionProvider,
+    SectionProvider sectionProvider,
+  ) async {
     try {
-      await context.read<VersionProvider>().saveVersion();
+      await cipherProvider.saveCipher(widget.cipherId!);
+
+      await versionProvider.saveVersion(versionId: widget.versionId);
+
+      await sectionProvider.saveSections(widget.versionId!);
+
       if (mounted) {
         Navigator.pop(context, true); // Close screen
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Versão salva com sucesso!')),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erro ao salvar: ${e.toString()}'),
-            backgroundColor: Theme.of(context).colorScheme.error,
+            content: Text(
+              AppLocalizations.of(context)!.cipherSavedSuccessfully,
+            ),
           ),
-        );
-      }
-    }
-  }
-
-  void _saveSections() async {
-    try {
-      await context.read<SectionProvider>().saveSections(widget.versionId);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Seções salvas com sucesso!')),
         );
       }
     } catch (e) {

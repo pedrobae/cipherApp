@@ -150,4 +150,23 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get lyrics => 'Letras';
+
+  @override
+  String get failedToCreateCipher => 'Falha ao criar cifra.';
+
+  @override
+  String get failedToCreateVersion => 'Falha ao criar versão.';
+
+  @override
+  String get cipherCreatedSuccessfully => 'Cifra criada com sucesso!';
+
+  @override
+  String get errorCreating => 'Erro ao criar: ';
+
+  @override
+  String get cipherSavedSuccessfully => 'Cifra salva com sucesso!';
+
+  @override
+  String get cannotCreateCipherExistingCipher =>
+      'Não fio possível criar a cifra porque uma cifra com o mesmo ID já existe.';
 }

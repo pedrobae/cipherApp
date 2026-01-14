@@ -109,5 +109,17 @@
   "addSection": "Add Section",
   "@addSection": {},
   "lyrics": "Lyrics",
-  "@lyrics": {}
+  "@lyrics": {},
+  "failedToCreateCipher": "Failed to create cipher.",
+  "@failedToCreateCipher": {},
+  "failedToCreateVersion": "Failed to create version.",
+  "@failedToCreateVersion": {},
+  "cipherCreatedSuccessfully": "Cipher created successfully!",
+  "@cipherCreatedSuccessfully": {},
+  "cipherSavedSuccessfully": "Cipher saved successfully!",
+  "@cipherSavedSuccessfully": {},
+  "errorCreating": "Error creating: ",
+  "@errorCreating": {},
+  "cannotCreateCipherExistingCipher": "Could not create cipher: existing cipher found.",
+  "@cannotCreateCipherExistingCipher": {}
 }

@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:flutter/material.dart';

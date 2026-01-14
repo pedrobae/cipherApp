@@ -109,5 +109,18 @@
   "addSection": "Adicionar Seção",
   "@addSection": {},
   "lyrics": "Letras",
-  "@lyrics": {}
+  "@lyrics": {},
+  "failedToCreateCipher": "Falha ao criar cifra.",
+  "@failedToCreateCipher": {},
+  "failedToCreateVersion": "Falha ao criar versão.",
+  "@failedToCreateVersion": {},
+  "cipherCreatedSuccessfully": "Cifra criada com sucesso!",
+  "@cipherCreatedSuccessfully": {},
+  "errorCreating": "Erro ao criar: ",
+  "@errorCreating": {"description": "Prefix to be used with the relevant error message when creating a cipher"  },
+  "cipherSavedSuccessfully": "Cifra salva com sucesso!",
+  "@cipherSavedSuccessfully": {},
+  "cannotCreateCipherExistingCipher":
+      "Não fio possível criar a cifra porque uma cifra com o mesmo ID já existe.",
+  "@cannotCreateCipherExistingCipher": {}
 }

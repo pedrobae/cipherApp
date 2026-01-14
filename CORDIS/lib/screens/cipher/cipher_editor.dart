@@ -389,6 +389,10 @@ class _CipherEditorState extends State<CipherEditor>
 
       if (mounted) {
         Navigator.pop(context, true); // Close screen
+        if (widget.versionType == VersionType.import) {
+          Navigator.pop(context, true); // Close parser screen
+          Navigator.pop(context, true); // Close import screen
+        }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(

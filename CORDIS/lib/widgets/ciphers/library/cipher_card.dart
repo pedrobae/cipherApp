@@ -60,139 +60,128 @@ class _CipherCardState extends State<CipherCard> {
             }
 
             // Card content
-            return Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: colorScheme.surfaceContainerHigh),
-              ),
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      if (selectionProvider.isSelectionMode) {
-                        try {
-                          if (selectionProvider.isSelectionMode) {
-                            selectionProvider.toggleItemSelection(cipher.id);
-                            return;
-                          }
-                          playlistProvider.addVersionToPlaylist(
-                            selectionProvider.targetId,
-                            versionProvider.getIdOfOldestVersionOfCipher(
-                              cipher.id,
-                            ),
-                          );
-                          versionProvider.loadVersionsForPlaylist(
-                            playlistProvider
-                                .getLocalPlaylistById(
-                                  selectionProvider.targetId,
-                                )!
-                                .items,
-                          );
-                          Navigator.pop(context);
-                        } catch (error) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                '${AppLocalizations.of(context)!.errorPrefix}$error',
-                              ),
-                              backgroundColor: Theme.of(
-                                context,
-                              ).colorScheme.error,
-                            ),
-                          );
-                        }
-                      } else {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => CipherViewer(
-                              cipherId: widget.cipherId,
-                              versionId: versionProvider
-                                  .getIdOfOldestVersionOfCipher(
-                                    widget.cipherId,
-                                  ),
-                              versionType: VersionType.local,
-                            ),
+            return GestureDetector(
+              onTap: () {
+                if (selectionProvider.isSelectionMode) {
+                  try {
+                    if (selectionProvider.isSelectionMode) {
+                      selectionProvider.toggleItemSelection(cipher.id);
+                      return;
+                    }
+                    playlistProvider.addVersionToPlaylist(
+                      selectionProvider.targetId,
+                      versionProvider.getIdOfOldestVersionOfCipher(cipher.id),
+                    );
+                    versionProvider.loadVersionsForPlaylist(
+                      playlistProvider
+                          .getLocalPlaylistById(selectionProvider.targetId)!
+                          .items,
+                    );
+                    Navigator.pop(context);
+                  } catch (error) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          '${AppLocalizations.of(context)!.errorPrefix}$error',
+                        ),
+                        backgroundColor: Theme.of(context).colorScheme.error,
+                      ),
+                    );
+                  }
+                } else {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => CipherViewer(
+                        cipherId: widget.cipherId,
+                        versionId: versionProvider.getIdOfOldestVersionOfCipher(
+                          widget.cipherId,
+                        ),
+                        versionType: VersionType.local,
+                      ),
+                    ),
+                  );
+                }
+              },
+              onLongPress: () async {
+                if (!selectionProvider.isSelectionMode) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => CipherEditor(
+                        cipherId: widget.cipherId,
+                        versionId: versionProvider.getIdOfOldestVersionOfCipher(
+                          widget.cipherId,
+                        ),
+                        versionType: VersionType.local,
+                      ),
+                    ),
+                  );
+                } else {
+                  selectionProvider.enableSelectionMode();
+                  selectionProvider.toggleItemSelection(
+                    versionProvider.getIdOfOldestVersionOfCipher(
+                      widget.cipherId,
+                    ),
+                  );
+                }
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: colorScheme.surfaceContainerHigh),
+                ),
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    // INFO
+                    Expanded(
+                      child: Column(
+                        spacing: 2.0,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            cipher.title,
+                            style: Theme.of(context).textTheme.titleMedium,
                           ),
-                        );
-                      }
-                    },
-                    onLongPress: () async {
-                      if (!selectionProvider.isSelectionMode) {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => CipherEditor(
-                              cipherId: widget.cipherId,
-                              versionId: versionProvider
-                                  .getIdOfOldestVersionOfCipher(
-                                    widget.cipherId,
-                                  ),
-                              versionType: VersionType.local,
-                            ),
-                          ),
-                        );
-                      } else {
-                        selectionProvider.enableSelectionMode();
-                        selectionProvider.toggleItemSelection(
-                          versionProvider.getIdOfOldestVersionOfCipher(
-                            widget.cipherId,
-                          ),
-                        );
-                      }
-                    },
-                    child:
-                        // INFO
-                        Expanded(
-                          child: Column(
-                            spacing: 2.0,
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          Row(
+                            spacing: 16.0,
                             children: [
                               Text(
-                                cipher.title,
-                                style: Theme.of(context).textTheme.titleMedium,
+                                '${AppLocalizations.of(context)!.musicKey}: ${cipher.musicKey}',
+                                style: Theme.of(context).textTheme.bodyMedium,
                               ),
-                              Row(
-                                spacing: 16.0,
-                                children: [
-                                  Text(
-                                    '${AppLocalizations.of(context)!.musicKey}: ${cipher.musicKey}',
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodyMedium,
-                                  ),
-                                  cipher.bpm != ''
-                                      ? Text(
-                                          cipher.bpm,
-                                          style: Theme.of(
-                                            context,
-                                          ).textTheme.bodyMedium,
-                                        )
-                                      : Text('-'),
-                                  cipher.duration != ''
-                                      ? Text(
-                                          cipher.duration,
-                                          style: Theme.of(
-                                            context,
-                                          ).textTheme.bodyMedium,
-                                        )
-                                      : Text('-'),
-                                ],
-                              ),
-                              Text(
-                                '$versionCount${AppLocalizations.of(context)!.versions}',
-                                style: Theme.of(context).textTheme.bodyMedium!
-                                    .copyWith(
-                                      color: Theme.of(
+                              cipher.bpm != ''
+                                  ? Text(
+                                      cipher.bpm,
+                                      style: Theme.of(
                                         context,
-                                      ).colorScheme.surfaceContainerLowest,
-                                    ),
-                              ),
+                                      ).textTheme.bodyMedium,
+                                    )
+                                  : Text('-'),
+                              cipher.duration != ''
+                                  ? Text(
+                                      cipher.duration,
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.bodyMedium,
+                                    )
+                                  : Text('-'),
                             ],
                           ),
-                        ),
-                  ),
-                  // ACTIONS
-                  IconButton(onPressed: () {}, icon: Icon(Icons.more_vert)),
-                ],
+                          Text(
+                            '$versionCount${AppLocalizations.of(context)!.versions}',
+                            style: Theme.of(context).textTheme.bodyMedium!
+                                .copyWith(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.surfaceContainerLowest,
+                                ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // ACTIONS
+                    IconButton(onPressed: () {}, icon: Icon(Icons.more_vert)),
+                  ],
+                ),
               ),
             );
           },

@@ -36,12 +36,10 @@ class _CipherEditorState extends State<CipherEditor>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-
-    // Load data
-    _loadData();
-
-    // Navigate to start tab after build
+    // Load data and navigate to start tab after build
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadData();
+
       _navigateStartTab();
     });
 
@@ -347,10 +345,14 @@ class _CipherEditorState extends State<CipherEditor>
         }
       }
 
-      await sectionProvider.saveSections(versionId);
+      await sectionProvider.createSectionsForNewVersion(versionId!);
 
       if (mounted) {
         Navigator.pop(context, true); // Close screen
+        if (widget.versionType == VersionType.import) {
+          Navigator.pop(context, true); // Close parser screen
+          Navigator.pop(context, true); // Close import screen
+        }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(

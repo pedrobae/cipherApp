@@ -73,10 +73,12 @@ class _InfoTabState extends State<InfoTab> {
         case VersionType.local:
         case VersionType.import:
           final cipherProvider = context.read<CipherProvider>();
-          final cipher = cipherProvider.getCipherById(-1)!;
+          final cipher = cipherProvider.getCipherById(widget.cipherId ?? -1)!;
 
           final versionProvider = context.read<VersionProvider>();
-          final version = versionProvider.getVersionById(-1)!;
+          final version = versionProvider.getVersionById(
+            (widget.versionId as int?) ?? -1,
+          )!;
 
           for (var field in InfoField.values) {
             switch (field) {

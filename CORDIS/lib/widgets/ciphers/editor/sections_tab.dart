@@ -58,12 +58,13 @@ class _SectionsTabState extends State<SectionsTab> {
       builder:
           (context, sectionProvider, versionProvider, cipherProvider, child) {
             List<String> uniqueSections;
-            dynamic version; // Version or VersionDto
             switch (widget.versionType) {
               case VersionType.local:
               case VersionType.brandNew:
-                version = versionProvider.getVersionById(widget.versionId)!;
-                uniqueSections = version.songStructure.toSet().toList();
+                uniqueSections = versionProvider
+                    .getSongStructure(widget.versionId)
+                    .toSet()
+                    .toList();
                 break;
               case VersionType.cloud:
                 uniqueSections = versionProvider

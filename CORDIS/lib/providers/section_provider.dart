@@ -72,6 +72,17 @@ class SectionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> createSectionsForNewVersion(int newVersionId) async {
+    final sections = _sections[-1];
+    for (final code in sections!.keys) {
+      await _cipherRepository.insertSection(
+        sections[code]!.copyWith(versionId: newVersionId),
+      );
+    }
+    _sections.remove(-1);
+    notifyListeners();
+  }
+
   // ====== READ =====
   /// Load sections for a given version from the database
   Future<void> loadSections(int versionId) async {

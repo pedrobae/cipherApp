@@ -1,3 +1,4 @@
+import 'package:cordis/providers/layout_settings_provider.dart';
 import 'package:cordis/providers/section_provider.dart';
 import 'package:cordis/widgets/ciphers/editor/sections/chord_token.dart';
 import 'package:cordis/widgets/ciphers/editor/sections/edit_section_dialog.dart';
@@ -52,8 +53,8 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Consumer<SectionProvider>(
-      builder: (context, sectionProvider, child) {
+    return Consumer2<SectionProvider, LayoutSettingsProvider>(
+      builder: (context, sectionProvider, layoutSettingsProvider, child) {
         final section = sectionProvider.getSection(
           widget.versionId,
           widget.sectionCode,
@@ -151,6 +152,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
                     sectionProvider,
                     context,
                     tokens,
+                    layoutSettingsProvider.fontFamily,
                     section.contentColor,
                     lineSpacing: 8,
                     letterSpacing: 0,
@@ -177,6 +179,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
     SectionProvider sectionProvider,
     BuildContext context,
     List<ContentToken> tokens,
+    String fontFamily,
     Color contentColor, {
     double lineSpacing = 8,
     double letterSpacing = 1,
@@ -204,6 +207,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
           child: _buildPrecedingChordDragTarget(
             0,
             sectionProvider,
+            fontFamily,
             tokens,
             contentColor,
           ),
@@ -221,7 +225,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
           final textPainter = TextPainter(
             text: TextSpan(
               text: token.text,
-              style: TextStyle(fontSize: _fontSize),
+              style: TextStyle(fontSize: _fontSize, fontFamily: fontFamily),
             ),
             maxLines: 1,
             textDirection: TextDirection.ltr,
@@ -231,7 +235,12 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
           // Save chord widget to be positioned once lyrics are positioned
           wordWidgets.add(
             _WidgetWithSize(
-              widget: _buildDraggableChord(token, position, contentColor),
+              widget: _buildDraggableChord(
+                token,
+                position,
+                contentColor,
+                fontFamily,
+              ),
               width: chordWidth,
               type: TokenType.chord,
             ),
@@ -243,7 +252,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
           final textPainter = TextPainter(
             text: TextSpan(
               text: token.text,
-              style: TextStyle(fontSize: _fontSize),
+              style: TextStyle(fontSize: _fontSize, fontFamily: fontFamily),
             ),
             maxLines: 1,
             textDirection: TextDirection.ltr,
@@ -287,6 +296,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
                 token,
                 position,
                 sectionProvider,
+                fontFamily,
                 tokens,
                 contentColor,
               ),
@@ -324,7 +334,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
           final textPainter = TextPainter(
             text: TextSpan(
               text: ' ',
-              style: TextStyle(fontSize: _fontSize),
+              style: TextStyle(fontSize: _fontSize, fontFamily: fontFamily),
             ),
             maxLines: 1,
             textDirection: TextDirection.ltr,
@@ -344,6 +354,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
                   tokens,
                   position,
                   maxWidth - currentX,
+                  fontFamily,
                   sectionProvider,
                   contentColor,
                 ),
@@ -364,6 +375,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
                   tokens,
                   tokenWidgets.length + wordWidgets.length,
                   tokenWidth,
+                  fontFamily,
                   sectionProvider,
                   contentColor,
                 ),
@@ -405,6 +417,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
                 tokens,
                 position,
                 maxWidth - currentX,
+                fontFamily,
                 sectionProvider,
                 contentColor,
               ),
@@ -428,6 +441,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
                 child: _buildPrecedingChordDragTarget(
                   tokenWidgets.length + wordWidgets.length + 1,
                   sectionProvider,
+                  fontFamily,
                   tokens,
                   contentColor,
                 ),
@@ -466,6 +480,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
     ContentToken token,
     int position,
     Color contentColor,
+    String fontFamily,
   ) {
     // Assign position to token for reference
     token.position = position;
@@ -480,14 +495,22 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
         child: ChordToken(
           token: token,
           sectionColor: contentColor.withValues(alpha: .5),
-          textStyle: TextStyle(fontSize: _fontSize, color: Colors.white),
+          textStyle: TextStyle(
+            fontSize: _fontSize,
+            color: Colors.white,
+            fontFamily: fontFamily,
+          ),
         ),
       ),
       childWhenDragging: SizedBox.shrink(),
       child: ChordToken(
         token: token,
         sectionColor: contentColor,
-        textStyle: TextStyle(fontSize: _fontSize, color: Colors.white),
+        textStyle: TextStyle(
+          fontSize: _fontSize,
+          color: Colors.white,
+          fontFamily: fontFamily,
+        ),
       ),
     );
   }
@@ -495,6 +518,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
   DragTarget<ContentToken> _buildPrecedingChordDragTarget(
     int position,
     SectionProvider sectionProvider,
+    String fontFamily,
     List<ContentToken> tokens,
     Color contentColor,
   ) {
@@ -514,7 +538,11 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
           return ChordToken(
             token: candidateData.first!,
             sectionColor: contentColor,
-            textStyle: TextStyle(fontSize: _fontSize, color: Colors.white),
+            textStyle: TextStyle(
+              fontSize: _fontSize,
+              color: Colors.white,
+              fontFamily: fontFamily,
+            ),
           );
         } else {
           return Container(
@@ -535,6 +563,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
     ContentToken token,
     int position,
     SectionProvider sectionProvider,
+    String fontFamily,
     List<ContentToken> tokens,
     Color contentColor,
   ) {
@@ -562,6 +591,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
                 style: TextStyle(
                   fontSize: _fontSize,
                   color: colorScheme.onSurface,
+                  fontFamily: fontFamily,
                 ),
               ),
               Positioned(
@@ -572,6 +602,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
                   textStyle: TextStyle(
                     fontSize: _fontSize,
                     color: Colors.white,
+                    fontFamily: fontFamily,
                   ),
                 ),
               ),
@@ -580,7 +611,11 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
         }
         return Text(
           token.text,
-          style: TextStyle(fontSize: _fontSize, color: colorScheme.onSurface),
+          style: TextStyle(
+            fontSize: _fontSize,
+            color: colorScheme.onSurface,
+            fontFamily: fontFamily,
+          ),
         );
       },
     );
@@ -591,6 +626,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
     List<ContentToken> tokens,
     int position,
     double width,
+    String fontFamily,
     SectionProvider sectionProvider,
     Color contentColor,
   ) {
@@ -620,6 +656,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
                   textStyle: TextStyle(
                     fontSize: _fontSize,
                     color: Colors.white,
+                    fontFamily: fontFamily,
                   ),
                 ),
               ),

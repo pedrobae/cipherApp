@@ -172,9 +172,12 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String welcome(Object userName) {
-    return 'Bem-vindo, $userName';
+    return 'Olá $userName';
   }
 
   @override
   String get anonymousWelcome => 'Bem-vindo';
+
+  @override
+  String get by => 'por';
 }

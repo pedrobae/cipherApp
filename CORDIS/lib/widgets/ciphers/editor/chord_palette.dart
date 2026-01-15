@@ -57,7 +57,9 @@ class _ChordPaletteState extends State<ChordPalette> {
         final theme = Theme.of(context);
         final colorScheme = theme.colorScheme;
         final musicKey =
-            versionProvider.getVersionById(widget.versionId)!.transposedKey ??
+            versionProvider
+                .getLocalVersionById(widget.versionId)!
+                .transposedKey ??
             cipherProvider.getCipherById(widget.cipherId)!.musicKey;
         final chords = ChordHelper().getChordsForKey(musicKey);
 

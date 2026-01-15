@@ -122,7 +122,7 @@
   "@errorCreating": {},
   "cannotCreateCipherExistingCipher": "Could not create cipher: existing cipher found.",
   "@cannotCreateCipherExistingCipher": {},
-  "welcome": "Hello, {userName}",
+  "welcome": "Hello {userName}",
   "@welcome": {
     "description": "Welcome message with the user's name",
     "placeholders": {
@@ -130,5 +130,7 @@
     }
   },
   "anonymousWelcome": "Welcome",
-  "@anonymousWelcome": {}
+  "@anonymousWelcome": {},
+  "by": "by",
+  "@by": {}
 }

@@ -78,7 +78,7 @@ class _InfoTabState extends State<InfoTab> {
           final cipher = cipherProvider.getCipherById(widget.cipherId ?? -1)!;
 
           final versionProvider = context.read<VersionProvider>();
-          final version = versionProvider.getVersionById(
+          final version = versionProvider.getLocalVersionById(
             (widget.versionId as int?) ?? -1,
           )!;
 

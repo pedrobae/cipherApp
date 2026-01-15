@@ -45,7 +45,7 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
   Widget build(BuildContext context) {
     return Consumer<VersionProvider>(
       builder: (context, versionProvider, child) {
-        final version = versionProvider.getVersionById(widget.versionId)!;
+        final version = versionProvider.getLocalVersionById(widget.versionId)!;
 
         return Consumer<CipherProvider>(
           builder: (context, cipherProvider, child) {

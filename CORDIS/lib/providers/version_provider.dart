@@ -653,8 +653,17 @@ class VersionProvider extends ChangeNotifier {
     }
   }
 
+  dynamic getVersionById(dynamic versionId) {
+    if (versionId.runtimeType == int) {
+      return _localVersions[versionId];
+    } else if (versionId.runtimeType == String) {
+      return _cloudVersions[versionId];
+    }
+    return null;
+  }
+
   // Get cached version by ID (returns null if not in cache)
-  Version? getVersionById(int versionId) {
+  Version? getLocalVersionById(int versionId) {
     return _localVersions[versionId];
   }
 

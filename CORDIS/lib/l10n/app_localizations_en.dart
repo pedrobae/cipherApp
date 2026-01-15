@@ -171,9 +171,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String welcome(Object userName) {
-    return 'Welcome, $userName';
+    return 'Hello $userName';
   }
 
   @override
   String get anonymousWelcome => 'Welcome';
+
+  @override
+  String get by => 'by';
 }

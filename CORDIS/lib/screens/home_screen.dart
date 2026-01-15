@@ -2,6 +2,7 @@ import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:cordis/providers/auth_provider.dart';
 
@@ -21,6 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (context, authProvider, cipherProvider, playlistProvider, child) {
           final theme = Theme.of(context);
           final colorScheme = theme.colorScheme;
+          final locale = Localizations.localeOf(context);
 
           if (authProvider.isLoading) {
             return Center(
@@ -57,21 +59,31 @@ class _HomeScreenState extends State<HomeScreen> {
 
           // HOME SCREEN
           return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Center(
-                child: authProvider.userName != null
-                    ? Text(
-                        AppLocalizations.of(
-                          context,
-                        )!.welcome(authProvider.userName as Object),
-                        style: Theme.of(context).textTheme.headlineSmall!
-                            .copyWith(fontWeight: FontWeight.bold),
-                      )
-                    : Text(
-                        AppLocalizations.of(context)!.anonymousWelcome,
-                        style: Theme.of(context).textTheme.headlineSmall!
-                            .copyWith(fontWeight: FontWeight.bold),
-                      ),
+              // Current date
+              Text(
+                DateFormat(
+                  'EEEE, MMM d',
+                  locale.languageCode,
+                ).format(DateTime.now()),
+                style: theme.textTheme.bodyMedium!.copyWith(
+                  color: colorScheme.onSurface,
+                  fontSize: 14,
+                ),
+              ),
+
+              // Welcome message
+              Text(
+                authProvider.userName != null
+                    ? AppLocalizations.of(
+                        context,
+                      )!.welcome(authProvider.userName as Object)
+                    : AppLocalizations.of(context)!.anonymousWelcome,
+                style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 24,
+                ),
               ),
             ],
           );

@@ -123,7 +123,7 @@
   "cannotCreateCipherExistingCipher":
       "Não foi possível criar a cifra porque uma cifra com o mesmo ID já existe.",
   "@cannotCreateCipherExistingCipher": {},
-  "welcome": "Olá, {userName}",
+  "welcome": "Olá {userName}",
   "@welcome": {
     "description": "Welcome message with the user's name",
     "placeholders": {
@@ -131,6 +131,7 @@
     }
   },
   "anonymousWelcome": "Bem-vindo",
-  "@anonymousWelcome": {}
-
+  "@anonymousWelcome": {},
+"by": "por",
+  "@by": {}
 }

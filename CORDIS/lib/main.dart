@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 
 import 'package:cordis/l10n/app_localizations.dart';
@@ -30,6 +31,9 @@ void main() async {
   await FirebaseService.initialize();
 
   await SettingsService.initialize();
+
+  // Initialize date formatting for all locales
+  await initializeDateFormatting();
 
   runApp(const MyApp());
 }

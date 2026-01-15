@@ -88,7 +88,6 @@ class _ReorderableStructureChipsState extends State<ReorderableStructureChips> {
                       key: ValueKey('$sectionCode-$index'),
                       index: index,
                       child: Container(
-                        key: ValueKey('$sectionCode-$index'),
                         padding: const EdgeInsets.only(right: 8),
                         child: Stack(
                           children: [

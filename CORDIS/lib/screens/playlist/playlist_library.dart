@@ -71,7 +71,6 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                     return Center(
                       child: const Column(
                         spacing: 8,
-                        crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text('Carregando suas playlists da nuvem...'),
@@ -82,49 +81,52 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                   }
                   // Handle Error State
                   if (playlistProvider.error != null) {
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Erro ao carregar playlists: ${playlistProvider.error}',
-                        ),
-                        ElevatedButton(
-                          onPressed: () async {
-                            await playlistProvider.loadLocalPlaylists();
-                            await _syncPlaylists(
-                              playlistProvider,
-                              cipherProvider,
-                              userProvider,
-                              versionProvider,
-                              authProvider,
-                            );
-                          },
-                          child: const Text('Tentar novamente'),
-                        ),
-                      ],
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Erro ao carregar playlists: ${playlistProvider.error}',
+                          ),
+                          ElevatedButton(
+                            onPressed: () async {
+                              await playlistProvider.loadLocalPlaylists();
+                              await _syncPlaylists(
+                                playlistProvider,
+                                cipherProvider,
+                                userProvider,
+                                versionProvider,
+                                authProvider,
+                              );
+                            },
+                            child: const Text('Tentar novamente'),
+                          ),
+                        ],
+                      ),
                     );
                   }
                   // Handle empty state
                   if (playlistProvider.localPlaylists.isEmpty) {
-                    return const Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      spacing: 16,
-                      children: [
-                        Icon(Icons.playlist_play, size: 64),
-                        Text(
-                          'Nenhuma playlist encontrada',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                    return const Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        spacing: 16,
+                        children: [
+                          Icon(Icons.playlist_play, size: 64),
+                          Text(
+                            'Nenhuma playlist encontrada',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        Text(
-                          'Crie sua primeira playlist!',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ],
+                          Text(
+                            'Crie sua primeira playlist!',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ],
+                      ),
                     );
                   }
                   return RefreshIndicator(

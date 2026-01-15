@@ -419,7 +419,7 @@ abstract class AppLocalizations {
   /// Welcome message with the user's name
   ///
   /// In pt, this message translates to:
-  /// **'Bem-vindo, {userName}'**
+  /// **'Olá {userName}'**
   String welcome(Object userName);
 
   /// No description provided for @anonymousWelcome.
@@ -427,6 +427,12 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Bem-vindo'**
   String get anonymousWelcome;
+
+  /// No description provided for @by.
+  ///
+  /// In pt, this message translates to:
+  /// **'por'**
+  String get by;
 }
 
 class _AppLocalizationsDelegate

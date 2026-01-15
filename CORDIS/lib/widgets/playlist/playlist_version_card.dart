@@ -74,7 +74,7 @@ class _PlaylistVersionCardState extends State<PlaylistVersionCard> {
   Widget build(BuildContext context) {
     return Consumer<VersionProvider>(
       builder: (context, versionProvider, child) {
-        final version = versionProvider.getVersionById(widget.versionId)!;
+        final version = versionProvider.getLocalVersionById(widget.versionId)!;
 
         // If version is not cached yet, show loading indicator
         final songStructure = version.songStructure

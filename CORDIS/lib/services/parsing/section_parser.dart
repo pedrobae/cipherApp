@@ -45,6 +45,7 @@ class SectionParser {
           // Possible Label found -  Validate
           if (labelData['isValid']) {
             validMatches.add({
+              'officialLabel': label.officialLabel,
               'label': match.group(0),
               'labelStart': labelData['labelStart'],
               'labelEnd': labelData['labelEnd'],
@@ -74,10 +75,7 @@ class SectionParser {
                 .allMatches(rawText.substring(sectionStart, sectionEnd))
                 .length +
             1,
-        'suggestedTitle': rawText.substring(
-          match['labelStart'],
-          match['labelEnd'],
-        ),
+        'suggestedTitle': match['officialLabel'],
         'isDuplicate': false,
       });
     }
@@ -153,6 +151,7 @@ class SectionParser {
     /// "Intro: C E F" -> valid -> Correctly identify the label at the start of the line
     /// "Verse 1"      -> valid
     /// "[Intro] A2  B2  C#m7  G#m7(11)" -> valid
+    /// "First Verse" -> valid
 
     /// Invalid examples:
     /// "Cantaremos como um coro de anjos" -> invalid
@@ -187,6 +186,15 @@ class SectionParser {
         'labelEnd': lineStart + labelEnd,
         'labelWithColon': true,
       };
+    }
+
+    // Check if label is at or near the end of line (e.g., "First Verse")
+    String afterMatch = rawText.substring(end).trimRight();
+    bool isAtLineEnd = afterMatch.isEmpty || afterMatch.startsWith('\n');
+
+    if (isAtLineEnd) {
+      // Label is at end of line - valid (e.g., "First Verse" or "Verse 1")
+      return {'isValid': true, 'labelStart': lineStart, 'labelEnd': end};
     }
 
     // Check preceding and following characters, examining equally spaced characters
@@ -247,21 +255,21 @@ class SectionParser {
       }
     }
 
-    // Check for duplicate titles and mark them, except 'verse' and 'unlabeled section'
-    Map<String, int> seenTitleIndex = {};
+    // Check for duplicate labels and rename suggestions, adding index suffixes
+    Map<String, int> labelCount = {};
     for (var section in sections) {
       String title = section['suggestedTitle'].toString().toLowerCase();
 
-      if (section['suggestedTitle'] == 'Unlabeled Section' ||
-          section['suggestedTitle'] == 'Verse') {
+      if (section['suggestedTitle'] == 'Unlabeled Section') {
         continue;
       }
 
-      if (seenTitleIndex.containsKey(title)) {
-        section['duplicatedSectionIndex'] =
-            seenTitleIndex[title]; // Mark as duplicate, with a reference
+      if (labelCount.containsKey(title)) {
+        int count = labelCount[title]! + 1;
+        section['suggestedTitle'] = '${section['suggestedTitle']} $count';
+        labelCount[title] = count;
       } else {
-        seenTitleIndex[title] = section['index'];
+        labelCount[title] = 1;
       }
     }
   }

@@ -5,7 +5,12 @@ import 'package:flutter/material.dart';
 /// AREA OF OPTIMIZATION: use a more efficient data structure for lookups
 final List<SectionLabels> commonSectionLabels = [
   SectionLabels(
-    labelVariations: ['verse', 'verso', r'parte\s*\d+', r'estrofe\s*\d+'],
+    labelVariations: [
+      'verse',
+      'verso',
+      r'(?:\w+\s+)?parte(?:\s*\d+)?',
+      r'(?:\w+\s+)?estrofe(?:\s*\d+)?',
+    ],
     officialLabel: 'Verse',
     code: 'V',
   ),

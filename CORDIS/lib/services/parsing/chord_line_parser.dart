@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 class ChordLineParser {
   /// Parses sections from the given [ImportVariant] and creates the parsed objects.
-  void parseBySimpleText(ImportVariant variant, ParsingResult result) {
+  void parseBySimpleText(ParsingResult result) {
     // Iterates through each section of the cipher creating Section objects
     Map<String, Section> parsedSections = result.parsedSections;
     List<String> songStructure = result.songStructure;
@@ -44,7 +44,9 @@ class ChordLineParser {
         contentCode: code,
         contentColor: defaultSectionColors[code] ?? Colors.grey,
         contentType: rawSection['suggestedTitle'] as String,
-        contentText: _buildContentFromSimpleText(variant.lines),
+        contentText: _buildContentFromSimpleText(
+          rawSection['content'] as String,
+        ),
       );
 
       parsedSections[code] = parsedSection;
@@ -108,27 +110,25 @@ class ChordLineParser {
     for (int index = 0; index < lines.length - 1; index++) {
       LineData lineData = lines[index];
       String lineText = lineData.text;
-      int wordCount = lineData.wordCount;
 
       LineData? nextLineData = lines[index + 1];
       String nextLineText = nextLineData.text;
-      int nextWordCount = nextLineData.wordCount;
 
-      if (_isChordLine(lineText, wordCount)) {
-        if (!_isChordLine(nextLineText, nextWordCount)) {
+      if (_isChordLine(lineText)) {
+        if (!_isChordLine(nextLineText)) {
           // This line is a chord line followed by a lyric line
           // Merge chords with the next line, associating chord positions
           String chordProLine = _mergeByPdfFormatting(lineData, nextLineData);
           content = '$content$chordProLine\n';
-        } else if (_isChordLine(nextLineText, nextWordCount)) {
+        } else if (_isChordLine(nextLineText)) {
           // This line is a chord line followed by another chord line
           // Format as chord-only line
           content = '$content${_formatChordOnlyLine(lineText)}\n';
         }
-      } else if (!_isChordLine(lineText, wordCount)) {
+      } else if (!_isChordLine(lineText)) {
         // This line is a lyric line
         // Lyric lines are handled by previous line (except if it is the first line)
-        if (!_isChordLine(nextLineText, nextWordCount)) {
+        if (!_isChordLine(nextLineText)) {
           // This line is a lyric line followed by another lyric line
           // If it's the first line, add it as-is
           if (index == 0) {
@@ -142,39 +142,38 @@ class ChordLineParser {
     // Handle last line if chord line
     LineData lastLineData = lines[lines.length - 1];
     String lastLineText = lastLineData.text;
-    int lastWordCount = lastLineData.wordCount;
-    if (_isChordLine(lastLineText, lastWordCount)) {
+    if (_isChordLine(lastLineText)) {
       content = '$content${_formatChordOnlyLine(lastLineText)}';
     }
 
     return content;
   }
 
-  String _buildContentFromSimpleText(List<Map<String, dynamic>> lines) {
+  String _buildContentFromSimpleText(String rawContent) {
+    List<String> lines = rawContent.split('\n');
+
     String content = '';
     // Iterate through lines in the section, creating the content
     for (int index = 0; index < lines.length - 1; index++) {
-      final String lineText = lines[index]['text'];
-      final int wordCount = lines[index]['wordCount'];
+      final String lineText = lines[index];
 
-      final String nextLineText = lines[index + 1]['text'];
-      final int nextWordCount = lines[index + 1]['wordCount'];
+      final String nextLineText = lines[index + 1];
 
-      if (_isChordLine(lineText, wordCount)) {
-        if (!_isChordLine(nextLineText, nextWordCount)) {
+      if (_isChordLine(lineText)) {
+        if (!_isChordLine(nextLineText)) {
           // This line is a chord line followed by a lyric line
           // Merge chords with the next line, associating chord positions
           String chordProLine = _mergeLines(lineText, nextLineText);
           content = '$content$chordProLine\n';
-        } else if (_isChordLine(nextLineText, nextWordCount)) {
+        } else if (_isChordLine(nextLineText)) {
           // This line is a chord line followed by another chord line
           // Format as chord-only line
           content = '$content${_formatChordOnlyLine(lineText)}\n';
         }
-      } else if (!_isChordLine(lineText, wordCount)) {
+      } else if (!_isChordLine(lineText)) {
         // This line is a lyric line
         // Lyric lines are handled by previous line (except if it is the first line)
-        if (!_isChordLine(nextLineText, nextWordCount)) {
+        if (!_isChordLine(nextLineText)) {
           // This line is a lyric line followed by another lyric line
           // If it's the first line, add it as-is
           if (index == 0) {
@@ -186,10 +185,9 @@ class ChordLineParser {
       }
     }
     // Check if the last line is a chord line and add it
-    final String lastLineText = lines[lines.length - 1]['text'];
-    final int lastWordCount = lines[lines.length - 1]['wordCount'];
+    final String lastLineText = lines[lines.length - 1];
 
-    if (_isChordLine(lastLineText, lastWordCount)) {
+    if (_isChordLine(lastLineText)) {
       content = '$content${_formatChordOnlyLine(lastLineText)}';
     }
 
@@ -322,7 +320,7 @@ class ChordLineParser {
     return formattedLine.toString();
   }
 
-  bool _isChordLine(String text, int wordCount) {
+  bool _isChordLine(String text) {
     // Simple regex to identify chord patterns (e.g., C, G7, Am, F#m)
     RegExp chordRegex = RegExp(
       r'([CDEFGAB][#b]?)(m|maj|min|sus|aug|dim)?([7|maj7|m7|min7|sus2|sus4])?(\/[A-G][#b]?)?',
@@ -359,7 +357,7 @@ class ChordLineParser {
     }
 
     // Heuristic: at least half of the words should match chord patterns
-    if (matches.length < (wordCount / 2)) {
+    if (matches.length < (text.split(RegExp(r'\s+')).length / 2)) {
       return false;
     }
 

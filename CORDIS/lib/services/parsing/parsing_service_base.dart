@@ -5,7 +5,6 @@ import 'package:cordis/models/dtos/pdf_dto.dart';
 import 'package:cordis/services/parsing/chord_line_parser.dart';
 import 'package:cordis/services/parsing/metadata_parser.dart';
 import 'package:cordis/services/parsing/section_parser.dart';
-import 'package:flutter/foundation.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 class ParsingServiceBase {
@@ -50,10 +49,7 @@ class ParsingServiceBase {
     switch (strategy) {
       case ParsingStrategy.doubleNewLine:
       case ParsingStrategy.sectionLabels:
-        chordLineParser.parseBySimpleText(
-          variant,
-          variant.parsingResults[strategy]!,
-        );
+        chordLineParser.parseBySimpleText(variant.parsingResults[strategy]!);
         break;
       case ParsingStrategy.pdfFormatting:
         chordLineParser.parseByPdfFormatting(
@@ -169,28 +165,14 @@ class ParsingServiceBase {
       // Split line text into words using whitespace as delimiter
       List<String> words = line['text'].split(RegExp(r'\s+')).toList();
 
-      variant.metadata['wordCount'] = words.length;
+      line['wordCount'] = words.length;
 
       // Calculate average word length
       double avgWordLength = words.isNotEmpty
           ? words.map((w) => w.length).reduce((a, b) => a + b) / words.length
           : 0.0;
 
-      variant.metadata['avgWordLength'] = avgWordLength;
-    }
-  }
-
-  void debugPrintCalcs(ImportVariant variant) {
-    if (kDebugMode) {
-      print('--- PDF Pre-Processing Results for ${variant.variation.name} ---');
-      print(
-        '--- Line Calculations ---\n\tLine Number\tWord Count\tAvg Word Length',
-      );
-      for (var line in variant.lines) {
-        print(
-          '\t${line['lineNumber']}\t\t${variant.metadata['wordCount']}\t\t${variant.metadata['avgWordLength'].toStringAsFixed(2)}',
-        );
-      }
+      line['avgWordLength'] = avgWordLength;
     }
   }
 

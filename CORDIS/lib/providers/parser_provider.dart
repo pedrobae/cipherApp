@@ -37,9 +37,11 @@ class ParserProvider extends ChangeNotifier {
       switch (importedCipher.importType) {
         case ImportType.text:
           for (var importVariant in _cipher!.importVariants.values) {
-            // Separate lines for each import variant
+            // Create parsing strategies based on text analysis
+            _parsingService.preProcessText(importVariant);
+
+            // Calculate line metrics
             _parsingService.calculateLines(importVariant);
-            _parsingService.debugPrintCalcs(importVariant);
           }
           break;
         case ImportType.pdf:

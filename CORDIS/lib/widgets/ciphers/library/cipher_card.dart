@@ -22,7 +22,9 @@ class _CipherCardState extends State<CipherCard> {
   @override
   void initState() {
     super.initState();
-    context.read<VersionProvider>().loadVersionsOfCipher(widget.cipherId);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<VersionProvider>().loadVersionsOfCipher(widget.cipherId);
+    });
   }
 
   @override

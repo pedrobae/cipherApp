@@ -1,13 +1,12 @@
 import 'package:cordis/l10n/app_localizations.dart';
-import 'package:cordis/providers/auth_provider.dart';
-import 'package:cordis/providers/selection_provider.dart';
-import 'package:cordis/providers/user_provider.dart';
-import 'package:cordis/providers/version_provider.dart';
+
 import 'package:cordis/widgets/icon_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cordis/providers/cipher_provider.dart';
-import 'package:cordis/providers/playlist_provider.dart';
+import 'package:cordis/providers/auth_provider.dart';
+import 'package:cordis/providers/selection_provider.dart';
+import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/widgets/ciphers/library/cipher_scroll_view.dart';
 
 class CipherLibraryScreen extends StatefulWidget {
@@ -29,9 +28,12 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
 
   @override
   void initState() {
-    final cipherProvider = Provider.of<CipherProvider>(context, listen: false);
-    cipherProvider.loadLocalCiphers();
     super.initState();
+    // Pre-load data with post-frame callback to avoid setState during build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final cipherProvider = context.read<CipherProvider>();
+      cipherProvider.loadLocalCiphers();
+    });
   }
 
   @override
@@ -39,12 +41,10 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Consumer6<
+    return Consumer4<
       CipherProvider,
       UserProvider,
       AuthProvider,
-      PlaylistProvider,
-      VersionProvider,
       SelectionProvider
     >(
       builder:
@@ -53,8 +53,6 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
             cipherProvider,
             userProvider,
             authProvider,
-            playlistProvider,
-            versionProvider,
             selectionProvider,
             child,
           ) {

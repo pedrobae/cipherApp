@@ -9,7 +9,7 @@ enum InfoField { title, author, versionName, bpm, musicKey, language, duration }
 
 class InfoTab extends StatefulWidget {
   final int? cipherId;
-  final String? versionId;
+  final dynamic versionId;
   final VersionType versionType;
 
   const InfoTab({
@@ -32,7 +32,9 @@ class _InfoTabState extends State<InfoTab> {
     for (var i = 0; i < InfoField.values.length; i++) {
       controllers[InfoField.values[i]] = TextEditingController();
     }
-    _syncWithProviderData();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _syncWithProviderData();
+    });
   }
 
   void _syncWithProviderData() {
@@ -197,9 +199,19 @@ class _InfoTabState extends State<InfoTab> {
                 );
                 break;
               case VersionType.local:
+                cipherProvider.cacheCipherUpdates(
+                  widget.cipherId!,
+                  field,
+                  value,
+                );
+                break;
               case VersionType.brandNew:
               case VersionType.import:
-                cipherProvider.cacheCipherUpdates(-1, field, value);
+                cipherProvider.cacheCipherUpdates(
+                  widget.cipherId ?? -1,
+                  field,
+                  value,
+                );
                 break;
             }
           },

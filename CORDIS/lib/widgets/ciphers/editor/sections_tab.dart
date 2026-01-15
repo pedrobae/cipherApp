@@ -1,6 +1,5 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/models/domain/cipher/version.dart';
-import 'package:cordis/providers/parser_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cordis/providers/cipher_provider.dart';
@@ -21,40 +20,6 @@ class SectionsTab extends StatefulWidget {
 }
 
 class _SectionsTabState extends State<SectionsTab> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Load sections for the version
-      final sectionProvider = context.read<SectionProvider>();
-      final versionProvider = context.read<VersionProvider>();
-      final parserProvider = context.read<ParserProvider>();
-
-      switch (widget.versionType) {
-        case VersionType.local:
-          sectionProvider.loadSections(widget.versionId!);
-          break;
-        case VersionType.cloud:
-          final version = versionProvider
-              .getCloudVersionByFirebaseId(widget.versionId!)!
-              .toDomain();
-          sectionProvider.setNewSectionsInCache(
-            widget.versionId!,
-            version.sections!,
-          );
-          break;
-        case VersionType.import:
-          sectionProvider.setNewSectionsInCache(
-            -1,
-            parserProvider.parsedCipher!.versions.first.sections!,
-          );
-        case VersionType.brandNew:
-          // No sections to load for brand new version
-          break;
-      }
-    });
-  }
-
   void _addSection(
     dynamic versionId,
     String sectionCode,
@@ -108,6 +73,12 @@ class _SectionsTabState extends State<SectionsTab> {
                     .toSet()
                     .toList();
                 break;
+            }
+
+            if (sectionProvider.isLoading || versionProvider.isLoading) {
+              return Center(
+                child: CircularProgressIndicator(color: colorScheme.primary),
+              );
             }
 
             return Column(

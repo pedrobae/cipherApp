@@ -54,6 +54,7 @@ class _CipherEditorState extends State<CipherEditor>
     final cipherProvider = context.read<CipherProvider>();
     final versionProvider = context.read<VersionProvider>();
     final parserProvider = context.read<ParserProvider>();
+    final sectionProvider = context.read<SectionProvider>();
 
     switch (widget.versionType) {
       case VersionType.import:
@@ -64,15 +65,30 @@ class _CipherEditorState extends State<CipherEditor>
         // Load imported version data
         final version = cipher.versions.first;
         versionProvider.setNewVersionInCache(version);
+        // Load sections
+        sectionProvider.setNewSectionsInCache(
+          -1,
+          version.sections!,
+        ); // -1 for new/imported versions
       case VersionType.cloud:
         // Load cloud version
         await versionProvider.ensureCloudVersionIsLoaded(widget.versionId!);
+        // Load sections
+        final version = versionProvider
+            .getCloudVersionByFirebaseId(widget.versionId!)!
+            .toDomain();
+        sectionProvider.setNewSectionsInCache(
+          widget.versionId!,
+          version.sections!,
+        );
         break;
       case VersionType.local:
         // Load the cipher
         await cipherProvider.loadCipher(widget.cipherId!);
         // Load the version
         await versionProvider.loadVersion(widget.versionId!);
+        // Load sections
+        await sectionProvider.loadSections(widget.versionId!);
         break;
       case VersionType.brandNew:
         // Nothing to load for brand new cipher/version

@@ -16,8 +16,6 @@ import 'package:cordis/widgets/dialogs/create_playlist_dialog.dart';
 import 'package:cordis/widgets/dialogs/delete_playlist_dialog.dart';
 import 'package:cordis/widgets/playlist/playlist_card.dart';
 import 'package:cordis/widgets/playlist/join_playlist_dialog.dart';
-import 'package:cordis/widgets/states/error_state_widget.dart';
-import 'package:cordis/widgets/states/empty_state_widget.dart';
 
 class PlaylistLibraryScreen extends StatefulWidget {
   const PlaylistLibraryScreen({super.key});
@@ -84,27 +82,49 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
                   }
                   // Handle Error State
                   if (playlistProvider.error != null) {
-                    return ErrorStateWidget(
-                      title: 'Erro ao carregar playlists',
-                      message: playlistProvider.error!,
-                      onRetry: () async {
-                        await playlistProvider.loadLocalPlaylists();
-                        await _syncPlaylists(
-                          playlistProvider,
-                          cipherProvider,
-                          userProvider,
-                          versionProvider,
-                          authProvider,
-                        );
-                      },
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Erro ao carregar playlists: ${playlistProvider.error}',
+                        ),
+                        ElevatedButton(
+                          onPressed: () async {
+                            await playlistProvider.loadLocalPlaylists();
+                            await _syncPlaylists(
+                              playlistProvider,
+                              cipherProvider,
+                              userProvider,
+                              versionProvider,
+                              authProvider,
+                            );
+                          },
+                          child: const Text('Tentar novamente'),
+                        ),
+                      ],
                     );
                   }
                   // Handle empty state
                   if (playlistProvider.localPlaylists.isEmpty) {
-                    return const EmptyStateWidget(
-                      icon: Icons.playlist_play,
-                      title: 'Nenhuma playlist encontrada',
-                      subtitle: 'Crie sua primeira playlist!',
+                    return const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      spacing: 16,
+                      children: [
+                        Icon(Icons.playlist_play, size: 64),
+                        Text(
+                          'Nenhuma playlist encontrada',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          'Crie sua primeira playlist!',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ],
                     );
                   }
                   return RefreshIndicator(

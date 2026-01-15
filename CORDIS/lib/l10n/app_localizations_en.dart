@@ -168,4 +168,12 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get cannotCreateCipherExistingCipher =>
       'Could not create cipher: existing cipher found.';
+
+  @override
+  String welcome(Object userName) {
+    return 'Welcome, $userName';
+  }
+
+  @override
+  String get anonymousWelcome => 'Welcome';
 }

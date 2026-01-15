@@ -413,8 +413,20 @@ abstract class AppLocalizations {
   /// No description provided for @cannotCreateCipherExistingCipher.
   ///
   /// In pt, this message translates to:
-  /// **'Não fio possível criar a cifra porque uma cifra com o mesmo ID já existe.'**
+  /// **'Não foi possível criar a cifra porque uma cifra com o mesmo ID já existe.'**
   String get cannotCreateCipherExistingCipher;
+
+  /// Welcome message with the user's name
+  ///
+  /// In pt, this message translates to:
+  /// **'Bem-vindo, {userName}'**
+  String welcome(Object userName);
+
+  /// No description provided for @anonymousWelcome.
+  ///
+  /// In pt, this message translates to:
+  /// **'Bem-vindo'**
+  String get anonymousWelcome;
 }
 
 class _AppLocalizationsDelegate

@@ -14,6 +14,7 @@ class AuthProvider extends ChangeNotifier {
   bool get isAdmin => _isAdmin;
   bool get isLoading => _isLoading;
   String? get error => _error;
+  String? get userName => _user?.displayName;
 
   AuthProvider() {
     // Listen to auth state changes and check admin status

@@ -168,5 +168,13 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get cannotCreateCipherExistingCipher =>
-      'Não fio possível criar a cifra porque uma cifra com o mesmo ID já existe.';
+      'Não foi possível criar a cifra porque uma cifra com o mesmo ID já existe.';
+
+  @override
+  String welcome(Object userName) {
+    return 'Bem-vindo, $userName';
+  }
+
+  @override
+  String get anonymousWelcome => 'Bem-vindo';
 }

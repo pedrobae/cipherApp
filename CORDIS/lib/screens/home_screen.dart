@@ -19,6 +19,9 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.all(16.0),
       child: Consumer3<AuthProvider, CipherProvider, PlaylistProvider>(
         builder: (context, authProvider, cipherProvider, playlistProvider, child) {
+          final theme = Theme.of(context);
+          final colorScheme = theme.colorScheme;
+
           if (authProvider.isLoading) {
             return Center(
               child: Column(
@@ -55,8 +58,21 @@ class _HomeScreenState extends State<HomeScreen> {
           // HOME SCREEN
           return Column(
             children: [
-              // Playlist + Cipher Search Bar
-              TextField(),
+              Center(
+                child: authProvider.userName != null
+                    ? Text(
+                        AppLocalizations.of(
+                          context,
+                        )!.welcome(authProvider.userName as Object),
+                        style: Theme.of(context).textTheme.headlineSmall!
+                            .copyWith(fontWeight: FontWeight.bold),
+                      )
+                    : Text(
+                        AppLocalizations.of(context)!.anonymousWelcome,
+                        style: Theme.of(context).textTheme.headlineSmall!
+                            .copyWith(fontWeight: FontWeight.bold),
+                      ),
+              ),
             ],
           );
         },

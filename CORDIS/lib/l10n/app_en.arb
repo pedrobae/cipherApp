@@ -121,5 +121,14 @@
   "errorCreating": "Error creating: ",
   "@errorCreating": {},
   "cannotCreateCipherExistingCipher": "Could not create cipher: existing cipher found.",
-  "@cannotCreateCipherExistingCipher": {}
+  "@cannotCreateCipherExistingCipher": {},
+  "welcome": "Hello, {userName}",
+  "@welcome": {
+    "description": "Welcome message with the user's name",
+    "placeholders": {
+      "userName": {}
+    }
+  },
+  "anonymousWelcome": "Welcome",
+  "@anonymousWelcome": {}
 }

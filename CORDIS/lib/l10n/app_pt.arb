@@ -121,6 +121,16 @@
   "cipherSavedSuccessfully": "Cifra salva com sucesso!",
   "@cipherSavedSuccessfully": {},
   "cannotCreateCipherExistingCipher":
-      "Não fio possível criar a cifra porque uma cifra com o mesmo ID já existe.",
-  "@cannotCreateCipherExistingCipher": {}
+      "Não foi possível criar a cifra porque uma cifra com o mesmo ID já existe.",
+  "@cannotCreateCipherExistingCipher": {},
+  "welcome": "Olá, {userName}",
+  "@welcome": {
+    "description": "Welcome message with the user's name",
+    "placeholders": {
+      "userName": {}
+    }
+  },
+  "anonymousWelcome": "Bem-vindo",
+  "@anonymousWelcome": {}
+
 }

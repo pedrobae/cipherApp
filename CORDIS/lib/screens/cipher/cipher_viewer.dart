@@ -35,12 +35,22 @@ class _CipherViewerState extends State<CipherViewer>
   @override
   void initState() {
     super.initState();
-    // TODO switch on version type
-    versionId =
-        widget.versionId ??
-        context.read<VersionProvider>().getIdOfOldestVersionOfCipher(
-          widget.cipherId!,
-        );
+    switch (widget.versionType) {
+      case VersionType.import:
+      case VersionType.brandNew:
+        versionId = -1;
+        break;
+      case VersionType.local:
+        versionId =
+            widget.versionId ??
+            context.read<VersionProvider>().getIdOfOldestVersionOfCipher(
+              widget.cipherId!,
+            );
+        break;
+      case VersionType.cloud:
+        versionId = widget.versionId!;
+        break;
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadData();
     });
@@ -49,7 +59,6 @@ class _CipherViewerState extends State<CipherViewer>
   Future<void> _loadData() async {
     if (!mounted) return;
     final sectionProvider = context.read<SectionProvider>();
-
     await sectionProvider.loadSections(versionId);
   }
 

@@ -21,9 +21,7 @@ class FilledTextButton extends StatelessWidget {
         backgroundColor: darkButton
             ? colorScheme.onSurface
             : colorScheme.surface,
-        side: BorderSide(
-          color: darkButton ? colorScheme.surface : colorScheme.onSurface,
-        ),
+        side: BorderSide(color: colorScheme.onSurface),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
         textStyle: const TextStyle(fontSize: 16),
         padding: const EdgeInsets.symmetric(vertical: 12),
@@ -33,8 +31,8 @@ class FilledTextButton extends StatelessWidget {
         text,
         style: TextStyle(
           fontSize: 16,
-          fontWeight: FontWeight.w400,
-          color: colorScheme.onSurface,
+          fontWeight: FontWeight.w500,
+          color: darkButton ? colorScheme.surface : colorScheme.onSurface,
         ),
       ),
     );

@@ -63,8 +63,7 @@ class CloudPlaylistRepository {
       return querySnapshot
           .map(
             (doc) => PlaylistDto.fromFirestore(
-              doc.data() as Map<String, dynamic>,
-              doc.id,
+              (doc.data() as Map<String, dynamic>)..['firebaseId'] = doc.id,
             ),
           )
           .toList();
@@ -106,8 +105,8 @@ class CloudPlaylistRepository {
       }
 
       return PlaylistDto.fromFirestore(
-        docSnapshot.data() as Map<String, dynamic>,
-        docSnapshot.id,
+        (docSnapshot.data() as Map<String, dynamic>)
+          ..['firebaseId'] = docSnapshot.id,
       );
     });
   }

@@ -20,32 +20,6 @@ class SectionsTab extends StatefulWidget {
 }
 
 class _SectionsTabState extends State<SectionsTab> {
-  void _addSection(
-    dynamic versionId,
-    String sectionCode,
-    SectionProvider sectionProvider,
-    VersionProvider versionProvider, {
-    String? sectionType,
-    Color? customColor,
-  }) {
-    final isNewSection = !sectionProvider
-        .getSections(versionId)
-        .containsKey(sectionCode);
-
-    // Add section to song structure
-    versionProvider.addSectionToStruct(versionId, sectionCode);
-
-    // Add section to sections map if it's new
-    if (isNewSection) {
-      sectionProvider.cacheAddSection(
-        versionId,
-        sectionCode,
-        sectionType: sectionType,
-        color: customColor,
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -108,7 +82,13 @@ class _SectionsTabState extends State<SectionsTab> {
                           tooltip: AppLocalizations.of(context)!.addSection,
                           icon: const Icon(Icons.add),
                           color: colorScheme.shadow,
-                          onPressed: () {},
+                          onPressed: () {
+                            _openAddSectionDialog(
+                              context,
+                              sectionProvider,
+                              versionProvider,
+                            );
+                          },
                         ),
                       ],
                     ),
@@ -152,6 +132,45 @@ class _SectionsTabState extends State<SectionsTab> {
               ],
             );
           },
+    );
+  }
+
+  void _addSection(
+    dynamic versionId,
+    String sectionCode,
+    SectionProvider sectionProvider,
+    VersionProvider versionProvider, {
+    String? sectionType,
+    Color? customColor,
+  }) {
+    final isNewSection = !sectionProvider
+        .getSections(versionId)
+        .containsKey(sectionCode);
+
+    // Add section to song structure
+    versionProvider.addSectionToStruct(versionId, sectionCode);
+
+    // Add section to sections map if it's new
+    if (isNewSection) {
+      sectionProvider.cacheAddSection(
+        versionId,
+        sectionCode,
+        sectionType: sectionType,
+        color: customColor,
+      );
+    }
+  }
+
+  void _openAddSectionDialog(
+    BuildContext context,
+    SectionProvider sectionProvider,
+    VersionProvider versionProvider,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return SizedBox.shrink();
+      },
     );
   }
 }

@@ -21,7 +21,7 @@ class DatabaseHelper {
 
       final db = await openDatabase(
         path,
-        version: 3,
+        version: 4,
         onCreate: _onCreate,
         onUpgrade: _onUpgrade, // Handle migrations
       );
@@ -176,6 +176,19 @@ class DatabaseHelper {
       )
     ''');
 
+    // Create schedule table
+    await db.execute('''
+      CREATE TABLE schedule (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        playlist_id INTEGER NOT NULL,
+        date TEXT NOT NULL,
+        time TEXT NOT NULL,
+        location TEXT,
+        firebase_id TEXT UNIQUE,
+        FOREIGN KEY (playlist_id) REFERENCES playlist (id) ON DELETE CASCADE
+      )
+    ''');
+
     // Create indexes for better performance
     await db.execute(
       'CREATE INDEX idx_cipher_tags_cipher_id ON cipher_tags(cipher_id)',
@@ -234,6 +247,18 @@ class DatabaseHelper {
     }
     if (oldVersion < 3) {
       await db.execute('ALTER TABLE cipher RENAME COLUMN tempo TO bpm');
+    }
+    if (oldVersion < 4) {
+      await db.execute(
+        ''' CREATE TABLE schedule (
+          id INTEGER PRIMARY KEY AUTOINCREMENT, 
+          playlist_id INTEGER NOT NULL, 
+          date TEXT NOT NULL, 
+          time TEXT NOT NULL, 
+          location TEXT, 
+          firebase_id TEXT UNIQUE, 
+          FOREIGN KEY (playlist_id) REFERENCES playlist (id) ON DELETE CASCADE)''',
+      );
     }
   }
 

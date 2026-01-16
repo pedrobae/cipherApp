@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 class Schedule {
   final int id;
+  final String? firebaseId;
   final String name;
   final DateTime date;
   final TimeOfDay time;
@@ -12,6 +13,7 @@ class Schedule {
 
   Schedule({
     required this.id,
+    this.firebaseId,
     required this.name,
     required this.date,
     required this.time,
@@ -22,6 +24,7 @@ class Schedule {
   factory Schedule.fromSqlite(Map<String, dynamic> map) {
     return Schedule(
       id: map['id'] as int,
+      firebaseId: map['firebase_id'] as String?,
       name: map['name'] as String,
       date: DateTime.parse(map['date'] as String),
       time: TimeOfDay(
@@ -37,6 +40,7 @@ class Schedule {
 
   Map<String, dynamic> toSqlite(List<int> roleIds) {
     return {
+      'firebase_id': firebaseId,
       'name': name,
       'date': date.toIso8601String(),
       'time':

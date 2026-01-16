@@ -18,7 +18,13 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<ScheduleProvider>().loadSchedules();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadData();
+    });
+  }
+
+  void _loadData() async {
+    await context.read<ScheduleProvider>().loadSchedules();
   }
 
   @override
@@ -118,28 +124,34 @@ class _HomeScreenState extends State<HomeScreen> {
                   : SizedBox.shrink(),
 
               // DIRECT CREATION BUTTONS
-              Column(
-                children: [
-                  FilledTextButton(
-                    darkButton: true,
-                    text: AppLocalizations.of(context)!.createPlaylist,
-                    onPressed: () {
-                      // TODO: Implement navigation to create playlist
-                    },
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    spacing: 16,
+                    children: [
+                      FilledTextButton(
+                        darkButton: true,
+                        text: AppLocalizations.of(context)!.createPlaylist,
+                        onPressed: () {
+                          // TODO: Implement navigation to create playlist
+                        },
+                      ),
+                      FilledTextButton(
+                        text: AppLocalizations.of(context)!.addSongToLibrary,
+                        onPressed: () {
+                          // TODO: Implement navigation to schedule view
+                        },
+                      ),
+                      FilledTextButton(
+                        text: AppLocalizations.of(context)!.assignSchedule,
+                        onPressed: () {
+                          // TODO: Implement navigation assign schedule
+                        },
+                      ),
+                    ],
                   ),
-                  FilledTextButton(
-                    text: AppLocalizations.of(context)!.addSongToLibrary,
-                    onPressed: () {
-                      // TODO: Implement navigation to schedule view
-                    },
-                  ),
-                  FilledTextButton(
-                    text: AppLocalizations.of(context)!.assignSchedule,
-                    onPressed: () {
-                      // TODO: Implement navigation assign schedule
-                    },
-                  ),
-                ],
+                ),
               ),
             ],
           );

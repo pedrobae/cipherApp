@@ -9,7 +9,7 @@ class LocalScheduleRepository {
   /// Retrieves all schedules from the local database.
   Future<List<Schedule>> getAllSchedules() async {
     final db = await _databaseHelper.database;
-    final List<Map<String, dynamic>> maps = await db.query('schedules');
+    final List<Map<String, dynamic>> maps = await db.query('schedule');
 
     return List.from(maps.map((map) => Schedule.fromSqlite(map)));
   }

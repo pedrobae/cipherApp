@@ -32,9 +32,9 @@ class PlaylistDto {
     this.versions = const [],
   });
 
-  factory PlaylistDto.fromFirestore(Map<String, dynamic> json, String id) {
+  factory PlaylistDto.fromFirestore(Map<String, dynamic> json) {
     return PlaylistDto(
-      firebaseId: id,
+      firebaseId: json['firebaseId'] as String?,
       name: json['name'] as String,
       description: json['description'] as String? ?? '',
       ownerId: json['ownerId'] as String,

@@ -12,8 +12,8 @@ import 'package:cordis/screens/playlist/playlist_presentation.dart';
 import 'package:cordis/widgets/playlist/playlist_version_card.dart';
 import 'package:cordis/widgets/playlist/text_section_card.dart';
 import 'package:cordis/widgets/ciphers/editor/custom_reorderable_delayed.dart';
-import 'package:cordis/widgets/dialogs/edit_playlist_dialog.dart';
-import 'package:cordis/widgets/dialogs/new_text_section_dialog.dart';
+import 'package:cordis/widgets/playlist/dialogs/edit_playlist_dialog.dart';
+import 'package:cordis/widgets/playlist/dialogs/new_text_section_dialog.dart';
 
 class PlaylistViewer extends StatefulWidget {
   final int playlistId; // Receive the playlist ID from the parent

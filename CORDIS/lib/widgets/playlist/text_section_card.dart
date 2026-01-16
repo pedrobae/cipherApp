@@ -1,5 +1,5 @@
 import 'package:cordis/providers/text_section_provider.dart';
-import 'package:cordis/widgets/dialogs/text_section_dialog.dart';
+import 'package:cordis/widgets/playlist/dialogs/text_section_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

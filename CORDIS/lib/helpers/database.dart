@@ -49,7 +49,6 @@ class DatabaseHelper {
         title TEXT NOT NULL,
         author TEXT,
         bpm TEXT,
-        duration TEXT,
         music_key TEXT,
         language TEXT DEFAULT 'por',
         firebase_id TEXT,
@@ -78,6 +77,7 @@ class DatabaseHelper {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         cipher_id INTEGER NOT NULL,
         song_structure TEXT NOT NULL,
+        duration INTEGER DEFAULT 0,
         transposed_key TEXT,
         version_name TEXT,
         firebase_cipher_id TEXT,
@@ -299,6 +299,13 @@ class DatabaseHelper {
           member_id INTEGER NOT NULL,
           FOREIGN KEY (role_id) REFERENCES role (id) ON DELETE CASCADE) 
           FOREIGN KEY (member_id) REFERENCES user (id) ON DELETE CASCADE) ''');
+    }
+    if (oldVersion < 7) {
+      // ADD DURATION TO VERSION TABLE AND REMOVE FROM CIPHER TABLE
+      await db.execute(
+        'ALTER TABLE version ADD COLUMN duration INTEGER DEFAULT 0',
+      );
+      await db.execute('ALTER TABLE cipher DROP COLUMN duration');
     }
   }
 

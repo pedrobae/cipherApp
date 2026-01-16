@@ -154,5 +154,9 @@
   "searchPlaylist": "Search playlists...",
   "@searchPlaylist": {"description": "hint text for searching playlists"},
   "noPlaylistsFound": "No playlists found",
-  "@noPlaylistsFound": {"description": "Message displayed when no playlists are found"}
+  "@noPlaylistsFound": {"description": "Message displayed when no playlists are found"},
+  "item": "item",
+  "@item": {},
+  "items": "items",
+  "@items": {}
 }

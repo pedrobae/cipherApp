@@ -54,7 +54,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
 
       // Load versions for playlist
       await versionProvider.loadVersionsForPlaylist(
-        playlistProvider.getLocalPlaylistById(widget.playlistId)!.items,
+        playlistProvider.getPlaylistById(widget.playlistId)!.items,
       );
 
       // Ensure all ciphers are loaded (loads all ciphers if not already loaded)
@@ -83,7 +83,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
             child,
           ) {
             final colorScheme = Theme.of(context).colorScheme;
-            final playlist = playlistProvider.getLocalPlaylistById(
+            final playlist = playlistProvider.getPlaylistById(
               widget.playlistId,
             );
             // Handle loading state

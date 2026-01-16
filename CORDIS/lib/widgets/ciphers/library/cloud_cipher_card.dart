@@ -34,7 +34,7 @@ class CloudCipherCard extends StatelessWidget {
             },
             child: Container(
               decoration: BoxDecoration(
-                border: Border.all(color: colorScheme.surfaceContainerHigh),
+                border: Border.all(color: colorScheme.surfaceContainerLowest),
               ),
               padding: const EdgeInsets.all(8.0),
               child: Row(

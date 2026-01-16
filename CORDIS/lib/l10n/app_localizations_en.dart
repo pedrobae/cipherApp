@@ -212,4 +212,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noPlaylistsFound => 'No playlists found';
+
+  @override
+  String get item => 'item';
+
+  @override
+  String get items => 'items';
 }

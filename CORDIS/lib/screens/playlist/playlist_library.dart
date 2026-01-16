@@ -1,5 +1,5 @@
 import 'package:cordis/l10n/app_localizations.dart';
-import 'package:cordis/widgets/playlist/playlist_scroll_view.dart';
+import 'package:cordis/widgets/playlist/library/playlist_scroll_view.dart';
 import 'package:cordis/widgets/icon_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

@@ -213,4 +213,10 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get noPlaylistsFound => 'Nenhuma playlist encontrada';
+
+  @override
+  String get item => 'item';
+
+  @override
+  String get items => 'itens';
 }

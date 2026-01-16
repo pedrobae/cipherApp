@@ -44,7 +44,7 @@ class _PlaylistPresentationScreenState
       final playlistProvider = context.read<PlaylistProvider>();
       // Load versions for playlist
       await versionProvider.loadVersionsForPlaylist(
-        playlistProvider.getLocalPlaylistById(widget.playlistId)!.items,
+        playlistProvider.getPlaylistById(widget.playlistId)!.items,
       );
 
       // Ensure all ciphers are loaded (loads all ciphers if not already loaded)
@@ -80,7 +80,7 @@ class _PlaylistPresentationScreenState
     return Consumer3<PlaylistProvider, LayoutSettingsProvider, VersionProvider>(
       builder:
           (context, playlistProvider, layoutProvider, versionProvider, child) {
-            final playlist = playlistProvider.getLocalPlaylistById(
+            final playlist = playlistProvider.getPlaylistById(
               widget.playlistId,
             )!;
 

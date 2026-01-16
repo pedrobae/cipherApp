@@ -2,6 +2,7 @@ import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/my_auth_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
+import 'package:cordis/widgets/playlist/library/playlist_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -73,14 +74,11 @@ class _PlaylistScrollViewState extends State<PlaylistScrollView> {
                       cacheExtent: 500,
                       itemCount: playlistProvider.filteredPlaylists.length,
                       itemBuilder: (context, index) {
-                        final playlist = playlistProvider
+                        final playlistId = playlistProvider
                             .filteredPlaylists
-                            .values
+                            .keys
                             .elementAt(index);
-                        return ListTile(
-                          title: Text(playlist.name),
-                          // Additional playlist details can be added here
-                        );
+                        return PlaylistCard(playlistId: playlistId);
                       },
                     ),
             );

@@ -35,7 +35,7 @@ class PlaylistProvider extends ChangeNotifier {
 
   String? get error => _error;
 
-  Playlist? getLocalPlaylistByFirebaseId(String firebaseId) {
+  Playlist? getPlaylistByFirebaseId(String firebaseId) {
     for (var p in _localPlaylists.values) {
       if (p.firebaseId == firebaseId) {
         return p;
@@ -44,7 +44,7 @@ class PlaylistProvider extends ChangeNotifier {
     return null;
   }
 
-  Playlist? getLocalPlaylistById(int id) {
+  Playlist? getPlaylistById(int id) {
     return _localPlaylists[id];
   }
 

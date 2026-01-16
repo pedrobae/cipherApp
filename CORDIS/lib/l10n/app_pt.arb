@@ -159,5 +159,9 @@
   "noPlaylistsFound": "Nenhuma playlist encontrada",
   "@noPlaylistsFound": {
     "description": "Message displayed when no playlists are found"
-  }
+  },
+  "item": "item",
+  "@item": {},
+  "items": "itens",
+  "@items": {}
 }

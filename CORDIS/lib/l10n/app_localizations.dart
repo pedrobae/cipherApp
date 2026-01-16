@@ -499,6 +499,18 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Nenhuma playlist encontrada'**
   String get noPlaylistsFound;
+
+  /// No description provided for @item.
+  ///
+  /// In pt, this message translates to:
+  /// **'item'**
+  String get item;
+
+  /// No description provided for @items.
+  ///
+  /// In pt, this message translates to:
+  /// **'itens'**
+  String get items;
 }
 
 class _AppLocalizationsDelegate

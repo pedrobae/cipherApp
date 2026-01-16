@@ -90,7 +90,7 @@ class _CipherCardState extends State<CipherCard> {
                     );
                     versionProvider.loadVersionsForPlaylist(
                       playlistProvider
-                          .getLocalPlaylistById(selectionProvider.targetId)!
+                          .getPlaylistById(selectionProvider.targetId)!
                           .items,
                     );
                     Navigator.pop(context);
@@ -142,7 +142,7 @@ class _CipherCardState extends State<CipherCard> {
               },
               child: Container(
                 decoration: BoxDecoration(
-                  border: Border.all(color: colorScheme.surfaceContainerHigh),
+                  border: Border.all(color: colorScheme.surfaceContainerLowest),
                 ),
                 padding: const EdgeInsets.all(8.0),
                 child: Row(

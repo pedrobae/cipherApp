@@ -9,7 +9,7 @@ import 'package:cordis/providers/layout_settings_provider.dart';
 import 'package:cordis/providers/version_provider.dart';
 import 'package:cordis/screens/cipher/cipher_editor.dart';
 import 'package:cordis/widgets/settings/layout_settings.dart';
-import 'package:cordis/widgets/ciphers/viewer/version_view.dart';
+import 'package:cordis/widgets/ciphers/viewer/content_view.dart';
 
 class CipherViewer extends StatefulWidget {
   final int? cipherId;
@@ -224,7 +224,7 @@ class _CipherViewerState extends State<CipherViewer>
                   ),
                 ],
               ),
-              body: Expanded(child: VersionView(versionId: widget.versionId)),
+              body: ContentView(versionId: widget.versionId),
             );
           },
     );

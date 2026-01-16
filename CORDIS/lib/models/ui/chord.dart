@@ -9,7 +9,7 @@ class Chord {
   double carryOver;
   final String lyricsBefore;
   final String nextWord;
-  final double offset = -0.4;
+  final double offset = -0.5; // Vertical offset adjustment
 
   Chord(
     this.name,

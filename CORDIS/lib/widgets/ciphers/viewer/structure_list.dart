@@ -6,21 +6,37 @@ import 'package:provider/provider.dart';
 
 class StructureList extends StatelessWidget {
   final dynamic versionId;
-  final Function(BuildContext context, int index) scrollToSection;
+  final List<String> filteredStructure;
+  final ScrollController scrollController;
+  final List<GlobalKey> sectionKeys;
 
   const StructureList({
     super.key,
     required this.versionId,
-    required this.scrollToSection,
+    required this.filteredStructure,
+    required this.scrollController,
+    required this.sectionKeys,
   });
+
+  void _scrollToSection(BuildContext context, int index) {
+    final sectionKey = sectionKeys[index];
+    final renderBox =
+        sectionKey.currentContext?.findRenderObject() as RenderBox;
+
+    final offset = renderBox.localToGlobal(Offset.zero).dy;
+
+    scrollController.animateTo(
+      scrollController.offset + offset - 300,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return Consumer2<VersionProvider, SectionProvider>(
       builder: (context, versionProvider, sectionProvider, child) {
-        final songStructure = versionProvider.getSongStructure(versionId ?? -1);
-
         return Container(
           padding: EdgeInsets.all(8),
           height: 64,
@@ -28,7 +44,7 @@ class StructureList extends StatelessWidget {
             border: Border.all(color: colorScheme.surfaceContainerLowest),
             borderRadius: BorderRadius.circular(0),
           ),
-          child: songStructure.isEmpty
+          child: filteredStructure.isEmpty
               ? Center(
                   child: Text(
                     AppLocalizations.of(context)!.noSectionsInStructurePrompt,
@@ -40,7 +56,7 @@ class StructureList extends StatelessWidget {
 
                   child: Row(
                     children: [
-                      ...songStructure.asMap().entries.map((entry) {
+                      ...filteredStructure.asMap().entries.map((entry) {
                         final index = entry.key;
                         final sectionCode = entry.value;
                         final section = sectionProvider.getSection(
@@ -49,9 +65,8 @@ class StructureList extends StatelessWidget {
                         )!;
                         final color = section.contentColor;
                         return GestureDetector(
-                          onTap: scrollToSection(context, index),
+                          onTap: () => _scrollToSection(context, index),
                           child: Container(
-                            key: ValueKey('$sectionCode-$index'),
                             padding: const EdgeInsets.only(right: 8),
                             child: Stack(
                               children: [

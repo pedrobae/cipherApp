@@ -5,7 +5,6 @@ class LayoutSettingsProvider extends ChangeNotifier {
   double fontSize = 16;
   String fontFamily = 'OpenSans';
   Color chordColor = const Color.fromARGB(255, 0, 0, 0);
-  Color lyricColor = Colors.black;
   int columnCount = 1;
   int transposeAmount = 0;
   bool showChords = true;
@@ -19,7 +18,6 @@ class LayoutSettingsProvider extends ChangeNotifier {
     fontSize = SettingsService.getFontSize();
     fontFamily = SettingsService.getFontFamily();
     chordColor = SettingsService.getChordColor();
-    lyricColor = SettingsService.getLyricColor();
     columnCount = SettingsService.getColumnCount();
     showChords = SettingsService.getShowChords();
     showLyrics = SettingsService.getShowLyrics();
@@ -45,12 +43,6 @@ class LayoutSettingsProvider extends ChangeNotifier {
   void setChordColor(Color color) {
     chordColor = color;
     SettingsService.setChordColor(color);
-    notifyListeners();
-  }
-
-  void setLyricColor(Color color) {
-    lyricColor = color;
-    SettingsService.setLyricColor(color);
     notifyListeners();
   }
 
@@ -153,7 +145,6 @@ class LayoutSettingsProvider extends ChangeNotifier {
   );
 
   TextStyle get lyricTextStyle => TextStyle(
-    color: lyricColor,
     fontFamily: fontFamily,
     fontSize: fontSize.toDouble(),
     height: 2,

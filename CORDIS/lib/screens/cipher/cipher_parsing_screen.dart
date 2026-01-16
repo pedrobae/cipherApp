@@ -222,7 +222,7 @@ class _CipherParsingScreenState extends State<CipherParsingScreen>
               ),
             ),
             for (var section in cipher.versions.first.sections!.entries) ...[
-              CipherSectionCard(
+              SectionCard(
                 sectionCode: section.value.contentCode,
                 sectionType: section.value.contentType,
                 sectionText: section.value.contentText,

@@ -3,13 +3,13 @@ import 'package:provider/provider.dart';
 import 'package:cordis/widgets/ciphers/viewer/chordpro_view.dart';
 import 'package:cordis/providers/layout_settings_provider.dart';
 
-class CipherSectionCard extends StatelessWidget {
+class SectionCard extends StatelessWidget {
   final String sectionCode;
   final String sectionType;
   final String sectionText;
   final Color sectionColor;
 
-  const CipherSectionCard({
+  const SectionCard({
     super.key,
     required this.sectionType,
     required this.sectionCode,
@@ -19,67 +19,63 @@ class CipherSectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (sectionText.trim().isEmpty) {
-      return SizedBox.shrink();
-    }
     return Consumer<LayoutSettingsProvider>(
       builder: (context, layoutSettingsProvider, child) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 8,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: sectionColor,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Row(
-                    spacing: 8,
-                    children: [
-                      Text(
-                        sectionCode,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: layoutSettingsProvider.fontSize,
-                        ),
+        final theme = Theme.of(context);
+        final colorScheme = theme.colorScheme;
+
+        if (sectionText.trim().isEmpty) {
+          return SizedBox.shrink();
+        }
+        return Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: colorScheme.surfaceContainerLowest),
+            borderRadius: BorderRadius.circular(0),
+          ),
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 16,
+            children: [
+              // LABEL
+              Row(
+                spacing: 8,
+                children: [
+                  Container(
+                    width: 42,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      color: sectionColor,
+                      borderRadius: BorderRadius.circular(0),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      sectionCode,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.surface,
+                        fontSize: layoutSettingsProvider.fontSize,
                       ),
-                      Text(
-                        sectionType,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: (layoutSettingsProvider.fontSize * .9),
-                        ),
-                      ),
-                    ],
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                ),
-              ],
-            ),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: sectionColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: sectionColor.withValues(alpha: 0.3),
-                  width: 1,
-                ),
+                  Text(
+                    sectionType,
+                    style: TextStyle(
+                      color: colorScheme.onSurface,
+                      fontWeight: FontWeight.w500,
+                      fontSize: layoutSettingsProvider.fontSize,
+                    ),
+                  ),
+                ],
               ),
-              child: ChordProView(
+              ChordProView(
                 chordPro: sectionText,
                 maxWidth: double.infinity,
                 isAnnotation: sectionCode == 'N',
               ),
-            ),
-          ],
+            ],
+          ),
         );
       },
     );

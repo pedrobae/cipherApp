@@ -9,34 +9,24 @@ import 'package:cordis/providers/layout_settings_provider.dart';
 import 'package:cordis/utils/section_helper.dart';
 import 'section_card.dart';
 
-class VersionView extends StatefulWidget {
+class ContentView extends StatefulWidget {
   final dynamic versionId;
-  const VersionView({super.key, required this.versionId});
+
+  ContentView({super.key, required this.versionId});
+
+  final List<GlobalKey> sectionKeys = [];
 
   @override
-  State<VersionView> createState() => _VersionViewState();
+  State<ContentView> createState() => _ContentViewState();
 }
 
-class _VersionViewState extends State<VersionView> {
+class _ContentViewState extends State<ContentView> {
   late ScrollController scrollController;
 
   @override
   void initState() {
     super.initState();
     scrollController = ScrollController();
-  }
-
-  void _scrollToSectionIndex(BuildContext context, int index) {
-    final RenderBox renderBox = context.findRenderObject() as RenderBox;
-    final position = renderBox.localToGlobal(Offset.zero);
-    final scrollPosition =
-        scrollController.offset + position.dy - 100; // 100px offset from top
-
-    scrollController.animateTo(
-      scrollPosition,
-      duration: const Duration(milliseconds: 800),
-      curve: Curves.easeInOut,
-    );
   }
 
   @override
@@ -48,23 +38,28 @@ class _VersionViewState extends State<VersionView> {
               widget.versionId,
             );
 
-            final filteredStructure = songStructure.where(
-              (sectionCode) =>
-                  ((layoutSettings.showAnnotations ||
-                      !isAnnotation(sectionCode)) &&
-                  (layoutSettings.showTransitions ||
-                      !isTransition(sectionCode))),
-            );
-            final sectionCardList = filteredStructure.map((sectionCode) {
-              String trimmedCode = sectionCode.trim();
+            final filteredStructure = songStructure
+                .where(
+                  (sectionCode) =>
+                      ((layoutSettings.showAnnotations ||
+                          !isAnnotation(sectionCode)) &&
+                      (layoutSettings.showTransitions ||
+                          !isTransition(sectionCode))),
+                )
+                .toList()
+                .asMap();
+            final sectionCardList = filteredStructure.entries.map((entry) {
+              String trimmedCode = entry.value.trim();
               final section = sectionProvider.getSection(
                 widget.versionId,
                 trimmedCode,
               );
+              widget.sectionKeys.add(GlobalKey());
               if (section == null) {
                 return const SizedBox.shrink();
               }
-              return CipherSectionCard(
+              return SectionCard(
+                key: widget.sectionKeys[entry.key],
                 sectionType: section.contentType,
                 sectionCode: trimmedCode,
                 sectionText: sectionProvider
@@ -82,6 +77,7 @@ class _VersionViewState extends State<VersionView> {
                 spacing: 16,
                 children: [
                   Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         AppLocalizations.of(context)!.songStructure,
@@ -93,18 +89,32 @@ class _VersionViewState extends State<VersionView> {
                       ),
                       StructureList(
                         versionId: widget.versionId,
-                        scrollToSection: (BuildContext context, int index) =>
-                            _scrollToSectionIndex(context, index),
+                        filteredStructure: filteredStructure.values.toList(),
+                        scrollController: scrollController,
+                        sectionKeys: widget.sectionKeys,
                       ),
                     ],
                   ),
-                  MasonryGridView.count(
-                    crossAxisCount: layoutSettings.columnCount,
-                    controller: scrollController,
-                    mainAxisSpacing: 8,
-                    crossAxisSpacing: 8,
-                    itemCount: sectionCardList.length,
-                    itemBuilder: (context, index) => sectionCardList[index],
+                  Expanded(
+                    child: SingleChildScrollView(
+                      controller: scrollController,
+                      child: Column(
+                        spacing: 16,
+                        children: [
+                          // Your structure list...
+                          MasonryGridView.count(
+                            crossAxisCount: layoutSettings.columnCount,
+                            mainAxisSpacing: 8,
+                            crossAxisSpacing: 8,
+                            itemCount: sectionCardList.length,
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) =>
+                                sectionCardList[index],
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),

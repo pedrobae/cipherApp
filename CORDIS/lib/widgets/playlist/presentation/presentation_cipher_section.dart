@@ -112,7 +112,7 @@ class _PresentationCipherSectionState extends State<PresentationCipherSection> {
                     final section = version.sections?[sectionCode];
                     if (section == null) return const SizedBox.shrink();
 
-                    return CipherSectionCard(
+                    return SectionCard(
                       key: _sectionKeys[sectionIndex],
                       sectionCode: section.contentCode,
                       sectionType: section.contentType,

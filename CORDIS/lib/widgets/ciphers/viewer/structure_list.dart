@@ -62,7 +62,13 @@ class StructureList extends StatelessWidget {
                         final section = sectionProvider.getSection(
                           versionId,
                           sectionCode,
-                        )!;
+                        );
+                        // Loading state
+                        if (section == null || sectionProvider.isLoading) {
+                          return const Center(
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          );
+                        }
                         final color = section.contentColor;
                         return GestureDetector(
                           onTap: () => _scrollToSection(context, index),

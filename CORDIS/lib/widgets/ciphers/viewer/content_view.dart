@@ -71,6 +71,9 @@ class _ContentViewState extends State<ContentView> {
               );
             }).toList();
 
+            // Add space at the end of the list for better scrolling
+            sectionCardList.add(SizedBox(height: 200));
+
             return Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(

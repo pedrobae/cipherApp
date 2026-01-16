@@ -19,71 +19,81 @@ class CloudCipherCard extends StatelessWidget {
     return Consumer<SelectionProvider>(
       builder: (context, selectionProvider, child) {
         return Container(
-          margin: const EdgeInsets.only(top: 8.0),
-          decoration: BoxDecoration(
-            border: Border.all(color: colorScheme.surfaceContainerHigh),
-          ),
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              // INFO
-              Expanded(
-                child: Column(
-                  spacing: 2.0,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      version.title,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    Row(
-                      spacing: 16.0,
+          margin: const EdgeInsets.only(top: 8.0), // Spacing from other cards
+          child: GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => CipherViewer(
+                    cipherId: null,
+                    versionId: version.firebaseId!,
+                    versionType: VersionType.cloud,
+                  ),
+                ),
+              );
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: colorScheme.surfaceContainerHigh),
+              ),
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  // INFO
+                  Expanded(
+                    child: Column(
+                      spacing: 2.0,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${AppLocalizations.of(context)!.musicKey}: ${version.transposedKey ?? version.originalKey}',
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          version.title,
+                          style: Theme.of(context).textTheme.titleMedium,
                         ),
-                        version.bpm != ''
-                            ? Text(
-                                version.bpm,
-                                style: Theme.of(context).textTheme.bodyMedium,
-                              )
-                            : Text('-'),
-                        version.bpm != ''
-                            ? Text(
-                                version.bpm,
-                                style: Theme.of(context).textTheme.bodyMedium,
-                              )
-                            : Text('-'),
+                        Row(
+                          spacing: 16.0,
+                          children: [
+                            Text(
+                              '${AppLocalizations.of(context)!.musicKey}: ${version.transposedKey ?? version.originalKey}',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                            version.bpm != ''
+                                ? Text(
+                                    version.bpm,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodyMedium,
+                                  )
+                                : Text('-'),
+                            version.bpm != ''
+                                ? Text(
+                                    version.bpm,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodyMedium,
+                                  )
+                                : Text('-'),
+                          ],
+                        ),
+                        Text(
+                          AppLocalizations.of(context)!.cloudCipher,
+                          style: Theme.of(context).textTheme.bodyMedium!
+                              .copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.surfaceContainerLowest,
+                              ),
+                        ),
                       ],
                     ),
-                    Text(
-                      AppLocalizations.of(context)!.cloudCipher,
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.surfaceContainerLowest,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                  // ACTIONS
+                  IconButton(
+                    onPressed: () {},
+                    icon: Icon(Icons.cloud_download),
+                  ),
+                ],
               ),
-              // ACTIONS
-              IconButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => CipherViewer(
-                        cipherId: null,
-                        versionId: version.firebaseId!,
-                        versionType: VersionType.cloud,
-                      ),
-                    ),
-                  );
-                },
-                icon: Icon(Icons.cloud_download),
-              ),
-            ],
+            ),
           ),
         );
       },

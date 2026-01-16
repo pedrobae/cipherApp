@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cordis/widgets/ciphers/viewer/chordpro_view.dart';
@@ -24,6 +26,22 @@ class SectionCard extends StatelessWidget {
         final theme = Theme.of(context);
         final colorScheme = theme.colorScheme;
 
+        // Measure section code width on the correct style
+        final textPainter = TextPainter(
+          text: TextSpan(
+            text: sectionCode,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: colorScheme.surface,
+              fontSize: layoutSettingsProvider.fontSize,
+            ),
+          ),
+          maxLines: 1,
+          textDirection: TextDirection.ltr,
+        )..layout();
+        final sectionCodeWidth =
+            textPainter.size.width + 16; // 8 padding each side
+
         if (sectionText.trim().isEmpty) {
           return SizedBox.shrink();
         }
@@ -42,7 +60,7 @@ class SectionCard extends StatelessWidget {
                 spacing: 8,
                 children: [
                   Container(
-                    width: 42,
+                    width: max(42, sectionCodeWidth),
                     height: 28,
                     decoration: BoxDecoration(
                       color: sectionColor,
@@ -60,7 +78,10 @@ class SectionCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    sectionType,
+                    sectionType.isNotEmpty
+                        ? sectionType[0].toUpperCase() +
+                              sectionType.substring(1)
+                        : sectionType,
                     style: TextStyle(
                       color: colorScheme.onSurface,
                       fontWeight: FontWeight.w500,

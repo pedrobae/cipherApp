@@ -3,6 +3,7 @@ import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:cordis/providers/parser_provider.dart';
 import 'package:cordis/widgets/ciphers/editor/chord_palette.dart';
 import 'package:cordis/widgets/ciphers/editor/delete_dialog.dart';
+import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cordis/providers/cipher_provider.dart';
@@ -228,16 +229,8 @@ class _CipherEditorState extends State<CipherEditor>
                     child: Column(
                       spacing: 16,
                       children: [
-                        FilledButton(
-                          style: FilledButton.styleFrom(
-                            minimumSize: const Size.fromHeight(50),
-                            backgroundColor: colorScheme.onSurface,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(0),
-                            ),
-                            textStyle: const TextStyle(fontSize: 16),
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                          ),
+                        FilledTextButton(
+                          darkButton: true,
                           onPressed: () {
                             if (widget.versionType == VersionType.import ||
                                 widget.versionType == VersionType.brandNew) {
@@ -254,19 +247,9 @@ class _CipherEditorState extends State<CipherEditor>
                               );
                             }
                           },
-                          child: Text(AppLocalizations.of(context)!.save),
+                          text: AppLocalizations.of(context)!.save,
                         ),
-                        FilledButton(
-                          style: FilledButton.styleFrom(
-                            minimumSize: const Size.fromHeight(50),
-                            backgroundColor: colorScheme.surface,
-                            side: BorderSide(color: colorScheme.onSurface),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(0),
-                            ),
-                            textStyle: const TextStyle(fontSize: 16),
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                          ),
+                        FilledTextButton(
                           onPressed: () {
                             if (widget.versionType == VersionType.import ||
                                 widget.versionType == VersionType.brandNew) {
@@ -275,17 +258,11 @@ class _CipherEditorState extends State<CipherEditor>
                               _showDeleteDialog(widget.cipherId != null);
                             }
                           },
-                          child: Text(
-                            (widget.versionType == VersionType.import ||
-                                    widget.versionType == VersionType.brandNew)
-                                ? AppLocalizations.of(context)!.cancel
-                                : AppLocalizations.of(context)!.delete,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
-                              color: colorScheme.onSurface,
-                            ),
-                          ),
+                          text:
+                              (widget.versionType == VersionType.import ||
+                                  widget.versionType == VersionType.brandNew)
+                              ? AppLocalizations.of(context)!.cancel
+                              : AppLocalizations.of(context)!.delete,
                         ),
                       ],
                     ),

@@ -197,4 +197,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get view => 'View';
+
+  @override
+  String get createPlaylist => 'Create Playlist';
+
+  @override
+  String get addSongToLibrary => 'Add Song to Library';
+
+  @override
+  String get assignSchedule => 'Assign Schedule';
 }

@@ -1,5 +1,6 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/schedule_provider.dart';
+import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:cordis/widgets/schedule/schedule_card.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -67,6 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // HOME SCREEN
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 24,
             children: [
               // Current date
               Text(
@@ -93,13 +95,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
 
-              const SizedBox(height: 24),
-
               // NEXT SCHEDULE
               scheduleProvider.isLoading
                   ? Center(child: CircularProgressIndicator())
                   : nextSchedule != null
                   ? Column(
+                      spacing: 16,
                       children: [
                         // SCHEDULE LABEL
                         Text(
@@ -115,6 +116,31 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     )
                   : SizedBox.shrink(),
+
+              // DIRECT CREATION BUTTONS
+              Column(
+                children: [
+                  FilledTextButton(
+                    darkButton: true,
+                    text: AppLocalizations.of(context)!.createPlaylist,
+                    onPressed: () {
+                      // TODO: Implement navigation to create playlist
+                    },
+                  ),
+                  FilledTextButton(
+                    text: AppLocalizations.of(context)!.addSongToLibrary,
+                    onPressed: () {
+                      // TODO: Implement navigation to schedule view
+                    },
+                  ),
+                  FilledTextButton(
+                    text: AppLocalizations.of(context)!.assignSchedule,
+                    onPressed: () {
+                      // TODO: Implement navigation assign schedule
+                    },
+                  ),
+                ],
+              ),
             ],
           );
         },

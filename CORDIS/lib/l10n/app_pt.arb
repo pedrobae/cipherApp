@@ -145,5 +145,11 @@
   "share": "Compartilhar",
   "@share": {},
   "view": "Visualizar",
-  "@view": {}
+  "@view": {},
+  "createPlaylist": "Criar Playlist",
+  "@createPlaylist": {},
+  "addSongToLibrary": "Adicionar Música",
+  "@addSongToLibrary": {},
+  "assignSchedule": "Agendar",
+  "@assignSchedule": {}
 }

@@ -469,6 +469,24 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Visualizar'**
   String get view;
+
+  /// No description provided for @createPlaylist.
+  ///
+  /// In pt, this message translates to:
+  /// **'Criar Playlist'**
+  String get createPlaylist;
+
+  /// No description provided for @addSongToLibrary.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicionar Música'**
+  String get addSongToLibrary;
+
+  /// No description provided for @assignSchedule.
+  ///
+  /// In pt, this message translates to:
+  /// **'Agendar'**
+  String get assignSchedule;
 }
 
 class _AppLocalizationsDelegate

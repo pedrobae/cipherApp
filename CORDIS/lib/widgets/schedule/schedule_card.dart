@@ -2,6 +2,7 @@ import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/my_auth_provider.dart';
 import 'package:cordis/providers/schedule_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
+import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -97,51 +98,18 @@ class ScheduleCard extends StatelessWidget {
                 ],
               ),
               // BOTTOM BUTTONS
-              FilledButton(
-                style: FilledButton.styleFrom(
-                  minimumSize: const Size.fromHeight(50),
-                  backgroundColor: colorScheme.onSurface,
-                  side: BorderSide(color: colorScheme.surface),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(0),
-                  ),
-                  textStyle: const TextStyle(fontSize: 16),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                ),
+              FilledTextButton(
+                darkButton: true,
                 onPressed: () {
-                  // Navigate to schedule view
+                  // TODO: Implement navigation to schedule view
                 },
-                child: Text(
-                  AppLocalizations.of(context)!.view,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    color: colorScheme.onSurface,
-                  ),
-                ),
+                text: AppLocalizations.of(context)!.view,
               ),
-              FilledButton(
-                style: FilledButton.styleFrom(
-                  minimumSize: const Size.fromHeight(50),
-                  backgroundColor: colorScheme.surface,
-                  side: BorderSide(color: colorScheme.onSurface),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(0),
-                  ),
-                  textStyle: const TextStyle(fontSize: 16),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                ),
+              FilledTextButton(
                 onPressed: () {
-                  Navigator.pop(context);
+                  // TODO: Implement share functionality
                 },
-                child: Text(
-                  AppLocalizations.of(context)!.share,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    color: colorScheme.onSurface,
-                  ),
-                ),
+                text: AppLocalizations.of(context)!.share,
               ),
             ],
           ),

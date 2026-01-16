@@ -144,5 +144,11 @@
   "share": "Share",
   "@share": {},
   "view": "View",
-  "@view": {}
+  "@view": {},
+  "createPlaylist": "Create Playlist",
+  "@createPlaylist": {},
+  "addSongToLibrary": "Add Song to Library",
+  "@addSongToLibrary": {},
+  "assignSchedule": "Assign Schedule",
+  "@assignSchedule": {}
 }

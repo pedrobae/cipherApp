@@ -18,7 +18,6 @@ import 'package:cordis/screens/playlist/playlist_presentation.dart';
 import 'package:cordis/widgets/playlist/playlist_version_card.dart';
 import 'package:cordis/widgets/playlist/text_section_card.dart';
 import 'package:cordis/widgets/ciphers/editor/custom_reorderable_delayed.dart';
-import 'package:cordis/widgets/playlist/collaborators/bottom_sheet.dart';
 import 'package:cordis/widgets/dialogs/edit_playlist_dialog.dart';
 import 'package:cordis/widgets/dialogs/new_text_section_dialog.dart';
 
@@ -236,12 +235,6 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
             ),
             _buildActionButton(
               context,
-              icon: Icons.group,
-              label: 'Colaboradores',
-              onPressed: () => _showCollaborators(context, playlist),
-            ),
-            _buildActionButton(
-              context,
               icon: Icons.edit,
               label: 'Editar',
               onPressed: () => _editPlaylist(context, playlist),
@@ -297,13 +290,6 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
         builder: (context) =>
             CipherLibraryScreen(selectionMode: true, playlistId: playlist.id),
       ),
-    );
-  }
-
-  void _showCollaborators(BuildContext context, Playlist playlist) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => CollaboratorsBottomSheet(playlist: playlist),
     );
   }
 

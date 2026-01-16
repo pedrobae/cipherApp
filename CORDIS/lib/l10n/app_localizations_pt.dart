@@ -198,4 +198,13 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get view => 'Visualizar';
+
+  @override
+  String get createPlaylist => 'Criar Playlist';
+
+  @override
+  String get addSongToLibrary => 'Adicionar Música';
+
+  @override
+  String get assignSchedule => 'Agendar';
 }

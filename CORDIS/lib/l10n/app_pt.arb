@@ -151,5 +151,13 @@
   "addSongToLibrary": "Adicionar Música",
   "@addSongToLibrary": {},
   "assignSchedule": "Agendar",
-  "@assignSchedule": {}
+  "@assignSchedule": {},
+  "searchPlaylist": "Pesquisar por nome da playlist...",
+  "@searchPlaylist": {
+    "description": "Hint text for searching playlists"
+  },
+  "noPlaylistsFound": "Nenhuma playlist encontrada",
+  "@noPlaylistsFound": {
+    "description": "Message displayed when no playlists are found"
+  }
 }

@@ -207,4 +207,10 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get assignSchedule => 'Agendar';
+
+  @override
+  String get searchPlaylist => 'Pesquisar por nome da playlist...';
+
+  @override
+  String get noPlaylistsFound => 'Nenhuma playlist encontrada';
 }

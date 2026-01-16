@@ -4,23 +4,18 @@ import 'package:cordis/models/domain/playlist/playlist.dart';
 import 'package:cordis/models/domain/playlist/playlist_item.dart';
 import 'package:cordis/models/dtos/playlist_dto.dart';
 import 'package:cordis/repositories/local_playlist_repository.dart';
-import 'package:cordis/repositories/cloud_playlist_repository.dart';
 
 class PlaylistProvider extends ChangeNotifier {
   final PlaylistRepository _playlistRepository = PlaylistRepository();
-  final CloudPlaylistRepository _cloudPlaylistRepository =
-      CloudPlaylistRepository();
 
   PlaylistProvider();
 
   final Map<int, Playlist> _localPlaylists = {};
+  Map<int, Playlist> _filteredPlaylists = {};
+
   bool _isLoading = false;
   bool _isSaving = false;
   bool _isDeleting = false;
-
-  final Map<String, PlaylistDto> _cloudPlaylists = {};
-  bool _isCloudLoading = false;
-  bool _isCloudSaving = false;
 
   String? _error;
 
@@ -30,13 +25,13 @@ class PlaylistProvider extends ChangeNotifier {
 
   // Getters
   Map<int, Playlist> get localPlaylists => _localPlaylists;
+  Map<int, Playlist> get filteredPlaylists => _filteredPlaylists;
+
+  String _searchTerm = '';
+
   bool get isLoading => _isLoading;
   bool get isSaving => _isSaving;
   bool get isDeleting => _isDeleting;
-
-  Map<String, PlaylistDto> get cloudPlaylists => _cloudPlaylists;
-  bool get isCloudLoading => _isCloudLoading;
-  bool get isCloudSaving => _isCloudSaving;
 
   String? get error => _error;
 
@@ -51,10 +46,6 @@ class PlaylistProvider extends ChangeNotifier {
 
   Playlist? getLocalPlaylistById(int id) {
     return _localPlaylists[id];
-  }
-
-  PlaylistDto? getCloudPlaylistById(String firebaseId) {
-    return _cloudPlaylists[firebaseId];
   }
 
   // Check if a playlist has pending changes to upload
@@ -93,26 +84,6 @@ class PlaylistProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> uploadPlaylist(PlaylistDto playlist) async {
-    if (_isCloudSaving) return;
-
-    _isCloudSaving = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      await _cloudPlaylistRepository.publishPlaylist(playlist);
-    } catch (e) {
-      _error = e.toString();
-      if (kDebugMode) {
-        print('Error Uploading Playlist: $e');
-      }
-    } finally {
-      _isCloudLoading = false;
-      notifyListeners();
-    }
-  }
-
   // ===== READ =====
   // Load Playlists from local SQLite database
   Future<void> loadLocalPlaylists() async {
@@ -135,29 +106,6 @@ class PlaylistProvider extends ChangeNotifier {
     }
   }
 
-  // Load all cloud playlists of a specific user
-  Future<void> loadCloudPlaylists(String userId) async {
-    if (_isCloudLoading) return;
-
-    _isCloudLoading = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      final cloudPlaylists = await _cloudPlaylistRepository
-          .fetchPlaylistsByUserId(userId);
-      for (var p in cloudPlaylists) {
-        _cloudPlaylists[p.firebaseId!] = p;
-      }
-    } catch (e) {
-      _error = e.toString();
-    } finally {
-      _isLoading = false;
-      _isCloudLoading = false;
-      notifyListeners();
-    }
-  }
-
   // Load Single Playlist by ID
   Future<void> loadPlaylist(int id) async {
     if (_isLoading) return;
@@ -175,32 +123,6 @@ class PlaylistProvider extends ChangeNotifier {
       _error = e.toString();
     } finally {
       _isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  // Load Single Playlist From Firestore by Firebase ID
-  Future<void> loadCloudPlaylist(String firebaseId) async {
-    if (_isCloudLoading) return;
-
-    _isCloudLoading = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      final cloudDto = await _cloudPlaylistRepository.fetchPlaylistById(
-        firebaseId,
-      );
-
-      if (cloudDto == null) {
-        throw Exception('Playlist não encontrada na nuvem');
-      }
-
-      _cloudPlaylists[cloudDto.firebaseId!] = cloudDto;
-    } catch (e) {
-      _error = e.toString();
-    } finally {
-      _isCloudLoading = false;
       notifyListeners();
     }
   }
@@ -437,48 +359,6 @@ class PlaylistProvider extends ChangeNotifier {
   }
 
   // ===== UTILITY =====
-  // Sync playlist from cloud with existing local playlist
-  // Assumes users and versions have already been synced/loaded beforehand
-  Future<void> syncPlaylist(
-    String firebaseId,
-    int ownerLocalId, {
-    List<PlaylistItem>? items,
-  }) async {
-    // Merge cloud playlists with local ones, avoiding duplicates
-    final cloudDto = _cloudPlaylists[firebaseId];
-    final existingPlaylist = getLocalPlaylistByFirebaseId(firebaseId);
-    if (existingPlaylist != null) {
-      // Update existing playlist with cloud data
-      // Compare timestamps? - only update if cloud is newer?
-      try {
-        // Update playlist metadata (name, description, timestamps)
-        await _playlistRepository.updatePlaylist(existingPlaylist.id, {
-          'name': cloudDto!.name,
-          'description': cloudDto.description,
-          'updated_at': cloudDto.updatedAt.toIso8601String(),
-          'is_public': cloudDto.isPublic ? 1 : 0,
-        });
-
-        // Reload playlist to update cache
-        await loadPlaylist(existingPlaylist.id);
-
-        if (kDebugMode) {
-          print('Successfully merged playlist: ${cloudDto.name}');
-        }
-      } catch (e) {
-        if (kDebugMode) {
-          print('Error merging playlist from cloud: $e');
-        }
-        rethrow;
-      }
-    } else {
-      await _playlistRepository.insertPlaylist(
-        cloudDto!.toDomain(items!, ownerLocalId),
-      );
-    }
-  }
-
-  // ===== UTILITY =====
   void _updateItemOrdersOptimistically(
     Playlist playlist,
     int oldIndex,
@@ -553,97 +433,49 @@ class PlaylistProvider extends ChangeNotifier {
     }
   }
 
-  /// Upload pending changes for a specific playlist to Firebase
-  Future<void> uploadChanges(
+  /// Build map of changes to upload to cloud for a playlist
+  Map<String, dynamic> buildUpdatePayload(
     int playlistLocalId,
     PlaylistDto playlistDto,
-  ) async {
-    if (!hasPendingChanges(playlistLocalId)) {
-      if (kDebugMode) {
-        print('No pending changes for playlist $playlistLocalId');
-      }
-      return;
+  ) {
+    Map<String, dynamic> updatePayload = {};
+    final changes = _pendingChanges[playlistLocalId];
+
+    if (changes == null) return updatePayload; // No changes to upload
+
+    // Build update payload based on pennding changes
+    // Add metadata changes
+    if (changes.containsKey('metadata')) {
+      updatePayload.addAll({
+        'updatedAt': DateTime.now(),
+        'name': playlistDto.name,
+        'description': playlistDto.description,
+        'shareCode': playlistDto.shareCode,
+        'isPublic': playlistDto.isPublic,
+      });
     }
 
-    final changes = _pendingChanges[playlistLocalId]!;
-
-    if (_isSaving) return;
-
-    try {
-      _isSaving = true;
-      notifyListeners();
-
-      // Build update payload
-      Map<String, dynamic> updatePayload = {'updatedAt': DateTime.now()};
-
-      // Add metadata changes
-      if (changes.containsKey('metadata')) {
-        updatePayload.addAll({
-          'name': playlistDto.name,
-          'description': playlistDto.description,
-          'shareCode': playlistDto.shareCode,
-          'isPublic': playlistDto.isPublic,
-        });
-      }
-
-      // Add items if reordered or changed versions or text sections
-      if (changes.containsKey('itemsReordered')) {
-        updatePayload['itemOrder'] = playlistDto.itemOrder;
-      }
-
-      if (changes.containsKey('versions')) {
-        updatePayload['versions'] = [
-          for (final version in playlistDto.versions) ...[
-            version.toFirestore(),
-          ],
-        ];
-      }
-
-      if (changes.containsKey('textSections')) {
-        updatePayload['textSections'] = playlistDto.textSections;
-      }
-
-      // Add collaborators if changed
-      if (changes.containsKey('collaborators')) {
-        updatePayload['collaborators'] = playlistDto.collaborators;
-      }
-
-      // Upload to Firebase
-      if (playlistDto.firebaseId != null) {
-        await _cloudPlaylistRepository.updatePlaylist(
-          playlistDto.firebaseId!,
-          playlistDto.ownerId,
-          updatePayload,
-        );
-
-        // Clear pending changes for this playlist
-        _pendingChanges.remove(playlistLocalId);
-
-        if (kDebugMode) {
-          print('Successfully uploaded changes for playlist $playlistLocalId');
-        }
-      } else {
-        if (kDebugMode) {
-          print(
-            'Playlist $playlistDto has no firebaseId, cannot upload changes',
-          );
-        }
-      }
-    } catch (e) {
-      _error = 'Erro ao fazer upload das alterações: $e';
-      if (kDebugMode) {
-        print('Error uploading changes for playlist $playlistLocalId: $e');
-      }
-      rethrow;
-    } finally {
-      _isSaving = false;
-      notifyListeners();
+    // Add items if reordered or changed versions or text sections
+    if (changes.containsKey('itemsReordered')) {
+      updatePayload['itemOrder'] = playlistDto.itemOrder;
     }
-  }
 
-  void clearCloudPlaylists() {
-    _cloudPlaylists.clear();
-    notifyListeners();
+    if (changes.containsKey('versions')) {
+      updatePayload['versions'] = [
+        for (final version in playlistDto.versions) ...[version.toFirestore()],
+      ];
+    }
+
+    if (changes.containsKey('textSections')) {
+      updatePayload['textSections'] = playlistDto.textSections;
+    }
+
+    // Add collaborators if changed
+    if (changes.containsKey('collaborators')) {
+      updatePayload['collaborators'] = playlistDto.collaborators;
+    }
+
+    return updatePayload;
   }
 
   /// Clear pending changes for a playlist (without uploading)
@@ -658,22 +490,33 @@ class PlaylistProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> joinPlaylist(String shareCode) async {
-    try {
-      final playlistId = await _cloudPlaylistRepository.enterPlaylist(
-        shareCode,
-      );
-      if (kDebugMode) {
-        print('Successfully joined playlist with ID: $playlistId');
-      }
+  // ===== SEARCH =====
+  void setSearchTerm(String searchTerm) {
+    _searchTerm = searchTerm.toLowerCase();
+    _filterLocalPlaylists();
+  }
 
-      // Load the joined playlist into local cache
-      await loadCloudPlaylist(playlistId);
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error joining playlist with share code $shareCode: $e');
+  void _filterLocalPlaylists() {
+    if (_searchTerm.isEmpty) {
+      _filteredPlaylists = _localPlaylists;
+    } else {
+      Map<int, Playlist> tempFiltered = {};
+      for (var entry in _localPlaylists.entries) {
+        final playlist = entry.value;
+        if (playlist.name.toLowerCase().contains(_searchTerm) ||
+            (playlist.description != null &&
+                playlist.description!.toLowerCase().contains(_searchTerm))) {
+          tempFiltered[entry.key] = playlist;
+        }
       }
-      rethrow;
+      _filteredPlaylists = tempFiltered;
     }
+    notifyListeners();
+  }
+
+  void clearSearch() {
+    _searchTerm = '';
+    _filteredPlaylists = _localPlaylists;
+    notifyListeners();
   }
 }

@@ -487,6 +487,18 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Agendar'**
   String get assignSchedule;
+
+  /// Hint text for searching playlists
+  ///
+  /// In pt, this message translates to:
+  /// **'Pesquisar por nome da playlist...'**
+  String get searchPlaylist;
+
+  /// Message displayed when no playlists are found
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma playlist encontrada'**
+  String get noPlaylistsFound;
 }
 
 class _AppLocalizationsDelegate

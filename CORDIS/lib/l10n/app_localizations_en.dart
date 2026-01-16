@@ -206,4 +206,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get assignSchedule => 'Assign Schedule';
+
+  @override
+  String get searchPlaylist => 'Search playlists...';
+
+  @override
+  String get noPlaylistsFound => 'No playlists found';
 }

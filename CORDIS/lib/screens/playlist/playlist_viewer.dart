@@ -1,9 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
-import 'package:cordis/models/domain/playlist/playlist_text_section.dart';
-import 'package:cordis/models/dtos/version_dto.dart';
-import 'package:cordis/providers/text_section_provider.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cordis/models/domain/playlist/playlist.dart';
@@ -117,32 +111,6 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                     ),
                   ],
                 ),
-                actions: [
-                  if (widget.syncPlaylist != null) ...[
-                    IconButton(
-                      onPressed: widget.syncPlaylist,
-                      icon: Icon(Icons.cloud_sync),
-                    ),
-                  ],
-                  if (playlist.createdBy ==
-                      userProvider.getLocalIdByFirebaseId(
-                        authProvider.id!,
-                      )) ...[
-                    IconButton(
-                      onPressed: () {
-                        _publishPlaylist(
-                          userProvider,
-                          playlistProvider,
-                          authProvider,
-                          cipherProvider,
-                          versionProvider,
-                          playlist,
-                        );
-                      },
-                      icon: const Icon(Icons.cloud_upload),
-                    ),
-                  ],
-                ],
               ),
               body: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -413,70 +381,5 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
       context: context,
       builder: (context) => NewTextSectionDialog(playlist: playlist),
     );
-  }
-
-  Future<void> _publishPlaylist(
-    UserProvider userProvider,
-    PlaylistProvider playlistProvider,
-    MyAuthProvider authProvider,
-    CipherProvider cipherProvider,
-    VersionProvider versionProvider,
-    Playlist playlist,
-  ) async {
-    final textSectionProvider = context.read<TextSectionProvider>();
-
-    final ownerFirebaseId = userProvider.getFirebaseIdByLocalId(
-      playlist.createdBy,
-    );
-
-    final userLocalIds = playlist.collaborators
-        .map((firebaseId) => userProvider.getLocalIdByFirebaseId(firebaseId))
-        .whereType<int>()
-        .toList();
-    final users = userProvider.getUsersByIds(userLocalIds);
-
-    List<VersionDto> versions = [];
-    List<TextSection> textSections = [];
-    for (final item in playlist.items) {
-      switch (item.type) {
-        case 'cipher_version':
-          final version = versionProvider.getLocalVersionById(item.contentId!);
-          final cipher = cipherProvider.getCipherById(version?.cipherId ?? -1);
-          if (version != null) {
-            versions.add(version.toDto(cipher!));
-          }
-          break;
-        case 'text_section':
-          final textSection = await textSectionProvider.getTextSectionById(
-            item.contentId!,
-          );
-          if (textSection != null) {
-            textSections.add(textSection);
-          }
-          break;
-        default:
-          // Unknown type, skip
-          break;
-      }
-    }
-
-    final playlistDto = playlist.toDto(
-      ownerFirebaseId,
-      users.map((user) => user.firebaseId!).toList(),
-      versions,
-      textSections,
-    );
-
-    if (playlist.firebaseId == null) {
-      if (kDebugMode) {
-        print('Publishing new playlist: ${playlist.name}');
-      }
-      playlistProvider.uploadPlaylist(playlistDto);
-    } else {
-      if (kDebugMode) {
-        print('Updating existing playlist: ${playlist.name}');
-      }
-      playlistProvider.uploadChanges(playlist.id, playlistDto);
-    }
   }
 }

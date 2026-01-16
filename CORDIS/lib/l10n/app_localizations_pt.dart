@@ -225,4 +225,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get searchSchedule => 'Pesquisar nome, local...';
+
+  @override
+  String get selectSectionType => 'Selecione sua Seção';
 }

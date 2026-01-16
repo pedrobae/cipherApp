@@ -17,7 +17,8 @@ class ChordLineParser {
     for (var rawSection in rawSections) {
       if (rawSection['suggestedTitle'] == 'Metadata') continue;
 
-      String? code = getCodeFromLabel(rawSection['suggestedTitle']);
+      String? code =
+          commonSectionLabels[rawSection['officialLabel'].toLowerCase()]?.code;
       if (code == null) {
         // Assign a default code if none is found
         code = incrementalDefaultCode.toString();
@@ -42,7 +43,10 @@ class ChordLineParser {
       Section parsedSection = Section(
         versionId: -1 /* ID will be set on database insertion */,
         contentCode: code,
-        contentColor: defaultSectionColors[code] ?? Colors.grey,
+        contentColor:
+            commonSectionLabels[rawSection['officialLabel'].toLowerCase()]
+                ?.color ??
+            Colors.grey,
         contentType: rawSection['suggestedTitle'] as String,
         contentText: _buildContentFromSimpleText(
           rawSection['content'] as String,
@@ -63,7 +67,8 @@ class ChordLineParser {
     for (var rawSection in rawSections) {
       if (rawSection['suggestedTitle'] == 'Metadata') continue;
 
-      String? code = getCodeFromLabel(rawSection['officialLabel']);
+      String? code =
+          commonSectionLabels[rawSection['officialLabel'].toLowerCase()]?.code;
       if (code == null) {
         // Assign a default code if none is found
         code = incrementalDefaultCode.toString();
@@ -93,7 +98,10 @@ class ChordLineParser {
       Section parsedSection = Section(
         versionId: -1 /* ID will be set on database insertion */,
         contentCode: code,
-        contentColor: defaultSectionColors[code] ?? Colors.grey,
+        contentColor:
+            commonSectionLabels[rawSection['officialLabel'].toLowerCase()]
+                ?.color ??
+            Colors.grey,
         contentType: rawSection['suggestedTitle'] as String,
         contentText: _buildContentFromLinesData(
           rawSection['linesData'] as List<LineData>,

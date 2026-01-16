@@ -230,7 +230,7 @@ class _CipherEditorState extends State<CipherEditor>
                       spacing: 16,
                       children: [
                         FilledTextButton(
-                          darkButton: true,
+                          isDarkButton: true,
                           onPressed: () {
                             if (widget.versionType == VersionType.import ||
                                 widget.versionType == VersionType.brandNew) {

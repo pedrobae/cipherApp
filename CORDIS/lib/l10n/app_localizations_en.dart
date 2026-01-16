@@ -224,4 +224,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get searchSchedule => 'Search schedule...';
+
+  @override
+  String get selectSectionType => 'Select your Section';
 }

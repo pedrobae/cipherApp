@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 /// Common Section labels are iterated through on import / parsing to identify sections
 /// MIGHT BE PRUDENT TO MAKE THIS LOCALIZABLE IN THE FUTURE
 /// AREA OF OPTIMIZATION: use a more efficient data structure for lookups
-final List<SectionLabels> commonSectionLabels = [
-  SectionLabels(
+const Map<String, SectionLabels> commonSectionLabels = {
+  'verse': SectionLabels(
     labelVariations: [
       'verse',
       'verso',
@@ -13,119 +13,74 @@ final List<SectionLabels> commonSectionLabels = [
     ],
     officialLabel: 'Verse',
     code: 'V',
+    color: Colors.blue,
   ),
-  SectionLabels(
+  'chorus': SectionLabels(
     labelVariations: ['chorus', 'coro', 'refrao', 'refrão'],
     officialLabel: 'Chorus',
     code: 'C',
+    color: Colors.red,
   ),
-  SectionLabels(
+  'bridge': SectionLabels(
     labelVariations: ['bridge', 'ponte'],
     officialLabel: 'Bridge',
     code: 'B',
+    color: Colors.green,
   ),
-  SectionLabels(labelVariations: ['intro'], officialLabel: 'Intro', code: 'I'),
-  SectionLabels(labelVariations: ['outro'], officialLabel: 'Outro', code: 'O'),
-  SectionLabels(labelVariations: ['solo'], officialLabel: 'Solo', code: 'S'),
-  SectionLabels(
+  'intro': SectionLabels(
+    labelVariations: ['intro'],
+    officialLabel: 'Intro',
+    code: 'I',
+    color: Colors.purple,
+  ),
+  'outro': SectionLabels(
+    labelVariations: ['outro'],
+    officialLabel: 'Outro',
+    code: 'O',
+    color: Colors.brown,
+  ),
+  'solo': SectionLabels(
+    labelVariations: ['solo'],
+    officialLabel: 'Solo',
+    code: 'S',
+    color: Colors.amber,
+  ),
+  'pre-chorus': SectionLabels(
     labelVariations: ['pre[- ]?chorus', 'pre[- ]?refrao', 'pré[- ]?refrão'],
     officialLabel: 'Pre-Chorus',
     code: 'PC',
+    color: Colors.orange,
   ),
-  SectionLabels(labelVariations: ['tag'], officialLabel: 'Tag', code: 'T'),
-  SectionLabels(
+  'tag': SectionLabels(
+    labelVariations: ['tag'],
+    officialLabel: 'Tag',
+    code: 'T',
+    color: Colors.teal,
+  ),
+  'finale': SectionLabels(
     labelVariations: ['finale', 'final'],
     officialLabel: 'Finale',
     code: 'F',
+    color: Colors.indigo,
   ),
-  SectionLabels(
+  'annotations': SectionLabels(
     labelVariations: ['notes', 'anotacoes', 'anotações'],
     officialLabel: 'Annotations',
     code: 'N',
+    color: Colors.grey,
   ),
-];
+};
 
 class SectionLabels {
-  List<String> labelVariations;
-  String officialLabel;
-  String code;
+  final List<String> labelVariations;
+  final String officialLabel;
+  final String code;
+  final Color color;
 
-  SectionLabels({
+  const SectionLabels({
     required this.labelVariations,
     required this.officialLabel,
     required this.code,
+    required this.color,
   });
-}
-
-/// Available colors for section selection in the cipher editor
-const List<Color> availableColors = [
-  Colors.blue,
-  Colors.red,
-  Colors.green,
-  Colors.orange,
-  Colors.purple,
-  Colors.amber,
-  Colors.teal,
-  Colors.brown,
-  Colors.indigo,
-  Colors.pink,
-  Colors.cyan,
-  Colors.lime,
-];
-
-/// Predefined section types with Portuguese display names
-const Map<String, String> predefinedSectionTypes = {
-  'I': 'Intro',
-  'V': 'Verso',
-  'V1': 'Verso 1',
-  'V2': 'Verso 2',
-  'V3': 'Verso 3',
-  'V4': 'Verso 4',
-  'C': 'Refrão',
-  'C1': 'Refrão 1',
-  'C2': 'Refrão 2',
-  'PC': 'Pré-Refrão',
-  'B': 'Ponte',
-  'B1': 'Ponte 1',
-  'B2': 'Ponte 2',
-  'S': 'Solo',
-  'O': 'Outro',
-  'F': 'Final',
-  'N': 'Anotações',
-  'T': 'Tag',
-};
-
-/// Default colors for predefined sections
-const Map<String, Color> defaultSectionColors = {
-  'I': Colors.purple,
-  'V': Colors.blue,
-  'V1': Colors.blue,
-  'V2': Colors.blue,
-  'V3': Colors.blue,
-  'V4': Colors.blue,
-  'C': Colors.red,
-  'C1': Colors.red,
-  'C2': Colors.red,
-  'PC': Colors.orange,
-  'B': Colors.green,
-  'B1': Colors.green,
-  'B2': Colors.green,
-  'S': Colors.amber,
-  'O': Colors.brown,
-  'F': Colors.indigo,
-  'N': Colors.grey,
-  'T': Colors.teal,
-};
-
-String? getCodeFromLabel(String label) {
-  String? code;
-
-  for (var entry in commonSectionLabels) {
-    if (entry.officialLabel.toLowerCase() == label.toLowerCase()) {
-      code = entry.code;
-      break;
-    }
-  }
-
-  return code;
 }

@@ -162,5 +162,7 @@
   "nextThisMonth": "Next This Month",
   "@nextThisMonth": {},
   "searchSchedule": "Search schedule...",
-  "@searchSchedule": {"description": "hint text for searching schedule"}
+  "@searchSchedule": {"description": "hint text for searching schedule"},
+  "selectSectionType": "Select your Section",
+  "@selectSectionType": {}
 }

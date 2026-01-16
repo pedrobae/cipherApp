@@ -167,5 +167,7 @@
   "nextThisMonth": "Ainda neste Mês",
   "@nextThisMonth": {},
   "searchSchedule": "Pesquisar nome, local...",
-  "@searchSchedule": {}
+  "@searchSchedule": {},
+  "selectSectionType": "Selecione sua Seção",
+  "@selectSectionType": {}
 }

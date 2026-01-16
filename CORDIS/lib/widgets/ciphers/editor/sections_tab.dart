@@ -1,5 +1,6 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/models/domain/cipher/version.dart';
+import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cordis/providers/cipher_provider.dart';
@@ -81,9 +82,9 @@ class _SectionsTabState extends State<SectionsTab> {
                         IconButton(
                           tooltip: AppLocalizations.of(context)!.addSection,
                           icon: const Icon(Icons.add),
-                          color: colorScheme.shadow,
+                          color: colorScheme.onSurface.withValues(alpha: 0.7),
                           onPressed: () {
-                            _openAddSectionDialog(
+                            _showNewSectionSheet(
                               context,
                               sectionProvider,
                               versionProvider,
@@ -136,40 +137,119 @@ class _SectionsTabState extends State<SectionsTab> {
   }
 
   void _addSection(
-    dynamic versionId,
-    String sectionCode,
+    SectionLabels sectionLabel,
     SectionProvider sectionProvider,
-    VersionProvider versionProvider, {
-    String? sectionType,
-    Color? customColor,
-  }) {
+    VersionProvider versionProvider,
+  ) {
     final isNewSection = !sectionProvider
-        .getSections(versionId)
-        .containsKey(sectionCode);
+        .getSections(widget.versionId)
+        .containsKey(sectionLabel.code);
 
     // Add section to song structure
-    versionProvider.addSectionToStruct(versionId, sectionCode);
-
+    versionProvider.addSectionToStruct(widget.versionId, sectionLabel.code);
     // Add section to sections map if it's new
     if (isNewSection) {
       sectionProvider.cacheAddSection(
-        versionId,
-        sectionCode,
-        sectionType: sectionType,
-        color: customColor,
+        widget.versionId,
+        sectionLabel.code,
+        sectionLabel.color,
+        sectionLabel.officialLabel,
       );
     }
+
+    Navigator.of(context).pop();
   }
 
-  void _openAddSectionDialog(
+  void _showNewSectionSheet(
     BuildContext context,
     SectionProvider sectionProvider,
     VersionProvider versionProvider,
   ) {
-    showDialog(
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    SectionLabels? selectedLabel;
+
+    showModalBottomSheet(
       context: context,
+      barrierColor: colorScheme.onSurface.withAlpha(85),
       builder: (context) {
-        return SizedBox.shrink();
+        return Container(
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            borderRadius: BorderRadius.circular(0),
+          ),
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Close Icon Button
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+
+              // LABEL
+              Text(
+                AppLocalizations.of(context)!.addSection,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 18,
+                ),
+              ),
+
+              SizedBox(height: 8),
+
+              // DROPDOWN MENU
+              DropdownButtonFormField<SectionLabels>(
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.selectSectionType,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: colorScheme.surfaceContainerLowest,
+                    ),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: colorScheme.primary),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                items: commonSectionLabels.values.map((sectionLabels) {
+                  return DropdownMenuItem<SectionLabels>(
+                    value: sectionLabels,
+                    child: Text(
+                      '${sectionLabels.code} - ${sectionLabels.officialLabel}',
+                    ),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  selectedLabel = value;
+                },
+              ),
+
+              SizedBox(height: 16),
+
+              FilledTextButton(
+                text: AppLocalizations.of(context)!.save,
+                onPressed: () {
+                  _addSection(selectedLabel!, sectionProvider, versionProvider);
+                },
+                isDarkButton: true,
+              ),
+
+              SizedBox(height: 40),
+            ],
+          ),
+        );
       },
     );
   }

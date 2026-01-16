@@ -29,18 +29,18 @@ class _ReorderableStructureChipsState extends State<ReorderableStructureChips> {
     VersionProvider versionProvider,
     SectionProvider sectionProvider,
   ) {
-    versionProvider.removeSectionFromStruct(widget.versionId ?? -1, index);
-    if (versionProvider
+    if (!versionProvider
         .getSongStructure(widget.versionId ?? -1)
         .contains(
           versionProvider.getSongStructure(widget.versionId ?? -1)[index],
         )) {
-      return;
+      sectionProvider.cacheDeleteSection(
+        widget.versionId ?? -1,
+        versionProvider.getSongStructure(widget.versionId ?? -1)[index],
+      );
     }
-    sectionProvider.cacheDeleteSection(
-      widget.versionId ?? -1,
-      versionProvider.getSongStructure(widget.versionId ?? -1)[index],
-    );
+
+    versionProvider.removeSectionFromStruct(widget.versionId ?? -1, index);
   }
 
   @override

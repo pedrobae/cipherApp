@@ -131,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     spacing: 16,
                     children: [
                       FilledTextButton(
-                        darkButton: true,
+                        isDarkButton: true,
                         text: AppLocalizations.of(context)!.createPlaylist,
                         onPressed: () {
                           // TODO: Implement navigation to create playlist

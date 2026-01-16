@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 class FilledTextButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
-  final bool darkButton;
+  final bool isDarkButton;
 
   const FilledTextButton({
     super.key,
     required this.text,
     required this.onPressed,
-    this.darkButton = false,
+    this.isDarkButton = false,
   });
 
   @override
@@ -18,7 +18,7 @@ class FilledTextButton extends StatelessWidget {
     return FilledButton(
       style: FilledButton.styleFrom(
         minimumSize: const Size.fromHeight(50),
-        backgroundColor: darkButton
+        backgroundColor: isDarkButton
             ? colorScheme.onSurface
             : colorScheme.surface,
         side: BorderSide(color: colorScheme.onSurface),
@@ -32,7 +32,7 @@ class FilledTextButton extends StatelessWidget {
         style: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w500,
-          color: darkButton ? colorScheme.surface : colorScheme.onSurface,
+          color: isDarkButton ? colorScheme.surface : colorScheme.onSurface,
         ),
       ),
     );

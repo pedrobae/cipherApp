@@ -523,6 +523,12 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Pesquisar nome, local...'**
   String get searchSchedule;
+
+  /// No description provided for @selectSectionType.
+  ///
+  /// In pt, this message translates to:
+  /// **'Selecione sua Seção'**
+  String get selectSectionType;
 }
 
 class _AppLocalizationsDelegate

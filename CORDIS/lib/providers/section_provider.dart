@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import 'package:cordis/models/domain/cipher/section.dart';
 import 'package:cordis/repositories/local_cipher_repository.dart';
-import 'package:cordis/utils/section_constants.dart';
 
 class SectionProvider extends ChangeNotifier {
   final LocalCipherRepository _cipherRepository = LocalCipherRepository();
@@ -42,19 +41,15 @@ class SectionProvider extends ChangeNotifier {
   // Add a new section
   void cacheAddSection(
     dynamic versionKey,
-    String contentCode, {
-    Color? color,
-    String? sectionType,
-  }) {
+    String contentCode,
+    Color color,
+    String sectionType,
+  ) {
     final newSection = Section(
       versionId: versionKey is String ? -1 : versionKey,
       contentCode: contentCode,
-      contentColor: color ?? (defaultSectionColors[contentCode]!),
-      contentType:
-          sectionType ??
-          commonSectionLabels
-              .firstWhere((label) => label.code == contentCode)
-              .officialLabel,
+      contentColor: color,
+      contentType: sectionType,
       contentText: '',
     );
 

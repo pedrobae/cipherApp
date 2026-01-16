@@ -99,7 +99,7 @@ class ScheduleCard extends StatelessWidget {
               ),
               // BOTTOM BUTTONS
               FilledTextButton(
-                darkButton: true,
+                isDarkButton: true,
                 onPressed: () {
                   // TODO: Implement navigation to schedule view
                 },

@@ -46,10 +46,10 @@ class _EditSectionDialogState extends State<EditSectionDialog> {
     contentColor = section!.contentColor;
 
     List<Color> presetColors = [];
-    for (var entry in defaultSectionColors.entries) {
-      if (!presetColors.contains(entry.value)) {
-        availableColors[predefinedSectionTypes[entry.key]!] = entry.value;
-        presetColors.add(entry.value);
+    for (var value in commonSectionLabels.values) {
+      if (!presetColors.contains(value.color)) {
+        availableColors[value.officialLabel] = value.color;
+        presetColors.add(value.color);
       }
     }
 

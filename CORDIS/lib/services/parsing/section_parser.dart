@@ -34,7 +34,7 @@ class SectionParser {
     String rawText = variant.rawText;
     List<Map<String, dynamic>> validMatches = [];
     // Search common label texts
-    for (var label in commonSectionLabels) {
+    for (var label in commonSectionLabels.values) {
       for (var labelVariation in label.labelVariations) {
         RegExp regex = RegExp(labelVariation, caseSensitive: false);
         Iterable<RegExpMatch> matches = regex.allMatches(variant.rawText);
@@ -338,7 +338,7 @@ class SectionParser {
   }
 
   (bool, RegExpMatch?, String) _containsLabel(String text) {
-    for (var label in commonSectionLabels) {
+    for (var label in commonSectionLabels.values) {
       for (var labelVariation in label.labelVariations) {
         RegExp regex = RegExp(labelVariation, caseSensitive: false);
         if (regex.hasMatch(text)) {

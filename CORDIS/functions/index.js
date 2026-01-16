@@ -1,24 +1,7 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * const {onCall} = require("firebase-functions/v2/https");
- * const {onDocumentWritten} = require("firebase-functions/v2/firestore");
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
-
 const {setGlobalOptions} = require("firebase-functions");
 const {onCall} = require("firebase-functions/v2/https");
 const {beforeUserCreated} = require("firebase-functions/v2/identity");
-// running at the same time. This helps mitigate the impact of unexpected
-// traffic spikes by instead downgrading performance. This limit is a
-// per-function limit. You can override the limit for each function using the
-// `maxInstances` option in the function's options, e.g.
-// `onRequest({ maxInstances: 5 }, (req, res) => { ... })`.
-// NOTE: setGlobalOptions does not apply to functions using the v1 API. V1
-// functions should each use functions.runWith({ maxInstances: 10 }) instead.
-// In the v1 API, each function can only serve one request per container, so
-// this will be the maximum concurrent request count.
+
 setGlobalOptions({maxInstances: 5});
 
 const functions = require("firebase-functions");
@@ -162,13 +145,13 @@ exports.createUserDocument = beforeUserCreated(async (event) => {
 
 // === PLAYLIST SHARING ===
 
-// Callable function to join a playlist using a share code
-exports.joinPlaylistWithCode = onCall(async (request) => {
+// Callable function to join a schedule using a share code
+exports.joinScheduleWithCode = onCall(async (request) => {
   // Authentication required
   if (!request.auth) {
     throw new functions.https.HttpsError(
         "unauthenticated",
-        "Must be authenticated to join a playlist.",
+        "Must be authenticated to join a schedule.",
     );
   }
 
@@ -186,56 +169,48 @@ exports.joinPlaylistWithCode = onCall(async (request) => {
     const db = admin.firestore();
 
     // Find the share code document
-    const shareCodeSnap = await db.collection("shareLinks")
+    const scheduleSnap = await db.collection("schedules")
         .where("shareCode", "==", shareCode)
         .limit(1)
         .get();
 
-    if (shareCodeSnap.empty) {
+    if (scheduleSnap.empty) {
       throw new functions.https.HttpsError(
           "not-found",
           "Invalid or expired share code.",
       );
     }
 
-    const shareCodeDoc = shareCodeSnap.docs[0];
-    const {playlistId} = shareCodeDoc.data();
+    const scheduleDoc = scheduleSnap.docs[0];
+    const {scheduleId} = scheduleDoc.data();
 
-    // Get the playlist to verify it exists
-    const playlistSnap = await db.collection("playlists").doc(playlistId).get();
-    if (!playlistSnap.exists) {
-      throw new functions.https.HttpsError(
-          "not-found",
-          "Playlist not found.",
-      );
-    }
 
-    const playlistData = playlistSnap.data();
+    const scheduleData = scheduleDoc.data();
 
     // Check if user is already a collaborator
-    const currentCollaborators = playlistData.collaborators || [];
+    const currentCollaborators = scheduleData.collaborators || [];
     if (currentCollaborators.includes(userId)) {
       throw new functions.https.HttpsError(
           "already-exists",
-          "You are already a collaborator on this playlist.",
+          "You are already a collaborator on this schedule.",
       );
     }
 
-    // Add user as collaborator to the playlist
-    await db.collection("playlists").doc(playlistId).update({
+    // Add user as collaborator to the schedule
+    await db.collection("schedules").doc(scheduleId).update({
       collaborators: admin.firestore.FieldValue.arrayUnion([userId]),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
-    console.log(`User ${userId} joined playlist ${playlistId} via share code`);
+    console.log(`User ${userId} joined schedule ${scheduleId} via share code`);
 
     return {
       success: true,
-      message: "Successfully joined playlist",
-      playlistId: playlistId,
+      message: "Successfully joined schedule",
+      scheduleId: scheduleId,
     };
   } catch (error) {
-    console.error("Error in joinPlaylistWithCode:", error);
+    console.error("Error in joinScheduleWithCode:", error);
 
     // Re-throw if it's already an HttpsError
     if (error instanceof functions.https.HttpsError) {
@@ -244,7 +219,7 @@ exports.joinPlaylistWithCode = onCall(async (request) => {
 
     throw new functions.https.HttpsError(
         "internal",
-        "Failed to join playlist",
+        "Failed to join schedule",
         error,
     );
   }

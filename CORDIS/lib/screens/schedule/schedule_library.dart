@@ -1,26 +1,31 @@
 import 'package:cordis/l10n/app_localizations.dart';
-import 'package:cordis/widgets/playlist/library/playlist_scroll_view.dart';
+import 'package:cordis/widgets/schedule/library/schedule_scroll_view.dart';
 import 'package:cordis/widgets/icon_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cordis/providers/playlist_provider.dart';
+import 'package:cordis/providers/schedule_provider.dart';
 
-class PlaylistLibraryScreen extends StatefulWidget {
-  const PlaylistLibraryScreen({super.key});
+class ScheduleLibraryScreen extends StatefulWidget {
+  const ScheduleLibraryScreen({super.key});
 
   @override
-  State<PlaylistLibraryScreen> createState() => _PlaylistLibraryScreenState();
+  State<ScheduleLibraryScreen> createState() => _ScheduleLibraryScreenState();
 }
 
-class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen> {
+class _ScheduleLibraryScreenState extends State<ScheduleLibraryScreen> {
   final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      final scheduleProvider = Provider.of<ScheduleProvider>(
+        context,
+        listen: false,
+      );
       if (mounted) {
-        context.read<PlaylistProvider>().loadLocalPlaylists();
+        scheduleProvider.loadLocalSchedules();
+        scheduleProvider.loadCloudSchedules();
       }
     });
   }
@@ -30,8 +35,8 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Consumer<PlaylistProvider>(
-      builder: (context, playlistProvider, child) {
+    return Consumer<ScheduleProvider>(
+      builder: (context, scheduleProvider, child) {
         return Padding(
           padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
           child: Column(
@@ -41,7 +46,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen> {
               TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
-                  hintText: AppLocalizations.of(context)!.searchPlaylist,
+                  hintText: AppLocalizations.of(context)!.searchSchedule,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(0),
                     borderSide: BorderSide(color: colorScheme.surfaceContainer),
@@ -55,7 +60,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen> {
                   visualDensity: VisualDensity.compact,
                 ),
                 onChanged: (value) {
-                  playlistProvider.setSearchTerm(value);
+                  scheduleProvider.setSearchTerm(value);
                 },
               ),
               // Buttons Row (e.g., Filters, Sort, Create New Cipher)
@@ -65,7 +70,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen> {
                   // CREATE NEW CIPHER
                   IconTextButton(
                     onTap: () {
-                      //TODO: Implement create new Playlist functionality
+                      //TODO: Implement create new Schedule functionality
                     },
                     text: AppLocalizations.of(context)!.create,
                     icon: Icon(Icons.add, color: colorScheme.onSurface),
@@ -86,7 +91,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen> {
                 ],
               ),
 
-              Expanded(child: PlaylistScrollView()),
+              Expanded(child: ScheduleScrollView()),
             ],
           ),
         );

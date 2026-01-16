@@ -158,5 +158,9 @@
   "item": "item",
   "@item": {},
   "items": "items",
-  "@items": {}
+  "@items": {},
+  "nextThisMonth": "Next This Month",
+  "@nextThisMonth": {},
+  "searchSchedule": "Search schedule...",
+  "@searchSchedule": {"description": "hint text for searching schedule"}
 }

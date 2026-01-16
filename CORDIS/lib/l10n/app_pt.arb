@@ -163,5 +163,9 @@
   "item": "item",
   "@item": {},
   "items": "itens",
-  "@items": {}
+  "@items": {},
+  "nextThisMonth": "Ainda neste Mês",
+  "@nextThisMonth": {},
+  "searchSchedule": "Pesquisar nome, local...",
+  "@searchSchedule": {}
 }

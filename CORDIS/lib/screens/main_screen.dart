@@ -18,7 +18,11 @@ class MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<MyAuthProvider>().addListener(_authListener);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<MyAuthProvider>().addListener(_authListener);
+      }
+    });
   }
 
   void _authListener() {

@@ -219,4 +219,10 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get items => 'itens';
+
+  @override
+  String get nextThisMonth => 'Ainda neste Mês';
+
+  @override
+  String get searchSchedule => 'Pesquisar nome, local...';
 }

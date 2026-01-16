@@ -218,4 +218,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get items => 'items';
+
+  @override
+  String get nextThisMonth => 'Next This Month';
+
+  @override
+  String get searchSchedule => 'Search schedule...';
 }

@@ -1,6 +1,6 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:cordis/helpers/guard.dart';
-import 'package:cordis/models/dtos/playlist_dto.dart';
+import 'package:cordis/models/dtos/schedule_dto.dart';
 import 'package:cordis/models/dtos/version_dto.dart';
 import 'package:cordis/services/firestore_service.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -17,28 +17,27 @@ import 'package:flutter/foundation.dart';
 //   final List<String> collaborators; // userIds
 //   final List<PlaylistItemDto> items; // Array whose order matters
 
-class CloudPlaylistRepository {
+class CloudScheduleRepository {
   final FirestoreService _firestoreService = FirestoreService();
   final GuardHelper _guardHelper = GuardHelper();
 
-  CloudPlaylistRepository();
-
+  CloudScheduleRepository();
   // ===== CREATE =====
 
-  /// Publish a new playlist to Firestore
+  /// Publish a new schedule to Firestore
   /// Returns the generated document ID
-  Future<String> publishPlaylist(PlaylistDto playlistDto) async {
-    return await _withErrorHandling('publish_playlist', () async {
+  Future<String> publishSchedule(ScheduleDto scheduleDto) async {
+    return await _withErrorHandling('publish_schedule', () async {
       await _guardHelper.requireAuth();
-      await _guardHelper.requireOwnership(playlistDto.ownerId);
+      await _guardHelper.requireOwnership(scheduleDto.ownerFirebaseId);
 
       final docId = await _firestoreService.createDocument(
-        collectionPath: 'playlists',
-        data: playlistDto.toFirestore(),
+        collectionPath: 'schedules',
+        data: scheduleDto.toFirestore(),
       );
 
       await FirebaseAnalytics.instance.logEvent(
-        name: 'created_playlist',
+        name: 'created_schedule',
         parameters: {'playlistId': docId},
       );
 
@@ -48,21 +47,23 @@ class CloudPlaylistRepository {
 
   // ===== READ =====
 
-  /// Fetch playlists of a specific user ID
-  /// Used when fetching playlists for a user
-  Future<List<PlaylistDto>> fetchPlaylistsByUserId(String userId) async {
-    return await _withErrorHandling('fetch_playlists_by_user_id', () async {
+  /// Fetch schedules of a specific user ID
+  /// Used when fetching schedules for a user
+  Future<List<ScheduleDto>> fetchSchedulesByUserId(
+    String firebaseUserId,
+  ) async {
+    return await _withErrorHandling('fetch_schedules_by_user_id', () async {
       final querySnapshot = await _firestoreService
           .fetchDocumentsContainingValue(
-            collectionPath: 'playlists',
+            collectionPath: 'schedules',
             field: 'collaborators',
             orderField: 'updatedAt',
-            value: userId,
+            value: firebaseUserId,
           );
 
       return querySnapshot
           .map(
-            (doc) => PlaylistDto.fromFirestore(
+            (doc) => ScheduleDto.fromFirestore(
               (doc.data() as Map<String, dynamic>)..['firebaseId'] = doc.id,
             ),
           )
@@ -70,12 +71,12 @@ class CloudPlaylistRepository {
     });
   }
 
-  /// Fetch a playlist's versions by its ID
-  Future<List<VersionDto>> fetchPlaylistVersions(String playlistId) async {
-    return await _withErrorHandling('fetch playlist by ID', () async {
+  /// Fetch a schedule's playlist's versions by its ID
+  Future<List<VersionDto>> fetchScheduleVersions(String scheduleId) async {
+    return await _withErrorHandling('fetch schedule by ID', () async {
       final docSnapshot = await _firestoreService.fetchSubCollectionDocuments(
-        parentCollectionPath: 'playlists',
-        parentDocumentId: playlistId,
+        parentCollectionPath: 'schedules',
+        parentDocumentId: scheduleId,
         subCollectionPath: 'versions',
       );
 
@@ -90,21 +91,21 @@ class CloudPlaylistRepository {
     });
   }
 
-  /// Fetches a playlist by its ID
+  /// Fetches a schedule by its ID
   /// Returns null if not found
   /// Used after successfully inserting a share code
-  Future<PlaylistDto?> fetchPlaylistById(String playlistId) async {
-    return await _withErrorHandling('fetch_playlist_by_id', () async {
+  Future<ScheduleDto?> fetchScheduleById(String scheduleId) async {
+    return await _withErrorHandling('fetch_schedule_by_id', () async {
       final docSnapshot = await _firestoreService.fetchDocumentById(
-        collectionPath: 'playlists',
-        documentId: playlistId,
+        collectionPath: 'schedules',
+        documentId: scheduleId,
       );
 
       if (docSnapshot == null) {
-        throw Exception('No playlist found with the provided playlist ID.');
+        throw Exception('No schedule found with the provided schedule ID.');
       }
 
-      return PlaylistDto.fromFirestore(
+      return ScheduleDto.fromFirestore(
         (docSnapshot.data() as Map<String, dynamic>)
           ..['firebaseId'] = docSnapshot.id,
       );
@@ -113,18 +114,18 @@ class CloudPlaylistRepository {
 
   // ===== UPDATE =====
 
-  /// Update an existing playlist in Firestore on the changes map
-  Future<void> updatePlaylist(
+  /// Update an existing schedule in Firestore on the changes map
+  Future<void> updateSchedule(
     String firebaseId,
     String ownerId,
     Map<String, dynamic> changes,
   ) async {
-    return await _withErrorHandling('update_playlist', () async {
+    return await _withErrorHandling('update_schedule', () async {
       await _guardHelper.requireAuth();
       await _guardHelper.requireOwnership(ownerId);
 
       await _firestoreService.updateDocument(
-        collectionPath: 'playlists',
+        collectionPath: 'schedules',
         documentId: firebaseId,
         data: changes,
       );
@@ -136,89 +137,89 @@ class CloudPlaylistRepository {
     });
   }
 
-  /// Enter Playlist via Share Code by adding the user as a collaborator
-  Future<String> enterPlaylist(String shareCode) async {
-    return await _withErrorHandling('enter_playlist_via_share_code', () async {
+  /// Enter Schedule via Share Code by adding the user as a collaborator
+  Future<String> enterSchedule(String shareCode) async {
+    return await _withErrorHandling('enter_schedule_via_share_code', () async {
       await _guardHelper.requireAuth();
 
       final functions = FirebaseFunctions.instance;
 
-      final result = await functions.httpsCallable('joinPlaylistWithCode').call(
+      final result = await functions.httpsCallable('joinScheduleWithCode').call(
         <String, dynamic>{'shareCode': shareCode},
       );
 
-      // After successfully joining load the playlist
+      // After successfully joining load the schedule
       if (result.data['success'] == true) {
-        final String playlistId = result.data['playlistId'];
-        return playlistId;
+        final String scheduleId = result.data['scheduleId'];
+        return scheduleId;
       } else {
         throw Exception(
-          'Failed to join playlist with the provided share code.',
+          'Failed to join schedule with the provided share code.',
         );
       }
     });
   }
 
   Future<void> updatePlaylistVersion(
-    String playlistId,
+    String scheduleId,
     String versionId,
     Map<String, dynamic> changes,
   ) async {
-    return await _withErrorHandling('update_playlist_version', () async {
+    return await _withErrorHandling('update_schedule_version', () async {
       await _guardHelper.requireAuth();
 
       await _firestoreService.updateSubCollectionDocument(
-        parentCollectionPath: 'playlists',
-        parentDocumentId: playlistId,
+        parentCollectionPath: 'schedules',
+        parentDocumentId: scheduleId,
         subCollectionPath: 'versions',
         documentId: versionId,
         data: changes,
       );
 
       await FirebaseAnalytics.instance.logEvent(
-        name: 'updated_playlist_version',
-        parameters: {'playlistId': playlistId, 'versionId': versionId},
+        name: 'updated_schedule_version',
+        parameters: {'scheduleId': scheduleId, 'versionId': versionId},
       );
     });
   }
 
   // ===== DELETE =====
-  /// Delete a playlist from Firestore
-  Future<void> deletePlaylist(String firebaseId, String ownerId) async {
-    return await _withErrorHandling('delete_playlist', () async {
+  /// Delete a schedule from Firestore
+  Future<void> deleteSchedule(String firebaseId, String ownerId) async {
+    return await _withErrorHandling('delete_schedule', () async {
       await _guardHelper.requireAuth();
       await _guardHelper.requireOwnership(ownerId);
 
       await _firestoreService.deleteDocument(
-        collectionPath: 'playlists',
+        collectionPath: 'schedules',
         documentId: firebaseId,
       );
 
       await FirebaseAnalytics.instance.logEvent(
-        name: 'deleted_playlist',
-        parameters: {'playlistId': firebaseId},
+        name: 'deleted_schedule',
+        parameters: {'scheduleId': firebaseId},
       );
     });
   }
 
   /// Delete a specific version of a playlist
   Future<void> deletePlaylistVersion(
-    String playlistId,
+    String scheduleId,
     String versionId,
   ) async {
-    return await _withErrorHandling('delete_playlist_version', () async {
+    return await _withErrorHandling('delete_schedule_version', () async {
       await _guardHelper.requireAuth();
 
       await _firestoreService.deleteSubCollectionDocument(
-        parentCollectionPath: 'playlists',
-        parentDocumentId: playlistId,
+        parentCollectionPath: 'schedules',
+        parentDocumentId: scheduleId,
         subCollectionPath: 'versions',
         documentId: versionId,
       );
 
       await FirebaseAnalytics.instance.logEvent(
-        name: 'deleted_playlist_version',
-        parameters: {'playlistId': playlistId, 'versionId': versionId},
+        name: 'deleted_schedule_version',
+        parameters: {'scheduleId': scheduleId, 'versionId': versionId},
       );
     });
   }

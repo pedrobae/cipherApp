@@ -511,6 +511,18 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'itens'**
   String get items;
+
+  /// No description provided for @nextThisMonth.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ainda neste Mês'**
+  String get nextThisMonth;
+
+  /// No description provided for @searchSchedule.
+  ///
+  /// In pt, this message translates to:
+  /// **'Pesquisar nome, local...'**
+  String get searchSchedule;
 }
 
 class _AppLocalizationsDelegate

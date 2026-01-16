@@ -61,7 +61,6 @@ class PlaylistRepository {
     // Get playlists
     final playlistResults = await db.rawQuery('''
       SELECT p.* FROM playlist p
-      ORDER BY p.updated_at DESC
     ''');
 
     List<Playlist> playlists = [];
@@ -90,14 +89,12 @@ class PlaylistRepository {
   }
 
   // ===== UPDATE =====
-  /// Update playlist, for name and description
+  /// Update playlist, for name and duration changes
   Future<void> updatePlaylist(
     int playlistId,
     Map<String, dynamic> changes,
   ) async {
     final db = await _databaseHelper.database;
-
-    changes['updated_at'] = DateTime.now().toIso8601String();
 
     await db.update(
       'playlist',
@@ -184,14 +181,6 @@ class PlaylistRepository {
         'position': nextPosition,
         'included_at': DateTime.now().toIso8601String(),
       });
-
-      // Update playlist timestamp
-      await txn.update(
-        'playlist',
-        {'updated_at': DateTime.now().toIso8601String()},
-        where: 'id = ?',
-        whereArgs: [playlistId],
-      );
     });
   }
 
@@ -239,14 +228,6 @@ class PlaylistRepository {
         'playlist_version',
         where: 'id = ?',
         whereArgs: [itemId],
-      );
-
-      // Update playlist timestamp
-      await txn.update(
-        'playlist',
-        {'updated_at': DateTime.now().toIso8601String()},
-        where: 'id = ?',
-        whereArgs: [playlistId],
       );
     });
   }

@@ -131,7 +131,7 @@ class LocalCipherRepository {
       // Update the cipher
       await txn.update(
         'cipher',
-        cipher.toSqLite()..['updated_at'] = DateTime.now().toIso8601String(),
+        cipher.toSqLite(),
         where: 'id = ?',
         whereArgs: [cipher.id],
       );

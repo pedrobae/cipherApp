@@ -1,5 +1,6 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/models/domain/cipher/version.dart';
+import 'package:cordis/models/dtos/version_dto.dart';
 import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
@@ -51,6 +52,19 @@ class _CipherCardState extends State<CipherCard> {
             final versionCount = versionProvider.getVersionsOfCipherCount(
               widget.cipherId,
             );
+
+            final versionId = versionProvider.getIdOfOldestVersionOfCipher(
+              widget.cipherId,
+            );
+
+            final version = versionProvider.getVersionById(versionId)!;
+            Duration duration;
+            if (version.runtimeType != Version) {
+              duration = Duration(seconds: (version as VersionDto).duration);
+            } else {
+              duration = (version as Version).duration;
+            }
+
             // Error handling
             if (cipherProvider.error != null || versionProvider.error != null) {
               return Container(
@@ -158,9 +172,9 @@ class _CipherCardState extends State<CipherCard> {
                                       ).textTheme.bodyMedium,
                                     )
                                   : Text('-'),
-                              cipher.duration != ''
+                              duration != Duration.zero
                                   ? Text(
-                                      cipher.duration,
+                                      version.duration,
                                       style: Theme.of(
                                         context,
                                       ).textTheme.bodyMedium,

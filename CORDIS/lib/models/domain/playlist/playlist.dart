@@ -8,16 +8,16 @@ class Playlist {
   final int id;
   final String? firebaseId;
   final String name;
-  final String? description;
   final int createdBy;
+  final Duration duration;
   final List<PlaylistItem> items; // Unified content items
 
   const Playlist({
     required this.id,
     this.firebaseId,
     required this.name,
-    this.description,
     required this.createdBy,
+    required this.duration,
     this.items = const [],
   });
 
@@ -25,8 +25,8 @@ class Playlist {
     return Playlist(
       id: json['id'] as int,
       name: json['name'] as String? ?? '',
-      description: json['description'] as String? ?? '',
       createdBy: json['created_by'] as int? ?? 0,
+      duration: Duration(seconds: json['duration'] as int? ?? 0),
       items: json['items'] != null
           ? (json['items'] as List)
                 .map((item) => PlaylistItem.fromJson(item))
@@ -39,7 +39,7 @@ class Playlist {
     return {
       'id': id,
       'name': name,
-      'description': description,
+      'duration': duration.inSeconds,
       'created_by': createdBy,
       'items': items.map((item) => item.toJson()).toList(),
     };
@@ -49,9 +49,9 @@ class Playlist {
   Map<String, dynamic> toDatabaseJson() {
     final result = <String, dynamic>{
       'name': name,
-      'description': description,
       'firebase_id': firebaseId,
       'author_id': createdBy,
+      'duration': duration.inSeconds,
     };
 
     // Only include id if it's not -1 (for updates)
@@ -70,7 +70,7 @@ class Playlist {
     return PlaylistDto(
       firebaseId: firebaseId,
       name: name,
-      description: description ?? '',
+      duration: duration.inSeconds,
       ownerId: ownerFirebaseId,
       itemOrder: items
           .map(
@@ -87,7 +87,7 @@ class Playlist {
   Playlist copyWith({
     int? id,
     String? name,
-    String? description,
+    Duration? duration,
     int? createdBy,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -99,8 +99,8 @@ class Playlist {
     return Playlist(
       id: id ?? this.id,
       name: name ?? this.name,
-      description: description ?? this.description,
       createdBy: createdBy ?? this.createdBy,
+      duration: duration ?? this.duration,
       items: items ?? this.items,
     );
   }

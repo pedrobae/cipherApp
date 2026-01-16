@@ -11,6 +11,7 @@ class Version {
   final String versionName;
   final String? transposedKey;
   final List<String> songStructure; // Changed from String to List<String>
+  final Duration duration;
   final DateTime createdAt;
   final Map<String, Section>? sections;
 
@@ -21,26 +22,30 @@ class Version {
     this.versionName = 'Original',
     this.transposedKey,
     this.songStructure = const [],
+    required this.duration,
     required this.createdAt,
     this.sections,
   });
 
-  factory Version.fromSqLite(Map<String, dynamic> json) {
+  factory Version.fromSqLite(Map<String, dynamic> row) {
     Map<String, Section> versionContentMap = {};
-    for (Map<String, dynamic> content in json['content']) {
+    for (Map<String, dynamic> content in row['content']) {
       Section versionContent = Section.fromSqLite(content);
       versionContentMap[versionContent.contentCode] = versionContent;
     }
 
     return Version(
-      id: json['id'] as int?,
-      firebaseId: json['firebase_id'] as String?,
-      cipherId: json['cipher_id'] as int,
-      songStructure: json['song_structure'] as List<String>,
-      transposedKey: json['transposed_key'] as String?,
-      versionName: json['version_name'] as String,
-      createdAt: json['created_at'] != null
-          ? DateTime.parse(json['created_at'])
+      id: row['id'] as int?,
+      firebaseId: row['firebase_id'] as String?,
+      cipherId: row['cipher_id'] as int,
+      songStructure: row['song_structure'] as List<String>,
+      transposedKey: row['transposed_key'] as String?,
+      versionName: row['version_name'] as String,
+      duration: row['duration'] != null
+          ? Duration(seconds: row['duration'])
+          : Duration.zero,
+      createdAt: row['created_at'] != null
+          ? DateTime.parse(row['created_at'])
           : DateTime.now(),
       sections: versionContentMap,
     );
@@ -63,6 +68,9 @@ class Version {
       firebaseId: row['firebase_id'] as String?,
       cipherId: row['cipher_id'] as int,
       songStructure: songStructure,
+      duration: row['duration'] != null
+          ? Duration(seconds: row['duration'])
+          : Duration.zero,
       transposedKey: row['transposed_key'] as String?,
       versionName: row['version_name'] as String,
       createdAt: row['created_at'] != null
@@ -103,7 +111,7 @@ class Version {
       language: cipher.language,
       originalKey: cipher.musicKey,
       bpm: '',
-      duration: cipher.duration,
+      duration: duration.inSeconds,
       tags: cipher.tags,
     );
   }
@@ -126,6 +134,7 @@ class Version {
     int? cipherId,
     String? firebaseCipherId,
     List<String>? songStructure,
+    Duration? duration,
     String? transposedKey,
     String? versionName,
     DateTime? createdAt,
@@ -137,6 +146,7 @@ class Version {
       cipherId: cipherId ?? this.cipherId,
       songStructure: songStructure ?? this.songStructure,
       transposedKey: transposedKey ?? this.transposedKey,
+      duration: duration ?? this.duration,
       versionName: versionName ?? this.versionName,
       createdAt: createdAt ?? this.createdAt,
       sections: content ?? sections,
@@ -150,6 +160,7 @@ class Version {
       versionName: 'Versão 1',
       songStructure: [],
       transposedKey: '',
+      duration: Duration.zero,
       sections: {},
       createdAt: DateTime.now(),
     );

@@ -5,7 +5,14 @@ import 'package:cordis/providers/version_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-enum InfoField { title, author, versionName, bpm, musicKey, language, duration }
+enum InfoField {
+  title,
+  author,
+  versionName,
+  bpm,
+  musicKey,
+  language,
+} // TODO - duration tags
 
 class InfoTab extends StatefulWidget {
   final int? cipherId;
@@ -67,9 +74,6 @@ class _InfoTabState extends State<InfoTab> {
               case InfoField.language:
                 controllers[field]!.text = version.language;
                 break;
-              case InfoField.duration:
-                controllers[field]!.text = version.duration;
-                break;
             }
           }
         case VersionType.local:
@@ -103,9 +107,6 @@ class _InfoTabState extends State<InfoTab> {
               case InfoField.language:
                 controllers[field]!.text = cipher.language;
                 break;
-              case InfoField.duration:
-                controllers[field]!.text = cipher.duration;
-                break;
             }
           }
         case VersionType.brandNew:
@@ -133,8 +134,6 @@ class _InfoTabState extends State<InfoTab> {
         return AppLocalizations.of(context)!.musicKey;
       case InfoField.language:
         return AppLocalizations.of(context)!.language;
-      case InfoField.duration:
-        return AppLocalizations.of(context)!.duration;
     }
   }
 

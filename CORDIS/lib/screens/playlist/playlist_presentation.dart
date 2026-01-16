@@ -158,30 +158,6 @@ class _PlaylistPresentationScreenState
                           spacing: 4,
                           children: [
                             const SizedBox(height: 12),
-                            if (playlist.description?.isNotEmpty == true)
-                              Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.all(16),
-                                margin: const EdgeInsets.only(bottom: 8),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context).cardColor,
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(
-                                    color: Theme.of(context).dividerColor,
-                                    width: 1,
-                                  ),
-                                ),
-                                child: Text(
-                                  playlist.description!,
-                                  style: Theme.of(context).textTheme.bodyLarge
-                                      ?.copyWith(
-                                        fontStyle: FontStyle.italic,
-                                        fontFamily: layoutProvider.fontFamily,
-                                      ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-
                             ...playlist.items.asMap().entries.map((entry) {
                               final itemIndex = entry.key;
                               final item = entry.value;

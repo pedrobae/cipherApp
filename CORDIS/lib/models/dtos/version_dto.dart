@@ -8,7 +8,7 @@ class VersionDto {
   final String title;
   final String author;
   final String bpm;
-  final String duration;
+  final int duration;
   final String language;
   final List<String> tags;
   final String versionName;
@@ -39,7 +39,7 @@ class VersionDto {
       firebaseId: id,
       author: map['author'] as String,
       title: map['title'] as String,
-      duration: map['duration'] as String? ?? '',
+      duration: map['duration'] as int? ?? 0,
       bpm: map['bpm'] as String? ?? '',
       language: map['language'] as String,
       versionName: map['versionName'] as String,
@@ -99,6 +99,7 @@ class VersionDto {
       versionName: versionName,
       transposedKey: transposedKey,
       songStructure: songStructure,
+      duration: Duration(seconds: duration),
       createdAt: updatedAt ?? DateTime.now(),
       sections: sections.map(
         (sectionsCode, section) =>
@@ -112,7 +113,7 @@ class VersionDto {
     String? firebaseId,
     String? title,
     String? author,
-    String? duration,
+    int? duration,
     String? bpm,
     String? language,
     List<String>? tags,

@@ -33,16 +33,6 @@ class PlaylistCard extends StatelessWidget {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (playlist.description != null &&
-                playlist.description!.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text(
-                  playlist.description!,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              ),
-            const SizedBox(height: 4),
             Text(
               '${playlist.cipherVersionItems.length} ${playlist.cipherVersionItems.length == 1 ? 'música' : 'músicas'}',
               style: Theme.of(

@@ -34,7 +34,7 @@ class TextSectionRepository {
     );
 
     if (results.isNotEmpty) {
-      return TextSection.fromJson(results.first);
+      return TextSection.fromFirestore(results.first);
     }
     return null;
   }
@@ -49,7 +49,7 @@ class TextSectionRepository {
     );
 
     if (results.isNotEmpty) {
-      return TextSection.fromJson(results.first);
+      return TextSection.fromFirestore(results.first);
     }
     return null;
   }
@@ -66,7 +66,7 @@ class TextSectionRepository {
     );
 
     for (final row in results) {
-      textSections[row['id'] as int] = TextSection.fromJson(row);
+      textSections[row['id'] as int] = TextSection.fromFirestore(row);
     }
 
     return textSections;

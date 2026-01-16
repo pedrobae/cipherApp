@@ -309,11 +309,6 @@ class CipherProvider extends ChangeNotifier {
           language: change,
         );
         break;
-      case InfoField.duration:
-        _localCiphers[cipherId] = _localCiphers[cipherId]!.copyWith(
-          duration: change,
-        );
-        break;
     }
     notifyListeners();
   }

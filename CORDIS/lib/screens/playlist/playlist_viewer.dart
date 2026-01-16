@@ -118,17 +118,6 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                   proxyDecorator: (child, index, animation) =>
                       Material(type: MaterialType.transparency, child: child),
                   buildDefaultDragHandles: true,
-                  header: Padding(
-                    padding: const EdgeInsets.only(
-                      bottom: 8.0,
-                      left: 16,
-                      right: 16,
-                    ),
-                    child: Text(
-                      playlist.description ?? '',
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
                   itemCount: playlist.items.length,
                   onReorder: (oldIndex, newIndex) =>
                       _onReorder(context, playlist, oldIndex, newIndex),

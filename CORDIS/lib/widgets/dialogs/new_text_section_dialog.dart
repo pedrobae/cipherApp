@@ -138,7 +138,7 @@ class _TextSectionDialogState extends State<NewTextSectionDialog> {
     try {
       final int nextPosition = widget.playlist.items.last.position + 1;
       await context.read<TextSectionProvider>().createTextSection(
-        TextSection.local(
+        TextSection.fromSqlite(
           playlistId: widget.playlist.id,
           title: newTitle,
           contentText: newContent,

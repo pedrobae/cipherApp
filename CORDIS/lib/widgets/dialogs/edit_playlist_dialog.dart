@@ -20,9 +20,6 @@ class _EditPlaylistFormState extends State<EditPlaylistForm> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.playlist.name);
-    _descriptionController = TextEditingController(
-      text: widget.playlist.description,
-    );
   }
 
   @override

@@ -6,6 +6,7 @@ class TextSection {
   final int playlistId;
   final String title;
   String contentText;
+  final Duration duration;
   final int position;
 
   TextSection({
@@ -14,10 +15,11 @@ class TextSection {
     required this.playlistId,
     required this.title,
     required this.contentText,
+    required this.duration,
     required this.position,
   });
 
-  factory TextSection.local({
+  factory TextSection.fromSqlite({
     required int playlistId,
     required String title,
     required String contentText,
@@ -26,17 +28,21 @@ class TextSection {
     return TextSection(
       firebaseId: generateFirebaseId(),
       playlistId: playlistId,
+      duration: Duration(),
       title: title,
       contentText: contentText,
       position: position,
     );
   }
 
-  factory TextSection.fromJson(Map<String, dynamic> json) {
+  factory TextSection.fromFirestore(Map<String, dynamic> json) {
     return TextSection(
       id: json['id'],
       playlistId: json['playlist_id'],
       firebaseId: json['firebase_id'] ?? generateFirebaseId(),
+      duration: json['duration'] != null
+          ? Duration(seconds: json['duration'])
+          : Duration.zero,
       title: json['title'],
       contentText: json['content'],
       position: json['position'] ?? 0,

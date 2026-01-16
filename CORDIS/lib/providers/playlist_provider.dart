@@ -449,7 +449,6 @@ class PlaylistProvider extends ChangeNotifier {
       updatePayload.addAll({
         'updatedAt': DateTime.now(),
         'name': playlistDto.name,
-        'description': playlistDto.description,
       });
     }
 
@@ -462,6 +461,7 @@ class PlaylistProvider extends ChangeNotifier {
       updatePayload['versions'] = [
         for (final version in playlistDto.versions) ...[version.toFirestore()],
       ];
+      updatePayload['duration'] = playlistDto.duration;
     }
     return updatePayload;
   }
@@ -491,9 +491,7 @@ class PlaylistProvider extends ChangeNotifier {
       Map<int, Playlist> tempFiltered = {};
       for (var entry in _localPlaylists.entries) {
         final playlist = entry.value;
-        if (playlist.name.toLowerCase().contains(_searchTerm) ||
-            (playlist.description != null &&
-                playlist.description!.toLowerCase().contains(_searchTerm))) {
+        if (playlist.name.toLowerCase().contains(_searchTerm)) {
           tempFiltered[entry.key] = playlist;
         }
       }

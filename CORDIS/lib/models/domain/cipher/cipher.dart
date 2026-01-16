@@ -6,7 +6,6 @@ class Cipher {
   final String title;
   final String author;
   final String bpm;
-  final String duration;
   final String musicKey;
   final String language;
   final DateTime createdAt;
@@ -26,7 +25,6 @@ class Cipher {
     required this.createdAt,
     this.updatedAt,
     required this.isLocal,
-    required this.duration,
     this.versions = const [],
   });
 
@@ -47,7 +45,6 @@ class Cipher {
       versions: json['maps'] != null
           ? (json['maps'] as List).map((m) => Version.fromSqLite(m)).toList()
           : const [],
-      duration: json['duration'] as String? ?? '',
     );
   }
 
@@ -62,7 +59,6 @@ class Cipher {
       musicKey: 'C',
       language: 'pt-BR',
       bpm: '',
-      duration: '',
       isLocal: true,
       tags: [],
       versions: [],
@@ -81,7 +77,6 @@ class Cipher {
       'language': language,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
-      'duration': duration,
     };
   }
 
@@ -99,7 +94,6 @@ class Cipher {
       'isLocal': false,
       'tags': tags,
       'versions': versions,
-      'duration': duration,
     };
   }
 
@@ -108,7 +102,6 @@ class Cipher {
       'title': title,
       'author': author,
       'bpm': bpm,
-      'duration': duration,
       'originalKey': musicKey,
       'language': language,
       'updatedAt': updatedAt,
@@ -143,7 +136,6 @@ class Cipher {
       updatedAt: updatedAt ?? this.updatedAt,
       isLocal: isLocal ?? this.isLocal,
       versions: versions ?? this.versions,
-      duration: duration ?? this.duration,
     );
   }
 }

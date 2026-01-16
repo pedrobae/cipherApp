@@ -552,10 +552,6 @@ class VersionProvider extends ChangeNotifier {
         _cloudVersions[versionFirebaseId] = _cloudVersions[versionFirebaseId]!
             .copyWith(language: newValue);
         break;
-      case InfoField.duration:
-        _cloudVersions[versionFirebaseId] = _cloudVersions[versionFirebaseId]!
-            .copyWith(duration: newValue);
-        break;
     }
     notifyListeners();
   }

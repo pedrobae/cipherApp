@@ -5,6 +5,36 @@ class LocalScheduleRepository {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
 
   // ===== CREATE =====
+  Future<int> insertSchedule(Schedule schedule) async {
+    final db = await _databaseHelper.database;
+    int scheduleId = await db.insert('schedule', schedule.toSqlite());
+
+    for (var role in schedule.roles) {
+      await insertRole(scheduleId, role);
+    }
+
+    return scheduleId;
+  }
+
+  Future<int> insertRole(int scheduleId, Role role) async {
+    final db = await _databaseHelper.database;
+    int roleId = await db.insert('role', role.toSqlite(scheduleId));
+
+    for (var memberId in role.memberIds) {
+      await insertMember(roleId, memberId);
+    }
+
+    return roleId;
+  }
+
+  Future<int> insertMember(int roleId, int memberId) async {
+    final db = await _databaseHelper.database;
+    return await db.insert('role_member', {
+      'role_id': roleId,
+      'member_id': memberId,
+    });
+  }
+
   // ===== READ =====
   /// Retrieves all schedules from the local database.
   Future<List<Schedule>> getAllSchedules() async {

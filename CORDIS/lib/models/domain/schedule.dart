@@ -43,7 +43,7 @@ class Schedule {
     );
   }
 
-  Map<String, dynamic> toSqlite(List<int> roleIds) {
+  Map<String, dynamic> toSqlite() {
     return {
       'firebase_id': firebaseId,
       'owner_id': ownerFirebaseId,
@@ -58,12 +58,21 @@ class Schedule {
 }
 
 class Role {
+  final int id;
   final String name;
   final List<int> memberIds;
 
-  Role({required this.name, required this.memberIds});
+  Role({required this.id, required this.name, required this.memberIds});
 
   factory Role.fromSqlite(Map<String, dynamic> map, List<int> memberIds) {
-    return Role(name: map['name'] as String, memberIds: memberIds);
+    return Role(
+      id: map['id'] as int,
+      name: map['name'] as String,
+      memberIds: memberIds,
+    );
+  }
+
+  Map<String, dynamic> toSqlite(int scheduleId) {
+    return {'name': name, 'schedule_id': scheduleId};
   }
 }

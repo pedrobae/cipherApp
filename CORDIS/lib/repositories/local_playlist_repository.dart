@@ -49,19 +49,6 @@ class PlaylistRepository {
         }
       }
 
-      // 3. Insert collaborator relationships if any
-      if (playlist.collaborators.isNotEmpty) {
-        for (String collaboratorId in playlist.collaborators) {
-          await txn.insert('user_playlist', {
-            'user_id': int.parse(collaboratorId),
-            'playlist_id': playlistId,
-            'role': 'collaborator',
-            'added_by': playlist.createdBy,
-            'added_at': DateTime.now().toIso8601String(),
-          });
-        }
-      }
-
       return playlistId;
     });
   }
@@ -139,12 +126,7 @@ class PlaylistRepository {
 
       await db.update(
         'playlist',
-        {
-          'name': playlist.name,
-          'description': playlist.description,
-          'is_public': (playlist.isPublic ?? false) ? 1 : 0,
-          'updated_at': playlist.updatedAt!.toIso8601String(),
-        },
+        {'name': playlist.name, 'description': playlist.description},
         where: 'id = ?',
         whereArgs: [playlistId],
       );
@@ -524,12 +506,7 @@ class PlaylistRepository {
         playlistId = existingResult.first['id'] as int;
         await txn.update(
           'playlist',
-          {
-            'name': playlist.name,
-            'description': playlist.description,
-            'is_public': (playlist.isPublic ?? false) ? 1 : 0,
-            'updated_at': playlist.updatedAt!.toIso8601String(),
-          },
+          {'name': playlist.name, 'description': playlist.description},
           where: 'id = ?',
           whereArgs: [playlistId],
         );

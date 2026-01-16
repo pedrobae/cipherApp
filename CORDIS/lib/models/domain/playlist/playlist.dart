@@ -1,22 +1,15 @@
 import 'package:cordis/models/domain/playlist/playlist_text_section.dart';
 import 'package:cordis/models/dtos/playlist_dto.dart';
-import 'package:cordis/helpers/codes.dart';
-import 'package:cordis/helpers/datetime.dart';
 import 'package:cordis/models/dtos/version_dto.dart';
 import 'package:flutter/foundation.dart';
 import 'playlist_item.dart';
 
 class Playlist {
   final int id;
-  final String name;
   final String? firebaseId;
+  final String name;
   final String? description;
   final int createdBy;
-  final bool? isPublic;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
-  final List<String> collaborators;
-  final String? shareCode;
   final List<PlaylistItem> items; // Unified content items
 
   const Playlist({
@@ -25,11 +18,6 @@ class Playlist {
     required this.name,
     this.description,
     required this.createdBy,
-    required this.isPublic,
-    this.createdAt,
-    this.updatedAt,
-    this.collaborators = const [],
-    required this.shareCode,
     this.items = const [],
   });
 
@@ -39,13 +27,6 @@ class Playlist {
       name: json['name'] as String? ?? '',
       description: json['description'] as String? ?? '',
       createdBy: json['created_by'] as int? ?? 0,
-      createdAt: DatetimeHelper.parseDateTime(json['created_at']),
-      updatedAt: DatetimeHelper.parseDateTime(json['updated_at']),
-      isPublic: _parseBoolean(json['is_public']),
-      collaborators: json['collaborators'] != null
-          ? List<String>.from(json['collaborators'])
-          : const [],
-      shareCode: json['share_code'] as String,
       items: json['items'] != null
           ? (json['items'] as List)
                 .map((item) => PlaylistItem.fromJson(item))
@@ -60,11 +41,6 @@ class Playlist {
       'name': name,
       'description': description,
       'created_by': createdBy,
-      'created_at': createdAt?.toIso8601String(),
-      'updated_at': updatedAt?.toIso8601String(),
-      'is_public': isPublic,
-      'collaborators': collaborators,
-      'share_code': shareCode,
       'items': items.map((item) => item.toJson()).toList(),
     };
   }
@@ -76,10 +52,6 @@ class Playlist {
       'description': description,
       'firebase_id': firebaseId,
       'author_id': createdBy,
-      'created_at': createdAt?.toIso8601String(),
-      'updated_at': updatedAt?.toIso8601String(),
-      'share_code': shareCode ?? generateShareCode(),
-      'is_public': (isPublic ?? false) ? 1 : 0,
     };
 
     // Only include id if it's not -1 (for updates)
@@ -92,7 +64,6 @@ class Playlist {
 
   PlaylistDto toDto(
     String ownerFirebaseId,
-    List<String> collaborators,
     List<VersionDto> versions,
     List<TextSection> textSections,
   ) {
@@ -101,11 +72,6 @@ class Playlist {
       name: name,
       description: description ?? '',
       ownerId: ownerFirebaseId,
-      isPublic: isPublic ?? false,
-      updatedAt: updatedAt ?? DateTime.now(),
-      createdAt: createdAt ?? DateTime.now(),
-      collaborators: collaborators,
-      shareCode: shareCode!,
       itemOrder: items
           .map(
             (item) => '${item.type == 'cipher_version' ? 'v' : 't'}:${item.id}',
@@ -135,12 +101,7 @@ class Playlist {
       name: name ?? this.name,
       description: description ?? this.description,
       createdBy: createdBy ?? this.createdBy,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-      collaborators: collaborators ?? this.collaborators,
-      shareCode: shareCode ?? this.shareCode,
       items: items ?? this.items,
-      isPublic: isPublic ?? this.isPublic,
     );
   }
 
@@ -212,17 +173,6 @@ class Playlist {
         );
       }
       print('======================');
-    }
-  }
-
-  // Helper method to parse boolean from database (handles both bool and int types)
-  static bool _parseBoolean(dynamic value) {
-    if (value is bool) {
-      return value;
-    } else if (value is int) {
-      return value == 1;
-    } else {
-      return false;
     }
   }
 }

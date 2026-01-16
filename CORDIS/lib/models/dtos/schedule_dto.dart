@@ -99,7 +99,7 @@ class RoleDto {
   }
 
   Role toDomain(List<int> memberLocalIds) {
-    final role = Role(name: name, memberIds: memberLocalIds);
+    final role = Role(id: -1, name: name, memberIds: memberLocalIds);
     return role;
   }
 }

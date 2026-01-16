@@ -450,8 +450,6 @@ class PlaylistProvider extends ChangeNotifier {
         'updatedAt': DateTime.now(),
         'name': playlistDto.name,
         'description': playlistDto.description,
-        'shareCode': playlistDto.shareCode,
-        'isPublic': playlistDto.isPublic,
       });
     }
 
@@ -465,16 +463,6 @@ class PlaylistProvider extends ChangeNotifier {
         for (final version in playlistDto.versions) ...[version.toFirestore()],
       ];
     }
-
-    if (changes.containsKey('textSections')) {
-      updatePayload['textSections'] = playlistDto.textSections;
-    }
-
-    // Add collaborators if changed
-    if (changes.containsKey('collaborators')) {
-      updatePayload['collaborators'] = playlistDto.collaborators;
-    }
-
     return updatePayload;
   }
 

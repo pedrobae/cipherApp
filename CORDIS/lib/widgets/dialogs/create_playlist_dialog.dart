@@ -1,4 +1,3 @@
-import 'package:cordis/helpers/codes.dart';
 import 'package:cordis/providers/my_auth_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
 import 'package:flutter/material.dart';
@@ -76,11 +75,6 @@ class _CreatePlaylistDialogState extends State<CreatePlaylistDialog> {
           ? null
           : _descriptionController.text.trim(),
       createdBy: createdBy,
-      isPublic: false,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-      collaborators: const [],
-      shareCode: generateShareCode(),
       items: const [],
     );
 

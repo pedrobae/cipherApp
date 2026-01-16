@@ -21,7 +21,7 @@ class DatabaseHelper {
 
       final db = await openDatabase(
         path,
-        version: 4,
+        version: 6,
         onCreate: _onCreate,
         onUpgrade: _onUpgrade, // Handle migrations
       );
@@ -123,10 +123,6 @@ class DatabaseHelper {
         description TEXT,
         author_id STRING NOT NULL,
         firebase_id TEXT UNIQUE,
-        share_code TEXT UNIQUE,
-        is_public BOOLEAN DEFAULT 0,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (author_id) REFERENCES user (id) ON DELETE CASCADE
       )
     ''');
@@ -187,6 +183,27 @@ class DatabaseHelper {
         firebase_id TEXT UNIQUE,
         FOREIGN KEY (playlist_id) REFERENCES playlist (id) ON DELETE CASCADE
       )
+    ''');
+
+    // Create role table
+    await db.execute('''  
+      CREATE TABLE role (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        schedule_id INTEGER NOT NULL,
+        name TEXT NOT NULL,
+        FOREIGN KEY (schedule_id) REFERENCES schedule (id) ON DELETE CASCADE
+      ) 
+    ''');
+
+    // Create role_member table
+    await db.execute('''  
+      CREATE TABLE role_member (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        role_id INTEGER NOT NULL,
+        member_id INTEGER NOT NULL,
+        FOREIGN KEY (role_id) REFERENCES role (id) ON DELETE CASCADE,
+        FOREIGN KEY (member_id) REFERENCES user (id) ON DELETE CASCADE
+      ) 
     ''');
 
     // Create indexes for better performance
@@ -259,6 +276,29 @@ class DatabaseHelper {
           firebase_id TEXT UNIQUE, 
           FOREIGN KEY (playlist_id) REFERENCES playlist (id) ON DELETE CASCADE)''',
       );
+    }
+    if (oldVersion < 5) {
+      // REMOVE time control from playlist table
+      await db.execute('ALTER TABLE playlist DROP COLUMN is_public');
+      await db.execute('ALTER TABLE playlist DROP COLUMN share_code');
+      await db.execute('ALTER TABLE playlist DROP COLUMN created_at');
+      await db.execute('ALTER TABLE playlist DROP COLUMN updated_at');
+    }
+    if (oldVersion < 6) {
+      // CREATE ROLE AND ROLE_MEMBER TABLES
+      await db.execute(
+        ''' CREATE TABLE role (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          schedule_id INTEGER NOT NULL,
+          name TEXT NOT NULL,
+          FOREIGN KEY (schedule_id) REFERENCES schedule (id) ON DELETE CASCADE) ''',
+      );
+      await db.execute(''' CREATE TABLE role_member (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          role_id INTEGER NOT NULL,
+          member_id INTEGER NOT NULL,
+          FOREIGN KEY (role_id) REFERENCES role (id) ON DELETE CASCADE) 
+          FOREIGN KEY (member_id) REFERENCES user (id) ON DELETE CASCADE) ''');
     }
   }
 

@@ -4,7 +4,7 @@ import 'package:cordis/widgets/icon_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cordis/providers/cipher_provider.dart';
-import 'package:cordis/providers/auth_provider.dart';
+import 'package:cordis/providers/my_auth_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/widgets/ciphers/library/cipher_scroll_view.dart';
@@ -44,7 +44,7 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
     return Consumer4<
       CipherProvider,
       UserProvider,
-      AuthProvider,
+      MyAuthProvider,
       SelectionProvider
     >(
       builder:

@@ -10,7 +10,7 @@ import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/providers/version_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
-import 'package:cordis/providers/auth_provider.dart';
+import 'package:cordis/providers/my_auth_provider.dart';
 import 'package:cordis/screens/playlist/playlist_viewer.dart';
 import 'package:cordis/widgets/dialogs/create_playlist_dialog.dart';
 import 'package:cordis/widgets/dialogs/delete_playlist_dialog.dart';
@@ -47,7 +47,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
       CipherProvider,
       UserProvider,
       VersionProvider,
-      AuthProvider
+      MyAuthProvider
     >(
       builder:
           (
@@ -198,7 +198,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
     CipherProvider cipherProvider,
     UserProvider userProvider,
     VersionProvider versionProvider,
-    AuthProvider authProvider,
+    MyAuthProvider authProvider,
   ) async {
     try {
       await playlistProvider.loadCloudPlaylists(authProvider.id!);
@@ -234,7 +234,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
     CipherProvider cipherProvider,
     UserProvider userProvider,
     VersionProvider versionProvider,
-    AuthProvider authProvider,
+    MyAuthProvider authProvider,
   ) async {
     try {
       setState(() {
@@ -329,7 +329,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen>
     CipherProvider cipherProvider,
     UserProvider userProvider,
     VersionProvider versionProvider,
-    AuthProvider authProvider, {
+    MyAuthProvider authProvider, {
     String? playlistFirebaseId,
   }) async {
     if (playlistFirebaseId == null) {

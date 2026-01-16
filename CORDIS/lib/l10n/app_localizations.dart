@@ -433,6 +433,42 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'por'**
   String get by;
+
+  /// No description provided for @nextUp.
+  ///
+  /// In pt, this message translates to:
+  /// **'Próxima Agenda'**
+  String get nextUp;
+
+  /// No description provided for @playlist.
+  ///
+  /// In pt, this message translates to:
+  /// **'Playlist'**
+  String get playlist;
+
+  /// No description provided for @role.
+  ///
+  /// In pt, this message translates to:
+  /// **'Função'**
+  String get role;
+
+  /// No description provided for @generalMember.
+  ///
+  /// In pt, this message translates to:
+  /// **'Membro Geral'**
+  String get generalMember;
+
+  /// No description provided for @share.
+  ///
+  /// In pt, this message translates to:
+  /// **'Compartilhar'**
+  String get share;
+
+  /// No description provided for @view.
+  ///
+  /// In pt, this message translates to:
+  /// **'Visualizar'**
+  String get view;
 }
 
 class _AppLocalizationsDelegate

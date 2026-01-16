@@ -11,7 +11,7 @@ import 'package:cordis/models/domain/playlist/playlist_item.dart';
 import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/version_provider.dart';
-import 'package:cordis/providers/auth_provider.dart';
+import 'package:cordis/providers/my_auth_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/screens/cipher/cipher_library.dart';
 import 'package:cordis/screens/playlist/playlist_presentation.dart';
@@ -77,7 +77,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
       VersionProvider,
       CipherProvider,
       UserProvider,
-      AuthProvider
+      MyAuthProvider
     >(
       builder:
           (
@@ -312,7 +312,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
     PlaylistItem item,
     PlaylistProvider playlistProvider,
     UserProvider userProvider,
-    AuthProvider authProvider,
+    MyAuthProvider authProvider,
   ) {
     switch (item.type) {
       case 'cipher_version':
@@ -432,7 +432,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
   Future<void> _publishPlaylist(
     UserProvider userProvider,
     PlaylistProvider playlistProvider,
-    AuthProvider authProvider,
+    MyAuthProvider authProvider,
     CipherProvider cipherProvider,
     VersionProvider versionProvider,
     Playlist playlist,

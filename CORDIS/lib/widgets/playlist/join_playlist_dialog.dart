@@ -1,6 +1,6 @@
 import 'package:cordis/models/dtos/playlist_dto.dart';
 import 'package:cordis/providers/playlist_provider.dart';
-import 'package:cordis/providers/auth_provider.dart';
+import 'package:cordis/providers/my_auth_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +34,7 @@ class _JoinPlaylistDialogState extends State<JoinPlaylistDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer3<AuthProvider, PlaylistProvider, UserProvider>(
+    return Consumer3<MyAuthProvider, PlaylistProvider, UserProvider>(
       builder: (context, authProvider, playlistProvider, userProvider, child) {
         return Dialog(
           shape: RoundedRectangleBorder(
@@ -72,7 +72,7 @@ class _JoinPlaylistDialogState extends State<JoinPlaylistDialog> {
 
   Future<void> joinPlaylistByCode(
     TextEditingController shareCodeController,
-    AuthProvider authProvider,
+    MyAuthProvider authProvider,
     PlaylistProvider playlistProvider,
     UserProvider userProvider,
     Function syncPlaylist,

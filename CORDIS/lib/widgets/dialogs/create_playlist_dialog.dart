@@ -1,5 +1,5 @@
 import 'package:cordis/helpers/codes.dart';
-import 'package:cordis/providers/auth_provider.dart';
+import 'package:cordis/providers/my_auth_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -64,7 +64,7 @@ class _CreatePlaylistDialogState extends State<CreatePlaylistDialog> {
     final name = _nameController.text.trim();
     if (name.isEmpty) return;
 
-    final uid = context.read<AuthProvider>().id;
+    final uid = context.read<MyAuthProvider>().id;
     final createdBy = uid != null
         ? context.read<UserProvider>().getLocalIdByFirebaseId(uid)!
         : -1;

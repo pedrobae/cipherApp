@@ -3,7 +3,7 @@ import 'package:cordis/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cordis/providers/navigation_provider.dart';
-import 'package:cordis/providers/auth_provider.dart';
+import 'package:cordis/providers/my_auth_provider.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
@@ -13,7 +13,7 @@ class AppDrawer extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Consumer2<NavigationProvider, AuthProvider>(
+    return Consumer2<NavigationProvider, MyAuthProvider>(
       builder: (context, navigationProvider, authProvider, child) {
         return Drawer(
           shape: RoundedRectangleBorder(

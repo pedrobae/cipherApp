@@ -1,10 +1,10 @@
 import 'package:cordis/l10n/app_localizations.dart';
-import 'package:cordis/providers/cipher_provider.dart';
-import 'package:cordis/providers/playlist_provider.dart';
+import 'package:cordis/providers/schedule_provider.dart';
+import 'package:cordis/widgets/schedule/schedule_card.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:cordis/providers/auth_provider.dart';
+import 'package:cordis/providers/my_auth_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,11 +15,17 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   @override
+  void initState() {
+    super.initState();
+    context.read<ScheduleProvider>().loadSchedules();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: Consumer3<AuthProvider, CipherProvider, PlaylistProvider>(
-        builder: (context, authProvider, cipherProvider, playlistProvider, child) {
+      child: Consumer2<MyAuthProvider, ScheduleProvider>(
+        builder: (context, authProvider, scheduleProvider, child) {
           final theme = Theme.of(context);
           final colorScheme = theme.colorScheme;
           final locale = Localizations.localeOf(context);
@@ -57,6 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           }
 
+          final nextSchedule = scheduleProvider.getNextSchedule();
           // HOME SCREEN
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,6 +92,29 @@ class _HomeScreenState extends State<HomeScreen> {
                   fontSize: 24,
                 ),
               ),
+
+              const SizedBox(height: 24),
+
+              // NEXT SCHEDULE
+              scheduleProvider.isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : nextSchedule != null
+                  ? Column(
+                      children: [
+                        // SCHEDULE LABEL
+                        Text(
+                          AppLocalizations.of(context)!.nextUp,
+                          style: theme.textTheme.titleMedium!.copyWith(
+                            color: colorScheme.onSurface,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        // SCHEDULE CARD
+                        ScheduleCard(scheduleId: nextSchedule.id),
+                      ],
+                    )
+                  : SizedBox.shrink(),
             ],
           );
         },

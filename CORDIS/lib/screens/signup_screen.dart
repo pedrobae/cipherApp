@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cordis/providers/auth_provider.dart';
+import 'package:cordis/providers/my_auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -18,14 +18,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
-  late final AuthProvider _authProvider;
+  late final MyAuthProvider _authProvider;
 
   @override
   void initState() {
     super.initState();
     // Listen for authentication changes after the first frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _authProvider = context.read<AuthProvider>();
+      _authProvider = context.read<MyAuthProvider>();
       _authProvider.addListener(_authListener);
     });
   }
@@ -114,7 +114,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             end: Alignment.bottomRight,
           ),
         ),
-        child: Consumer<AuthProvider>(
+        child: Consumer<MyAuthProvider>(
           builder: (context, authProvider, child) => Center(
             child: SingleChildScrollView(
               child: Column(

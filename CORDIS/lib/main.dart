@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:cordis/l10n/app_localizations.dart';
 
 import 'package:cordis/providers/admin_provider.dart';
-import 'package:cordis/providers/auth_provider.dart';
+import 'package:cordis/providers/my_auth_provider.dart';
 import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/import_provider.dart';
 import 'package:cordis/providers/layout_settings_provider.dart';
@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AdminProvider()),
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => MyAuthProvider()),
         ChangeNotifierProvider(create: (_) => CipherProvider()),
         ChangeNotifierProvider(create: (_) => ImportProvider()),
         ChangeNotifierProvider(

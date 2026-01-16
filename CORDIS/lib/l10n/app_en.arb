@@ -132,5 +132,17 @@
   "anonymousWelcome": "Welcome",
   "@anonymousWelcome": {},
   "by": "by",
-  "@by": {}
+  "@by": {},
+  "nextUp": "Next Up",
+  "@nextUp": {},
+  "playlist": "Playlist",
+  "@playlist": {},
+  "role": "Role",
+  "@role": {},
+  "generalMember": "General Member",
+  "@generalMember": {},
+  "share": "Share",
+  "@share": {},
+  "view": "View",
+  "@view": {}
 }

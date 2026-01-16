@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cordis/services/auth_service.dart';
 
-class AuthProvider extends ChangeNotifier {
+class MyAuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();
   User? _user;
   bool _isAdmin = false;
@@ -16,7 +16,7 @@ class AuthProvider extends ChangeNotifier {
   String? get error => _error;
   String? get userName => _user?.displayName;
 
-  AuthProvider() {
+  MyAuthProvider() {
     // Listen to auth state changes and check admin status
     _authService.authStateChanges.listen(_onAuthStateChanged);
     _checkAdminStatus();

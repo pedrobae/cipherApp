@@ -180,4 +180,22 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get by => 'por';
+
+  @override
+  String get nextUp => 'Próxima Agenda';
+
+  @override
+  String get playlist => 'Playlist';
+
+  @override
+  String get role => 'Função';
+
+  @override
+  String get generalMember => 'Membro Geral';
+
+  @override
+  String get share => 'Compartilhar';
+
+  @override
+  String get view => 'Visualizar';
 }

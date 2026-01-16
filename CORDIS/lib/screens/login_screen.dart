@@ -1,6 +1,6 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:cordis/providers/auth_provider.dart';
+import 'package:cordis/providers/my_auth_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -18,14 +18,14 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
 
-  late final AuthProvider _authProvider;
+  late final MyAuthProvider _authProvider;
 
   @override
   void initState() {
     super.initState();
     // Listen for authentication changes after the first frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _authProvider = context.read<AuthProvider>();
+      _authProvider = context.read<MyAuthProvider>();
       _authProvider.addListener(_authListener);
     });
   }
@@ -82,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      body: Consumer<AuthProvider>(
+      body: Consumer<MyAuthProvider>(
         builder: (context, authProvider, child) => SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),

@@ -132,6 +132,18 @@
   },
   "anonymousWelcome": "Bem-vindo",
   "@anonymousWelcome": {},
-"by": "por",
-  "@by": {}
+  "by": "por",
+  "@by": {},
+  "nextUp": "Próxima Agenda",
+  "@nextUp": {},
+  "playlist": "Playlist",
+  "@playlist": {},
+  "role": "Função",
+  "@role": {},
+  "generalMember": "Membro Geral",
+  "@generalMember": {},
+  "share": "Compartilhar",
+  "@share": {},
+  "view": "Visualizar",
+  "@view": {}
 }

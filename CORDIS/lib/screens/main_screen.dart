@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:cordis/providers/navigation_provider.dart';
-import 'package:cordis/providers/auth_provider.dart';
+import 'package:cordis/providers/my_auth_provider.dart';
 
 import 'package:cordis/widgets/app_drawer.dart';
 
@@ -18,11 +18,11 @@ class MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<AuthProvider>().addListener(_authListener);
+    context.read<MyAuthProvider>().addListener(_authListener);
   }
 
   void _authListener() {
-    final authProvider = context.read<AuthProvider>();
+    final authProvider = context.read<MyAuthProvider>();
     if (!authProvider.isAuthenticated) {
       Navigator.of(context).pushNamed('/login');
     }
@@ -30,7 +30,7 @@ class MainScreenState extends State<MainScreen> {
 
   @override
   void dispose() {
-    context.read<AuthProvider>().removeListener(_authListener);
+    context.read<MyAuthProvider>().removeListener(_authListener);
     super.dispose();
   }
 
@@ -39,7 +39,7 @@ class MainScreenState extends State<MainScreen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Consumer2<AuthProvider, NavigationProvider>(
+    return Consumer2<MyAuthProvider, NavigationProvider>(
       builder: (context, authProvider, navigationProvider, child) {
         return Scaffold(
           appBar: AppBar(

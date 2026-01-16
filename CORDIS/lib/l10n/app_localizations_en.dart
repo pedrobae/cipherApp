@@ -179,4 +179,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get by => 'by';
+
+  @override
+  String get nextUp => 'Next Up';
+
+  @override
+  String get playlist => 'Playlist';
+
+  @override
+  String get role => 'Role';
+
+  @override
+  String get generalMember => 'General Member';
+
+  @override
+  String get share => 'Share';
+
+  @override
+  String get view => 'View';
 }

@@ -182,15 +182,14 @@ class _CipherViewerState extends State<CipherViewer>
             ); // Version or VersionDTO
 
             // Set original key for transposer
-            if (!_hasSetOriginalKey &&
-                (cipher?.musicKey.isNotEmpty == true ||
-                    version.originalKey.isNotEmpty)) {
-              _hasSetOriginalKey = true;
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                settings.setOriginalKey(
-                  cipher?.musicKey ?? version.originalKey,
-                );
-              });
+            if (!_hasSetOriginalKey) {
+              if (widget.versionType == VersionType.cloud) {
+                settings.setOriginalKey(version.originalKey ?? '');
+                _hasSetOriginalKey = true;
+              } else {
+                settings.setOriginalKey(cipher!.musicKey);
+                _hasSetOriginalKey = true;
+              }
             }
 
             return Scaffold(

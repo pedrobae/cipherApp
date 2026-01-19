@@ -300,13 +300,6 @@ class DatabaseHelper {
           FOREIGN KEY (role_id) REFERENCES role (id) ON DELETE CASCADE) 
           FOREIGN KEY (member_id) REFERENCES user (id) ON DELETE CASCADE) ''');
     }
-    if (oldVersion < 7) {
-      // ADD DURATION TO VERSION TABLE AND REMOVE FROM CIPHER TABLE
-      await db.execute(
-        'ALTER TABLE version ADD COLUMN duration INTEGER DEFAULT 0',
-      );
-      await db.execute('ALTER TABLE cipher DROP COLUMN duration');
-    }
     if (oldVersion < 8) {
       // CHANGE BPM TYPE FROM TEXT TO INTEGER IN CIPHER TABLE
       await db.execute(

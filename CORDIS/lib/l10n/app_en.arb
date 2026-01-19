@@ -212,5 +212,13 @@
     "placeholders": {
       "count": {}
     }
-  }
+  },
+  "chooseLanguage": "Choose Language",
+  "@chooseLanguage": {},
+  "selectAppLanguage": "Select the application language:",
+  "@selectAppLanguage": {},
+  "portuguese": "Portuguese",
+  "@portuguese": {},
+  "english": "English",
+  "@english": {}
 }

@@ -577,6 +577,30 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'{count} seções'**
   String nSections(Object count);
+
+  /// No description provided for @chooseLanguage.
+  ///
+  /// In pt, this message translates to:
+  /// **'Escolher Idioma'**
+  String get chooseLanguage;
+
+  /// No description provided for @selectAppLanguage.
+  ///
+  /// In pt, this message translates to:
+  /// **'Selecione o idioma do aplicativo:'**
+  String get selectAppLanguage;
+
+  /// No description provided for @portuguese.
+  ///
+  /// In pt, this message translates to:
+  /// **'Português'**
+  String get portuguese;
+
+  /// No description provided for @english.
+  ///
+  /// In pt, this message translates to:
+  /// **'Inglês'**
+  String get english;
 }
 
 class _AppLocalizationsDelegate

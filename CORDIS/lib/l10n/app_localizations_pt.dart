@@ -264,4 +264,16 @@ class AppLocalizationsPt extends AppLocalizations {
   String nSections(Object count) {
     return '$count seções';
   }
+
+  @override
+  String get chooseLanguage => 'Escolher Idioma';
+
+  @override
+  String get selectAppLanguage => 'Selecione o idioma do aplicativo:';
+
+  @override
+  String get portuguese => 'Português';
+
+  @override
+  String get english => 'Inglês';
 }

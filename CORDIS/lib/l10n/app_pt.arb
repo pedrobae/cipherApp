@@ -217,5 +217,13 @@
     "placeholders": {
       "count": {}
     }
-  }
+  },
+  "chooseLanguage": "Escolher Idioma",
+  "@chooseLanguage": {},
+  "selectAppLanguage": "Selecione o idioma do aplicativo:",
+  "@selectAppLanguage": {},
+  "portuguese": "Português",
+  "@portuguese": {},
+  "english": "Inglês",
+  "@english": {}
 }

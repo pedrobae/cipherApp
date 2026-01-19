@@ -65,7 +65,7 @@ class _MetadataTabState extends State<MetadataTab> {
                 controllers[field]!.text = version.versionName;
                 break;
               case InfoField.bpm:
-                controllers[field]!.text = version.bpm;
+                controllers[field]!.text = version.bpm.toString();
                 break;
               case InfoField.musicKey:
                 controllers[field]!.text =
@@ -98,7 +98,7 @@ class _MetadataTabState extends State<MetadataTab> {
                 controllers[field]!.text = version.versionName;
                 break;
               case InfoField.bpm:
-                controllers[field]!.text = cipher.bpm;
+                controllers[field]!.text = cipher.bpm.toString();
                 break;
               case InfoField.musicKey:
                 controllers[field]!.text =

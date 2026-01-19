@@ -221,7 +221,7 @@ class _CipherParsingScreenState extends State<CipherParsingScreen>
                           )!.authorWithPlaceholder(cipher.author),
                           style: theme.textTheme.bodyMedium,
                         ),
-                        if (cipher.bpm.isNotEmpty)
+                        if (cipher.bpm != 0)
                           Text(
                             AppLocalizations.of(
                               context,

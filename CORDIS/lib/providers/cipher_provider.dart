@@ -293,7 +293,7 @@ class CipherProvider extends ChangeNotifier {
         break;
       case InfoField.bpm:
         _localCiphers[cipherId] = _localCiphers[cipherId]!.copyWith(
-          bpm: change,
+          bpm: int.tryParse(change) ?? 0,
         );
         break;
       case InfoField.musicKey:

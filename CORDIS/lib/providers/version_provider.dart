@@ -538,7 +538,7 @@ class VersionProvider extends ChangeNotifier {
         break;
       case InfoField.bpm:
         _cloudVersions[versionFirebaseId] = _cloudVersions[versionFirebaseId]!
-            .copyWith(bpm: newValue);
+            .copyWith(bpm: int.tryParse(newValue) ?? 0);
         break;
       case InfoField.versionName:
         _cloudVersions[versionFirebaseId] = _cloudVersions[versionFirebaseId]!

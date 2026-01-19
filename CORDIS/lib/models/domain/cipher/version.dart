@@ -110,7 +110,7 @@ class Version {
       author: cipher.author,
       language: cipher.language,
       originalKey: cipher.musicKey,
-      bpm: '',
+      bpm: cipher.bpm,
       duration: duration.inSeconds,
       tags: cipher.tags,
     );

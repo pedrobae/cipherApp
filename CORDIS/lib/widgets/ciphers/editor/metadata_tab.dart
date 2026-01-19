@@ -12,14 +12,14 @@ enum InfoField {
   bpm,
   musicKey,
   language,
-} // TODO - duration tags
+} // TODO - duration / tags
 
-class InfoTab extends StatefulWidget {
+class MetadataTab extends StatefulWidget {
   final int? cipherId;
   final dynamic versionId;
   final VersionType versionType;
 
-  const InfoTab({
+  const MetadataTab({
     super.key,
     this.cipherId,
     this.versionId,
@@ -27,10 +27,10 @@ class InfoTab extends StatefulWidget {
   });
 
   @override
-  State<InfoTab> createState() => _InfoTabState();
+  State<MetadataTab> createState() => _MetadataTabState();
 }
 
-class _InfoTabState extends State<InfoTab> {
+class _MetadataTabState extends State<MetadataTab> {
   Map<InfoField, TextEditingController> controllers = {};
 
   @override

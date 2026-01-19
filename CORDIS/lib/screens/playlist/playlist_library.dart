@@ -66,6 +66,11 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen> {
                   IconTextButton(
                     onTap: () {
                       //TODO: Implement create new Playlist functionality
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Funcionalidade em desenvolvimento 🚧'),
+                        ),
+                      );
                     },
                     text: AppLocalizations.of(context)!.create,
                     icon: Icon(Icons.add, color: colorScheme.onSurface),

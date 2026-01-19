@@ -25,6 +25,11 @@ class PlaylistCard extends StatelessWidget {
         return GestureDetector(
           onTap: () {
             // TODO - Open playlist details
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Funcionalidade em desenvolvimento 🚧'),
+              ),
+            );
           },
           child: Container(
             decoration: BoxDecoration(
@@ -60,6 +65,11 @@ class PlaylistCard extends StatelessWidget {
                 IconButton(
                   onPressed: () {
                     // TODO - Show playlist actions
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Funcionalidade em desenvolvimento 🚧'),
+                      ),
+                    );
                   },
                   icon: Icon(Icons.more_vert),
                 ),

@@ -4,7 +4,7 @@ import 'package:cordis/models/domain/playlist/playlist_item.dart';
 import 'package:cordis/models/dtos/version_dto.dart';
 import 'package:cordis/repositories/cloud_version_repository.dart';
 import 'package:cordis/repositories/local_cipher_repository.dart';
-import 'package:cordis/widgets/ciphers/editor/info_tab.dart';
+import 'package:cordis/widgets/ciphers/editor/metadata_tab.dart';
 import 'package:flutter/foundation.dart';
 
 class VersionProvider extends ChangeNotifier {

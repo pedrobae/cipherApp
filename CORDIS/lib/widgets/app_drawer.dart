@@ -97,6 +97,13 @@ class AppDrawer extends StatelessWidget {
                         title: Text(AppLocalizations.of(context)!.about),
                         onTap: () {
                           // TODO: Show about
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Funcionalidade em desenvolvimento 🚧',
+                              ),
+                            ),
+                          );
                         },
                         trailing: Icon(
                           Icons.arrow_forward_ios_rounded,

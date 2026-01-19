@@ -5,9 +5,7 @@ import 'package:cordis/providers/import_provider.dart';
 import 'package:flutter/material.dart';
 
 class ImportPdfScreen extends StatefulWidget {
-  final bool isNewCipher;
-
-  const ImportPdfScreen({super.key, required this.isNewCipher});
+  const ImportPdfScreen({super.key});
 
   @override
   State<ImportPdfScreen> createState() => _ImportPdfScreenState();

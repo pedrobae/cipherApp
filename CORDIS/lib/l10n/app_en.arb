@@ -220,5 +220,15 @@
   "portuguese": "Portuguese",
   "@portuguese": {},
   "english": "English",
-  "@english": {}
+  "@english": {},
+  "createManually": "Create Manually",
+  "@createManually": {},
+  "import": "Import",
+  "@import": {},
+  "importFromPDF": "Import from PDF",
+  "@importFromPDF": {},
+  "importFromImage": "Import from Image",
+  "@importFromImage": {},
+  "importFromText": "Import from Text",
+  "@importFromText": {}
 }

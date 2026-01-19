@@ -120,7 +120,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               title: 'Ajuda e Suporte',
               subtitle: 'FAQ e contato',
               onTap: () {
-                _showComingSoon(context);
+                showComingSoon(context);
               },
             ),
           ],
@@ -412,7 +412,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  void _showComingSoon(BuildContext context) {
+  void showComingSoon(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Funcionalidade em desenvolvimento 🚧')),
     );

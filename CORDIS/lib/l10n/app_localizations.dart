@@ -601,6 +601,36 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Inglês'**
   String get english;
+
+  /// No description provided for @createManually.
+  ///
+  /// In pt, this message translates to:
+  /// **'Criar Manualmente'**
+  String get createManually;
+
+  /// No description provided for @import.
+  ///
+  /// In pt, this message translates to:
+  /// **'Importar'**
+  String get import;
+
+  /// No description provided for @importFromImage.
+  ///
+  /// In pt, this message translates to:
+  /// **'Importar de Imagem'**
+  String get importFromImage;
+
+  /// No description provided for @importFromPDF.
+  ///
+  /// In pt, this message translates to:
+  /// **'Importar de PDF'**
+  String get importFromPDF;
+
+  /// No description provided for @importFromText.
+  ///
+  /// In pt, this message translates to:
+  /// **'Importar de Texto'**
+  String get importFromText;
 }
 
 class _AppLocalizationsDelegate

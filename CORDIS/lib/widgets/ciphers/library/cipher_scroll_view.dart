@@ -1,13 +1,10 @@
-import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
-import 'package:cordis/screens/cipher/cipher_editor.dart';
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/version_provider.dart';
 import 'package:cordis/widgets/ciphers/library/cipher_card.dart';
 import 'package:cordis/widgets/ciphers/library/cloud_cipher_card.dart';
-import 'package:cordis/widgets/ciphers/library/import_bottom_sheet.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -22,12 +19,9 @@ class CipherScrollView extends StatefulWidget {
 }
 
 class _CipherScrollViewState extends State<CipherScrollView> {
-  late bool selectionMode;
-
   @override
   void initState() {
     super.initState();
-    selectionMode = widget.playlistId != null;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _loadData();
@@ -80,42 +74,7 @@ class _CipherScrollViewState extends State<CipherScrollView> {
                 // Display cipher list
                 _buildCiphersList(cipherProvider, versionProvider),
 
-                if (!selectionMode) ...[
-                  // TODO: ASK for design
-                  Positioned(
-                    bottom: MediaQuery.of(context).viewInsets.bottom + 8,
-                    right: MediaQuery.of(context).viewInsets.right + 8,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      spacing: 8,
-                      children: [
-                        FloatingActionButton.extended(
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => const CipherEditor(
-                                  versionType: VersionType.brandNew,
-                                ),
-                              ),
-                            );
-                          },
-                          icon: const Icon(Icons.add),
-                          label: const Text('Nova Cifra'),
-                          heroTag: 'library_fab',
-                        ),
-                        FloatingActionButton.extended(
-                          onPressed: () {
-                            _showImportBottomSheet(isNewCipher: true);
-                          },
-                          icon: const Icon(Icons.import_export),
-                          label: const Text('Importar'),
-                          heroTag: 'library_import_fab',
-                        ),
-                      ],
-                    ),
-                  ),
-                ] else if (selectionProvider.isSelectionMode) ...[
+                if (selectionProvider.isSelectionMode) ...[
                   _buildBatchAddButton(selectionProvider, cipherProvider),
                 ],
               ],
@@ -244,16 +203,6 @@ class _CipherScrollViewState extends State<CipherScrollView> {
               )
             : const SizedBox.shrink(key: ValueKey('empty_space')),
       ),
-    );
-  }
-
-  void _showImportBottomSheet({required bool isNewCipher}) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) {
-        return ImportBottomSheet(isNewCipher: isNewCipher);
-      },
     );
   }
 }

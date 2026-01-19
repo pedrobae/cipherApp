@@ -276,4 +276,19 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get english => 'Inglês';
+
+  @override
+  String get createManually => 'Criar Manualmente';
+
+  @override
+  String get import => 'Importar';
+
+  @override
+  String get importFromImage => 'Importar de Imagem';
+
+  @override
+  String get importFromPDF => 'Importar de PDF';
+
+  @override
+  String get importFromText => 'Importar de Texto';
 }

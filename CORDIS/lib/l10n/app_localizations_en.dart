@@ -275,4 +275,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get english => 'English';
+
+  @override
+  String get createManually => 'Create Manually';
+
+  @override
+  String get import => 'Import';
+
+  @override
+  String get importFromImage => 'Import from Image';
+
+  @override
+  String get importFromPDF => 'Import from PDF';
+
+  @override
+  String get importFromText => 'Import from Text';
 }

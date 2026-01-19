@@ -53,7 +53,10 @@ class _CipherCardState extends State<CipherCard> {
               return Container(
                 padding: const EdgeInsets.all(16.0),
                 child: Text(
-                  '${AppLocalizations.of(context)!.errorPrefix}${cipherProvider.error ?? versionProvider.error}',
+                  AppLocalizations.of(context)!.errorMessage(
+                    AppLocalizations.of(context)!.loading,
+                    cipherProvider.error ?? versionProvider.error!,
+                  ),
                 ),
               );
             }
@@ -104,7 +107,10 @@ class _CipherCardState extends State<CipherCard> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
-                          '${AppLocalizations.of(context)!.errorPrefix}$error',
+                          AppLocalizations.of(context)!.errorMessage(
+                            AppLocalizations.of(context)!.addToPlaylist,
+                            error.toString(),
+                          ),
                         ),
                         backgroundColor: Theme.of(context).colorScheme.error,
                       ),

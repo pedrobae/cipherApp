@@ -343,7 +343,10 @@ class _CipherEditorState extends State<CipherEditor>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              '${AppLocalizations.of(context)!.errorCreating}${e.toString()}',
+              AppLocalizations.of(context)!.errorMessage(
+                AppLocalizations.of(context)!.create,
+                e.toString(),
+              ),
             ),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),

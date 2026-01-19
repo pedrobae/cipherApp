@@ -285,23 +285,21 @@ class SectionParser {
     // Check first line for label
     bool firstLineHasLabel;
     RegExpMatch? match;
-    String officialLabel;
-    String label = 'Unlabeled Section';
-    (firstLineHasLabel, match, officialLabel) = _containsLabel(
-      linesData[0].text,
-    );
+    SectionLabels label;
+    String labelText = 'Unlabeled Section';
+    (firstLineHasLabel, match, label) = _containsLabel(linesData[0].text);
 
     if (firstLineHasLabel) {
       final labelData = _validateLabel(linesData[0].text, match!);
 
       if (labelData['isValid']) {
         // Save extracted label
-        label = linesData[0].text
+        labelText = linesData[0].text
             .substring(labelData['labelStart'], labelData['labelEnd'])
             .trim();
 
         if (labelData['labelWithColon'] == true) {
-          label = label.substring(0, label.length - 1).trim();
+          labelText = labelText.substring(0, labelText.length - 1).trim();
         }
 
         // Remove label from LineData
@@ -330,24 +328,24 @@ class SectionParser {
       'content': sectionContent,
       'numberOfLines': linesData.length,
       'isDuplicate': false,
-      'suggestedTitle': label,
+      'suggestedTitle': labelText,
       'linesData': linesData,
-      'officialLabel': officialLabel,
+      'label': label,
     };
 
     result.rawSections.add(section);
   }
 
-  (bool, RegExpMatch?, String) _containsLabel(String text) {
+  (bool, RegExpMatch?, SectionLabels) _containsLabel(String text) {
     for (var label in commonSectionLabels.values) {
       for (var labelVariation in label.labelVariations) {
         RegExp regex = RegExp(labelVariation, caseSensitive: false);
         if (regex.hasMatch(text)) {
-          return (true, regex.firstMatch(text)!, label.officialLabel);
+          return (true, regex.firstMatch(text)!, label);
         }
       }
     }
-    return (false, null, 'Unlabeled Section');
+    return (false, null, SectionLabels.unknown());
   }
 }
 

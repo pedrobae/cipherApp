@@ -1,4 +1,6 @@
+import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/screens/cipher/cipher_parsing_screen.dart';
+import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:cordis/providers/import_provider.dart';
@@ -33,13 +35,23 @@ class _ImportPdfScreenState extends State<ImportPdfScreen> {
 
         if (mounted) {
           context.read<ImportProvider>().setSelectedFile(path!);
+          context.read<ImportProvider>().setSelectedFileName(
+            result.files.first.name,
+          );
         }
       }
       // If result is null, user canceled - do nothing
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao selecionar arquivo: $e')),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.errorMessage(
+                AppLocalizations.of(context)!.selectPDFFile,
+                e.toString(),
+              ),
+            ),
+          ),
         );
       }
     }
@@ -48,7 +60,7 @@ class _ImportPdfScreenState extends State<ImportPdfScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Importar de PDF')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.importFromPDF)),
       body: Consumer<ImportProvider>(
         builder: (context, importProvider, child) {
           final theme = Theme.of(context);
@@ -60,94 +72,94 @@ class _ImportPdfScreenState extends State<ImportPdfScreen> {
               spacing: 16,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Card(
-                  margin: EdgeInsets.zero,
-                  color: colorScheme.surfaceContainerHigh,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      spacing: 8,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          spacing: 8,
-                          children: [
-                            Icon(
-                              Icons.info_outline,
-                              color: colorScheme.primary,
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(0),
+                    border: Border.all(color: colorScheme.onSurface, width: 1),
+                  ),
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    spacing: 8,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        spacing: 8,
+                        children: [
+                          Icon(Icons.info_outline, color: colorScheme.primary),
+                          Text(
+                            AppLocalizations.of(context)!.howToImport,
+                            style: theme.textTheme.titleMedium!.copyWith(
+                              fontWeight: FontWeight.bold,
                             ),
-                            Text(
-                              'Como importar',
-                              style: theme.textTheme.titleMedium!.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const Text(
-                          '• Selecione um PDF com cifra\n'
-                          '• Fonte mono é recomendada se possível\n'
-                          '• Separe estrofes com linhas vazias\n'
-                          '• Acordes acima das letras',
-                        ),
-                      ],
-                    ),
+                          ),
+                        ],
+                      ),
+                      Text(
+                        AppLocalizations.of(context)!.importInstructions,
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                    ],
                   ),
                 ),
 
                 // File selection button
-                OutlinedButton.icon(
-                  onPressed: importProvider.isImporting ? null : _pickPdfFile,
-                  icon: const Icon(Icons.file_upload),
-                  label: const Text('Selecionar Arquivo PDF'),
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.all(16),
-                  ),
+                FilledTextButton(
+                  onPressed: () {
+                    importProvider.isImporting ? null : _pickPdfFile();
+                  },
+                  text: AppLocalizations.of(context)!.selectPDFFile,
+                  isDarkButton: true,
                 ),
 
                 const SizedBox(height: 16),
 
                 // Selected file display
                 if (importProvider.selectedFile != null)
-                  Card(
-                    color: colorScheme.primaryContainer,
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.picture_as_pdf,
-                            color: colorScheme.onPrimaryContainer,
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Arquivo selecionado:',
-                                  style: Theme.of(context).textTheme.bodySmall,
-                                ),
-                                Text(
-                                  importProvider.selectedFile!,
-                                  style: Theme.of(context).textTheme.bodyLarge
-                                      ?.copyWith(fontWeight: FontWeight.bold),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            ),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.close),
-                            onPressed: () {
-                              // Clear selected file
-                              importProvider.clearSelectedFile();
-                              importProvider.clearError();
-                            },
-                          ),
-                        ],
+                  Container(
+                    decoration: BoxDecoration(
+                      color: colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(0),
+                      border: Border.all(
+                        color: colorScheme.onSurface,
+                        width: 1,
                       ),
+                    ),
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      spacing: 16,
+                      children: [
+                        Icon(
+                          Icons.picture_as_pdf,
+                          color: colorScheme.onPrimaryContainer,
+                        ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                AppLocalizations.of(context)!.selectedFile,
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                              Text(
+                                importProvider.selectedFileName!,
+                                style: Theme.of(context).textTheme.bodyLarge
+                                    ?.copyWith(fontWeight: FontWeight.bold),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () {
+                            // Clear selected file
+                            importProvider.clearSelectedFile();
+                            importProvider.clearSelectedFileName();
+                            importProvider.clearError();
+                          },
+                        ),
+                      ],
                     ),
                   ),
 
@@ -180,35 +192,20 @@ class _ImportPdfScreenState extends State<ImportPdfScreen> {
                 const Spacer(),
 
                 // Process button
-                FilledButton.icon(
-                  onPressed:
-                      (importProvider.selectedFile != null &&
-                          !importProvider.isImporting)
-                      ? () async {
-                          final navigator = Navigator.of(context);
-                          await importProvider.importText();
-                          navigator.push(
-                            MaterialPageRoute(
-                              builder: (context) => CipherParsingScreen(),
-                            ),
-                          );
-                        }
-                      : null,
-                  icon: importProvider.isImporting
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.auto_fix_high),
-                  label: Text(
-                    importProvider.isImporting
-                        ? 'Processando...'
-                        : 'Processar PDF',
-                  ),
-                  style: FilledButton.styleFrom(
-                    padding: const EdgeInsets.all(16),
-                  ),
+                FilledTextButton(
+                  isDisabled:
+                      (importProvider.selectedFile == null ||
+                      importProvider.isImporting),
+                  onPressed: () async {
+                    final navigator = Navigator.of(context);
+                    await importProvider.importText();
+                    navigator.push(
+                      MaterialPageRoute(
+                        builder: (context) => CipherParsingScreen(),
+                      ),
+                    );
+                  },
+                  text: AppLocalizations.of(context)!.processPDF,
                 ),
               ],
             ),

@@ -56,7 +56,10 @@ class _CipherScrollViewState extends State<CipherScrollView> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      '${AppLocalizations.of(context)!.errorPrefix}${cipherProvider.error}',
+                      AppLocalizations.of(context)!.errorMessage(
+                        AppLocalizations.of(context)!.loading,
+                        cipherProvider.error!,
+                      ),
                     ),
                     const SizedBox(height: 16),
                     ElevatedButton(

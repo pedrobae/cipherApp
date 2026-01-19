@@ -58,7 +58,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    '${AppLocalizations.of(context)!.errorPrefix}${authProvider.error}',
+                    AppLocalizations.of(context)!.errorMessage(
+                      AppLocalizations.of(context)!.authentication,
+                      authProvider.error!,
+                    ),
                     style: const TextStyle(color: Colors.red),
                     textAlign: TextAlign.center,
                   ),

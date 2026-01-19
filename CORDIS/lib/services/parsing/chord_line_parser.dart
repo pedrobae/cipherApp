@@ -57,13 +57,13 @@ class ChordLineParser {
     Map<String, Section> parsedSections = result.parsedSections;
     List<Map<String, dynamic>> rawSections = result.rawSections;
     List<String> songStructure = result.songStructure;
-    int incrementalDefaultCode = 0;
+    int incrementalDefaultCode = 1;
 
     for (var rawSection in rawSections) {
       if (rawSection['suggestedTitle'] == 'Metadata') continue;
 
       String? code = rawSection['label']?.code;
-      if (code == null) {
+      if (code == null || code.isEmpty) {
         // Assign a default code if none is found
         code = incrementalDefaultCode.toString();
         incrementalDefaultCode++;
@@ -299,21 +299,15 @@ class ChordLineParser {
   String _formatChordOnlyLine(String chordLine) {
     // Formats a line that contains only chords into ChordPro format
     StringBuffer formattedLine = StringBuffer();
-    int i = 0;
 
-    while (i < chordLine.length) {
-      if (chordLine[i] != ' ') {
-        // Found a chord character, insert chord brackets
-        formattedLine.write('[');
-        while (i < chordLine.length && chordLine[i] != ' ') {
-          formattedLine.write(chordLine[i]);
-          i++;
-        }
-        formattedLine.write(']');
-      } else {
-        // Just a space, move to the next character
-        i++;
-      }
+    RegExp chordRegex = RegExp(
+      r'([CDEFGAB][#b]?)(m|maj|min|sus|aug|dim)?([7|maj7|m7|min7|sus2|sus4])?(\/[A-G][#b]?)?',
+    );
+    List<RegExpMatch> matches = chordRegex.allMatches(chordLine).toList();
+    for (var match in matches) {
+      formattedLine.write('[');
+      formattedLine.write(match.group(0));
+      formattedLine.write(']');
     }
 
     return formattedLine.toString();

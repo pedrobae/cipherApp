@@ -12,22 +12,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get appName => 'CORDIS';
 
   @override
-  String get home => 'Home';
-
-  @override
-  String get library => 'Biblioteca';
-
-  @override
-  String get playlists => 'Playlists';
-
-  @override
-  String get settings => 'Configurações';
-
-  @override
-  String get about => 'Sobre';
-
-  @override
-  String get schedule => 'Agenda';
+  String get authentication => 'Autenticação';
 
   @override
   String get email => 'E-mail';
@@ -58,13 +43,28 @@ class AppLocalizationsPt extends AppLocalizations {
       'Por favor, tente novamente ou solicite uma nova.';
 
   @override
+  String get home => 'Home';
+
+  @override
+  String get library => 'Biblioteca';
+
+  @override
+  String get playlists => 'Playlists';
+
+  @override
+  String get schedule => 'Agenda';
+
+  @override
+  String get settings => 'Configurações';
+
+  @override
+  String get about => 'Sobre';
+
+  @override
   String get title => 'Título';
 
   @override
   String get author => 'Autor';
-
-  @override
-  String get versionName => 'Nome da Versão';
 
   @override
   String get musicKey => 'Tom';
@@ -79,28 +79,60 @@ class AppLocalizationsPt extends AppLocalizations {
   String get language => 'Idioma';
 
   @override
-  String get sections => 'Seções';
+  String get versionName => 'Nome da Versão';
 
   @override
   String get versions => ' versões';
 
   @override
-  String get cipherEditorTitle => 'Editor de Cifras';
+  String get sections => 'Seções';
 
   @override
-  String get info => 'Informações';
+  String get songStructure => 'Mapa da Música';
+
+  @override
+  String get addSection => 'Adicionar Seção';
+
+  @override
+  String get selectSectionType => 'Selecione sua Seção';
+
+  @override
+  String get noSectionsInStructurePrompt =>
+      'Nenhuma seção na estrutura. Use o botão acima para adicionar seções.';
+
+  @override
+  String get lyrics => 'Letras';
+
+  @override
+  String get cipherEditorTitle => 'Editor de Cifras';
 
   @override
   String get cloudCipher => 'Cifra na Nuvem';
 
   @override
-  String get addToPlaylist => 'Adicionar à Playlist';
+  String get cipherParsing => 'Escolhendo Análise';
+
+  @override
+  String get info => 'Informações';
+
+  @override
+  String get cipherCreatedSuccessfully => 'Cifra criada com sucesso!';
+
+  @override
+  String get cipherSavedSuccessfully => 'Cifra salva com sucesso!';
+
+  @override
+  String get failedToCreateCipher => 'Falha ao criar cifra.';
+
+  @override
+  String get failedToCreateVersion => 'Falha ao criar versão.';
+
+  @override
+  String get cannotCreateCipherExistingCipher =>
+      'Não foi possível criar a cifra porque uma cifra com o mesmo ID já existe.';
 
   @override
   String get searchCiphers => 'Pesquisar por título, autor...';
-
-  @override
-  String get create => 'Criar';
 
   @override
   String get filter => 'Filtrar';
@@ -112,80 +144,25 @@ class AppLocalizationsPt extends AppLocalizations {
   String get noCiphersFound => 'Nenhuma cifra encontrada';
 
   @override
-  String get loading => 'Carregando...';
-
-  @override
-  String get errorPrefix => 'Erro: ';
-
-  @override
-  String get tryAgain => 'Tentar Novamente';
-
-  @override
-  String get save => 'Salvar';
-
-  @override
-  String get cancel => 'Cancelar';
-
-  @override
-  String get delete => 'Excluir';
-
-  @override
-  String get hintPrefixO => 'Insira seu ';
-
-  @override
-  String get hintPrefixA => 'Insira sua ';
-
-  @override
-  String get hintSuffix => ' aqui...';
-
-  @override
-  String get noSectionsInStructurePrompt =>
-      'Nenhuma seção na estrutura. Use o botão acima para adicionar seções.';
-
-  @override
-  String get songStructure => 'Mapa da Música';
-
-  @override
-  String get addSection => 'Adicionar Seção';
-
-  @override
-  String get lyrics => 'Letras';
-
-  @override
-  String get failedToCreateCipher => 'Falha ao criar cifra.';
-
-  @override
-  String get failedToCreateVersion => 'Falha ao criar versão.';
-
-  @override
-  String get cipherCreatedSuccessfully => 'Cifra criada com sucesso!';
-
-  @override
-  String get errorCreating => 'Erro ao criar: ';
-
-  @override
-  String get cipherSavedSuccessfully => 'Cifra salva com sucesso!';
-
-  @override
-  String get cannotCreateCipherExistingCipher =>
-      'Não foi possível criar a cifra porque uma cifra com o mesmo ID já existe.';
-
-  @override
-  String welcome(Object userName) {
-    return 'Olá $userName';
-  }
-
-  @override
-  String get anonymousWelcome => 'Bem-vindo';
-
-  @override
-  String get by => 'por';
-
-  @override
-  String get nextUp => 'Próxima Agenda';
+  String get createPlaylist => 'Criar Playlist';
 
   @override
   String get playlist => 'Playlist';
+
+  @override
+  String get searchPlaylist => 'Pesquisar por nome da playlist...';
+
+  @override
+  String get noPlaylistsFound => 'Nenhuma playlist encontrada';
+
+  @override
+  String get addToPlaylist => 'Adicionar à Playlist';
+
+  @override
+  String get item => 'item';
+
+  @override
+  String get items => 'itens';
 
   @override
   String get role => 'Função';
@@ -200,25 +177,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get view => 'Visualizar';
 
   @override
-  String get createPlaylist => 'Criar Playlist';
-
-  @override
-  String get addSongToLibrary => 'Adicionar Música';
-
-  @override
-  String get assignSchedule => 'Agendar';
-
-  @override
-  String get searchPlaylist => 'Pesquisar por nome da playlist...';
-
-  @override
-  String get noPlaylistsFound => 'Nenhuma playlist encontrada';
-
-  @override
-  String get item => 'item';
-
-  @override
-  String get items => 'itens';
+  String get nextUp => 'Próxima Agenda';
 
   @override
   String get nextThisMonth => 'Ainda neste Mês';
@@ -227,18 +186,93 @@ class AppLocalizationsPt extends AppLocalizations {
   String get searchSchedule => 'Pesquisar nome, local...';
 
   @override
-  String get selectSectionType => 'Selecione sua Seção';
+  String get assignSchedule => 'Agendar';
 
   @override
-  String get cipherParsing => 'Escolhendo Análise';
+  String get create => 'Criar';
 
   @override
-  String get confirm => 'Confirmar';
+  String get createManually => 'Criar Manualmente';
+
+  @override
+  String get import => 'Importar';
+
+  @override
+  String get importFromPDF => 'Importar de PDF';
+
+  @override
+  String get selectPDFFile => 'Selecionar Arquivo PDF';
+
+  @override
+  String get selectedFile => 'Arquivo Selecionado: ';
+
+  @override
+  String get processPDF => 'Processar PDF';
+
+  @override
+  String get howToImport => 'Como Importar';
+
+  @override
+  String get importInstructions =>
+      '• Selecione um PDF com cifra\n• Fonte mono é recomendada se possível\n• Separe estrofes com linhas vazias\n• Acordes acima das letras';
+
+  @override
+  String get importFromImage => 'Importar de Imagem';
+
+  @override
+  String get importFromText => 'Importar de Texto';
+
+  @override
+  String get pasteTextPrompt => 'Cole o texto da cifra aqui...';
 
   @override
   String importedFrom(Object importType) {
     return 'Cifra importada de $importType';
   }
+
+  @override
+  String get addSongToLibrary => 'Adicionar Música';
+
+  @override
+  String get chooseLanguage => 'Escolher Idioma';
+
+  @override
+  String get selectAppLanguage => 'Selecione o idioma do aplicativo:';
+
+  @override
+  String get portuguese => 'Português';
+
+  @override
+  String get english => 'Inglês';
+
+  @override
+  String get loading => 'Carregando...';
+
+  @override
+  String get tryAgain => 'Tentar Novamente';
+
+  @override
+  String get save => 'Salvar';
+
+  @override
+  String get cancel => 'Cancelar';
+
+  @override
+  String get delete => 'Excluir';
+
+  @override
+  String get confirm => 'Confirmar';
+
+  @override
+  String welcome(Object userName) {
+    return 'Olá $userName';
+  }
+
+  @override
+  String get anonymousWelcome => 'Bem-vindo';
+
+  @override
+  String get by => 'por';
 
   @override
   String titleWithPlaceholder(Object title) {
@@ -266,29 +300,16 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get chooseLanguage => 'Escolher Idioma';
+  String get hintPrefixO => 'Insira seu ';
 
   @override
-  String get selectAppLanguage => 'Selecione o idioma do aplicativo:';
+  String get hintPrefixA => 'Insira sua ';
 
   @override
-  String get portuguese => 'Português';
+  String get hintSuffix => ' aqui...';
 
   @override
-  String get english => 'Inglês';
-
-  @override
-  String get createManually => 'Criar Manualmente';
-
-  @override
-  String get import => 'Importar';
-
-  @override
-  String get importFromImage => 'Importar de Imagem';
-
-  @override
-  String get importFromPDF => 'Importar de PDF';
-
-  @override
-  String get importFromText => 'Importar de Texto';
+  String errorMessage(Object job, Object errorDetails) {
+    return 'Erro durante $job: $errorDetails';
+  }
 }

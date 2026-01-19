@@ -2,6 +2,7 @@ import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/models/domain/cipher/cipher.dart';
 import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:cordis/models/domain/parsing_cipher.dart';
+import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cordis/providers/import_provider.dart';
@@ -48,28 +49,20 @@ class _CipherParsingScreenState extends State<CipherParsingScreen>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Consumer2<ImportProvider, ParserProvider>(
       builder: (context, importProvider, parserProvider, child) {
         final doc = parserProvider.doc;
-        if (doc == null) {
-          return Scaffold(
-            appBar: AppBar(
-              title: Text(AppLocalizations.of(context)!.cipherParsing),
-            ),
-            body: Center(
-              child: Text(
-                parserProvider.error.isNotEmpty
-                    ? parserProvider.error
-                    : AppLocalizations.of(context)!.noCiphersFound,
-              ),
-            ),
-          );
-        }
 
         return Scaffold(
           appBar: AppBar(
             title: Text(AppLocalizations.of(context)!.cipherParsing),
-            bottom: _tabController != null && doc.candidates.isNotEmpty
+            bottom:
+                _tabController != null &&
+                    doc != null &&
+                    doc.candidates.isNotEmpty
                 ? TabBar(
                     controller: _tabController,
                     tabs: doc.candidates.map((candidate) {
@@ -82,27 +75,47 @@ class _CipherParsingScreenState extends State<CipherParsingScreen>
                   )
                 : null,
           ),
-          floatingActionButton: doc.candidates.isNotEmpty
-              ? FloatingActionButton.extended(
-                  label: Text(AppLocalizations.of(context)!.confirm),
-                  icon: Icon(Icons.check),
-                  onPressed: () {
-                    // Set chosen cipher in parser provider
-                    context.read<ParserProvider>().parsedCipher =
-                        doc.candidates[_tabController!.index].cipher;
-                    // Confirm parsing and navigate to editor
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => CipherEditor(
-                          versionType: VersionType.import,
-                          versionId: -1,
-                        ),
-                      ),
-                    );
-                  },
+          body: doc == null
+              ? Center(
+                  child: Text(
+                    parserProvider.error.isNotEmpty
+                        ? parserProvider.error
+                        : AppLocalizations.of(context)!.noCiphersFound,
+                  ),
                 )
-              : null,
-          body: _buildBody(importProvider, parserProvider),
+              : _buildBody(importProvider, parserProvider),
+          bottomNavigationBar: doc == null
+              ? null
+              : Container(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      top: BorderSide(
+                        color: colorScheme.surfaceContainerLowest,
+                        width: 1,
+                      ),
+                    ),
+                  ),
+                  padding: const EdgeInsets.all(8.0),
+                  child: FilledTextButton.icon(
+                    text: AppLocalizations.of(context)!.confirm,
+                    icon: Icons.check,
+                    isDarkButton: true,
+                    onPressed: () {
+                      // Set chosen cipher in parser provider
+                      context.read<ParserProvider>().parsedCipher =
+                          doc.candidates[_tabController!.index].cipher;
+                      // Confirm parsing and navigate to editor
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => CipherEditor(
+                            versionType: VersionType.import,
+                            versionId: -1,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
         );
       },
     );
@@ -177,11 +190,9 @@ class _CipherParsingScreenState extends State<CipherParsingScreen>
                 children: [
                   ListTile(
                     leading: Icon(_getStrategyIcon(strategy)),
-                    title: Expanded(
-                      child: Text(
-                        version.versionName,
-                        style: theme.textTheme.titleMedium,
-                      ),
+                    title: Text(
+                      version.versionName,
+                      style: theme.textTheme.titleMedium,
                     ),
                     trailing: Container(
                       decoration: BoxDecoration(

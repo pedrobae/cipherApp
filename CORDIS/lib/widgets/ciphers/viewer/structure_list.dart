@@ -74,32 +74,26 @@ class StructureList extends StatelessWidget {
                           onTap: () => _scrollToSection(context, index),
                           child: Container(
                             padding: const EdgeInsets.only(right: 8),
-                            child: Stack(
-                              children: [
-                                Container(
-                                  height: 44,
-                                  width: 44,
-                                  decoration: BoxDecoration(
-                                    color: color.withValues(alpha: .8),
-                                    borderRadius: BorderRadius.circular(0),
-                                    border: Border.all(
-                                      color: colorScheme.shadow,
-                                      width: 1,
-                                    ),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      sectionCode,
-                                      style: TextStyle(
-                                        color: colorScheme.onSurface,
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 14,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
+                            height: 44,
+                            width: 44,
+                            decoration: BoxDecoration(
+                              color: color.withValues(alpha: .8),
+                              borderRadius: BorderRadius.circular(0),
+                              border: Border.all(
+                                color: colorScheme.shadow,
+                                width: 1,
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                sectionCode,
+                                style: TextStyle(
+                                  color: colorScheme.onSurface,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14,
                                 ),
-                              ],
+                                textAlign: TextAlign.center,
+                              ),
                             ),
                           ),
                         );

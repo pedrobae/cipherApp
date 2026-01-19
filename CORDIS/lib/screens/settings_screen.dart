@@ -53,6 +53,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 16),
 
               _buildDangerousTile(
+                icon: Icons.language,
+                title: 'Mudar Idioma',
+                subtitle: 'Alterar idioma do aplicativo',
+                isLoading: false,
+                onTap: () {
+                  _showComingSoon(context);
+                },
+              ),
+
+              const SizedBox(height: 16),
+
+              _buildDangerousTile(
                 icon: Icons.refresh,
                 title: 'Resetar Banco de Dados',
                 subtitle: 'Apaga todos os dados e recria com dados iniciais',
@@ -61,6 +73,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ? null
                     : () => _showResetDatabaseDialog(context),
               ),
+
+              const SizedBox(height: 16),
 
               Card(
                 child: ListTile(

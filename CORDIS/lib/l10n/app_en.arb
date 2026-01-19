@@ -164,5 +164,53 @@
   "searchSchedule": "Search schedule...",
   "@searchSchedule": {"description": "hint text for searching schedule"},
   "selectSectionType": "Select your Section",
-  "@selectSectionType": {}
+  "@selectSectionType": {},
+  "cipherParsing": "Choosing Parsing",
+  "@cipherParsing": {
+    "description": "Title for the cipher parsing screen"
+  },
+  "confirm": "Confirm",
+  "@confirm": {},
+  "importedFrom": "Song imported from {importType}",
+  "@importedFrom": {
+    "description": "Text indicating the source from which the song was imported",
+    "placeholders": {
+      "importType": {}
+    }
+  },
+  "titleWithPlaceholder": "Title: {title}",
+  "@titleWithPlaceholder": {
+    "description": "Label for the song title with placeholder",
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "authorWithPlaceholder": "Author: {author}",
+  "@authorWithPlaceholder": {
+    "description": "Label for the author with placeholder",
+    "placeholders": {
+      "author": {}
+    }
+  },
+  "bpmWithPlaceholder": "BPM: {bpm}",
+  "@bpmWithPlaceholder": {
+    "description": "Label for the BPM with placeholder",
+    "placeholders": {
+      "bpm": {}
+    }
+  },
+  "keyWithPlaceholder": "Key: {key}",
+  "@keyWithPlaceholder": {
+    "description": "Label for the music key with placeholder",
+    "placeholders": {
+      "key": {}
+    }
+  },
+  "nSections": "{count} sections",
+  "@nSections": {
+    "description": "Label for number of sections with placeholder",
+    "placeholders": {
+      "count": {}
+    }
+  }
 }

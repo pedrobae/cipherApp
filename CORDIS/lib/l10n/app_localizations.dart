@@ -529,6 +529,54 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Selecione sua Seção'**
   String get selectSectionType;
+
+  /// Title for the cipher parsing screen
+  ///
+  /// In pt, this message translates to:
+  /// **'Escolhendo Análise'**
+  String get cipherParsing;
+
+  /// No description provided for @confirm.
+  ///
+  /// In pt, this message translates to:
+  /// **'Confirmar'**
+  String get confirm;
+
+  /// Text indicating the source from which the song was imported
+  ///
+  /// In pt, this message translates to:
+  /// **'Cifra importada de {importType}'**
+  String importedFrom(Object importType);
+
+  /// Label for the song title with placeholder
+  ///
+  /// In pt, this message translates to:
+  /// **'Título: {title}'**
+  String titleWithPlaceholder(Object title);
+
+  /// Label for the author with placeholder
+  ///
+  /// In pt, this message translates to:
+  /// **'Autor: {author}'**
+  String authorWithPlaceholder(Object author);
+
+  /// Label for the BPM with placeholder
+  ///
+  /// In pt, this message translates to:
+  /// **'BPM: {bpm}'**
+  String bpmWithPlaceholder(Object bpm);
+
+  /// Label for the music key with placeholder
+  ///
+  /// In pt, this message translates to:
+  /// **'Tom: {key}'**
+  String keyWithPlaceholder(Object key);
+
+  /// Label for number of sections with placeholder
+  ///
+  /// In pt, this message translates to:
+  /// **'{count} seções'**
+  String nSections(Object count);
 }
 
 class _AppLocalizationsDelegate

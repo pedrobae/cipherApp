@@ -1,3 +1,4 @@
+import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/models/domain/cipher/cipher.dart';
 import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:cordis/models/domain/parsing_cipher.dart';
@@ -52,14 +53,22 @@ class _CipherParsingScreenState extends State<CipherParsingScreen>
         final doc = parserProvider.doc;
         if (doc == null) {
           return Scaffold(
-            appBar: AppBar(title: Text('Analisador de Cifras')),
-            body: Center(child: Text('Nenhum documento para analisar.')),
+            appBar: AppBar(
+              title: Text(AppLocalizations.of(context)!.cipherParsing),
+            ),
+            body: Center(
+              child: Text(
+                parserProvider.error.isNotEmpty
+                    ? parserProvider.error
+                    : AppLocalizations.of(context)!.noCiphersFound,
+              ),
+            ),
           );
         }
 
         return Scaffold(
           appBar: AppBar(
-            title: Text('Analisador de Cifras'),
+            title: Text(AppLocalizations.of(context)!.cipherParsing),
             bottom: _tabController != null && doc.candidates.isNotEmpty
                 ? TabBar(
                     controller: _tabController,
@@ -75,7 +84,7 @@ class _CipherParsingScreenState extends State<CipherParsingScreen>
           ),
           floatingActionButton: doc.candidates.isNotEmpty
               ? FloatingActionButton.extended(
-                  label: Text('Confirmar'),
+                  label: Text(AppLocalizations.of(context)!.confirm),
                   icon: Icon(Icons.check),
                   onPressed: () {
                     // Set chosen cipher in parser provider
@@ -103,32 +112,6 @@ class _CipherParsingScreenState extends State<CipherParsingScreen>
     ImportProvider importProvider,
     ParserProvider parserProvider,
   ) {
-    // Display error if parsing failed
-    if (parserProvider.error.isNotEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.error_outline, size: 48, color: Colors.red),
-            SizedBox(height: 16),
-            Text(
-              'Erro durante análise:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                parserProvider.error,
-                style: TextStyle(color: Colors.red),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
     // Show loading indicator while parsing
     if (parserProvider.isParsing ||
         parserProvider.cipher == null ||
@@ -139,7 +122,7 @@ class _CipherParsingScreenState extends State<CipherParsingScreen>
           children: [
             CircularProgressIndicator.adaptive(),
             SizedBox(height: 16.0),
-            Text('Analisando cifra, aguarde...'),
+            Text(AppLocalizations.of(context)!.loading),
           ],
         ),
       );
@@ -148,21 +131,6 @@ class _CipherParsingScreenState extends State<CipherParsingScreen>
     // Display parsing results in tabs
     return Column(
       children: [
-        // Header - parsing status and metadata
-        Card(
-          margin: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              ListTile(
-                leading: const Icon(Icons.check_circle, color: Colors.green),
-                title: Text(
-                  'Cifra importada de ${importProvider.getImportType()}',
-                ),
-              ),
-            ],
-          ),
-        ),
-
         // Body - Tabs with parsing results
         Expanded(
           child: TabBarView(
@@ -186,49 +154,184 @@ class _CipherParsingScreenState extends State<CipherParsingScreen>
     ImportVariation variation,
     Cipher cipher,
   ) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final version = cipher.versions.first;
+
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 24,
           children: [
             // Strategy info card
-            Card(
-              color: Colors.blue.shade50,
+            Container(
+              decoration: BoxDecoration(
+                color: colorScheme.primary.withAlpha(25),
+                border: Border.all(color: colorScheme.primary),
+                borderRadius: BorderRadius.circular(0),
+              ),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ListTile(
                     leading: Icon(_getStrategyIcon(strategy)),
-                    title: Text(strategy.name),
-                    trailing: Chip(
-                      label: Text(
-                        '${cipher.versions.first.sectionCount} seções',
+                    title: Expanded(
+                      child: Text(
+                        version.versionName,
+                        style: theme.textTheme.titleMedium,
+                      ),
+                    ),
+                    trailing: Container(
+                      decoration: BoxDecoration(
+                        color: colorScheme.primary.withAlpha(100),
+                        borderRadius: BorderRadius.circular(0),
+                        border: Border.all(
+                          color: colorScheme.onSurface,
+                          width: 1,
+                        ),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      child: Text(
+                        AppLocalizations.of(
+                          context,
+                        )!.nSections(version.sectionCount),
                       ),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
+                      spacing: 4,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Título: ${cipher.title}'),
-                        Text('Artista: ${cipher.author}'),
-                        if (cipher.bpm.isNotEmpty) Text('Tempo: ${cipher.bpm}'),
+                        Text(
+                          AppLocalizations.of(
+                            context,
+                          )!.titleWithPlaceholder(cipher.title),
+                          style: theme.textTheme.titleMedium,
+                        ),
+                        Text(
+                          AppLocalizations.of(
+                            context,
+                          )!.authorWithPlaceholder(cipher.author),
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                        if (cipher.bpm.isNotEmpty)
+                          Text(
+                            AppLocalizations.of(
+                              context,
+                            )!.bpmWithPlaceholder(cipher.bpm),
+                            style: theme.textTheme.bodyMedium,
+                          ),
                         if (cipher.musicKey.isNotEmpty)
-                          Text('Tom: ${cipher.musicKey}'),
+                          Text(
+                            AppLocalizations.of(
+                              context,
+                            )!.keyWithPlaceholder(cipher.musicKey),
+                            style: theme.textTheme.bodyMedium,
+                          ),
                       ],
                     ),
                   ),
                 ],
               ),
             ),
-            for (var section in cipher.versions.first.sections!.entries) ...[
-              SectionCard(
-                sectionCode: section.value.contentCode,
-                sectionType: section.value.contentType,
-                sectionText: section.value.contentText,
-                sectionColor: section.value.contentColor,
-              ),
-            ],
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 8,
+              children: [
+                Text(
+                  AppLocalizations.of(context)!.songStructure,
+                  style: theme.textTheme.titleMedium!.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(8),
+                  height: 64,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: colorScheme.surfaceContainerLowest,
+                    ),
+                    borderRadius: BorderRadius.circular(0),
+                  ),
+                  child: version.songStructure.isEmpty
+                      ? Center(
+                          child: Text(
+                            AppLocalizations.of(
+                              context,
+                            )!.noSectionsInStructurePrompt,
+                          ),
+                        )
+                      : SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+
+                          child: Row(
+                            children: [
+                              ...version.songStructure.asMap().entries.map((
+                                entry,
+                              ) {
+                                final sectionCode = entry.value;
+                                final section = version.sections![sectionCode]!;
+                                final color = section.contentColor;
+                                return Container(
+                                  padding: const EdgeInsets.only(right: 8),
+                                  child: Container(
+                                    height: 44,
+                                    width: 44,
+                                    decoration: BoxDecoration(
+                                      color: color.withValues(alpha: .8),
+                                      borderRadius: BorderRadius.circular(0),
+                                      border: Border.all(
+                                        color: colorScheme.shadow,
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        sectionCode,
+                                        style: TextStyle(
+                                          color: colorScheme.onSurface,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }),
+                            ],
+                          ),
+                        ),
+                ),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 8,
+              children: [
+                Text(
+                  AppLocalizations.of(context)!.sections,
+                  style: theme.textTheme.titleMedium!.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                for (var section in version.sections!.entries) ...[
+                  SectionCard(
+                    sectionCode: section.value.contentCode,
+                    sectionType: section.value.contentType,
+                    sectionText: section.value.contentText,
+                    sectionColor: section.value.contentColor,
+                  ),
+                ],
+              ],
+            ),
           ],
         ),
       ),

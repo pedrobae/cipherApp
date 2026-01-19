@@ -228,4 +228,40 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get selectSectionType => 'Selecione sua Seção';
+
+  @override
+  String get cipherParsing => 'Escolhendo Análise';
+
+  @override
+  String get confirm => 'Confirmar';
+
+  @override
+  String importedFrom(Object importType) {
+    return 'Cifra importada de $importType';
+  }
+
+  @override
+  String titleWithPlaceholder(Object title) {
+    return 'Título: $title';
+  }
+
+  @override
+  String authorWithPlaceholder(Object author) {
+    return 'Autor: $author';
+  }
+
+  @override
+  String bpmWithPlaceholder(Object bpm) {
+    return 'BPM: $bpm';
+  }
+
+  @override
+  String keyWithPlaceholder(Object key) {
+    return 'Tom: $key';
+  }
+
+  @override
+  String nSections(Object count) {
+    return '$count seções';
+  }
 }

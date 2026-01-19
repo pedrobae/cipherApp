@@ -227,4 +227,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get selectSectionType => 'Select your Section';
+
+  @override
+  String get cipherParsing => 'Choosing Parsing';
+
+  @override
+  String get confirm => 'Confirm';
+
+  @override
+  String importedFrom(Object importType) {
+    return 'Song imported from $importType';
+  }
+
+  @override
+  String titleWithPlaceholder(Object title) {
+    return 'Title: $title';
+  }
+
+  @override
+  String authorWithPlaceholder(Object author) {
+    return 'Author: $author';
+  }
+
+  @override
+  String bpmWithPlaceholder(Object bpm) {
+    return 'BPM: $bpm';
+  }
+
+  @override
+  String keyWithPlaceholder(Object key) {
+    return 'Key: $key';
+  }
+
+  @override
+  String nSections(Object count) {
+    return '$count sections';
+  }
 }

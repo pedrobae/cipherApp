@@ -1,7 +1,6 @@
 import 'package:cordis/models/domain/cipher/section.dart';
 import 'package:cordis/models/domain/parsing_cipher.dart';
 import 'package:cordis/models/dtos/pdf_dto.dart';
-import 'package:cordis/utils/section_constants.dart';
 import 'package:flutter/material.dart';
 
 class ChordLineParser {
@@ -17,8 +16,7 @@ class ChordLineParser {
     for (var rawSection in rawSections) {
       if (rawSection['suggestedTitle'] == 'Metadata') continue;
 
-      String? code =
-          commonSectionLabels[rawSection['officialLabel'].toLowerCase()]?.code;
+      String? code = rawSection['label']?.code;
       if (code == null) {
         // Assign a default code if none is found
         code = incrementalDefaultCode.toString();
@@ -43,10 +41,7 @@ class ChordLineParser {
       Section parsedSection = Section(
         versionId: -1 /* ID will be set on database insertion */,
         contentCode: code,
-        contentColor:
-            commonSectionLabels[rawSection['officialLabel'].toLowerCase()]
-                ?.color ??
-            Colors.grey,
+        contentColor: rawSection['label']?.color ?? Colors.grey,
         contentType: rawSection['suggestedTitle'] as String,
         contentText: _buildContentFromSimpleText(
           rawSection['content'] as String,
@@ -67,8 +62,7 @@ class ChordLineParser {
     for (var rawSection in rawSections) {
       if (rawSection['suggestedTitle'] == 'Metadata') continue;
 
-      String? code =
-          commonSectionLabels[rawSection['officialLabel'].toLowerCase()]?.code;
+      String? code = rawSection['label']?.code;
       if (code == null) {
         // Assign a default code if none is found
         code = incrementalDefaultCode.toString();
@@ -98,10 +92,7 @@ class ChordLineParser {
       Section parsedSection = Section(
         versionId: -1 /* ID will be set on database insertion */,
         contentCode: code,
-        contentColor:
-            commonSectionLabels[rawSection['officialLabel'].toLowerCase()]
-                ?.color ??
-            Colors.grey,
+        contentColor: rawSection['label']?.color ?? Colors.grey,
         contentType: rawSection['suggestedTitle'] as String,
         contentText: _buildContentFromLinesData(
           rawSection['linesData'] as List<LineData>,

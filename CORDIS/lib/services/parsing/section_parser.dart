@@ -46,7 +46,7 @@ class SectionParser {
           if (labelData['isValid']) {
             validMatches.add({
               'officialLabel': label.officialLabel,
-              'label': match.group(0),
+              'label': label,
               'labelStart': labelData['labelStart'],
               'labelEnd': labelData['labelEnd'],
             });
@@ -77,6 +77,7 @@ class SectionParser {
             1,
         'suggestedTitle': match['officialLabel'],
         'isDuplicate': false,
+        'label': match['label'],
       });
     }
     _checkDuplicates(result);

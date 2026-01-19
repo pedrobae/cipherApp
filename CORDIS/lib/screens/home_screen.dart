@@ -1,5 +1,7 @@
 import 'package:cordis/l10n/app_localizations.dart';
+import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/providers/schedule_provider.dart';
+import 'package:cordis/widgets/ciphers/library/create_cipher_sheet.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:cordis/widgets/schedule/library/schedule_card.dart';
 import 'package:flutter/material.dart';
@@ -56,7 +58,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    '${AppLocalizations.of(context)!.errorPrefix}${authProvider.error}',
+                    AppLocalizations.of(context)!.errorMessage(
+                      AppLocalizations.of(context)!.authentication,
+                      authProvider.error!,
+                    ),
                     style: const TextStyle(color: Colors.red),
                     textAlign: TextAlign.center,
                   ),
@@ -135,18 +140,41 @@ class _HomeScreenState extends State<HomeScreen> {
                         text: AppLocalizations.of(context)!.createPlaylist,
                         onPressed: () {
                           // TODO: Implement navigation to create playlist
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Funcionalidade em desenvolvimento 🚧',
+                              ),
+                            ),
+                          );
                         },
                       ),
                       FilledTextButton(
                         text: AppLocalizations.of(context)!.addSongToLibrary,
                         onPressed: () {
-                          // TODO: Implement navigation to schedule view
+                          context.read<NavigationProvider>().navigateToRoute(
+                            NavigationRoute.library,
+                          );
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            builder: (context) {
+                              return CreateCipherSheet();
+                            },
+                          );
                         },
                       ),
                       FilledTextButton(
                         text: AppLocalizations.of(context)!.assignSchedule,
                         onPressed: () {
                           // TODO: Implement navigation assign schedule
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Funcionalidade em desenvolvimento 🚧',
+                              ),
+                            ),
+                          );
                         },
                       ),
                     ],

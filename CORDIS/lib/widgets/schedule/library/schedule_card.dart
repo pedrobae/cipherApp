@@ -91,6 +91,13 @@ class ScheduleCard extends StatelessWidget {
                     IconButton(
                       onPressed: () {
                         // TODO: Implement schedule actions
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Funcionalidade em desenvolvimento 🚧',
+                            ),
+                          ),
+                        );
                       },
                       icon: Icon(Icons.more_vert),
                     ),
@@ -102,12 +109,22 @@ class ScheduleCard extends StatelessWidget {
                 isDarkButton: true,
                 onPressed: () {
                   // TODO: Implement navigation to schedule view
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Funcionalidade em desenvolvimento 🚧'),
+                    ),
+                  );
                 },
                 text: AppLocalizations.of(context)!.view,
               ),
               FilledTextButton(
                 onPressed: () {
                   // TODO: Implement share functionality
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Funcionalidade em desenvolvimento 🚧'),
+                    ),
+                  );
                 },
                 text: AppLocalizations.of(context)!.share,
               ),

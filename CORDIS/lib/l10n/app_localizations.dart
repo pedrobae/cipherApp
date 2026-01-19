@@ -98,61 +98,31 @@ abstract class AppLocalizations {
     Locale('pt'),
   ];
 
-  /// No description provided for @appName.
+  /// Application name
   ///
   /// In pt, this message translates to:
   /// **'CORDIS'**
   String get appName;
 
-  /// No description provided for @home.
+  /// Authentication related messages
   ///
   /// In pt, this message translates to:
-  /// **'Home'**
-  String get home;
+  /// **'Autenticação'**
+  String get authentication;
 
-  /// No description provided for @library.
-  ///
-  /// In pt, this message translates to:
-  /// **'Biblioteca'**
-  String get library;
-
-  /// No description provided for @playlists.
-  ///
-  /// In pt, this message translates to:
-  /// **'Playlists'**
-  String get playlists;
-
-  /// No description provided for @settings.
-  ///
-  /// In pt, this message translates to:
-  /// **'Configurações'**
-  String get settings;
-
-  /// No description provided for @about.
-  ///
-  /// In pt, this message translates to:
-  /// **'Sobre'**
-  String get about;
-
-  /// No description provided for @schedule.
-  ///
-  /// In pt, this message translates to:
-  /// **'Agenda'**
-  String get schedule;
-
-  /// No description provided for @email.
+  /// Email field label
   ///
   /// In pt, this message translates to:
   /// **'E-mail'**
   String get email;
 
-  /// No description provided for @password.
+  /// Password field label
   ///
   /// In pt, this message translates to:
   /// **'Senha'**
   String get password;
 
-  /// No description provided for @login.
+  /// Login button label
   ///
   /// In pt, this message translates to:
   /// **'Entrar'**
@@ -164,7 +134,7 @@ abstract class AppLocalizations {
   /// **'Login no '**
   String get logInTitlePrefix;
 
-  /// No description provided for @logOut.
+  /// Logout button label
   ///
   /// In pt, this message translates to:
   /// **'Sair'**
@@ -182,7 +152,7 @@ abstract class AppLocalizations {
   /// **'Registre-se.'**
   String get accountCreationSuffix;
 
-  /// No description provided for @forgotPassword.
+  /// Forgot password link label
   ///
   /// In pt, this message translates to:
   /// **'Esqueceu a Senha?'**
@@ -194,53 +164,83 @@ abstract class AppLocalizations {
   /// **'Por favor, tente novamente ou solicite uma nova.'**
   String get forgotPasswordSuffix;
 
-  /// No description provided for @title.
+  /// Home navigation tab
+  ///
+  /// In pt, this message translates to:
+  /// **'Home'**
+  String get home;
+
+  /// Library navigation tab
+  ///
+  /// In pt, this message translates to:
+  /// **'Biblioteca'**
+  String get library;
+
+  /// Playlists navigation tab
+  ///
+  /// In pt, this message translates to:
+  /// **'Playlists'**
+  String get playlists;
+
+  /// Schedule navigation tab
+  ///
+  /// In pt, this message translates to:
+  /// **'Agenda'**
+  String get schedule;
+
+  /// Settings navigation tab
+  ///
+  /// In pt, this message translates to:
+  /// **'Configurações'**
+  String get settings;
+
+  /// About navigation tab
+  ///
+  /// In pt, this message translates to:
+  /// **'Sobre'**
+  String get about;
+
+  /// Song title field label
   ///
   /// In pt, this message translates to:
   /// **'Título'**
   String get title;
 
-  /// No description provided for @author.
+  /// Song author field label
   ///
   /// In pt, this message translates to:
   /// **'Autor'**
   String get author;
 
-  /// No description provided for @versionName.
-  ///
-  /// In pt, this message translates to:
-  /// **'Nome da Versão'**
-  String get versionName;
-
-  /// No description provided for @musicKey.
+  /// Musical key field label
   ///
   /// In pt, this message translates to:
   /// **'Tom'**
   String get musicKey;
 
-  /// No description provided for @bpm.
+  /// Beats per minute field label
   ///
   /// In pt, this message translates to:
   /// **'BPM'**
   String get bpm;
 
-  /// No description provided for @duration.
+  /// Song duration field label
   ///
   /// In pt, this message translates to:
   /// **'Duração'**
   String get duration;
 
-  /// No description provided for @language.
+  /// Song language field label
   ///
   /// In pt, this message translates to:
   /// **'Idioma'**
   String get language;
 
-  /// No description provided for @sections.
+  /// Version name field label
   ///
   /// In pt, this message translates to:
-  /// **'Seções'**
-  String get sections;
+  /// **'Nome da Versão'**
+  String get versionName;
 
   /// Label for number of versions of a cipher (lowercase 'v')
   ///
@@ -248,49 +248,109 @@ abstract class AppLocalizations {
   /// **' versões'**
   String get versions;
 
-  /// No description provided for @cipherEditorTitle.
+  /// Sections field label
+  ///
+  /// In pt, this message translates to:
+  /// **'Seções'**
+  String get sections;
+
+  /// Song structure/map label
+  ///
+  /// In pt, this message translates to:
+  /// **'Mapa da Música'**
+  String get songStructure;
+
+  /// Add section button label
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicionar Seção'**
+  String get addSection;
+
+  /// Prompt to select a section type
+  ///
+  /// In pt, this message translates to:
+  /// **'Selecione sua Seção'**
+  String get selectSectionType;
+
+  /// Prompt displayed when there are no sections in the song structure
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma seção na estrutura. Use o botão acima para adicionar seções.'**
+  String get noSectionsInStructurePrompt;
+
+  /// Lyrics field label
+  ///
+  /// In pt, this message translates to:
+  /// **'Letras'**
+  String get lyrics;
+
+  /// Title for the cipher/song editor screen
   ///
   /// In pt, this message translates to:
   /// **'Editor de Cifras'**
   String get cipherEditorTitle;
 
-  /// No description provided for @info.
-  ///
-  /// In pt, this message translates to:
-  /// **'Informações'**
-  String get info;
-
-  /// No description provided for @cloudCipher.
+  /// Label for cloud-based song maps
   ///
   /// In pt, this message translates to:
   /// **'Cifra na Nuvem'**
   String get cloudCipher;
 
-  /// No description provided for @addToPlaylist.
+  /// Title for the cipher parsing screen
   ///
   /// In pt, this message translates to:
-  /// **'Adicionar à Playlist'**
-  String get addToPlaylist;
+  /// **'Escolhendo Análise'**
+  String get cipherParsing;
 
-  /// No description provided for @searchCiphers.
+  /// Information button/tab label
+  ///
+  /// In pt, this message translates to:
+  /// **'Informações'**
+  String get info;
+
+  /// Success message when cipher is created
+  ///
+  /// In pt, this message translates to:
+  /// **'Cifra criada com sucesso!'**
+  String get cipherCreatedSuccessfully;
+
+  /// Success message when cipher is saved
+  ///
+  /// In pt, this message translates to:
+  /// **'Cifra salva com sucesso!'**
+  String get cipherSavedSuccessfully;
+
+  /// Error message when cipher creation fails
+  ///
+  /// In pt, this message translates to:
+  /// **'Falha ao criar cifra.'**
+  String get failedToCreateCipher;
+
+  /// Error message when version creation fails
+  ///
+  /// In pt, this message translates to:
+  /// **'Falha ao criar versão.'**
+  String get failedToCreateVersion;
+
+  /// Error message when trying to create duplicate cipher
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível criar a cifra porque uma cifra com o mesmo ID já existe.'**
+  String get cannotCreateCipherExistingCipher;
+
+  /// Hint text for cipher search field
   ///
   /// In pt, this message translates to:
   /// **'Pesquisar por título, autor...'**
   String get searchCiphers;
 
-  /// No description provided for @create.
-  ///
-  /// In pt, this message translates to:
-  /// **'Criar'**
-  String get create;
-
-  /// No description provided for @filter.
+  /// Filter button label
   ///
   /// In pt, this message translates to:
   /// **'Filtrar'**
   String get filter;
 
-  /// No description provided for @sort.
+  /// Sort button label
   ///
   /// In pt, this message translates to:
   /// **'Ordenar'**
@@ -302,41 +362,287 @@ abstract class AppLocalizations {
   /// **'Nenhuma cifra encontrada'**
   String get noCiphersFound;
 
-  /// No description provided for @loading.
+  /// Create playlist button label
+  ///
+  /// In pt, this message translates to:
+  /// **'Criar Playlist'**
+  String get createPlaylist;
+
+  /// Playlist label
+  ///
+  /// In pt, this message translates to:
+  /// **'Playlist'**
+  String get playlist;
+
+  /// Hint text for searching playlists
+  ///
+  /// In pt, this message translates to:
+  /// **'Pesquisar por nome da playlist...'**
+  String get searchPlaylist;
+
+  /// Message displayed when no playlists are found
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma playlist encontrada'**
+  String get noPlaylistsFound;
+
+  /// Add song to playlist button label
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicionar à Playlist'**
+  String get addToPlaylist;
+
+  /// Singular item label
+  ///
+  /// In pt, this message translates to:
+  /// **'item'**
+  String get item;
+
+  /// Plural items label
+  ///
+  /// In pt, this message translates to:
+  /// **'itens'**
+  String get items;
+
+  /// User role label
+  ///
+  /// In pt, this message translates to:
+  /// **'Função'**
+  String get role;
+
+  /// Default user role
+  ///
+  /// In pt, this message translates to:
+  /// **'Membro Geral'**
+  String get generalMember;
+
+  /// Share button label
+  ///
+  /// In pt, this message translates to:
+  /// **'Compartilhar'**
+  String get share;
+
+  /// View button label
+  ///
+  /// In pt, this message translates to:
+  /// **'Visualizar'**
+  String get view;
+
+  /// Next scheduled item label
+  ///
+  /// In pt, this message translates to:
+  /// **'Próxima Agenda'**
+  String get nextUp;
+
+  /// Next scheduled item this month label
+  ///
+  /// In pt, this message translates to:
+  /// **'Ainda neste Mês'**
+  String get nextThisMonth;
+
+  /// Hint text for searching schedule
+  ///
+  /// In pt, this message translates to:
+  /// **'Pesquisar nome, local...'**
+  String get searchSchedule;
+
+  /// Assign schedule button label
+  ///
+  /// In pt, this message translates to:
+  /// **'Agendar'**
+  String get assignSchedule;
+
+  /// Create button label
+  ///
+  /// In pt, this message translates to:
+  /// **'Criar'**
+  String get create;
+
+  /// Create manually option label
+  ///
+  /// In pt, this message translates to:
+  /// **'Criar Manualmente'**
+  String get createManually;
+
+  /// Import button label
+  ///
+  /// In pt, this message translates to:
+  /// **'Importar'**
+  String get import;
+
+  /// Import from PDF option
+  ///
+  /// In pt, this message translates to:
+  /// **'Importar de PDF'**
+  String get importFromPDF;
+
+  /// Prompt to select a PDF file
+  ///
+  /// In pt, this message translates to:
+  /// **'Selecionar Arquivo PDF'**
+  String get selectPDFFile;
+
+  /// Label for displaying the selected file name
+  ///
+  /// In pt, this message translates to:
+  /// **'Arquivo Selecionado: '**
+  String get selectedFile;
+
+  /// Process PDF button label
+  ///
+  /// In pt, this message translates to:
+  /// **'Processar PDF'**
+  String get processPDF;
+
+  /// How to import instructions title
+  ///
+  /// In pt, this message translates to:
+  /// **'Como Importar'**
+  String get howToImport;
+
+  /// Instructions for importing a song map from a PDF file
+  ///
+  /// In pt, this message translates to:
+  /// **'• Selecione um PDF com cifra\n• Fonte mono é recomendada se possível\n• Separe estrofes com linhas vazias\n• Acordes acima das letras'**
+  String get importInstructions;
+
+  /// Import from image option
+  ///
+  /// In pt, this message translates to:
+  /// **'Importar de Imagem'**
+  String get importFromImage;
+
+  /// Import from text option
+  ///
+  /// In pt, this message translates to:
+  /// **'Importar de Texto'**
+  String get importFromText;
+
+  /// Prompt to paste cipher text
+  ///
+  /// In pt, this message translates to:
+  /// **'Cole o texto da cifra aqui...'**
+  String get pasteTextPrompt;
+
+  /// Text indicating the source from which the song was imported
+  ///
+  /// In pt, this message translates to:
+  /// **'Cifra importada de {importType}'**
+  String importedFrom(Object importType);
+
+  /// Add song to library button label
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicionar Música'**
+  String get addSongToLibrary;
+
+  /// Choose language prompt
+  ///
+  /// In pt, this message translates to:
+  /// **'Escolher Idioma'**
+  String get chooseLanguage;
+
+  /// Language selection instruction
+  ///
+  /// In pt, this message translates to:
+  /// **'Selecione o idioma do aplicativo:'**
+  String get selectAppLanguage;
+
+  /// Portuguese language option
+  ///
+  /// In pt, this message translates to:
+  /// **'Português'**
+  String get portuguese;
+
+  /// English language option
+  ///
+  /// In pt, this message translates to:
+  /// **'Inglês'**
+  String get english;
+
+  /// Loading indicator text
   ///
   /// In pt, this message translates to:
   /// **'Carregando...'**
   String get loading;
 
-  /// Prefix to be used with the relevant error message
-  ///
-  /// In pt, this message translates to:
-  /// **'Erro: '**
-  String get errorPrefix;
-
-  /// No description provided for @tryAgain.
+  /// Retry button label
   ///
   /// In pt, this message translates to:
   /// **'Tentar Novamente'**
   String get tryAgain;
 
-  /// No description provided for @save.
+  /// Save button label
   ///
   /// In pt, this message translates to:
   /// **'Salvar'**
   String get save;
 
-  /// No description provided for @cancel.
+  /// Cancel button label
   ///
   /// In pt, this message translates to:
   /// **'Cancelar'**
   String get cancel;
 
-  /// No description provided for @delete.
+  /// Delete button label
   ///
   /// In pt, this message translates to:
   /// **'Excluir'**
   String get delete;
+
+  /// Confirm button label
+  ///
+  /// In pt, this message translates to:
+  /// **'Confirmar'**
+  String get confirm;
+
+  /// Welcome message with the user's name
+  ///
+  /// In pt, this message translates to:
+  /// **'Olá {userName}'**
+  String welcome(Object userName);
+
+  /// Generic welcome message
+  ///
+  /// In pt, this message translates to:
+  /// **'Bem-vindo'**
+  String get anonymousWelcome;
+
+  /// By/author preposition
+  ///
+  /// In pt, this message translates to:
+  /// **'por'**
+  String get by;
+
+  /// Label for the song title with placeholder
+  ///
+  /// In pt, this message translates to:
+  /// **'Título: {title}'**
+  String titleWithPlaceholder(Object title);
+
+  /// Label for the author with placeholder
+  ///
+  /// In pt, this message translates to:
+  /// **'Autor: {author}'**
+  String authorWithPlaceholder(Object author);
+
+  /// Label for the BPM with placeholder
+  ///
+  /// In pt, this message translates to:
+  /// **'BPM: {bpm}'**
+  String bpmWithPlaceholder(Object bpm);
+
+  /// Label for the music key with placeholder
+  ///
+  /// In pt, this message translates to:
+  /// **'Tom: {key}'**
+  String keyWithPlaceholder(Object key);
+
+  /// Label for number of sections with placeholder
+  ///
+  /// In pt, this message translates to:
+  /// **'{count} seções'**
+  String nSections(Object count);
 
   /// Prefix to be used on text fields with masculine nouns
   ///
@@ -356,179 +662,11 @@ abstract class AppLocalizations {
   /// **' aqui...'**
   String get hintSuffix;
 
-  /// Prompt displayed when there are no sections in the song structure
+  /// Generic error message with placeholders
   ///
   /// In pt, this message translates to:
-  /// **'Nenhuma seção na estrutura. Use o botão acima para adicionar seções.'**
-  String get noSectionsInStructurePrompt;
-
-  /// No description provided for @songStructure.
-  ///
-  /// In pt, this message translates to:
-  /// **'Mapa da Música'**
-  String get songStructure;
-
-  /// No description provided for @addSection.
-  ///
-  /// In pt, this message translates to:
-  /// **'Adicionar Seção'**
-  String get addSection;
-
-  /// No description provided for @lyrics.
-  ///
-  /// In pt, this message translates to:
-  /// **'Letras'**
-  String get lyrics;
-
-  /// No description provided for @failedToCreateCipher.
-  ///
-  /// In pt, this message translates to:
-  /// **'Falha ao criar cifra.'**
-  String get failedToCreateCipher;
-
-  /// No description provided for @failedToCreateVersion.
-  ///
-  /// In pt, this message translates to:
-  /// **'Falha ao criar versão.'**
-  String get failedToCreateVersion;
-
-  /// No description provided for @cipherCreatedSuccessfully.
-  ///
-  /// In pt, this message translates to:
-  /// **'Cifra criada com sucesso!'**
-  String get cipherCreatedSuccessfully;
-
-  /// Prefix to be used with the relevant error message when creating a cipher
-  ///
-  /// In pt, this message translates to:
-  /// **'Erro ao criar: '**
-  String get errorCreating;
-
-  /// No description provided for @cipherSavedSuccessfully.
-  ///
-  /// In pt, this message translates to:
-  /// **'Cifra salva com sucesso!'**
-  String get cipherSavedSuccessfully;
-
-  /// No description provided for @cannotCreateCipherExistingCipher.
-  ///
-  /// In pt, this message translates to:
-  /// **'Não foi possível criar a cifra porque uma cifra com o mesmo ID já existe.'**
-  String get cannotCreateCipherExistingCipher;
-
-  /// Welcome message with the user's name
-  ///
-  /// In pt, this message translates to:
-  /// **'Olá {userName}'**
-  String welcome(Object userName);
-
-  /// No description provided for @anonymousWelcome.
-  ///
-  /// In pt, this message translates to:
-  /// **'Bem-vindo'**
-  String get anonymousWelcome;
-
-  /// No description provided for @by.
-  ///
-  /// In pt, this message translates to:
-  /// **'por'**
-  String get by;
-
-  /// No description provided for @nextUp.
-  ///
-  /// In pt, this message translates to:
-  /// **'Próxima Agenda'**
-  String get nextUp;
-
-  /// No description provided for @playlist.
-  ///
-  /// In pt, this message translates to:
-  /// **'Playlist'**
-  String get playlist;
-
-  /// No description provided for @role.
-  ///
-  /// In pt, this message translates to:
-  /// **'Função'**
-  String get role;
-
-  /// No description provided for @generalMember.
-  ///
-  /// In pt, this message translates to:
-  /// **'Membro Geral'**
-  String get generalMember;
-
-  /// No description provided for @share.
-  ///
-  /// In pt, this message translates to:
-  /// **'Compartilhar'**
-  String get share;
-
-  /// No description provided for @view.
-  ///
-  /// In pt, this message translates to:
-  /// **'Visualizar'**
-  String get view;
-
-  /// No description provided for @createPlaylist.
-  ///
-  /// In pt, this message translates to:
-  /// **'Criar Playlist'**
-  String get createPlaylist;
-
-  /// No description provided for @addSongToLibrary.
-  ///
-  /// In pt, this message translates to:
-  /// **'Adicionar Música'**
-  String get addSongToLibrary;
-
-  /// No description provided for @assignSchedule.
-  ///
-  /// In pt, this message translates to:
-  /// **'Agendar'**
-  String get assignSchedule;
-
-  /// Hint text for searching playlists
-  ///
-  /// In pt, this message translates to:
-  /// **'Pesquisar por nome da playlist...'**
-  String get searchPlaylist;
-
-  /// Message displayed when no playlists are found
-  ///
-  /// In pt, this message translates to:
-  /// **'Nenhuma playlist encontrada'**
-  String get noPlaylistsFound;
-
-  /// No description provided for @item.
-  ///
-  /// In pt, this message translates to:
-  /// **'item'**
-  String get item;
-
-  /// No description provided for @items.
-  ///
-  /// In pt, this message translates to:
-  /// **'itens'**
-  String get items;
-
-  /// No description provided for @nextThisMonth.
-  ///
-  /// In pt, this message translates to:
-  /// **'Ainda neste Mês'**
-  String get nextThisMonth;
-
-  /// No description provided for @searchSchedule.
-  ///
-  /// In pt, this message translates to:
-  /// **'Pesquisar nome, local...'**
-  String get searchSchedule;
-
-  /// No description provided for @selectSectionType.
-  ///
-  /// In pt, this message translates to:
-  /// **'Selecione sua Seção'**
-  String get selectSectionType;
+  /// **'Erro durante {job}: {errorDetails}'**
+  String errorMessage(Object job, Object errorDetails);
 }
 
 class _AppLocalizationsDelegate

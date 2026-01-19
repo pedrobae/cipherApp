@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/version_provider.dart';
 import 'package:cordis/providers/section_provider.dart';
-import 'package:cordis/widgets/ciphers/editor/info_tab.dart';
+import 'package:cordis/widgets/ciphers/editor/metadata_tab.dart';
 import 'package:cordis/widgets/ciphers/editor/sections_tab.dart';
 
 class CipherEditor extends StatefulWidget {
@@ -200,7 +200,7 @@ class _CipherEditorState extends State<CipherEditor>
                           child: Column(
                             children: [
                               // Basic cipher info
-                              InfoTab(
+                              MetadataTab(
                                 cipherId: widget.cipherId,
                                 versionId: widget.versionId,
                                 versionType: widget.versionType,
@@ -343,7 +343,10 @@ class _CipherEditorState extends State<CipherEditor>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              '${AppLocalizations.of(context)!.errorCreating}${e.toString()}',
+              AppLocalizations.of(context)!.errorMessage(
+                AppLocalizations.of(context)!.create,
+                e.toString(),
+              ),
             ),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),

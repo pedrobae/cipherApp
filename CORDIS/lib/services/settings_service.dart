@@ -68,13 +68,19 @@ class SettingsService {
   }
 
   /// Save locale
-  static Future<void> setLocale(String locale) async {
-    await _preferences.setString(_keyLocale, locale);
+  static Future<void> setLocale(Locale locale) async {
+    await _preferences.setString(_keyLocale, locale.toString());
   }
 
   /// Get locale
-  static String getLocale() {
-    return _preferences.getString(_keyLocale) ?? 'pt_BR';
+  static Locale getLocale() {
+    final localeString = _preferences.getString(_keyLocale) ?? 'pt_BR';
+    final parts = localeString.split('_');
+    if (parts.length == 2) {
+      return Locale(parts[0], parts[1]);
+    } else {
+      return Locale(parts[0]);
+    }
   }
 
   // === LAYOUT SETTINGS ===

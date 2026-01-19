@@ -12,22 +12,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appName => 'CORDIS';
 
   @override
-  String get home => 'Home';
-
-  @override
-  String get library => 'Library';
-
-  @override
-  String get playlists => 'Playlists';
-
-  @override
-  String get settings => 'Settings';
-
-  @override
-  String get about => 'About';
-
-  @override
-  String get schedule => 'Schedule';
+  String get authentication => 'Authentication';
 
   @override
   String get email => 'Email';
@@ -57,13 +42,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get forgotPasswordSuffix => 'Please try again or Request a new one.';
 
   @override
+  String get home => 'Home';
+
+  @override
+  String get library => 'Library';
+
+  @override
+  String get playlists => 'Playlists';
+
+  @override
+  String get schedule => 'Schedule';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get about => 'About';
+
+  @override
   String get title => 'Song Title';
 
   @override
   String get author => 'Author';
-
-  @override
-  String get versionName => 'Version Name';
 
   @override
   String get musicKey => 'Key';
@@ -78,28 +78,60 @@ class AppLocalizationsEn extends AppLocalizations {
   String get language => 'Language';
 
   @override
-  String get sections => 'Sections';
+  String get versionName => 'Version Name';
 
   @override
   String get versions => ' versions';
 
   @override
-  String get cipherEditorTitle => 'Song Editor';
+  String get sections => 'Sections';
 
   @override
-  String get info => 'Info';
+  String get songStructure => 'Song Structure';
+
+  @override
+  String get addSection => 'Add Section';
+
+  @override
+  String get selectSectionType => 'Select your Section';
+
+  @override
+  String get noSectionsInStructurePrompt =>
+      'No sections in structure. Use the button above to add sections.';
+
+  @override
+  String get lyrics => 'Lyrics';
+
+  @override
+  String get cipherEditorTitle => 'Song Editor';
 
   @override
   String get cloudCipher => 'Cloud Song Map';
 
   @override
-  String get addToPlaylist => 'Add to Playlist';
+  String get cipherParsing => 'Choosing Parsing';
+
+  @override
+  String get info => 'Info';
+
+  @override
+  String get cipherCreatedSuccessfully => 'Cipher created successfully!';
+
+  @override
+  String get cipherSavedSuccessfully => 'Cipher saved successfully!';
+
+  @override
+  String get failedToCreateCipher => 'Failed to create cipher.';
+
+  @override
+  String get failedToCreateVersion => 'Failed to create version.';
+
+  @override
+  String get cannotCreateCipherExistingCipher =>
+      'Could not create cipher: existing cipher found.';
 
   @override
   String get searchCiphers => 'Search title, author...';
-
-  @override
-  String get create => 'Create';
 
   @override
   String get filter => 'Filter';
@@ -111,80 +143,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noCiphersFound => 'No Song Map found';
 
   @override
-  String get loading => 'Loading...';
-
-  @override
-  String get errorPrefix => 'Error: ';
-
-  @override
-  String get tryAgain => 'Try Again';
-
-  @override
-  String get save => 'Save';
-
-  @override
-  String get cancel => 'Cancel';
-
-  @override
-  String get delete => 'Delete';
-
-  @override
-  String get hintPrefixO => 'Enter your ';
-
-  @override
-  String get hintPrefixA => 'Enter your ';
-
-  @override
-  String get hintSuffix => ' here...';
-
-  @override
-  String get noSectionsInStructurePrompt =>
-      'No sections in structure. Use the button above to add sections.';
-
-  @override
-  String get songStructure => 'Song Structure';
-
-  @override
-  String get addSection => 'Add Section';
-
-  @override
-  String get lyrics => 'Lyrics';
-
-  @override
-  String get failedToCreateCipher => 'Failed to create cipher.';
-
-  @override
-  String get failedToCreateVersion => 'Failed to create version.';
-
-  @override
-  String get cipherCreatedSuccessfully => 'Cipher created successfully!';
-
-  @override
-  String get errorCreating => 'Error creating: ';
-
-  @override
-  String get cipherSavedSuccessfully => 'Cipher saved successfully!';
-
-  @override
-  String get cannotCreateCipherExistingCipher =>
-      'Could not create cipher: existing cipher found.';
-
-  @override
-  String welcome(Object userName) {
-    return 'Hello $userName';
-  }
-
-  @override
-  String get anonymousWelcome => 'Welcome';
-
-  @override
-  String get by => 'by';
-
-  @override
-  String get nextUp => 'Next Up';
+  String get createPlaylist => 'Create Playlist';
 
   @override
   String get playlist => 'Playlist';
+
+  @override
+  String get searchPlaylist => 'Search playlists...';
+
+  @override
+  String get noPlaylistsFound => 'No playlists found';
+
+  @override
+  String get addToPlaylist => 'Add to Playlist';
+
+  @override
+  String get item => 'item';
+
+  @override
+  String get items => 'items';
 
   @override
   String get role => 'Role';
@@ -199,25 +176,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get view => 'View';
 
   @override
-  String get createPlaylist => 'Create Playlist';
-
-  @override
-  String get addSongToLibrary => 'Add Song to Library';
-
-  @override
-  String get assignSchedule => 'Assign Schedule';
-
-  @override
-  String get searchPlaylist => 'Search playlists...';
-
-  @override
-  String get noPlaylistsFound => 'No playlists found';
-
-  @override
-  String get item => 'item';
-
-  @override
-  String get items => 'items';
+  String get nextUp => 'Next Up';
 
   @override
   String get nextThisMonth => 'Next This Month';
@@ -226,5 +185,130 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchSchedule => 'Search schedule...';
 
   @override
-  String get selectSectionType => 'Select your Section';
+  String get assignSchedule => 'Assign Schedule';
+
+  @override
+  String get create => 'Create';
+
+  @override
+  String get createManually => 'Create Manually';
+
+  @override
+  String get import => 'Import';
+
+  @override
+  String get importFromPDF => 'Import from PDF';
+
+  @override
+  String get selectPDFFile => 'Select PDF File';
+
+  @override
+  String get selectedFile => 'Selected File: ';
+
+  @override
+  String get processPDF => 'Process PDF';
+
+  @override
+  String get howToImport => 'How to Import';
+
+  @override
+  String get importInstructions =>
+      '• Select a PDF with the song map\n• Separate verses with empty lines or Labels\n• Chords above the lyrics at the correct positions';
+
+  @override
+  String get importFromImage => 'Import from Image';
+
+  @override
+  String get importFromText => 'Import from Text';
+
+  @override
+  String get pasteTextPrompt => 'Paste the cipher text here...';
+
+  @override
+  String importedFrom(Object importType) {
+    return 'Song imported from $importType';
+  }
+
+  @override
+  String get addSongToLibrary => 'Add Song to Library';
+
+  @override
+  String get chooseLanguage => 'Choose Language';
+
+  @override
+  String get selectAppLanguage => 'Select the application language:';
+
+  @override
+  String get portuguese => 'Portuguese';
+
+  @override
+  String get english => 'English';
+
+  @override
+  String get loading => 'Loading...';
+
+  @override
+  String get tryAgain => 'Try Again';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get confirm => 'Confirm';
+
+  @override
+  String welcome(Object userName) {
+    return 'Hello $userName';
+  }
+
+  @override
+  String get anonymousWelcome => 'Welcome';
+
+  @override
+  String get by => 'by';
+
+  @override
+  String titleWithPlaceholder(Object title) {
+    return 'Title: $title';
+  }
+
+  @override
+  String authorWithPlaceholder(Object author) {
+    return 'Author: $author';
+  }
+
+  @override
+  String bpmWithPlaceholder(Object bpm) {
+    return 'BPM: $bpm';
+  }
+
+  @override
+  String keyWithPlaceholder(Object key) {
+    return 'Key: $key';
+  }
+
+  @override
+  String nSections(Object count) {
+    return '$count sections';
+  }
+
+  @override
+  String get hintPrefixO => 'Enter your ';
+
+  @override
+  String get hintPrefixA => 'Enter your ';
+
+  @override
+  String get hintSuffix => ' here...';
+
+  @override
+  String errorMessage(Object job, Object errorDetails) {
+    return 'Error during $job: $errorDetails';
+  }
 }

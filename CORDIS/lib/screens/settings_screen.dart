@@ -1,3 +1,4 @@
+import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/text_section_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/providers/version_provider.dart';
@@ -41,6 +42,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 _showThemeDialog(context);
               },
             ),
+            const SizedBox(height: 16),
+            _buildSettingsTile(
+              icon: Icons.language,
+              title: 'Mudar Idioma',
+              subtitle: 'Alterar idioma do aplicativo',
+              onTap: () {
+                _showLanguageDialog(context);
+              },
+            ),
 
             const SizedBox(height: 32),
 
@@ -61,6 +71,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ? null
                     : () => _showResetDatabaseDialog(context),
               ),
+
+              const SizedBox(height: 16),
 
               Card(
                 child: ListTile(
@@ -108,7 +120,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               title: 'Ajuda e Suporte',
               subtitle: 'FAQ e contato',
               onTap: () {
-                _showComingSoon(context);
+                showComingSoon(context);
               },
             ),
           ],
@@ -400,7 +412,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  void _showComingSoon(BuildContext context) {
+  void showComingSoon(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Funcionalidade em desenvolvimento 🚧')),
     );
@@ -447,6 +459,50 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: const Text('Concluído'),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  void _showLanguageDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => Consumer<SettingsProvider>(
+        builder: (context, settingsProvider, child) => AlertDialog.adaptive(
+          title: Text(AppLocalizations.of(context)!.chooseLanguage),
+          content: SizedBox(
+            width: 300,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  AppLocalizations.of(context)!.selectAppLanguage,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
+                DropdownButton<Locale>(
+                  onChanged: (value) {
+                    if (value != null) {
+                      settingsProvider.setLocale(value);
+                      Navigator.pop(context);
+                    }
+                  },
+                  items: [
+                    DropdownMenuItem(
+                      value: const Locale('pt', 'BR'),
+                      child: Text(AppLocalizations.of(context)!.portuguese),
+                    ),
+                    DropdownMenuItem(
+                      value: const Locale('en', ''),
+                      child: Text(AppLocalizations.of(context)!.english),
+                    ),
+                  ],
+                  value: settingsProvider.locale,
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

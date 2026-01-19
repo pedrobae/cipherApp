@@ -71,6 +71,11 @@ class _ScheduleLibraryScreenState extends State<ScheduleLibraryScreen> {
                   IconTextButton(
                     onTap: () {
                       //TODO: Implement create new Schedule functionality
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Funcionalidade em desenvolvimento 🚧'),
+                        ),
+                      );
                     },
                     text: AppLocalizations.of(context)!.create,
                     icon: Icon(Icons.add, color: colorScheme.onSurface),

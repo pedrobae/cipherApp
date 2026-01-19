@@ -1,4 +1,6 @@
 import 'package:cordis/l10n/app_localizations.dart';
+import 'package:cordis/providers/version_provider.dart';
+import 'package:cordis/widgets/ciphers/library/create_cipher_sheet.dart';
 
 import 'package:cordis/widgets/icon_text_button.dart';
 import 'package:flutter/material.dart';
@@ -41,11 +43,12 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Consumer4<
+    return Consumer5<
       CipherProvider,
       UserProvider,
       MyAuthProvider,
-      SelectionProvider
+      SelectionProvider,
+      VersionProvider
     >(
       builder:
           (
@@ -54,6 +57,7 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
             userProvider,
             authProvider,
             selectionProvider,
+            versionProvider,
             child,
           ) {
             return Scaffold(
@@ -92,7 +96,8 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
                         visualDensity: VisualDensity.compact,
                       ),
                       onChanged: (value) {
-                        // TODO: Implement search functionality
+                        cipherProvider.searchLocalCiphers(value);
+                        versionProvider.searchCachedCloudVersions(value);
                       },
                     ),
                     // Buttons Row (e.g., Filters, Sort, Create New Cipher)
@@ -102,7 +107,7 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
                         // CREATE NEW CIPHER
                         IconTextButton(
                           onTap: () {
-                            //TODO: Implement create new cipher functionality
+                            _showCreateCipherSheet();
                           },
                           text: AppLocalizations.of(context)!.create,
                           icon: Icon(Icons.add, color: colorScheme.onSurface),
@@ -111,6 +116,13 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
                         IconTextButton(
                           onTap: () {
                             // TODO: Implement sort functionality
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Funcionalidade em desenvolvimento 🚧',
+                                ),
+                              ),
+                            );
                           },
                           text: AppLocalizations.of(context)!.sort,
                           icon: Icon(Icons.sort, color: colorScheme.onSurface),
@@ -119,6 +131,13 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
                         IconTextButton(
                           onTap: () {
                             // TODO: Implement filter functionality
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Funcionalidade em desenvolvimento 🚧',
+                                ),
+                              ),
+                            );
                           },
                           text: AppLocalizations.of(context)!.filter,
                           icon: Icon(
@@ -136,6 +155,16 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
               ),
             );
           },
+    );
+  }
+
+  void _showCreateCipherSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return CreateCipherSheet();
+      },
     );
   }
 }

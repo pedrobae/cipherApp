@@ -13,11 +13,13 @@ class ImportProvider extends ChangeNotifier {
   ParsingCipher? _importedCipher;
   bool _isImporting = false;
   String? _selectedFile;
+  String? _selectedFileName;
   String? _error;
   ImportType? _importType;
 
   ParsingCipher? get importedCipher => _importedCipher;
   String? get selectedFile => _selectedFile;
+  String? get selectedFileName => _selectedFileName;
   bool get isImporting => _isImporting;
   String? get error => _error;
 
@@ -132,9 +134,21 @@ class ImportProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Sets the selected file name.
+  void setSelectedFileName(String fileName) {
+    _selectedFileName = fileName;
+    notifyListeners();
+  }
+
   /// Clears the selected file name.
   void clearSelectedFile() {
     _selectedFile = null;
+    notifyListeners();
+  }
+
+  /// Clears the selected file name.
+  void clearSelectedFileName() {
+    _selectedFileName = null;
     notifyListeners();
   }
 

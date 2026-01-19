@@ -5,14 +5,14 @@ import 'package:cordis/services/settings_service.dart';
 class SettingsProvider extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.system;
   ThemeColor _themeColor = ThemeColor.green;
-  String _locale = 'pt_BR';
+  Locale _locale = const Locale('pt', 'BR');
   bool _notificationsEnabled = true;
   bool _reminderNotifications = true;
 
   // Getters
   ThemeMode get themeMode => _themeMode;
   ThemeColor get themeColor => _themeColor;
-  String get locale => _locale;
+  Locale get locale => _locale;
   bool get notificationsEnabled => _notificationsEnabled;
   bool get reminderNotifications => _reminderNotifications;
 
@@ -41,7 +41,7 @@ class SettingsProvider extends ChangeNotifier {
   }
 
   /// Set locale and persist
-  Future<void> setLocale(String locale) async {
+  Future<void> setLocale(Locale locale) async {
     _locale = locale;
     await SettingsService.setLocale(locale);
     notifyListeners();

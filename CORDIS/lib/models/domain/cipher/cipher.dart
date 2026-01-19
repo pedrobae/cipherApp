@@ -5,7 +5,7 @@ class Cipher {
   final int id;
   final String title;
   final String author;
-  final String bpm;
+  final int bpm;
   final String musicKey;
   final String language;
   final DateTime createdAt;
@@ -34,7 +34,7 @@ class Cipher {
       id: json['id'] as int,
       title: json['title'] as String? ?? '',
       author: json['author'] as String? ?? '',
-      bpm: json['bpm'] as String? ?? '',
+      bpm: json['bpm'] as int? ?? 0,
       tags: json['tags'] != null ? List<String>.from(json['tags']) : const [],
       musicKey: json['music_key'] as String? ?? '',
       language: json['language'] as String? ?? 'por',
@@ -58,7 +58,7 @@ class Cipher {
       author: '',
       musicKey: 'C',
       language: 'pt-BR',
-      bpm: '',
+      bpm: 0,
       isLocal: true,
       tags: [],
       versions: [],
@@ -114,7 +114,7 @@ class Cipher {
     String? firebaseId,
     String? title,
     String? author,
-    String? bpm,
+    int? bpm,
     List<String>? tags,
     String? musicKey,
     String? language,

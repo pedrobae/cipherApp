@@ -56,17 +56,17 @@ class CloudCipherCard extends StatelessWidget {
                               '${AppLocalizations.of(context)!.musicKey}: ${version.transposedKey ?? version.originalKey}',
                               style: Theme.of(context).textTheme.bodyMedium,
                             ),
-                            version.bpm != ''
+                            version.bpm != 0
                                 ? Text(
-                                    version.bpm,
+                                    version.bpm.toString(),
                                     style: Theme.of(
                                       context,
                                     ).textTheme.bodyMedium,
                                   )
                                 : Text('-'),
-                            version.bpm != ''
+                            version.duration != 0
                                 ? Text(
-                                    version.bpm,
+                                    version.duration.toString(),
                                     style: Theme.of(
                                       context,
                                     ).textTheme.bodyMedium,

@@ -4,7 +4,7 @@ import 'package:cordis/providers/version_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class StructureList extends StatelessWidget {
+class StructureList extends StatefulWidget {
   final dynamic versionId;
   final List<String> filteredStructure;
   final ScrollController scrollController;
@@ -18,15 +18,27 @@ class StructureList extends StatelessWidget {
     required this.sectionKeys,
   });
 
+  @override
+  State<StructureList> createState() => _StructureListState();
+}
+
+class _StructureListState extends State<StructureList> {
+  final listScrollController = ScrollController();
+
   void _scrollToSection(BuildContext context, int index) {
-    final sectionKey = sectionKeys[index];
+    final sectionKey = widget.sectionKeys[index];
     final renderBox =
         sectionKey.currentContext?.findRenderObject() as RenderBox;
 
     final offset = renderBox.localToGlobal(Offset.zero).dy;
 
-    scrollController.animateTo(
-      scrollController.offset + offset - 300,
+    widget.scrollController.animateTo(
+      widget.scrollController.offset + offset - 300,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+    listScrollController.animateTo(
+      (index * 52 - 150).toDouble(),
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
@@ -44,7 +56,7 @@ class StructureList extends StatelessWidget {
             border: Border.all(color: colorScheme.surfaceContainerLowest),
             borderRadius: BorderRadius.circular(0),
           ),
-          child: filteredStructure.isEmpty
+          child: widget.filteredStructure.isEmpty
               ? Center(
                   child: Text(
                     AppLocalizations.of(context)!.noSectionsInStructurePrompt,
@@ -53,14 +65,15 @@ class StructureList extends StatelessWidget {
                 )
               : SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
-
+                  controller: listScrollController,
                   child: Row(
+                    spacing: 8,
                     children: [
-                      ...filteredStructure.asMap().entries.map((entry) {
+                      ...widget.filteredStructure.asMap().entries.map((entry) {
                         final index = entry.key;
                         final sectionCode = entry.value;
                         final section = sectionProvider.getSection(
-                          versionId,
+                          widget.versionId,
                           sectionCode,
                         );
                         // Loading state
@@ -73,33 +86,26 @@ class StructureList extends StatelessWidget {
                         return GestureDetector(
                           onTap: () => _scrollToSection(context, index),
                           child: Container(
-                            padding: const EdgeInsets.only(right: 8),
-                            child: Stack(
-                              children: [
-                                Container(
-                                  height: 44,
-                                  width: 44,
-                                  decoration: BoxDecoration(
-                                    color: color.withValues(alpha: .8),
-                                    borderRadius: BorderRadius.circular(0),
-                                    border: Border.all(
-                                      color: colorScheme.shadow,
-                                      width: 1,
-                                    ),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      sectionCode,
-                                      style: TextStyle(
-                                        color: colorScheme.onSurface,
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 14,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
+                            height: 44,
+                            width: 44,
+                            decoration: BoxDecoration(
+                              color: color.withValues(alpha: .8),
+                              borderRadius: BorderRadius.circular(0),
+                              border: Border.all(
+                                color: colorScheme.shadow,
+                                width: 1,
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                sectionCode,
+                                style: TextStyle(
+                                  color: colorScheme.onSurface,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14,
                                 ),
-                              ],
+                                textAlign: TextAlign.center,
+                              ),
                             ),
                           ),
                         );

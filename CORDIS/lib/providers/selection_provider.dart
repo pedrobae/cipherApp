@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 
 class SelectionProvider extends ChangeNotifier {
   bool _isSelectionMode = false;
-  dynamic targetId = null;
+  dynamic targetId; // Playlsit ID, could be String or int
   final List<dynamic> _selectedItems = [];
 
   bool get isSelectionMode => _isSelectionMode;

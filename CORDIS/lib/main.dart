@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 
@@ -70,11 +71,13 @@ class MyApp extends StatelessWidget {
         builder: (context, settingsProvider, child) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            localizationsDelegates: const [AppLocalizations.delegate],
-            supportedLocales: const [
-              Locale('en', ''), // English
-              Locale('pt', ''), // Portuguese
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
             ],
+            supportedLocales: const [Locale('en', ''), Locale('pt', 'BR')],
+            locale: settingsProvider.locale,
             title: AppLocalizations.of(context)?.appName,
             theme: settingsProvider.lightTheme,
             darkTheme: settingsProvider.darkTheme,

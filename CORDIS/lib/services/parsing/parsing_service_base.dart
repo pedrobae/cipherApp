@@ -195,7 +195,7 @@ class ParsingServiceBase {
       createdAt: DateTime.now(),
       title: variant.metadata['title'] ?? 'Unknown Title',
       author: variant.metadata['artist'] ?? 'Unknown Artist',
-      bpm: variant.metadata['bpm'] ?? '',
+      bpm: variant.metadata['bpm'] ?? 0,
       musicKey: variant.metadata['key'] ?? '',
       language: variant.metadata['language'] ?? '',
       isLocal: true,

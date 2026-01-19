@@ -83,4 +83,13 @@ class SectionLabels {
     required this.code,
     required this.color,
   });
+
+  factory SectionLabels.unknown() {
+    return SectionLabels(
+      labelVariations: [],
+      officialLabel: 'Unlabeled Section',
+      code: '',
+      color: Colors.grey,
+    );
+  }
 }

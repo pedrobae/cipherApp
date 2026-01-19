@@ -1,4 +1,6 @@
+import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/screens/cipher/cipher_parsing_screen.dart';
+import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:cordis/providers/import_provider.dart';
 import 'package:provider/provider.dart';
@@ -31,7 +33,7 @@ class _ImportTextScreenState extends State<ImportTextScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Importar de Texto')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.importFromText)),
       body: Consumer<ImportProvider>(
         builder: (context, importProvider, child) {
           // Handle Error State
@@ -41,11 +43,14 @@ class _ImportTextScreenState extends State<ImportTextScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Erro ao importar: ${importProvider.error}',
+                    AppLocalizations.of(context)!.errorMessage(
+                      AppLocalizations.of(context)!.importFromText,
+                      importProvider.error!,
+                    ),
                     style: const TextStyle(color: Colors.red),
                   ),
                   FilledButton.icon(
-                    label: const Text('Tentar Novamente'),
+                    label: Text(AppLocalizations.of(context)!.tryAgain),
                     onPressed: () {
                       importProvider.clearError();
                     },
@@ -64,9 +69,9 @@ class _ImportTextScreenState extends State<ImportTextScreen> {
           // Default State
           return Center(
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
-                spacing: 4,
+                spacing: 16.0,
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   Expanded(
@@ -78,12 +83,23 @@ class _ImportTextScreenState extends State<ImportTextScreen> {
                       textAlignVertical: TextAlignVertical(y: -1),
                       controller: _importTextController,
                       decoration: InputDecoration(
-                        hintText: 'Cole o texto de uma cifra.',
+                        hintText: AppLocalizations.of(context)!.pasteTextPrompt,
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(0),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(0),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 2,
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                  FilledButton.icon(
-                    label: const Text('Importar'),
+                  FilledTextButton(
+                    text: AppLocalizations.of(context)!.import,
+                    isDarkButton: true,
                     onPressed: () async {
                       final text = _importTextController.text;
                       if (text.isNotEmpty) {
@@ -97,7 +113,6 @@ class _ImportTextScreenState extends State<ImportTextScreen> {
                         );
                       }
                     },
-                    icon: const Icon(Icons.import_export),
                   ),
                 ],
               ),

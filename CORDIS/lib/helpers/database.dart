@@ -21,7 +21,7 @@ class DatabaseHelper {
 
       final db = await openDatabase(
         path,
-        version: 6,
+        version: 7,
         onCreate: _onCreate,
         onUpgrade: _onUpgrade, // Handle migrations
       );
@@ -48,7 +48,7 @@ class DatabaseHelper {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
         author TEXT,
-        bpm TEXT,
+        bpm INTEGER DEFAULT 0,
         music_key TEXT,
         language TEXT DEFAULT 'por',
         firebase_id TEXT,
@@ -300,12 +300,32 @@ class DatabaseHelper {
           FOREIGN KEY (role_id) REFERENCES role (id) ON DELETE CASCADE) 
           FOREIGN KEY (member_id) REFERENCES user (id) ON DELETE CASCADE) ''');
     }
-    if (oldVersion < 7) {
-      // ADD DURATION TO VERSION TABLE AND REMOVE FROM CIPHER TABLE
+    if (oldVersion < 8) {
+      // CHANGE BPM TYPE FROM TEXT TO INTEGER IN CIPHER TABLE
       await db.execute(
-        'ALTER TABLE version ADD COLUMN duration INTEGER DEFAULT 0',
+        'ALTER TABLE cipher ADD COLUMN bpm_temp INTEGER DEFAULT 0',
       );
-      await db.execute('ALTER TABLE cipher DROP COLUMN duration');
+
+      // Copy and convert existing data
+      final List<Map<String, Object?>> rows = await db.rawQuery(
+        'SELECT id, bpm FROM cipher',
+      );
+      for (final row in rows) {
+        final int id = row['id'] as int;
+        final String? bpmString = row['bpm'] as String?;
+        final int bpmValue = int.tryParse(bpmString ?? '') ?? 0;
+
+        await db.rawUpdate('UPDATE cipher SET bpm_temp = ? WHERE id = ?', [
+          bpmValue,
+          id,
+        ]);
+      }
+
+      // Remove old bpm column
+      await db.execute('ALTER TABLE cipher DROP COLUMN bpm');
+
+      // Rename temp column to bpm
+      await db.execute('ALTER TABLE cipher RENAME COLUMN bpm_temp TO bpm');
     }
   }
 

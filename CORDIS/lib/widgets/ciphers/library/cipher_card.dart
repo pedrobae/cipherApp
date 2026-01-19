@@ -48,6 +48,25 @@ class _CipherCardState extends State<CipherCard> {
             playlistProvider,
             child,
           ) {
+            // Error handling
+            if (cipherProvider.error != null || versionProvider.error != null) {
+              return Container(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  AppLocalizations.of(context)!.errorMessage(
+                    AppLocalizations.of(context)!.loading,
+                    cipherProvider.error ?? versionProvider.error!,
+                  ),
+                ),
+              );
+            }
+            // Loading state
+            if (cipherProvider.isLoading || versionProvider.isLoading) {
+              return Center(
+                child: CircularProgressIndicator(color: colorScheme.primary),
+              );
+            }
+
             final cipher = cipherProvider.getCipherById(widget.cipherId)!;
             final versionCount = versionProvider.getVersionsOfCipherCount(
               widget.cipherId,
@@ -63,16 +82,6 @@ class _CipherCardState extends State<CipherCard> {
               duration = Duration(seconds: (version as VersionDto).duration);
             } else {
               duration = (version as Version).duration;
-            }
-
-            // Error handling
-            if (cipherProvider.error != null || versionProvider.error != null) {
-              return Container(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  '${AppLocalizations.of(context)!.errorPrefix}${cipherProvider.error ?? versionProvider.error}',
-                ),
-              );
             }
 
             // Card content
@@ -98,7 +107,10 @@ class _CipherCardState extends State<CipherCard> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
-                          '${AppLocalizations.of(context)!.errorPrefix}$error',
+                          AppLocalizations.of(context)!.errorMessage(
+                            AppLocalizations.of(context)!.addToPlaylist,
+                            error.toString(),
+                          ),
                         ),
                         backgroundColor: Theme.of(context).colorScheme.error,
                       ),
@@ -164,9 +176,9 @@ class _CipherCardState extends State<CipherCard> {
                                 '${AppLocalizations.of(context)!.musicKey}: ${cipher.musicKey}',
                                 style: Theme.of(context).textTheme.bodyMedium,
                               ),
-                              cipher.bpm != ''
+                              cipher.bpm != 0
                                   ? Text(
-                                      cipher.bpm,
+                                      cipher.bpm.toString(),
                                       style: Theme.of(
                                         context,
                                       ).textTheme.bodyMedium,

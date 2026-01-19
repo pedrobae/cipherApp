@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:cordis/widgets/ciphers/editor/info_tab.dart';
+import 'package:cordis/widgets/ciphers/editor/metadata_tab.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cordis/models/domain/cipher/cipher.dart';
 import 'package:cordis/repositories/local_cipher_repository.dart';
@@ -293,7 +293,7 @@ class CipherProvider extends ChangeNotifier {
         break;
       case InfoField.bpm:
         _localCiphers[cipherId] = _localCiphers[cipherId]!.copyWith(
-          bpm: change,
+          bpm: int.tryParse(change) ?? 0,
         );
         break;
       case InfoField.musicKey:

@@ -60,12 +60,6 @@ class _CipherCardState extends State<CipherCard> {
                 ),
               );
             }
-            // Loading state
-            if (cipherProvider.isLoading || versionProvider.isLoading) {
-              return Center(
-                child: CircularProgressIndicator(color: colorScheme.primary),
-              );
-            }
 
             final cipher = cipherProvider.getCipherById(widget.cipherId)!;
             final versionCount = versionProvider.getVersionsOfCipherCount(
@@ -75,6 +69,15 @@ class _CipherCardState extends State<CipherCard> {
             final versionId = versionProvider.getIdOfOldestVersionOfCipher(
               widget.cipherId,
             );
+
+            // Loading state
+            if (cipherProvider.isLoading ||
+                versionProvider.isLoading ||
+                versionId == null) {
+              return Center(
+                child: CircularProgressIndicator(color: colorScheme.primary),
+              );
+            }
 
             final version = versionProvider.getVersionById(versionId)!;
             Duration duration;
@@ -95,7 +98,7 @@ class _CipherCardState extends State<CipherCard> {
                     }
                     playlistProvider.addVersionToPlaylist(
                       selectionProvider.targetId,
-                      versionProvider.getIdOfOldestVersionOfCipher(cipher.id),
+                      versionProvider.getIdOfOldestVersionOfCipher(cipher.id)!,
                     );
                     versionProvider.loadVersionsForPlaylist(
                       playlistProvider

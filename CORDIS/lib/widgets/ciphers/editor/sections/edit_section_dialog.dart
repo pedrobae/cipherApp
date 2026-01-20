@@ -43,7 +43,9 @@ class _EditSectionDialogState extends State<EditSectionDialog> {
 
     contentTypeController = TextEditingController(text: section!.contentType);
 
-    contentTextController = TextEditingController(text: _song.generateLyrics());
+    contentTextController = TextEditingController(
+      text: _song.generateChordPro(),
+    );
 
     contentColor = section!.contentColor;
 
@@ -55,152 +57,138 @@ class _EditSectionDialogState extends State<EditSectionDialog> {
       }
     }
 
+    // Ensure current color is in available colors
+    if (!availableColors.containsValue(contentColor)) {
+      availableColors['Current'] = contentColor;
+    }
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      insetPadding: const EdgeInsets.all(24),
       child: Container(
-        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(0),
         ),
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            spacing: 16,
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              // HEADER
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    AppLocalizations.of(
-                      context,
-                    )!.editPlaceholder(AppLocalizations.of(context)!.section),
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    icon: Icon(
-                      Icons.close,
-                      size: 24,
-                      color: Theme.of(context).colorScheme.onSurface,
+          clipBehavior: Clip.none,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              spacing: 16,
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                // HEADER
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      AppLocalizations.of(
+                        context,
+                      )!.editPlaceholder(AppLocalizations.of(context)!.section),
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
-                  ),
-                ],
-              ),
-
-              TextField(
-                controller: contentCodeController,
-                // enabled: widget.versionId == -1,
-                decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)!.sectionCode,
-                ),
-              ),
-              TextField(
-                controller: contentTypeController,
-                decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)!.sectionType,
-                ),
-              ),
-              // Default section colors picker
-              DropdownButtonFormField<Color>(
-                decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)!.sectionColor,
-                ),
-                selectedItemBuilder: (context) {
-                  return availableColors.entries.map((entry) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        spacing: 16,
-                        children: [
-                          Container(
-                            width: 24,
-                            height: 24,
-                            decoration: BoxDecoration(
-                              color: entry.value,
-                              border: Border.all(color: Colors.black),
-                              borderRadius: BorderRadius.circular(24),
-                            ),
-                          ),
-                          Text(entry.key),
-                        ],
+                    IconButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      icon: Icon(
+                        Icons.close,
+                        size: 24,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
-                    );
-                  }).toList();
-                },
-                items: [
-                  ...availableColors.entries.map(
-                    (entry) => DropdownMenuItem<Color>(
-                      value: entry.value,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Row(
-                          spacing: 16,
-                          children: [
-                            Container(
-                              width: 24,
-                              height: 24,
-                              decoration: BoxDecoration(
-                                color: entry.value,
-                                border: Border.all(color: Colors.black),
-                                borderRadius: BorderRadius.circular(24),
+                    ),
+                  ],
+                ),
+
+                TextField(
+                  controller: contentCodeController,
+                  // enabled: widget.versionId == -1,
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.sectionCode,
+                  ),
+                ),
+                TextField(
+                  controller: contentTypeController,
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.sectionType,
+                  ),
+                ),
+                // Default section colors picker
+                DropdownButtonFormField<Color>(
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.sectionColor,
+                  ),
+                  initialValue: contentColor,
+                  items: [
+                    ...availableColors.entries.map(
+                      (entry) => DropdownMenuItem<Color>(
+                        value: entry.value,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Row(
+                            spacing: 16,
+                            children: [
+                              Container(
+                                width: 24,
+                                height: 24,
+                                decoration: BoxDecoration(
+                                  color: entry.value,
+                                  border: Border.all(color: Colors.black),
+                                  borderRadius: BorderRadius.circular(24),
+                                ),
                               ),
-                            ),
-                            Text(entry.key),
-                          ],
+                              Text(entry.key),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-                onChanged: (Color? newColor) {
-                  setState(() {
-                    contentColor = newColor!;
-                  });
-                },
-              ),
-              TextFormField(
-                controller: contentTextController,
-                minLines: 4,
-                decoration: InputDecoration(
-                  hintText: AppLocalizations.of(context)!.sectionText,
+                  ],
+                  onChanged: (Color? newColor) {
+                    setState(() {
+                      contentColor = newColor!;
+                    });
+                  },
                 ),
-                maxLines: null,
-                keyboardType: TextInputType.multiline,
-              ),
+                TextField(
+                  controller: contentTextController,
+                  minLines: 4,
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.sectionText,
+                  ),
+                  maxLines: null,
+                  keyboardType: TextInputType.multiline,
+                ),
 
-              // ACTION BUTTONS
-              FilledTextButton(
-                text: AppLocalizations.of(context)!.save,
-                isDarkButton: true,
-                onPressed: () {
-                  _updateSection(
-                    contentCodeController.text,
-                    contentTypeController.text,
-                    contentTextController.text,
-                    contentColor,
-                  );
-                  Navigator.of(context).pop();
-                },
-              ),
-              FilledTextButton(
-                text: AppLocalizations.of(context)!.delete,
-                onPressed: () {
-                  _deleteSection();
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
+                // ACTION BUTTONS
+                FilledTextButton(
+                  text: AppLocalizations.of(context)!.save,
+                  isDarkButton: true,
+                  onPressed: () {
+                    _updateSection(
+                      contentCodeController.text,
+                      contentTypeController.text,
+                      contentTextController.text,
+                      contentColor,
+                    );
+                    Navigator.of(context).pop();
+                  },
+                ),
+                FilledTextButton(
+                  text: AppLocalizations.of(context)!.delete,
+                  onPressed: () {
+                    _deleteSection();
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -208,25 +196,13 @@ class _EditSectionDialogState extends State<EditSectionDialog> {
   }
 
   void _updateSection(String? code, String? type, String? text, Color? color) {
-    final List<String> lines = text != null ? text.split('\n') : [];
-
-    for (int index = 0; index < _song.linesMap.length; index++) {
-      if (index >= lines.length) {
-        _song.linesMap.remove(index);
-        continue;
-      }
-      _song.linesMap[index] = lines[index];
-    }
-
-    final newContent = _song.generateChordPro();
-
     // Update the section with new values
     context.read<SectionProvider>().cacheUpdatedSection(
       widget.versionId,
       widget.sectionCode,
       newContentCode: code,
       newContentType: type,
-      newContentText: newContent,
+      newContentText: text,
       newColor: color,
     );
     // If the content code has changed, update the song structure accordingly

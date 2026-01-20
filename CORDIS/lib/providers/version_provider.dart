@@ -98,12 +98,12 @@ class VersionProvider extends ChangeNotifier {
         .length;
   }
 
-  int getIdOfOldestVersionOfCipher(int cipherId) {
+  int? getIdOfOldestVersionOfCipher(int cipherId) {
     final versions = _localVersions.values
         .where((version) => version.cipherId == cipherId)
         .toList();
     versions.sort((a, b) => a.createdAt.compareTo(b.createdAt));
-    return versions.first.id!;
+    return versions.isNotEmpty ? versions.first.id : null;
   }
 
   // ===== CREATE =====

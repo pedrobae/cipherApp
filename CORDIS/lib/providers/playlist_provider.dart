@@ -224,6 +224,7 @@ class PlaylistProvider extends ChangeNotifier {
             type: item.type,
             contentId: item.contentId,
             position: item.position,
+            duration: item.duration,
           ),
         )
         .toList();
@@ -320,19 +321,22 @@ class PlaylistProvider extends ChangeNotifier {
     List<int> versionItemsToPrune = [];
 
     for (final item in playlist.items) {
-      if (item.type == 'text_section') {
-        if (!textSectionItems.any(
-          (textItem) =>
-              (textItem['firebaseContentId'] == item.firebaseContentId),
-        )) {
-          textItemsToPrune.add(item.id!);
-        }
-      } else if (item.type == 'cipher_version') {
-        if (!versionSectionItems.any(
-          (versionItem) => (versionItem['contentId'] == item.contentId),
-        )) {
-          versionItemsToPrune.add(item.id!);
-        }
+      switch (item.type) {
+        case PlaylistItemType.textSection:
+          if (!textSectionItems.any(
+            (textItem) =>
+                (textItem['firebaseContentId'] == item.firebaseContentId),
+          )) {
+            textItemsToPrune.add(item.id!);
+          }
+          break;
+        case PlaylistItemType.cipherVersion:
+          if (!versionSectionItems.any(
+            (versionItem) => (versionItem['contentId'] == item.contentId),
+          )) {
+            versionItemsToPrune.add(item.id!);
+          }
+          break;
       }
     }
 

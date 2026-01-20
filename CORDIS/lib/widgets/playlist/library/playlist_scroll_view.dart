@@ -79,7 +79,10 @@ class _PlaylistScrollViewState extends State<PlaylistScrollView> {
                             .filteredPlaylists
                             .keys
                             .elementAt(index);
-                        return PlaylistCard(playlistId: playlistId);
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 8.0),
+                          child: PlaylistCard(playlistId: playlistId),
+                        );
                       },
                     ),
             );

@@ -26,11 +26,14 @@ class PlaylistCard extends StatelessWidget {
         // Card content
         return GestureDetector(
           onTap: () {
-            navigationProvider.push(PlaylistViewer(playlistId: playlistId));
+            navigationProvider.push(
+              PlaylistViewer(playlistId: playlistId),
+              isDense: true,
+            );
           },
           child: Container(
             decoration: BoxDecoration(
-              border: Border.all(color: colorScheme.surfaceContainerHigh),
+              border: Border.all(color: colorScheme.surfaceContainerLowest),
             ),
             padding: const EdgeInsets.all(8.0),
             child: Row(
@@ -43,17 +46,27 @@ class PlaylistCard extends StatelessWidget {
                     children: [
                       Text(
                         playlist.name,
-                        style: Theme.of(context).textTheme.titleMedium,
+                        style: Theme.of(context).textTheme.titleMedium!
+                            .copyWith(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 18,
+                            ),
                       ),
-                      Text(
-                        itemCount > 1
-                            ? '$itemCount ${AppLocalizations.of(context)!.items}'
-                            : '$itemCount ${AppLocalizations.of(context)!.item}',
-                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.surfaceContainerLowest,
-                        ),
+                      Row(
+                        children: [
+                          Text(
+                            itemCount != 1
+                                ? '$itemCount ${AppLocalizations.of(context)!.items}'
+                                : '$itemCount ${AppLocalizations.of(context)!.item}',
+                            style: Theme.of(context).textTheme.bodyMedium!
+                                .copyWith(
+                                  color: Theme.of(context).colorScheme.shadow,
+                                ),
+                          ),
+                          itemCount > 0
+                              ? Text(playlist.getDurationString())
+                              : const SizedBox.shrink(),
+                        ],
                       ),
                     ],
                   ),

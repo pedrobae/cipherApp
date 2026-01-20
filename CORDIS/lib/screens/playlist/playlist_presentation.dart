@@ -8,7 +8,6 @@ import 'package:cordis/providers/version_provider.dart';
 import 'package:cordis/providers/layout_settings_provider.dart';
 import 'package:cordis/widgets/playlist/presentation/presentation_cipher_section.dart';
 import 'package:cordis/widgets/playlist/presentation/presentation_text_section.dart';
-import 'package:cordis/widgets/playlist/presentation/playlist_navigation_drawer.dart';
 import 'package:cordis/widgets/settings/layout_settings.dart';
 
 class PlaylistPresentationScreen extends StatefulWidget {
@@ -92,10 +91,6 @@ class _PlaylistPresentationScreenState
             }
 
             return Scaffold(
-              endDrawer: PlaylistNavigationDrawer(
-                playlist: playlist,
-                onItemSelected: (index) => _scrollToItem(index, null),
-              ),
               body: CustomScrollView(
                 controller: _scrollController, // Keep your existing controller
                 slivers: <Widget>[

@@ -34,7 +34,7 @@ class PlaylistRepository {
       // 2. Insert playlist items if any
       for (final item in playlist.items) {
         switch (item.type) {
-          case 'cipher_version':
+          case PlaylistItemType.cipherVersion:
             await txn.insert('playlist_version', {
               'version_id': item.contentId,
               'playlist_id': playlistId,
@@ -42,7 +42,7 @@ class PlaylistRepository {
               'included_at': DateTime.now().toIso8601String(),
             });
             break;
-          case 'text_section':
+          case PlaylistItemType.textSection:
             // Handle text sections if they exist
             // For now, just skip as we're removing text sections
             break;
@@ -327,7 +327,7 @@ class PlaylistRepository {
 
     final textSectionResults = await db.rawQuery(
       '''
-        SELECT id as content_id, position, 'text_section' as type, id
+        SELECT id as content_id, position, duration, id
         FROM playlist_text 
         WHERE playlist_id = ? 
         ORDER BY position ASC
@@ -339,8 +339,9 @@ class PlaylistRepository {
       final id = row['id'] as int;
       final contentId = row['content_id'] as int;
       final position = row['position'] as int;
+      final duration = Duration(milliseconds: row['duration'] as int);
 
-      return PlaylistItem.textSection(contentId, position, id);
+      return PlaylistItem.textSection(contentId, position, id, duration);
     }).toList();
   }
 
@@ -350,7 +351,7 @@ class PlaylistRepository {
 
     final versionResults = await db.rawQuery(
       '''
-        SELECT version_id as content_id, position, 'cipher_version' as type, id
+        SELECT version_id as content_id, position, duration, id
         FROM playlist_version 
         WHERE playlist_id = ? 
         ORDER BY position ASC
@@ -362,8 +363,9 @@ class PlaylistRepository {
       final id = row['id'] as int;
       final contentId = row['content_id'] as int;
       final position = row['position'] as int;
+      final duration = Duration(milliseconds: row['duration'] as int);
 
-      return PlaylistItem.cipherVersion(contentId, position, id);
+      return PlaylistItem.cipherVersion(contentId, position, id, duration);
     }).toList();
   }
 

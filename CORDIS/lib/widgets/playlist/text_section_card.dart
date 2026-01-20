@@ -1,5 +1,4 @@
 import 'package:cordis/providers/text_section_provider.dart';
-import 'package:cordis/widgets/playlist/dialogs/text_section_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -23,7 +22,6 @@ class _TextSectionCardState extends State<TextSectionCard> {
     final textSectionProvider = context.watch<TextSectionProvider>();
 
     return InkWell(
-      onTap: _ontap,
       child: Card(
         color: Theme.of(context).colorScheme.surfaceContainerHighest,
         elevation: 4,
@@ -59,14 +57,6 @@ class _TextSectionCardState extends State<TextSectionCard> {
           ),
         ),
       ),
-    );
-  }
-
-  void _ontap() {
-    TextSectionDialog.show(
-      context,
-      textSectionId: widget.textSectionId,
-      playlistId: widget.playlistId,
     );
   }
 }

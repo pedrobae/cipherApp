@@ -1,8 +1,33 @@
 /// Represents a content item in a playlist (cipher version or text section)
+enum PlaylistItemType { cipherVersion, textSection }
+
+extension PlaylistItemTypeExtension on PlaylistItemType {
+  String get name {
+    switch (this) {
+      case PlaylistItemType.cipherVersion:
+        return 'cipherVersion';
+      case PlaylistItemType.textSection:
+        return 'textSection';
+    }
+  }
+
+  static PlaylistItemType getTypeByName(String name) {
+    switch (name) {
+      case 'cipherVersion':
+        return PlaylistItemType.cipherVersion;
+      case 'textSection':
+        return PlaylistItemType.textSection;
+      default:
+        throw Exception('Not a PlaylistItemType name: $name');
+    }
+  }
+}
+
 class PlaylistItem {
-  final String type; // 'cipher_version' or 'text_section'
+  final PlaylistItemType type;
   final int? id;
   final int? contentId;
+  Duration duration;
   String? firebaseContentId;
   int position;
 
@@ -11,19 +36,17 @@ class PlaylistItem {
     required this.type,
     this.contentId,
     required this.position,
+    required this.duration,
     this.firebaseContentId,
   });
-
-  // Content type constants
-  static const String cipherVersionType = 'cipher_version';
-  static const String textSectionType = 'text_section';
 
   factory PlaylistItem.fromJson(Map<String, dynamic> json) {
     return PlaylistItem(
       id: json['id'] as int,
-      type: json['content_type'] as String,
+      type: PlaylistItemTypeExtension.getTypeByName(json['content_type']),
       contentId: json['content_id'] as int,
       position: json['order_index'] as int,
+      duration: Duration(seconds: json['duration'] as int),
     );
   }
 
@@ -31,38 +54,55 @@ class PlaylistItem {
     return {
       'content_type': type,
       'content_id': contentId,
+      'duration': duration.inSeconds,
       'order_index': position,
       'firebase_id': firebaseContentId,
     };
   }
 
   // Helper constructors
-  PlaylistItem.cipherVersion(int cipherVersionId, int position, int id)
-    : this(
+  PlaylistItem.cipherVersion(
+    int cipherVersionId,
+    int position,
+    int id,
+    Duration duration,
+  ) : this(
         id: id,
-        type: cipherVersionType,
+        type: PlaylistItemType.cipherVersion,
         contentId: cipherVersionId,
         position: position,
+        duration: duration,
       );
 
-  PlaylistItem.textSection(int textSectionId, int position, int id)
-    : this(
+  PlaylistItem.textSection(
+    int textSectionId,
+    int position,
+    int id,
+    Duration duration,
+  ) : this(
         id: id,
-        type: textSectionType,
+        type: PlaylistItemType.textSection,
         contentId: textSectionId,
         position: position,
+        duration: duration,
       );
 
   // Type checking helpers
-  bool get isCipherVersion => type == cipherVersionType;
-  bool get isTextSection => type == textSectionType;
+  bool get isCipherVersion => type == PlaylistItemType.cipherVersion;
+  bool get isTextSection => type == PlaylistItemType.textSection;
 
-  PlaylistItem copyWith({String? type, int? contentId, int? position}) {
+  PlaylistItem copyWith({
+    PlaylistItemType? type,
+    int? contentId,
+    int? position,
+    Duration? duration,
+  }) {
     return PlaylistItem(
       id: id,
       type: type ?? this.type,
       contentId: contentId ?? this.contentId,
       position: position ?? this.position,
+      duration: duration ?? this.duration,
     );
   }
 

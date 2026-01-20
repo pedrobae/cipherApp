@@ -32,6 +32,22 @@ class Playlist {
     );
   }
 
+  String getDurationString() {
+    final totalDuration = items.fold(Duration.zero, (a, b) => a + b.duration);
+
+    final hours = totalDuration.inHours;
+    final minutes = totalDuration.inMinutes.remainder(60);
+    final seconds = totalDuration.inSeconds.remainder(60);
+
+    if (hours > 0) {
+      return '${hours}h ${minutes}m ${seconds}s';
+    } else if (minutes > 0) {
+      return '${minutes}m ${seconds}s';
+    } else {
+      return '${seconds}s';
+    }
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -57,7 +73,8 @@ class Playlist {
       ownerId: ownerFirebaseId,
       itemOrder: items
           .map(
-            (item) => '${item.type == 'cipher_version' ? 'v' : 't'}:${item.id}',
+            (item) =>
+                '${item.type == PlaylistItemType.cipherVersion ? 'v' : 't'}:${item.id}',
           )
           .toList(),
       versions: versions,
@@ -87,28 +104,7 @@ class Playlist {
     );
   }
 
-  // Methods for unified content items
-  Playlist addCipherVersionItem(int cipherVersionId) {
-    final position = items.length;
-    final newItem = PlaylistItem.cipherVersion(
-      cipherVersionId,
-      position,
-      -1,
-    ); // id -1 for new items
-    return copyWith(items: [...items, newItem], updatedAt: DateTime.now());
-  }
-
-  Playlist addTextSectionItem(int textSectionId) {
-    final position = items.length;
-    final newItem = PlaylistItem.textSection(
-      textSectionId,
-      position,
-      -1,
-    ); // id -1 for new items
-    return copyWith(items: [...items, newItem], updatedAt: DateTime.now());
-  }
-
-  Playlist removeItem(String type, int contentId) {
+  Playlist removeItem(PlaylistItemType type, int contentId) {
     final updatedItems = items
         .where((item) => !(item.type == type && item.contentId == contentId))
         .toList();

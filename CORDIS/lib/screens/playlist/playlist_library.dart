@@ -37,7 +37,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen> {
         return Padding(
           padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
           child: Column(
-            spacing: 8,
+            spacing: 16.0,
             children: [
               // Search Bar
               TextField(
@@ -62,6 +62,8 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen> {
               ),
 
               Expanded(child: PlaylistScrollView()),
+
+              // Create Playlist Button
               FilledTextButton(
                 onPressed: () {
                   navigationProvider.push(CreatePlaylistScreen());

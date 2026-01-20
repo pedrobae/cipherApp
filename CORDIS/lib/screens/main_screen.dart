@@ -45,6 +45,8 @@ class MainScreenState extends State<MainScreen> {
 
     return Consumer2<MyAuthProvider, NavigationProvider>(
       builder: (context, authProvider, navigationProvider, child) {
+        final isDense = navigationProvider.isDense;
+
         return PopScope(
           canPop: false,
           onPopInvokedWithResult: (didPop, _) {
@@ -52,15 +54,17 @@ class MainScreenState extends State<MainScreen> {
             navigationProvider.pop();
           },
           child: Scaffold(
-            appBar: AppBar(
-              backgroundColor: colorScheme.surfaceContainer,
-              centerTitle: true,
-              title: SvgPicture.asset(
-                'assets/logos/v2_simple_color_white.svg',
-                width: 80,
-              ),
-            ),
-            drawer: AppDrawer(),
+            appBar: isDense
+                ? null
+                : AppBar(
+                    backgroundColor: colorScheme.surfaceContainer,
+                    centerTitle: true,
+                    title: SvgPicture.asset(
+                      'assets/logos/v2_simple_color_white.svg',
+                      width: 80,
+                    ),
+                  ),
+            drawer: isDense ? null : AppDrawer(),
             bottomNavigationBar: Container(
               decoration: BoxDecoration(
                 border: Border(

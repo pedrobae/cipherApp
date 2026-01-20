@@ -9,13 +9,15 @@ enum NavigationRoute { home, library, playlists, schedule }
 
 class NavigationProvider extends ChangeNotifier {
   NavigationRoute _currentRoute = NavigationRoute.home;
+  static List<Widget> _screenStack = [];
+  bool _isDense = false;
   bool _isLoading = false;
   String? _error;
-  static List<Widget> _screenStack = [];
 
   // Getters
   NavigationRoute get currentRoute => _currentRoute;
   int get currentIndex => _currentRoute.index;
+  bool get isDense => _isDense;
   bool get isLoading => _isLoading;
   String? get error => _error;
   Widget get currentScreen =>
@@ -38,8 +40,9 @@ class NavigationProvider extends ChangeNotifier {
     }
   }
 
-  void push(Widget screen) {
+  void push(Widget screen, {bool isDense = false}) {
     _screenStack.add(screen);
+    _isDense = isDense;
     notifyListeners();
   }
 

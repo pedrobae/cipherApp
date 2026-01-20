@@ -61,6 +61,8 @@
 
   "sections": "Seções",
   "@sections": {"description": "Sections field label"},
+  "section": "Seção",
+  "@section": {"description": "Section label"},
   "songStructure": "Mapa da Música",
   "@songStructure": {"description": "Song structure/map label"},
   "addSection": "Adicionar Seção",
@@ -71,6 +73,14 @@
   "@noSectionsInStructurePrompt": {"description": "Prompt displayed when there are no sections in the song structure"},
   "lyrics": "Letras",
   "@lyrics": {"description": "Lyrics field label"},
+  "sectionCode": "Código da Seção",
+  "@sectionCode": {"description": "Section code field label"},
+  "sectionType": "Tipo da Seção",
+  "@sectionType": {"description": "Section type field label"},
+  "sectionColor": "Cor da Seção",
+  "@sectionColor": {"description": "Section color field label"},
+  "sectionText": "Texto da Seção...",
+  "@sectionText": {"description": "Hint text for section text input"},
 
 
   "cipherEditorTitle": "Editor de Cifras",
@@ -210,7 +220,8 @@
   "@delete": {"description": "Delete button label"},
   "confirm": "Confirmar",
   "@confirm": {"description": "Confirm button label"},
-
+  "editPlaceholder": "Editar {object}",
+  "@editPlaceholder": {"description": "Edit placeholder with object name", "placeholders": {"object": {}}},
 
   "welcome": "Olá {userName}",
   "@welcome": {"description": "Welcome message with the user's name", "placeholders": {"userName": {}}},

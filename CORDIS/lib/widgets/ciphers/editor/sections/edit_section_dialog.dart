@@ -1,7 +1,9 @@
+import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/models/domain/cipher/section.dart';
 import 'package:cordis/models/ui/song.dart';
 import 'package:cordis/providers/section_provider.dart';
 import 'package:cordis/providers/version_provider.dart';
+import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:cordis/utils/section_constants.dart';
 import 'package:provider/provider.dart';
@@ -58,110 +60,150 @@ class _EditSectionDialogState extends State<EditSectionDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text('Edit Section'),
-      content: Column(
-        spacing: 8,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(
-            controller: contentCodeController,
-            decoration: InputDecoration(labelText: 'Content Code'),
-          ),
-          TextField(
-            controller: contentTypeController,
-            decoration: InputDecoration(labelText: 'Content Type'),
-          ),
-
-          // Default section colors picker
-          DropdownButtonFormField<Color>(
-            decoration: InputDecoration(labelText: 'Content Color'),
-            selectedItemBuilder: (context) {
-              return availableColors.entries.map((entry) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Row(
-                    spacing: 16,
-                    children: [
-                      Container(
-                        width: 24,
-                        height: 24,
-                        decoration: BoxDecoration(
-                          color: entry.value,
-                          border: Border.all(color: Colors.black),
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                      ),
-                      Text(entry.key),
-                    ],
+    return Dialog(
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(0),
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            spacing: 16,
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              // HEADER
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    AppLocalizations.of(
+                      context,
+                    )!.editPlaceholder(AppLocalizations.of(context)!.section),
+                    style: Theme.of(context).textTheme.titleLarge,
                   ),
-                );
-              }).toList();
-            },
-            items: [
-              ...availableColors.entries.map(
-                (entry) => DropdownMenuItem<Color>(
-                  value: entry.value,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Row(
-                      spacing: 16,
-                      children: [
-                        Container(
-                          width: 24,
-                          height: 24,
-                          decoration: BoxDecoration(
-                            color: entry.value,
-                            border: Border.all(color: Colors.black),
-                            borderRadius: BorderRadius.circular(24),
-                          ),
-                        ),
-                        Text(entry.key),
-                      ],
+                  IconButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    icon: Icon(
+                      Icons.close,
+                      size: 24,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
+                ],
+              ),
+
+              TextField(
+                controller: contentCodeController,
+                enabled: widget.versionId == -1,
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.sectionCode,
                 ),
               ),
+              TextField(
+                controller: contentTypeController,
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.sectionType,
+                ),
+              ),
+              // Default section colors picker
+              DropdownButtonFormField<Color>(
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.sectionColor,
+                ),
+                selectedItemBuilder: (context) {
+                  return availableColors.entries.map((entry) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        spacing: 16,
+                        children: [
+                          Container(
+                            width: 24,
+                            height: 24,
+                            decoration: BoxDecoration(
+                              color: entry.value,
+                              border: Border.all(color: Colors.black),
+                              borderRadius: BorderRadius.circular(24),
+                            ),
+                          ),
+                          Text(entry.key),
+                        ],
+                      ),
+                    );
+                  }).toList();
+                },
+                items: [
+                  ...availableColors.entries.map(
+                    (entry) => DropdownMenuItem<Color>(
+                      value: entry.value,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Row(
+                          spacing: 16,
+                          children: [
+                            Container(
+                              width: 24,
+                              height: 24,
+                              decoration: BoxDecoration(
+                                color: entry.value,
+                                border: Border.all(color: Colors.black),
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                            ),
+                            Text(entry.key),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+                onChanged: (Color? newColor) {
+                  setState(() {
+                    contentColor = newColor!;
+                  });
+                },
+              ),
+              TextFormField(
+                controller: contentTextController,
+                minLines: 4,
+                decoration: InputDecoration(
+                  hintText: AppLocalizations.of(context)!.sectionText,
+                ),
+                maxLines: null,
+                keyboardType: TextInputType.multiline,
+              ),
+
+              // ACTION BUTTONS
+              FilledTextButton(
+                text: AppLocalizations.of(context)!.save,
+                isDarkButton: true,
+                onPressed: () {
+                  _updateSection(
+                    contentCodeController.text,
+                    contentTypeController.text,
+                    contentTextController.text,
+                    contentColor,
+                  );
+                  Navigator.of(context).pop();
+                },
+              ),
+              FilledTextButton(
+                text: AppLocalizations.of(context)!.delete,
+                onPressed: () {
+                  _deleteSection();
+                  Navigator.of(context).pop();
+                },
+              ),
             ],
-            onChanged: (Color? newColor) {
-              setState(() {
-                contentColor = newColor!;
-              });
-            },
           ),
-          TextFormField(
-            controller: contentTextController,
-            minLines: 4,
-            decoration: InputDecoration(
-              hintText: 'Conteúdo da seção',
-              border: const OutlineInputBorder(),
-            ),
-            maxLines: null,
-            keyboardType: TextInputType.multiline,
-          ),
-        ],
+        ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            _deleteSection();
-            Navigator.of(context).pop();
-          },
-          child: Text('Delete'),
-        ),
-        TextButton(
-          onPressed: () {
-            _updateSection(
-              contentCodeController.text,
-              contentTypeController.text,
-              contentTextController.text,
-              contentColor,
-            );
-            Navigator.of(context).pop();
-          },
-          child: Text('Save'),
-        ),
-      ],
     );
   }
 

@@ -87,6 +87,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sections => 'Sections';
 
   @override
+  String get section => 'Section';
+
+  @override
   String get songStructure => 'Song Structure';
 
   @override
@@ -101,6 +104,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get lyrics => 'Lyrics';
+
+  @override
+  String get sectionCode => 'Section Code';
+
+  @override
+  String get sectionType => 'Section Type';
+
+  @override
+  String get sectionColor => 'Section Color';
+
+  @override
+  String get sectionText => 'Section Text...';
 
   @override
   String get cipherEditorTitle => 'Song Editor';
@@ -288,6 +303,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get confirm => 'Confirm';
+
+  @override
+  String editPlaceholder(Object object) {
+    return 'Edit $object';
+  }
 
   @override
   String welcome(Object userName) {

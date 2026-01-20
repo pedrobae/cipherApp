@@ -43,10 +43,10 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   fl_chart: ^0.69.0                # Charts for data visualization (PDF analysis preview)
 
-flutter_icons:
+flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/logos/app_icon.svg"
+  image_path: "assets/logos/logo_new.png"
 
 flutter:
   generate: true

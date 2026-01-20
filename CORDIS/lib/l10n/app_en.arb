@@ -61,6 +61,8 @@
 
   "sections": "Sections",
   "@sections": {"description": "Sections field label"},
+  "section": "Section",
+  "@section": {"description": "Section label"},
   "songStructure": "Song Structure",
   "@songStructure": {"description": "Song structure/map label"},
   "addSection": "Add Section",
@@ -71,6 +73,14 @@
   "@noSectionsInStructurePrompt": {"description": "Prompt displayed when there are no sections in the song structure"},
   "lyrics": "Lyrics",
   "@lyrics": {"description": "Lyrics field label"},
+  "sectionCode": "Section Code",
+  "@sectionCode": {"description": "Section code field label"},
+  "sectionType": "Section Type",
+  "@sectionType": {"description": "Section type field label"},
+  "sectionColor": "Section Color",
+  "@sectionColor": {"description": "Section color field label"},
+  "sectionText": "Section Text...",
+  "@sectionText": {"description": "Hint text for section text input"},
 
 
   "cipherEditorTitle": "Song Editor",
@@ -210,6 +220,8 @@
   "@delete": {"description": "Delete button label"},
   "confirm": "Confirm",
   "@confirm": {"description": "Confirm button label"},
+  "editPlaceholder": "Edit {object}",
+  "@editPlaceholder": {"description": "Placeholder text for editing an object", "placeholders": {"object": {}}},
 
 
   "welcome": "Hello {userName}",

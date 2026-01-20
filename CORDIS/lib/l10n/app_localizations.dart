@@ -254,6 +254,12 @@ abstract class AppLocalizations {
   /// **'Seções'**
   String get sections;
 
+  /// Section label
+  ///
+  /// In pt, this message translates to:
+  /// **'Seção'**
+  String get section;
+
   /// Song structure/map label
   ///
   /// In pt, this message translates to:
@@ -283,6 +289,30 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Letras'**
   String get lyrics;
+
+  /// Section code field label
+  ///
+  /// In pt, this message translates to:
+  /// **'Código da Seção'**
+  String get sectionCode;
+
+  /// Section type field label
+  ///
+  /// In pt, this message translates to:
+  /// **'Tipo da Seção'**
+  String get sectionType;
+
+  /// Section color field label
+  ///
+  /// In pt, this message translates to:
+  /// **'Cor da Seção'**
+  String get sectionColor;
+
+  /// Hint text for section text input
+  ///
+  /// In pt, this message translates to:
+  /// **'Texto da Seção...'**
+  String get sectionText;
 
   /// Title for the cipher/song editor screen
   ///
@@ -649,6 +679,12 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Confirmar'**
   String get confirm;
+
+  /// Edit placeholder with object name
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar {object}'**
+  String editPlaceholder(Object object);
 
   /// Welcome message with the user's name
   ///

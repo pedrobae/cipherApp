@@ -123,7 +123,7 @@ class PlaylistRepository {
 
       await db.update(
         'playlist',
-        {'name': playlist.name, 'duration': playlist.duration.inSeconds},
+        {'name': playlist.name},
         where: 'id = ?',
         whereArgs: [playlistId],
       );
@@ -487,7 +487,7 @@ class PlaylistRepository {
         playlistId = existingResult.first['id'] as int;
         await txn.update(
           'playlist',
-          {'name': playlist.name, 'duration': playlist.duration.inSeconds},
+          {'name': playlist.name},
           where: 'id = ?',
           whereArgs: [playlistId],
         );

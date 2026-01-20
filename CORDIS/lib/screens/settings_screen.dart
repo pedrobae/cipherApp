@@ -24,107 +24,102 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // App Settings Section
-            _buildSectionHeader('Configurações do App', Icons.settings),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // App Settings Section
+          _buildSectionHeader('Configurações do App', Icons.settings),
+          const SizedBox(height: 16),
+
+          _buildSettingsTile(
+            icon: Icons.palette,
+            title: 'Tema',
+            subtitle: 'Personalizar aparência do app',
+            onTap: () {
+              _showThemeDialog(context);
+            },
+          ),
+          const SizedBox(height: 16),
+          _buildSettingsTile(
+            icon: Icons.language,
+            title: 'Mudar Idioma',
+            subtitle: 'Alterar idioma do aplicativo',
+            onTap: () {
+              _showLanguageDialog(context);
+            },
+          ),
+
+          const SizedBox(height: 32),
+
+          // Development Tools Section (only in debug mode)
+          if (kDebugMode) ...[
+            _buildSectionHeader('Ferramentas de Desenvolvimento', Icons.build),
             const SizedBox(height: 16),
 
-            _buildSettingsTile(
-              icon: Icons.palette,
-              title: 'Tema',
-              subtitle: 'Personalizar aparência do app',
-              onTap: () {
-                _showThemeDialog(context);
-              },
+            _buildDangerousTile(
+              icon: Icons.refresh,
+              title: 'Resetar Banco de Dados',
+              subtitle: 'Apaga todos os dados e recria com dados iniciais',
+              isLoading: _isResettingDb,
+              onTap: _isResettingDb
+                  ? null
+                  : () => _showResetDatabaseDialog(context),
             ),
+
             const SizedBox(height: 16),
+
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.cached),
+                title: const Text('Recarregar Interface'),
+                subtitle: const Text(
+                  'Debug: Força recarga completa de dados e telas',
+                ),
+                trailing: _isReloading
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.refresh),
+                onTap: _isReloading ? null : _reloadAllData,
+              ),
+            ),
+
             _buildSettingsTile(
-              icon: Icons.language,
-              title: 'Mudar Idioma',
-              subtitle: 'Alterar idioma do aplicativo',
-              onTap: () {
-                _showLanguageDialog(context);
-              },
+              icon: Icons.storage,
+              title: 'Informações do Banco',
+              subtitle: 'Ver estatísticas e tabelas',
+              onTap: () => _showDatabaseInfo(),
             ),
 
             const SizedBox(height: 32),
-
-            // Development Tools Section (only in debug mode)
-            if (kDebugMode) ...[
-              _buildSectionHeader(
-                'Ferramentas de Desenvolvimento',
-                Icons.build,
-              ),
-              const SizedBox(height: 16),
-
-              _buildDangerousTile(
-                icon: Icons.refresh,
-                title: 'Resetar Banco de Dados',
-                subtitle: 'Apaga todos os dados e recria com dados iniciais',
-                isLoading: _isResettingDb,
-                onTap: _isResettingDb
-                    ? null
-                    : () => _showResetDatabaseDialog(context),
-              ),
-
-              const SizedBox(height: 16),
-
-              Card(
-                child: ListTile(
-                  leading: const Icon(Icons.cached),
-                  title: const Text('Recarregar Interface'),
-                  subtitle: const Text(
-                    'Debug: Força recarga completa de dados e telas',
-                  ),
-                  trailing: _isReloading
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.refresh),
-                  onTap: _isReloading ? null : _reloadAllData,
-                ),
-              ),
-
-              _buildSettingsTile(
-                icon: Icons.storage,
-                title: 'Informações do Banco',
-                subtitle: 'Ver estatísticas e tabelas',
-                onTap: () => _showDatabaseInfo(),
-              ),
-
-              const SizedBox(height: 32),
-            ],
-
-            // About Section
-            _buildSectionHeader('Sobre', Icons.info),
-            const SizedBox(height: 16),
-
-            _buildSettingsTile(
-              icon: Icons.info_outline,
-              title: 'Versão do App',
-              subtitle: 'v1.0.0+1',
-              onTap: () {
-                _showAboutDialog(context);
-              },
-            ),
-
-            _buildSettingsTile(
-              icon: Icons.help_outline,
-              title: 'Ajuda e Suporte',
-              subtitle: 'FAQ e contato',
-              onTap: () {
-                showComingSoon(context);
-              },
-            ),
           ],
-        ),
+
+          // About Section
+          _buildSectionHeader('Sobre', Icons.info),
+          const SizedBox(height: 16),
+
+          _buildSettingsTile(
+            icon: Icons.info_outline,
+            title: 'Versão do App',
+            subtitle: 'v1.0.0+1',
+            onTap: () {
+              _showAboutDialog(context);
+            },
+          ),
+
+          _buildSettingsTile(
+            icon: Icons.help_outline,
+            title: 'Ajuda e Suporte',
+            subtitle: 'FAQ e contato',
+            onTap: () {
+              showComingSoon(context);
+            },
+          ),
+        ],
       ),
     );
   }
@@ -239,7 +234,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       // Check if widget is still mounted before using context
       if (mounted) await context.read<CipherProvider>().loadLocalCiphers();
 
-      if (mounted) await context.read<PlaylistProvider>().loadLocalPlaylists();
+      if (mounted) await context.read<PlaylistProvider>().loadPlaylists();
 
       // Check mounted again after async operations
       if (!mounted) return;
@@ -286,7 +281,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       // Force reload all providers from database
       await Future.wait([
         context.read<CipherProvider>().loadLocalCiphers(forceReload: true),
-        context.read<PlaylistProvider>().loadLocalPlaylists(),
+        context.read<PlaylistProvider>().loadPlaylists(),
         context.read<UserProvider>().loadUsers(),
       ]);
 

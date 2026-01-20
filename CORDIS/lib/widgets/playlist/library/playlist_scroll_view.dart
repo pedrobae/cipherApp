@@ -35,7 +35,7 @@ class _PlaylistScrollViewState extends State<PlaylistScrollView> {
                     Text(playlistProvider.error!),
                     ElevatedButton(
                       onPressed: () {
-                        playlistProvider.loadLocalPlaylists();
+                        playlistProvider.loadPlaylists();
                       },
                       child: Text(AppLocalizations.of(context)!.tryAgain),
                     ),
@@ -47,7 +47,7 @@ class _PlaylistScrollViewState extends State<PlaylistScrollView> {
             // Display playlist list
             return RefreshIndicator(
               onRefresh: () async {
-                playlistProvider.loadLocalPlaylists();
+                playlistProvider.loadPlaylists();
               },
               child: playlistProvider.filteredPlaylists.isEmpty
                   ? Center(

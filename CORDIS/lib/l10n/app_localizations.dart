@@ -398,6 +398,30 @@ abstract class AppLocalizations {
   /// **'Criar Playlist'**
   String get createPlaylist;
 
+  /// Prompt to name the playlist
+  ///
+  /// In pt, this message translates to:
+  /// **'Nomeie sua playlist'**
+  String get namePlaylistPrompt;
+
+  /// Instructions for creating a new playlist
+  ///
+  /// In pt, this message translates to:
+  /// **'Crie uma playlist vazia primeiro, você pode adicionar músicas e seções faladas depois.'**
+  String get createPlaylistInstructions;
+
+  /// Label for playlist name input field
+  ///
+  /// In pt, this message translates to:
+  /// **'Nome da Playlist'**
+  String get playlistNameLabel;
+
+  /// Hint text for playlist name input field
+  ///
+  /// In pt, this message translates to:
+  /// **'Insira o nome da playlist'**
+  String get playlistNameHint;
+
   /// Playlist label
   ///
   /// In pt, this message translates to:

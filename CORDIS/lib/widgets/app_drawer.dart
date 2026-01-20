@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:cordis/l10n/app_localizations.dart';
+import 'package:cordis/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cordis/providers/navigation_provider.dart';
@@ -124,7 +125,8 @@ class AppDrawer extends StatelessWidget {
                         leading: const Icon(Icons.settings),
                         title: Text(AppLocalizations.of(context)!.settings),
                         onTap: () {
-                          Navigator.of(context).popAndPushNamed('/settings');
+                          Navigator.of(context).pop();
+                          navigationProvider.push(const SettingsScreen());
                         },
                         trailing: Icon(
                           Icons.arrow_forward_ios_rounded,

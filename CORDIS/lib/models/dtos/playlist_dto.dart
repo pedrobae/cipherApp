@@ -6,7 +6,6 @@ class PlaylistDto {
   final String? firebaseId; // ID na nuvem (Firebase)
   final String name;
   final String ownerId; // Usuário que criou a playlist
-  final int duration;
   final List<String> itemOrder;
   final List<Map<String, String>> textSections;
   final List<VersionDto> versions;
@@ -15,7 +14,6 @@ class PlaylistDto {
     this.firebaseId,
     required this.name,
     required this.ownerId,
-    required this.duration,
     this.itemOrder = const [],
     this.textSections = const [],
     this.versions = const [],
@@ -25,7 +23,6 @@ class PlaylistDto {
     return PlaylistDto(
       firebaseId: json['firebaseId'] as String?,
       name: json['name'] as String,
-      duration: json['duration'] as int? ?? 0,
       ownerId: json['ownerId'] as String,
       itemOrder:
           (json['itemOrder'] as List<dynamic>?)
@@ -37,14 +34,7 @@ class PlaylistDto {
   }
 
   Map<String, dynamic> toFirestore() {
-    return {
-      'name': name,
-      'duration': duration,
-      'ownerId': ownerId,
-      'itemOrder': itemOrder,
-      'textSections': textSections,
-      'versions': versions.map((version) => version.toFirestore()).toList(),
-    };
+    return {'name': name, 'itemOrder': itemOrder, 'textSections': textSections};
   }
 
   /// Method to convert PlaylistDto to Playlist domain model items must be inserted first
@@ -52,7 +42,6 @@ class PlaylistDto {
     return Playlist(
       id: -1, // ID local será atribuído pelo banco de dados local
       name: name,
-      duration: Duration(seconds: duration),
       createdBy: ownerLocalId,
       items: items,
       firebaseId: firebaseId,

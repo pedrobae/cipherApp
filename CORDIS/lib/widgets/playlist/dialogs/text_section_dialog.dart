@@ -188,7 +188,7 @@ class _TextSectionDialogState extends State<TextSectionDialog> {
         null,
       );
       // Refresh the playlist to show updated text section
-      playlistProvider.loadLocalPlaylists();
+      playlistProvider.loadPlaylists();
 
       if (mounted) {
         Navigator.pop(context);

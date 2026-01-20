@@ -9,7 +9,6 @@ class Playlist {
   final String? firebaseId;
   final String name;
   final int createdBy;
-  final Duration duration;
   final List<PlaylistItem> items; // Unified content items
 
   const Playlist({
@@ -17,7 +16,6 @@ class Playlist {
     this.firebaseId,
     required this.name,
     required this.createdBy,
-    required this.duration,
     this.items = const [],
   });
 
@@ -26,7 +24,6 @@ class Playlist {
       id: json['id'] as int,
       name: json['name'] as String? ?? '',
       createdBy: json['created_by'] as int? ?? 0,
-      duration: Duration(seconds: json['duration'] as int? ?? 0),
       items: json['items'] != null
           ? (json['items'] as List)
                 .map((item) => PlaylistItem.fromJson(item))
@@ -39,7 +36,6 @@ class Playlist {
     return {
       'id': id,
       'name': name,
-      'duration': duration.inSeconds,
       'created_by': createdBy,
       'items': items.map((item) => item.toJson()).toList(),
     };
@@ -47,19 +43,7 @@ class Playlist {
 
   // Database-specific serialization (excludes relational data)
   Map<String, dynamic> toDatabaseJson() {
-    final result = <String, dynamic>{
-      'name': name,
-      'firebase_id': firebaseId,
-      'author_id': createdBy,
-      'duration': duration.inSeconds,
-    };
-
-    // Only include id if it's not -1 (for updates)
-    if (id != -1) {
-      result['id'] = id;
-    }
-
-    return result;
+    return {'name': name, 'firebase_id': firebaseId, 'author_id': createdBy};
   }
 
   PlaylistDto toDto(
@@ -70,7 +54,6 @@ class Playlist {
     return PlaylistDto(
       firebaseId: firebaseId,
       name: name,
-      duration: duration.inSeconds,
       ownerId: ownerFirebaseId,
       itemOrder: items
           .map(
@@ -100,7 +83,6 @@ class Playlist {
       id: id ?? this.id,
       name: name ?? this.name,
       createdBy: createdBy ?? this.createdBy,
-      duration: duration ?? this.duration,
       items: items ?? this.items,
     );
   }

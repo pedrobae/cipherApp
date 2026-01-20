@@ -161,6 +161,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createPlaylist => 'Create Playlist';
 
   @override
+  String get namePlaylistPrompt => 'Name your playlist';
+
+  @override
+  String get createPlaylistInstructions =>
+      'Create an empty playlist first, you can add songs and flow items later.';
+
+  @override
+  String get playlistNameLabel => 'Playlist Name';
+
+  @override
+  String get playlistNameHint => 'Enter a playlist name';
+
+  @override
   String get playlist => 'Playlist';
 
   @override

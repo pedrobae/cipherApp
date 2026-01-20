@@ -10,7 +10,7 @@ class PlaylistProvider extends ChangeNotifier {
 
   PlaylistProvider();
 
-  final Map<int, Playlist> _localPlaylists = {};
+  final Map<int, Playlist> _playlists = {};
   Map<int, Playlist> _filteredPlaylists = {};
 
   bool _isLoading = false;
@@ -24,7 +24,7 @@ class PlaylistProvider extends ChangeNotifier {
   final Map<int, Map<String, dynamic>> _pendingChanges = {};
 
   // Getters
-  Map<int, Playlist> get localPlaylists => _localPlaylists;
+  Map<int, Playlist> get playlists => _playlists;
   Map<int, Playlist> get filteredPlaylists => _filteredPlaylists;
 
   String _searchTerm = '';
@@ -36,7 +36,7 @@ class PlaylistProvider extends ChangeNotifier {
   String? get error => _error;
 
   Playlist? getPlaylistByFirebaseId(String firebaseId) {
-    for (var p in _localPlaylists.values) {
+    for (var p in _playlists.values) {
       if (p.firebaseId == firebaseId) {
         return p;
       }
@@ -45,7 +45,7 @@ class PlaylistProvider extends ChangeNotifier {
   }
 
   Playlist? getPlaylistById(int id) {
-    return _localPlaylists[id];
+    return _playlists[id];
   }
 
   // Check if a playlist has pending changes to upload
@@ -61,7 +61,7 @@ class PlaylistProvider extends ChangeNotifier {
 
   // ===== CREATE =====
   // Create a new playlist from local cache
-  Future<void> createPlaylist(Playlist playlist) async {
+  Future<void> createPlaylist(String playlistName, int userLocalId) async {
     if (_isSaving) return;
 
     _isSaving = true;
@@ -69,13 +69,12 @@ class PlaylistProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      if (_localPlaylists[-1] == null) {
-        throw Exception('No playlist found to create.');
-      }
-      int id = await _playlistRepository.insertPlaylist(playlist);
+      int id = await _playlistRepository.insertPlaylist(
+        Playlist(name: playlistName, id: -1, createdBy: userLocalId),
+      );
 
       // Add the created playlist with new ID directly to cache
-      _localPlaylists[id] = _localPlaylists[id]!.copyWith(id: id);
+      _playlists[id] = _playlists[id]!.copyWith(id: id);
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -86,7 +85,7 @@ class PlaylistProvider extends ChangeNotifier {
 
   // ===== READ =====
   // Load Playlists from local SQLite database
-  Future<void> loadLocalPlaylists() async {
+  Future<void> loadPlaylists() async {
     if (_isLoading) return;
 
     _isLoading = true;
@@ -96,7 +95,7 @@ class PlaylistProvider extends ChangeNotifier {
     try {
       final playlist = await _playlistRepository.getAllPlaylists();
       for (var p in playlist) {
-        _localPlaylists[p.id] = p;
+        _playlists[p.id] = p;
       }
     } catch (e) {
       _error = e.toString();
@@ -118,7 +117,7 @@ class PlaylistProvider extends ChangeNotifier {
       final Playlist playlist = (await _playlistRepository.getPlaylistById(
         id,
       ))!;
-      _localPlaylists[playlist.id] = playlist;
+      _playlists[playlist.id] = playlist;
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -288,7 +287,7 @@ class PlaylistProvider extends ChangeNotifier {
 
     try {
       await _playlistRepository.deletePlaylist(playlistId);
-      _localPlaylists.remove(playlistId);
+      _playlists.remove(playlistId);
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -314,7 +313,7 @@ class PlaylistProvider extends ChangeNotifier {
     List<Map<String, dynamic>> versionSectionItems,
     List<Map<String, dynamic>> textSectionItems,
   ) {
-    final playlist = _localPlaylists[playlistId]!;
+    final playlist = _playlists[playlistId]!;
 
     List<int> textItemsToPrune = [];
     List<int> versionItemsToPrune = [];
@@ -415,7 +414,7 @@ class PlaylistProvider extends ChangeNotifier {
 
   // Clear cached data and reset state
   void clearCache() {
-    _localPlaylists.clear();
+    _playlists.clear();
     _error = null;
     _isLoading = false;
     _isSaving = false;
@@ -461,7 +460,6 @@ class PlaylistProvider extends ChangeNotifier {
       updatePayload['versions'] = [
         for (final version in playlistDto.versions) ...[version.toFirestore()],
       ];
-      updatePayload['duration'] = playlistDto.duration;
     }
     return updatePayload;
   }
@@ -486,10 +484,10 @@ class PlaylistProvider extends ChangeNotifier {
 
   void _filterLocalPlaylists() {
     if (_searchTerm.isEmpty) {
-      _filteredPlaylists = _localPlaylists;
+      _filteredPlaylists = _playlists;
     } else {
       Map<int, Playlist> tempFiltered = {};
-      for (var entry in _localPlaylists.entries) {
+      for (var entry in _playlists.entries) {
         final playlist = entry.value;
         if (playlist.name.toLowerCase().contains(_searchTerm)) {
           tempFiltered[entry.key] = playlist;
@@ -502,7 +500,7 @@ class PlaylistProvider extends ChangeNotifier {
 
   void clearSearch() {
     _searchTerm = '';
-    _filteredPlaylists = _localPlaylists;
+    _filteredPlaylists = _playlists;
     notifyListeners();
   }
 }

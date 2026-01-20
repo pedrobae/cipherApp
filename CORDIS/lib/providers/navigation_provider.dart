@@ -11,24 +11,15 @@ class NavigationProvider extends ChangeNotifier {
   NavigationRoute _currentRoute = NavigationRoute.home;
   bool _isLoading = false;
   String? _error;
+  static List<Widget> _screenStack = [];
 
   // Getters
   NavigationRoute get currentRoute => _currentRoute;
   int get currentIndex => _currentRoute.index;
   bool get isLoading => _isLoading;
   String? get error => _error;
-  Widget get currentScreen {
-    switch (_currentRoute) {
-      case NavigationRoute.home:
-        return const HomeScreen();
-      case NavigationRoute.library:
-        return const CipherLibraryScreen();
-      case NavigationRoute.playlists:
-        return const PlaylistLibraryScreen();
-      case NavigationRoute.schedule:
-        return const ScheduleLibraryScreen();
-    }
-  }
+  Widget get currentScreen =>
+      _screenStack.isNotEmpty ? _screenStack.last : const HomeScreen();
 
   /// USED BY THE MAIN SCREEN TO NAVIGATE BETWEEN CONTENT TABS
 
@@ -36,7 +27,25 @@ class NavigationProvider extends ChangeNotifier {
   void navigateToRoute(NavigationRoute route) {
     if (_currentRoute != route) {
       _currentRoute = route;
+      _screenStack = switch (route) {
+        NavigationRoute.home => [const HomeScreen()],
+        NavigationRoute.library => [const CipherLibraryScreen()],
+        NavigationRoute.playlists => [const PlaylistLibraryScreen()],
+        NavigationRoute.schedule => [const ScheduleLibraryScreen()],
+      };
       _error = null; // Clear any previous errors
+      notifyListeners();
+    }
+  }
+
+  void push(Widget screen) {
+    _screenStack.add(screen);
+    notifyListeners();
+  }
+
+  void pop() {
+    if (_screenStack.length > 1) {
+      _screenStack.removeLast();
       notifyListeners();
     }
   }

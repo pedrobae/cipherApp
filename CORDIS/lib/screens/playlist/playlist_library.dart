@@ -1,4 +1,6 @@
 import 'package:cordis/l10n/app_localizations.dart';
+import 'package:cordis/providers/navigation_provider.dart';
+import 'package:cordis/screens/playlist/create_playlist.dart';
 import 'package:cordis/widgets/playlist/library/playlist_scroll_view.dart';
 import 'package:cordis/widgets/icon_text_button.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +22,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        context.read<PlaylistProvider>().loadLocalPlaylists();
+        context.read<PlaylistProvider>().loadPlaylists();
       }
     });
   }
@@ -30,8 +32,8 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Consumer<PlaylistProvider>(
-      builder: (context, playlistProvider, child) {
+    return Consumer2<PlaylistProvider, NavigationProvider>(
+      builder: (context, playlistProvider, navigationProvider, child) {
         return Padding(
           padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
           child: Column(
@@ -65,12 +67,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen> {
                   // CREATE NEW PLAYLIST BUTTON
                   IconTextButton(
                     onTap: () {
-                      //TODO: Implement create new Playlist functionality
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Funcionalidade em desenvolvimento 🚧'),
-                        ),
-                      );
+                      navigationProvider.push(CreatePlaylistScreen());
                     },
                     text: AppLocalizations.of(context)!.create,
                     icon: Icon(Icons.add, color: colorScheme.onSurface),

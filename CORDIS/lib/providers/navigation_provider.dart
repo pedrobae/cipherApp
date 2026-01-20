@@ -9,15 +9,15 @@ enum NavigationRoute { home, library, playlists, schedule }
 
 class NavigationProvider extends ChangeNotifier {
   NavigationRoute _currentRoute = NavigationRoute.home;
-  static List<Widget> _screenStack = [];
-  bool _isDense = false;
+  static List<Widget> _screenStack = [const HomeScreen()];
+  static List<bool> _densityStack = [false];
   bool _isLoading = false;
   String? _error;
 
   // Getters
   NavigationRoute get currentRoute => _currentRoute;
   int get currentIndex => _currentRoute.index;
-  bool get isDense => _isDense;
+  bool get isDense => _densityStack.isNotEmpty ? _densityStack.last : false;
   bool get isLoading => _isLoading;
   String? get error => _error;
   Widget get currentScreen =>
@@ -35,6 +35,7 @@ class NavigationProvider extends ChangeNotifier {
         NavigationRoute.playlists => [const PlaylistLibraryScreen()],
         NavigationRoute.schedule => [const ScheduleLibraryScreen()],
       };
+      _densityStack = [false];
       _error = null; // Clear any previous errors
       notifyListeners();
     }
@@ -42,13 +43,14 @@ class NavigationProvider extends ChangeNotifier {
 
   void push(Widget screen, {bool isDense = false}) {
     _screenStack.add(screen);
-    _isDense = isDense;
+    _densityStack.add(isDense);
     notifyListeners();
   }
 
   void pop() {
     if (_screenStack.length > 1) {
       _screenStack.removeLast();
+      _densityStack.removeLast();
       notifyListeners();
     }
   }

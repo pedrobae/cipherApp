@@ -31,8 +31,8 @@ dependencies:
   firebase_analytics: ^12.0.2
   google_sign_in: ^6.2.1
   cloud_functions: ^6.0.3
-  file_picker: ^8.1.4              # Seleção de arquivos
-  syncfusion_flutter_pdf: ^31.2.18 # Extração de texto de PDF (null-safe)
+  file_picker: ^8.1.4
+  syncfusion_flutter_pdf: ^31.2.18
   flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:

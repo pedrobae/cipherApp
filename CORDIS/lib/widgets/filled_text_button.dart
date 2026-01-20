@@ -6,6 +6,7 @@ class FilledTextButton extends StatelessWidget {
   final VoidCallback onPressed;
   final bool isDarkButton;
   final bool isDisabled;
+  final bool isDense;
 
   const FilledTextButton({
     super.key,
@@ -14,6 +15,7 @@ class FilledTextButton extends StatelessWidget {
     required this.onPressed,
     this.isDarkButton = false,
     this.isDisabled = false,
+    this.isDense = false,
   });
 
   factory FilledTextButton.icon({
@@ -21,6 +23,7 @@ class FilledTextButton extends StatelessWidget {
     required VoidCallback onPressed,
     required IconData icon,
     bool isDarkButton = false,
+    bool isDense = false,
   }) {
     return FilledTextButton(
       text: text,
@@ -35,7 +38,9 @@ class FilledTextButton extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     return FilledButton(
       style: FilledButton.styleFrom(
-        minimumSize: const Size.fromHeight(50),
+        minimumSize: isDense
+            ? const Size.fromHeight(40)
+            : const Size.fromHeight(50),
         backgroundColor: isDarkButton
             ? (isDisabled
                   ? colorScheme.onSurface.withValues(alpha: 0.68)

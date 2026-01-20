@@ -91,7 +91,45 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                   spacing: 16.0,
                   children: [
                     Expanded(
-                      child: SingleChildScrollView(child: Column(children: [])),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            if (playlist.items.isEmpty) ...[
+                              Text(
+                                AppLocalizations.of(context)!.emptyPlaylist,
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(
+                                      fontSize: 16,
+                                      color: colorScheme.onSurfaceVariant,
+                                    ),
+                                textAlign: TextAlign.center,
+                              ),
+                              Text(
+                                AppLocalizations.of(
+                                  context,
+                                )!.addItemsToPlaylistInstructions,
+                              ),
+                            ] else ...[
+                              // ITEMS LIST
+                            ],
+                            // ADD ITEMS BUTTON
+                            FilledTextButton(
+                              text: AppLocalizations.of(context)!.addSong,
+                              isDense: true,
+                              onPressed: () {
+                                // TODO add song items
+                              },
+                            ),
+                            FilledTextButton(
+                              text: AppLocalizations.of(context)!.addFlowItem,
+                              isDense: true,
+                              onPressed: () {
+                                // TODO add flow items
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                     FilledTextButton(
                       text: AppLocalizations.of(context)!.save,

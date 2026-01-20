@@ -180,9 +180,8 @@ class VersionProvider extends ChangeNotifier {
   /// Load public versions from Firestore
   Future<void> loadCloudVersions({bool forceReload = false}) async {
     final now = DateTime.now();
-    if (_lastCloudLoad != null &&
-        now.difference(_lastCloudLoad!).inDays < 7 &&
-        _localVersions.keys.any((key) => key is String) &&
+    if ((_lastCloudLoad != null &&
+            now.difference(_lastCloudLoad!).inDays < 7) &&
         !forceReload) {
       return;
     }
@@ -202,6 +201,8 @@ class VersionProvider extends ChangeNotifier {
       await _cloudCache.saveCloudVersions(cloudVersions);
       await _cloudCache.saveLastCloudLoad(now);
       _filterCloudVersions();
+
+      _lastCloudLoad = now;
 
       if (kDebugMode) {
         print(

@@ -1,5 +1,7 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/navigation_provider.dart';
+import 'package:cordis/providers/selection_provider.dart';
+import 'package:cordis/screens/cipher/cipher_library.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -47,21 +49,21 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
 
     return Consumer6<
       PlaylistProvider,
-      VersionProvider,
       CipherProvider,
       UserProvider,
       MyAuthProvider,
-      NavigationProvider
+      NavigationProvider,
+      SelectionProvider
     >(
       builder:
           (
             context,
             playlistProvider,
-            versionProvider,
             cipherProvider,
             userProvider,
             authProvider,
             navigationProvider,
+            selectionProvider,
             child,
           ) {
             final playlist = playlistProvider.getPlaylistById(
@@ -133,7 +135,13 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                               text: AppLocalizations.of(context)!.addSong,
                               isDense: true,
                               onPressed: () {
-                                // TODO add song to playlist
+                                selectionProvider.enableSelectionMode();
+                                selectionProvider.setTarget(widget.playlistId);
+
+                                navigationProvider.push(
+                                  const CipherLibraryScreen(),
+                                  isDense: true,
+                                );
                               },
                             ),
                             FilledTextButton(

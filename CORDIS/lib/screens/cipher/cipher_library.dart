@@ -1,8 +1,8 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/version_provider.dart';
 import 'package:cordis/widgets/ciphers/library/create_cipher_sheet.dart';
+import 'package:cordis/widgets/filled_text_button.dart';
 
-import 'package:cordis/widgets/icon_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cordis/providers/cipher_provider.dart';
@@ -12,14 +12,7 @@ import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/widgets/ciphers/library/cipher_scroll_view.dart';
 
 class CipherLibraryScreen extends StatefulWidget {
-  final bool selectionMode;
-  final int? playlistId;
-
-  const CipherLibraryScreen({
-    super.key,
-    this.selectionMode = false,
-    this.playlistId,
-  });
+  const CipherLibraryScreen({super.key});
 
   @override
   State<CipherLibraryScreen> createState() => _CipherLibraryScreenState();
@@ -61,10 +54,15 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
             child,
           ) {
             return Scaffold(
-              appBar: widget.selectionMode
+              appBar: selectionProvider.isSelectionMode
                   ? AppBar(
-                      title: Text(AppLocalizations.of(context)!.addToPlaylist),
-                      backgroundColor: colorScheme.surface,
+                      leading: const BackButton(),
+                      title: Text(
+                        AppLocalizations.of(context)!.addToPlaylist,
+                        style: theme.textTheme.titleLarge!.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     )
                   : null,
               body: Padding(
@@ -74,7 +72,8 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
                   right: 16.0,
                 ),
                 child: Column(
-                  spacing: 8,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  spacing: 16,
                   children: [
                     // Search Bar
                     TextField(
@@ -100,56 +99,18 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
                         versionProvider.searchCachedCloudVersions(value);
                       },
                     ),
-                    // Buttons Row (e.g., Filters, Sort, Create New Cipher)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // CREATE NEW CIPHER
-                        IconTextButton(
-                          onTap: () {
-                            _showCreateCipherSheet();
-                          },
-                          text: AppLocalizations.of(context)!.create,
-                          icon: Icon(Icons.add, color: colorScheme.onSurface),
-                        ),
-                        // SORT BUTTON
-                        IconTextButton(
-                          onTap: () {
-                            // TODO: Implement sort functionality
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Funcionalidade em desenvolvimento 🚧',
-                                ),
-                              ),
-                            );
-                          },
-                          text: AppLocalizations.of(context)!.sort,
-                          icon: Icon(Icons.sort, color: colorScheme.onSurface),
-                        ),
-                        // FILTER BUTTON
-                        IconTextButton(
-                          onTap: () {
-                            // TODO: Implement filter functionality
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Funcionalidade em desenvolvimento 🚧',
-                                ),
-                              ),
-                            );
-                          },
-                          text: AppLocalizations.of(context)!.filter,
-                          icon: Icon(
-                            Icons.filter_list,
-                            color: colorScheme.onSurface,
+                    Expanded(child: CipherScrollView()),
+
+                    // CREATE CIPHER BUTTON
+                    selectionProvider.isSelectionMode
+                        ? const SizedBox.shrink()
+                        : FilledTextButton(
+                            onPressed: () {
+                              _showCreateCipherSheet();
+                            },
+                            text: AppLocalizations.of(context)!.create,
+                            isDarkButton: true,
                           ),
-                        ),
-                      ],
-                    ),
-                    Expanded(
-                      child: CipherScrollView(playlistId: widget.playlistId),
-                    ),
                   ],
                 ),
               ),

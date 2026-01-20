@@ -92,17 +92,13 @@ class _CipherCardState extends State<CipherCard> {
               onTap: () {
                 if (selectionProvider.isSelectionMode) {
                   try {
-                    if (selectionProvider.isSelectionMode) {
-                      selectionProvider.toggleItemSelection(cipher.id);
-                      return;
-                    }
                     playlistProvider.addVersionToPlaylist(
-                      selectionProvider.targetId,
+                      selectionProvider.targetId!,
                       versionProvider.getIdOfOldestVersionOfCipher(cipher.id)!,
                     );
                     versionProvider.loadVersionsForPlaylist(
                       playlistProvider
-                          .getPlaylistById(selectionProvider.targetId)!
+                          .getPlaylistById(selectionProvider.targetId!)!
                           .items,
                     );
                     Navigator.pop(context);

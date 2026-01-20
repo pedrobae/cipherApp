@@ -1,6 +1,6 @@
 import 'package:cordis/l10n/app_localizations.dart';
+import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:cordis/widgets/schedule/library/schedule_scroll_view.dart';
-import 'package:cordis/widgets/icon_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cordis/providers/schedule_provider.dart';
@@ -40,7 +40,7 @@ class _ScheduleLibraryScreenState extends State<ScheduleLibraryScreen> {
         return Padding(
           padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
           child: Column(
-            spacing: 8,
+            spacing: 16,
             children: [
               // Search Bar
               TextField(
@@ -63,40 +63,21 @@ class _ScheduleLibraryScreenState extends State<ScheduleLibraryScreen> {
                   scheduleProvider.setSearchTerm(value);
                 },
               ),
-              // Buttons Row (e.g., Filters, Sort, Create New Cipher)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // CREATE NEW CIPHER
-                  IconTextButton(
-                    onTap: () {
-                      //TODO: Implement create new Schedule functionality
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Funcionalidade em desenvolvimento 🚧'),
-                        ),
-                      );
-                    },
-                    text: AppLocalizations.of(context)!.create,
-                    icon: Icon(Icons.add, color: colorScheme.onSurface),
-                  ),
-                  // TODO think of these buttons
-                  // SORT BUTTON
-                  IconTextButton(
-                    onTap: () {},
-                    text: AppLocalizations.of(context)!.sort,
-                    icon: Icon(Icons.sort, color: colorScheme.onSurface),
-                  ),
-                  // FILTER BUTTON
-                  IconTextButton(
-                    onTap: () {},
-                    text: AppLocalizations.of(context)!.filter,
-                    icon: Icon(Icons.filter_list, color: colorScheme.onSurface),
-                  ),
-                ],
-              ),
 
               Expanded(child: ScheduleScrollView()),
+
+              FilledTextButton(
+                onPressed: () {
+                  //TODO: Implement create new Schedule functionality
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Funcionalidade em desenvolvimento 🚧'),
+                    ),
+                  );
+                },
+                text: AppLocalizations.of(context)!.create,
+                isDarkButton: true,
+              ),
             ],
           ),
         );

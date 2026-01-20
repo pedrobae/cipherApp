@@ -1,7 +1,10 @@
+import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/models/domain/cipher/section.dart';
 import 'package:cordis/models/dtos/pdf_dto.dart';
-import 'package:cordis/providers/import_provider.dart';
+import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
+
+enum ImportType { text, pdf, image }
 
 /// Import strategy variants - different ways to extract text from source
 /// Used when the same import type has multiple extraction methods
@@ -12,8 +15,58 @@ enum ImportVariation {
   imageOcr, // Image with OCR
 }
 
+// extension to get localized names
+extension ImportVariationExtension on ImportVariation {
+  String getName(BuildContext context) {
+    switch (this) {
+      case ImportVariation.pdfWithColumns:
+        return AppLocalizations.of(context)!.pdfWithColumns;
+      case ImportVariation.pdfNoColumns:
+        return AppLocalizations.of(context)!.pdfNoColumns;
+      case ImportVariation.textDirect:
+        return AppLocalizations.of(context)!.textDirect;
+      case ImportVariation.imageOcr:
+        return AppLocalizations.of(context)!.imageOcr;
+    }
+  }
+}
+
 /// Available parsing strategies for converting imported text to cipher sections
 enum ParsingStrategy { doubleNewLine, sectionLabels, pdfFormatting }
+
+// extension to get localized string names
+extension ParsingStrategyExtension on ParsingStrategy {
+  String getName(BuildContext context) {
+    switch (this) {
+      case ParsingStrategy.doubleNewLine:
+        return AppLocalizations.of(context)!.doubleNewLine;
+      case ParsingStrategy.sectionLabels:
+        return AppLocalizations.of(context)!.sectionLabels;
+      case ParsingStrategy.pdfFormatting:
+        return AppLocalizations.of(context)!.pdfFormatting;
+    }
+  }
+}
+
+/// Mapping of import type to their applicable parsing strategies
+Map<ImportType, List<ParsingStrategy>> importTypeToParsingStrategies = {
+  ImportType.pdf: [ParsingStrategy.pdfFormatting],
+  ImportType.text: [
+    ParsingStrategy.doubleNewLine,
+    ParsingStrategy.sectionLabels,
+  ],
+  ImportType.image: [],
+};
+
+// Mapping of import type to their applicable import variations
+Map<ImportType, List<ImportVariation>> importTypeToVariations = {
+  ImportType.pdf: [
+    ImportVariation.pdfWithColumns,
+    ImportVariation.pdfNoColumns,
+  ],
+  ImportType.text: [ImportVariation.textDirect],
+  ImportType.image: [ImportVariation.imageOcr],
+};
 
 /// Container for results from a single parsing strategy
 class ParsingResult {

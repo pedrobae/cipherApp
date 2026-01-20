@@ -3,8 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:cordis/services/import/image_import_service.dart';
 import 'package:cordis/services/import/pdf_import_service.dart';
 
-enum ImportType { text, pdf, image }
-
 class ImportProvider extends ChangeNotifier {
   final PDFImportService _pdfService = PDFImportService();
   final ImageImportService _imageService = ImageImportService();
@@ -16,16 +14,31 @@ class ImportProvider extends ChangeNotifier {
   String? _selectedFileName;
   String? _error;
   ImportType? _importType;
+  ParsingStrategy? _parsingStrategy;
+  ImportVariation? _importVariation;
 
   ParsingCipher? get importedCipher => _importedCipher;
   String? get selectedFile => _selectedFile;
   String? get selectedFileName => _selectedFileName;
   bool get isImporting => _isImporting;
   String? get error => _error;
+  ParsingStrategy? get parsingStrategy => _parsingStrategy;
+  ImportVariation? get importVariation => _importVariation;
 
   /// Sets the import type (text, pdf, image).
   void setImportType(ImportType type) {
     _importType = type;
+  }
+
+  /// Sets the parsing strategy.
+  void setParsingStrategy(ParsingStrategy strategy) {
+    _parsingStrategy = strategy;
+    notifyListeners();
+  }
+
+  void setImportVariation(ImportVariation variation) {
+    _importVariation = variation;
+    notifyListeners();
   }
 
   /// Gets a string representation of the import type.
@@ -60,7 +73,7 @@ class ImportProvider extends ChangeNotifier {
           _importedCipher = ParsingCipher(importType: ImportType.text);
 
           final variant = ImportVariant(
-            variation: ImportVariation.textDirect,
+            variation: _importVariation ?? ImportVariation.textDirect,
             rawText: data ?? '',
             lines: lines
                 .asMap()
@@ -69,7 +82,7 @@ class ImportProvider extends ChangeNotifier {
                 .toList(),
           );
           _importedCipher!.addImportVariant(
-            ImportVariation.textDirect.name,
+            (_importVariation ?? ImportVariation.textDirect).name,
             variant,
           );
           break;
@@ -82,34 +95,19 @@ class ImportProvider extends ChangeNotifier {
 
           _importedCipher = ParsingCipher(importType: ImportType.pdf);
 
-          // Variant 1: PDF without column detection
-          // TODO: Handle multi-page PDFs - currently only processes page 0
-          final noColumnsVariant = ImportVariant.fromPdfLines(
-            pdfDocument.pageLines[0]!,
-            strategy: ImportVariation.pdfNoColumns,
+          final variant = ImportVariant.fromPdfLines(
+            _importVariation == ImportVariation.pdfNoColumns
+                ? pdfDocument.pageLines[0]!
+                : pdfDocument.pageLinesWithColumns[0]!,
+            strategy: _importVariation!,
           );
-          _importedCipher!.addImportVariant(
-            ImportVariation.pdfNoColumns.name,
-            noColumnsVariant,
-          );
-
-          // Variant 2: PDF with column detection (if columns detected)
-          if (pdfDocument.hasColumns[0] == true) {
-            final hasColumnsVariant = ImportVariant.fromPdfLines(
-              pdfDocument.pageLinesWithColumns[0]!,
-              strategy: ImportVariation.pdfWithColumns,
-            );
-            _importedCipher!.addImportVariant(
-              ImportVariation.pdfWithColumns.name,
-              hasColumnsVariant,
-            );
-          }
 
           // Store metadata in all variants
-          for (var variant in _importedCipher!.importVariants.values) {
-            variant.metadata['hasColumns'] = pdfDocument.hasColumns[0];
-            variant.metadata['pageCount'] = pdfDocument.pageLines.length;
-          }
+          variant.metadata['hasColumns'] = pdfDocument.hasColumns[0];
+          variant.metadata['pageCount'] = pdfDocument.pageLines.length;
+
+          _importedCipher!.addImportVariant(_importVariation!.name, variant);
+
           break;
 
         case ImportType.image:

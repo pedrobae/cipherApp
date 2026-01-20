@@ -536,6 +536,60 @@ abstract class AppLocalizations {
   /// **'Adicionar Música'**
   String get addSongToLibrary;
 
+  /// Title for parsing strategy selection
+  ///
+  /// In pt, this message translates to:
+  /// **'Estratégia de Processamento'**
+  String get parsingStrategy;
+
+  /// Parsing strategy option for double new lines
+  ///
+  /// In pt, this message translates to:
+  /// **'Dupla Nova Linha'**
+  String get doubleNewLine;
+
+  /// Parsing strategy option for section labels
+  ///
+  /// In pt, this message translates to:
+  /// **'Rótulos de Seção'**
+  String get sectionLabels;
+
+  /// Parsing strategy option for PDF formatting
+  ///
+  /// In pt, this message translates to:
+  /// **'Formatação PDF'**
+  String get pdfFormatting;
+
+  /// Title for import variation selection
+  ///
+  /// In pt, this message translates to:
+  /// **'Variação de Importação'**
+  String get importVariation;
+
+  /// Import variation option for PDF with columns
+  ///
+  /// In pt, this message translates to:
+  /// **'PDF com Colunas'**
+  String get pdfWithColumns;
+
+  /// Import variation option for PDF without columns
+  ///
+  /// In pt, this message translates to:
+  /// **'PDF sem Colunas'**
+  String get pdfNoColumns;
+
+  /// Import variation option for direct text
+  ///
+  /// In pt, this message translates to:
+  /// **'Texto Simples'**
+  String get textDirect;
+
+  /// Import variation option for image with OCR
+  ///
+  /// In pt, this message translates to:
+  /// **'Imagem com OCR'**
+  String get imageOcr;
+
   /// Choose language prompt
   ///
   /// In pt, this message translates to:

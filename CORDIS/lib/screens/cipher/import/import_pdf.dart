@@ -1,4 +1,5 @@
 import 'package:cordis/l10n/app_localizations.dart';
+import 'package:cordis/models/domain/parsing_cipher.dart';
 import 'package:cordis/screens/cipher/cipher_parsing_screen.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:file_picker/file_picker.dart';
@@ -188,6 +189,33 @@ class _ImportPdfScreenState extends State<ImportPdfScreen> {
                       ),
                     ),
                   ),
+
+                // Import Variation Dropdown
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      AppLocalizations.of(context)!.importVariation,
+                      style: theme.textTheme.titleMedium,
+                    ),
+                    DropdownButton<ImportVariation>(
+                      value: importProvider.importVariation,
+                      items: importTypeToVariations[ImportType.pdf]!.map((
+                        ImportVariation variation,
+                      ) {
+                        return DropdownMenuItem<ImportVariation>(
+                          value: variation,
+                          child: Text(variation.getName(context)),
+                        );
+                      }).toList(),
+                      onChanged: (ImportVariation? newVariation) {
+                        if (newVariation != null) {
+                          importProvider.setImportVariation(newVariation);
+                        }
+                      },
+                    ),
+                  ],
+                ),
 
                 const Spacer(),
 

@@ -62,7 +62,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // CREATE NEW CIPHER
+                  // CREATE NEW PLAYLIST BUTTON
                   IconTextButton(
                     onTap: () {
                       //TODO: Implement create new Playlist functionality

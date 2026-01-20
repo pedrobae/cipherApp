@@ -233,6 +233,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addSongToLibrary => 'Add Song to Library';
 
   @override
+  String get parsingStrategy => 'Parsing Strategy';
+
+  @override
+  String get doubleNewLine => 'Double New Line';
+
+  @override
+  String get sectionLabels => 'Section Labels';
+
+  @override
+  String get pdfFormatting => 'PDF Formatting';
+
+  @override
+  String get importVariation => 'Import Variation';
+
+  @override
+  String get pdfWithColumns => 'PDF with Columns';
+
+  @override
+  String get pdfNoColumns => 'PDF without Columns';
+
+  @override
+  String get textDirect => 'Direct Text';
+
+  @override
+  String get imageOcr => 'Image with OCR';
+
+  @override
   String get chooseLanguage => 'Choose Language';
 
   @override

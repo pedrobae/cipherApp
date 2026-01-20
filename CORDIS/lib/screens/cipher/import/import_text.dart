@@ -1,4 +1,5 @@
 import 'package:cordis/l10n/app_localizations.dart';
+import 'package:cordis/models/domain/parsing_cipher.dart';
 import 'package:cordis/screens/cipher/cipher_parsing_screen.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:flutter/material.dart';
@@ -96,6 +97,34 @@ class _ImportTextScreenState extends State<ImportTextScreen> {
                         ),
                       ),
                     ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)!.parsingStrategy,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      DropdownButton<ParsingStrategy>(
+                        value: importProvider.parsingStrategy,
+                        items: importTypeToParsingStrategies[ImportType.text]!
+                            .map((ParsingStrategy strategy) {
+                              return DropdownMenuItem<ParsingStrategy>(
+                                value: strategy,
+                                child: Text(strategy.getName(context)),
+                              );
+                            })
+                            .toList(),
+                        onChanged: (ParsingStrategy? newStrategy) {
+                          if (newStrategy != null) {
+                            importProvider.setParsingStrategy(newStrategy);
+                          }
+                        },
+                      ),
+                    ],
                   ),
                   FilledTextButton(
                     text: AppLocalizations.of(context)!.import,

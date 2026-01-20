@@ -234,6 +234,33 @@ class AppLocalizationsPt extends AppLocalizations {
   String get addSongToLibrary => 'Adicionar Música';
 
   @override
+  String get parsingStrategy => 'Estratégia de Processamento';
+
+  @override
+  String get doubleNewLine => 'Dupla Nova Linha';
+
+  @override
+  String get sectionLabels => 'Rótulos de Seção';
+
+  @override
+  String get pdfFormatting => 'Formatação PDF';
+
+  @override
+  String get importVariation => 'Variação de Importação';
+
+  @override
+  String get pdfWithColumns => 'PDF com Colunas';
+
+  @override
+  String get pdfNoColumns => 'PDF sem Colunas';
+
+  @override
+  String get textDirect => 'Texto Simples';
+
+  @override
+  String get imageOcr => 'Imagem com OCR';
+
+  @override
   String get chooseLanguage => 'Escolher Idioma';
 
   @override

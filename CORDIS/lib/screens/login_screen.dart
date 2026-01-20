@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:cordis/providers/my_auth_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -90,10 +89,10 @@ class _LoginScreenState extends State<LoginScreen> {
               spacing: 24,
               children: [
                 SizedBox(height: 40),
-                SvgPicture.asset(
-                  'assets/logos/v1_simple_color_black.svg',
-                  width: 80,
-                  height: 80,
+                Image.asset(
+                  'assets/logos/logo_new.png',
+                  width: 150,
+                  height: 150,
                 ),
                 Text(
                   AppLocalizations.of(context)!.logInTitlePrefix +

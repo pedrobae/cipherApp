@@ -186,6 +186,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addToPlaylist => 'Add to Playlist';
 
   @override
+  String get emptyPlaylist => 'This Playlist is empty.';
+
+  @override
+  String get emptyPlaylistInstructions =>
+      'Please add Song and Flow items to build your playlist.';
+
+  @override
   String get item => 'item';
 
   @override
@@ -202,6 +209,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get view => 'View';
+
+  @override
+  String get addSong => 'Add Song';
+
+  @override
+  String get addFlowItem => 'Add Flow Item';
 
   @override
   String get nextUp => 'Next Up';

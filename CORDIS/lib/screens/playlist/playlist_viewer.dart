@@ -42,7 +42,8 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return Consumer6<
       PlaylistProvider,
@@ -78,7 +79,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                 leading: BackButton(color: colorScheme.onSurface),
                 title: Text(
                   playlist.name,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  style: theme.textTheme.titleMedium?.copyWith(
                     fontSize: 18,
                     fontWeight: FontWeight.w500,
                     color: colorScheme.onSurface,
@@ -88,26 +89,41 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
               body: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   spacing: 16.0,
                   children: [
                     Expanded(
                       child: SingleChildScrollView(
                         child: Column(
+                          spacing: 12.0,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             if (playlist.items.isEmpty) ...[
-                              Text(
-                                AppLocalizations.of(context)!.emptyPlaylist,
-                                style: Theme.of(context).textTheme.bodyMedium
-                                    ?.copyWith(
-                                      fontSize: 16,
-                                      color: colorScheme.onSurfaceVariant,
-                                    ),
-                                textAlign: TextAlign.center,
-                              ),
-                              Text(
-                                AppLocalizations.of(
-                                  context,
-                                )!.addItemsToPlaylistInstructions,
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                spacing: 4,
+                                children: [
+                                  Text(
+                                    AppLocalizations.of(context)!.emptyPlaylist,
+                                    style: theme.textTheme.headlineSmall
+                                        ?.copyWith(
+                                          color: colorScheme.onSurface,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  Text(
+                                    AppLocalizations.of(
+                                      context,
+                                    )!.emptyPlaylistInstructions,
+                                    style: theme.textTheme.titleMedium
+                                        ?.copyWith(
+                                          color: colorScheme.onSurface,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                  ),
+                                  SizedBox(height: 24),
+                                ],
                               ),
                             ] else ...[
                               // ITEMS LIST
@@ -117,7 +133,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                               text: AppLocalizations.of(context)!.addSong,
                               isDense: true,
                               onPressed: () {
-                                // TODO add song items
+                                // TODO add song to playlist
                               },
                             ),
                             FilledTextButton(

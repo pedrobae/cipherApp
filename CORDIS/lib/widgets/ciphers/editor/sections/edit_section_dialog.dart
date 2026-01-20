@@ -81,7 +81,7 @@ class _EditSectionDialogState extends State<EditSectionDialog> {
             child: Column(
               spacing: 16,
               mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // HEADER
                 Row(

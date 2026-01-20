@@ -227,6 +227,7 @@ class _CipherEditorState extends State<CipherEditor>
                       bottom: 16.0,
                     ),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       spacing: 16,
                       children: [
                         FilledTextButton(

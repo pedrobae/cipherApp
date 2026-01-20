@@ -133,6 +133,10 @@
   "@noPlaylistsFound": {"description": "Message displayed when no playlists are found"},
   "addToPlaylist": "Adicionar à Playlist",
   "@addToPlaylist": {"description": "Add song to playlist button label"},
+  "emptyPlaylist": "Esta Playlist está vazia.",
+  "@emptyPlaylist": {"description": "Message displayed when a playlist is empty"},
+  "emptyPlaylistInstructions": "Por favor, adicione músicas e itens de Texto para construir sua playlist.",
+  "@emptyPlaylistInstructions": {"description": "Instructions for adding items to an empty playlist"},
   "item": "item",
   "@item": {"description": "Singular item label"},
   "items": "itens",
@@ -145,6 +149,10 @@
   "@share": {"description": "Share button label"},
   "view": "Visualizar",
   "@view": {"description": "View button label"},
+  "addSong": "Adicionar Música",
+  "@addSong": {"description": "Add song button label"},
+  "addFlowItem": "Adicionar Texto",
+  "@addFlowItem": {"description": "Add flow item button label"},
 
 
   "nextUp": "Próxima Agenda",

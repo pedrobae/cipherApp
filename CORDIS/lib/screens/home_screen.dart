@@ -78,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
           final nextSchedule = scheduleProvider.getNextSchedule();
           // HOME SCREEN
           return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             spacing: 24,
             children: [
               // Current date
@@ -132,6 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Expanded(
                 child: Center(
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     mainAxisSize: MainAxisSize.min,
                     spacing: 16,
                     children: [

@@ -446,6 +446,18 @@ abstract class AppLocalizations {
   /// **'Adicionar à Playlist'**
   String get addToPlaylist;
 
+  /// Message displayed when a playlist is empty
+  ///
+  /// In pt, this message translates to:
+  /// **'Esta Playlist está vazia.'**
+  String get emptyPlaylist;
+
+  /// Instructions for adding items to an empty playlist
+  ///
+  /// In pt, this message translates to:
+  /// **'Por favor, adicione músicas e itens de Texto para construir sua playlist.'**
+  String get emptyPlaylistInstructions;
+
   /// Singular item label
   ///
   /// In pt, this message translates to:
@@ -481,6 +493,18 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Visualizar'**
   String get view;
+
+  /// Add song button label
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicionar Música'**
+  String get addSong;
+
+  /// Add flow item button label
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicionar Texto'**
+  String get addFlowItem;
 
   /// Next scheduled item label
   ///

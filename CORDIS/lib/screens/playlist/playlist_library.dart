@@ -1,8 +1,8 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/screens/playlist/create_playlist.dart';
+import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:cordis/widgets/playlist/library/playlist_scroll_view.dart';
-import 'package:cordis/widgets/icon_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
@@ -60,35 +60,15 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen> {
                   playlistProvider.setSearchTerm(value);
                 },
               ),
-              // Buttons Row (e.g., Filters, Sort, Create New Cipher)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // CREATE NEW PLAYLIST BUTTON
-                  IconTextButton(
-                    onTap: () {
-                      navigationProvider.push(CreatePlaylistScreen());
-                    },
-                    text: AppLocalizations.of(context)!.create,
-                    icon: Icon(Icons.add, color: colorScheme.onSurface),
-                  ),
-                  // TODO think of these buttons
-                  // SORT BUTTON
-                  IconTextButton(
-                    onTap: () {},
-                    text: AppLocalizations.of(context)!.sort,
-                    icon: Icon(Icons.sort, color: colorScheme.onSurface),
-                  ),
-                  // FILTER BUTTON
-                  IconTextButton(
-                    onTap: () {},
-                    text: AppLocalizations.of(context)!.filter,
-                    icon: Icon(Icons.filter_list, color: colorScheme.onSurface),
-                  ),
-                ],
-              ),
 
               Expanded(child: PlaylistScrollView()),
+              FilledTextButton(
+                onPressed: () {
+                  navigationProvider.push(CreatePlaylistScreen());
+                },
+                text: AppLocalizations.of(context)!.create,
+                isDarkButton: true,
+              ),
             ],
           ),
         );

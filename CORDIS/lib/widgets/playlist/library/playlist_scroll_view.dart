@@ -71,6 +71,7 @@ class _PlaylistScrollViewState extends State<PlaylistScrollView> {
                       ),
                     )
                   : ListView.builder(
+                      physics: const AlwaysScrollableScrollPhysics(),
                       cacheExtent: 500,
                       itemCount: playlistProvider.filteredPlaylists.length,
                       itemBuilder: (context, index) {

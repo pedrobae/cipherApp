@@ -97,6 +97,7 @@ class PlaylistProvider extends ChangeNotifier {
       for (var p in playlist) {
         _playlists[p.id] = p;
       }
+      _filterLocalPlaylists();
     } catch (e) {
       _error = e.toString();
     } finally {

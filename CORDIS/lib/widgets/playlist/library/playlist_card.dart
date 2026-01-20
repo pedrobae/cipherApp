@@ -1,3 +1,5 @@
+import 'package:cordis/providers/navigation_provider.dart';
+import 'package:cordis/screens/playlist/playlist_viewer.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
@@ -15,8 +17,8 @@ class PlaylistCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Consumer<PlaylistProvider>(
-      builder: (context, playlistProvider, child) {
+    return Consumer2<PlaylistProvider, NavigationProvider>(
+      builder: (context, playlistProvider, navigationProvider, child) {
         final playlist = playlistProvider.getPlaylistById(playlistId)!;
 
         final itemCount = playlist.items.length;
@@ -24,12 +26,7 @@ class PlaylistCard extends StatelessWidget {
         // Card content
         return GestureDetector(
           onTap: () {
-            // TODO - Open playlist details
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Funcionalidade em desenvolvimento 🚧'),
-              ),
-            );
+            navigationProvider.push(PlaylistViewer(playlistId: playlistId));
           },
           child: Container(
             decoration: BoxDecoration(

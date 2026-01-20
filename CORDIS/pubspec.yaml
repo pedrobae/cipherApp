@@ -46,7 +46,7 @@ dev_dependencies:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/logos/logo_new.png"
+  image_path: "assets/logos/app_icon.png"
 
 flutter:
   generate: true

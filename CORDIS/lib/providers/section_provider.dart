@@ -121,6 +121,21 @@ class SectionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void renameSectionKey(
+    dynamic versionKey, {
+    required String oldCode,
+    required String newCode,
+  }) {
+    final section = _sections[versionKey]![oldCode];
+    if (section == null) return;
+
+    // Remove the old entry and add a new one with the updated code
+    _sections[versionKey]!.remove(oldCode);
+    _sections[versionKey]![newCode] = section;
+
+    notifyListeners();
+  }
+
   /// ===== DELETE =====
   // Remove all sections by its code
   void cacheDeleteSection(dynamic versionKey, String sectionCode) {

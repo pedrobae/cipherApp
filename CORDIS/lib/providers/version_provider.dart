@@ -694,27 +694,15 @@ class VersionProvider extends ChangeNotifier {
     required String oldCode,
     required String newCode,
   }) {
-    if (versionId is int) {
-      for (
-        int i = 0;
-        i < _localVersions[versionId]!.songStructure.length;
-        i++
-      ) {
-        if (_localVersions[versionId]!.songStructure[i] == oldCode) {
-          _localVersions[versionId]!.songStructure[i] = newCode;
-        }
-      }
-    } else {
-      for (
-        int i = 0;
-        i < _cloudVersions[versionId]!.songStructure.length;
-        i++
-      ) {
-        if (_cloudVersions[versionId]!.songStructure[i] == oldCode) {
-          _cloudVersions[versionId]!.songStructure[i] = newCode;
-        }
+    final songStructure = getSongStructure(versionId);
+
+    // Iterate through the song structure and update the section code
+    for (int i = 0; i < _localVersions[versionId]!.songStructure.length; i++) {
+      if (songStructure[i] == oldCode) {
+        songStructure[i] = newCode;
       }
     }
+
     notifyListeners();
   }
 

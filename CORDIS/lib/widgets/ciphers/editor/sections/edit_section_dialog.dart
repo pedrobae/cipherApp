@@ -99,7 +99,7 @@ class _EditSectionDialogState extends State<EditSectionDialog> {
 
               TextField(
                 controller: contentCodeController,
-                enabled: widget.versionId == -1,
+                // enabled: widget.versionId == -1,
                 decoration: InputDecoration(
                   labelText: AppLocalizations.of(context)!.sectionCode,
                 ),
@@ -232,6 +232,12 @@ class _EditSectionDialogState extends State<EditSectionDialog> {
     // If the content code has changed, update the song structure accordingly
     if (code != null && code != widget.sectionCode) {
       context.read<VersionProvider>().updateSectionCodeInStruct(
+        widget.versionId,
+        oldCode: widget.sectionCode,
+        newCode: code,
+      );
+
+      context.read<SectionProvider>().renameSectionKey(
         widget.versionId,
         oldCode: widget.sectionCode,
         newCode: code,

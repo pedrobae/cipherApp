@@ -30,14 +30,12 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final playlistProvider = context.read<PlaylistProvider>();
       final versionProvider = context.read<VersionProvider>();
-      final cipherProvider = context.read<CipherProvider>();
+
+      await playlistProvider.loadPlaylist(widget.playlistId);
 
       await versionProvider.loadVersionsForPlaylist(
         playlistProvider.getPlaylistById(widget.playlistId)!.items,
       );
-
-      // Ensure all ciphers are loaded (loads all ciphers if not already loaded)
-      await cipherProvider.loadLocalCiphers();
     });
   }
 
@@ -145,7 +143,21 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                                 ],
                               )
                             // ITEMS LIST
-                            : SizedBox.shrink(), // Placeholder for items list
+                            : Builder(
+                                builder: (context) {
+                                  final items = _buildPlaylistItems(
+                                    context,
+                                    playlist,
+                                    playlistProvider,
+                                    userProvider,
+                                    authProvider,
+                                  );
+
+                                  return SingleChildScrollView(
+                                    child: Column(children: [...items]),
+                                  );
+                                },
+                              ),
                       ),
                     ),
                   ],

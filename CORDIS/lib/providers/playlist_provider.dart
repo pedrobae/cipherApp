@@ -95,7 +95,8 @@ class PlaylistProvider extends ChangeNotifier {
     try {
       final playlist = await _playlistRepository.getAllPlaylists();
       for (var p in playlist) {
-        _playlists[p.id] = p;
+        final items = await _playlistRepository.getItemsOfPlaylist(p.id);
+        _playlists[p.id] = p.copyWith(items: items);
       }
       _filterLocalPlaylists();
     } catch (e) {
@@ -118,7 +119,11 @@ class PlaylistProvider extends ChangeNotifier {
       final Playlist playlist = (await _playlistRepository.getPlaylistById(
         id,
       ))!;
-      _playlists[playlist.id] = playlist;
+
+      final List<PlaylistItem> items = await _playlistRepository
+          .getItemsOfPlaylist(playlist.id);
+
+      _playlists[playlist.id] = playlist.copyWith(items: items);
     } catch (e) {
       _error = e.toString();
     } finally {

@@ -137,7 +137,9 @@ class VersionProvider extends ChangeNotifier {
       _localVersions[versionId] = versionWithCipherId.copyWith(id: versionId);
 
       if (kDebugMode) {
-        print('Created a new version with id $versionId, for cipher $cipherId');
+        print(
+          'Created a new version with id $versionId, for cipher ${cipherId ?? versionWithCipherId.cipherId}',
+        );
       }
     } catch (e) {
       _error = e.toString();

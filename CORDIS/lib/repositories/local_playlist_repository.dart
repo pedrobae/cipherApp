@@ -328,7 +328,7 @@ class PlaylistRepository {
     final textSectionResults = await db.rawQuery(
       '''
         SELECT id as content_id, position, duration, id
-        FROM playlist_text 
+        FROM playlist_text
         WHERE playlist_id = ? 
         ORDER BY position ASC
       ''',
@@ -351,8 +351,8 @@ class PlaylistRepository {
 
     final versionResults = await db.rawQuery(
       '''
-        SELECT version_id as content_id, position, duration, id
-        FROM playlist_version 
+        SELECT v.id as content_id, position, v.duration, pv.id
+        FROM playlist_version AS pv JOIN version AS v ON pv.version_id = v.id
         WHERE playlist_id = ? 
         ORDER BY position ASC
       ''',

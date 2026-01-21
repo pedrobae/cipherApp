@@ -53,6 +53,7 @@ class PlaylistCard extends StatelessWidget {
                             ),
                       ),
                       Row(
+                        spacing: 8,
                         children: [
                           Text(
                             itemCount != 1
@@ -64,7 +65,15 @@ class PlaylistCard extends StatelessWidget {
                                 ),
                           ),
                           itemCount > 0
-                              ? Text(playlist.getDurationString())
+                              ? Text(
+                                  '${AppLocalizations.of(context)!.duration}: ${playlist.getDurationString()}',
+                                  style: Theme.of(context).textTheme.bodyMedium!
+                                      .copyWith(
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.shadow,
+                                      ),
+                                )
                               : const SizedBox.shrink(),
                         ],
                       ),

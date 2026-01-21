@@ -21,7 +21,7 @@ class DatabaseHelper {
 
       final db = await openDatabase(
         path,
-        version: 9,
+        version: 10,
         onCreate: _onCreate,
         onUpgrade: _onUpgrade, // Handle migrations
       );
@@ -166,6 +166,7 @@ class DatabaseHelper {
         content TEXT NOT NULL,
         firebase_id TEXT,
         position INTEGER NOT NULL DEFAULT 0,
+        duration INTEGER DEFAULT 0,
         added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (playlist_id) REFERENCES playlist (id) ON DELETE CASCADE
       )
@@ -335,6 +336,12 @@ class DatabaseHelper {
       await db.execute('ALTER TABLE version ADD COLUMN bpm INTEGER DEFAULT 0');
       // DROP EXISTING DATA IN CIPHER TABLE AND DROP COLUMN
       await db.execute('ALTER TABLE cipher DROP COLUMN bpm');
+    }
+    if (oldVersion < 11) {
+      // ADD DURATION COLUMN TO PLAYLIST_TEXT TABLE
+      await db.execute(
+        'ALTER TABLE playlist_text ADD COLUMN duration INTEGER DEFAULT 0',
+      );
     }
   }
 

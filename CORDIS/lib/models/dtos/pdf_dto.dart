@@ -84,10 +84,10 @@ class DocumentData {
       List<double> wordBounds = [];
       for (var line in pageEntry.value) {
         // Skip lines that have a too great left bound (to avoid titles)
-        if (line.bounds.left > 100.0) {
+        if (line.bounds!.left > 100.0) {
           continue;
         }
-        for (var word in line.wordList) {
+        for (var word in line.wordList!) {
           wordBounds = _projectWord(
             word.bounds.left,
             word.bounds.right,
@@ -122,7 +122,7 @@ class DocumentData {
 
           for (var line in pageEntry.value) {
             // Skip lines until we reach a left column line
-            if (line.bounds.left < 100.0) {
+            if (line.bounds!.left < 100.0) {
               startedContent = true;
             }
 
@@ -133,7 +133,7 @@ class DocumentData {
 
             List<WordData> wordsInLeftColumn = [];
             List<WordData> wordsInRightColumn = [];
-            for (var word in line.wordList) {
+            for (var word in line.wordList!) {
               if (word.bounds.right < gapStart) {
                 wordsInLeftColumn.add(word);
               } else {
@@ -149,9 +149,9 @@ class DocumentData {
                   fontSize: line.fontSize,
                   bounds: Rect.fromLTRB(
                     wordsInRightColumn.first.bounds.left,
-                    line.bounds.top,
-                    line.bounds.right,
-                    line.bounds.bottom,
+                    line.bounds!.top,
+                    line.bounds!.right,
+                    line.bounds!.bottom,
                   ),
                   fontStyle: line.fontStyle,
                   lineIndex: line.lineIndex,
@@ -165,10 +165,10 @@ class DocumentData {
                   text: wordsInLeftColumn.map((w) => w.text).join(' '),
                   fontSize: line.fontSize,
                   bounds: Rect.fromLTRB(
-                    line.bounds.left,
-                    line.bounds.top,
+                    line.bounds!.left,
+                    line.bounds!.top,
                     wordsInLeftColumn.last.bounds.right,
-                    line.bounds.bottom,
+                    line.bounds!.bottom,
                   ),
                   fontStyle: line.fontStyle,
                   lineIndex: line.lineIndex,
@@ -245,22 +245,27 @@ class DocumentData {
 class LineData {
   String text;
   final double? fontSize;
-  final Rect bounds;
+  final Rect? bounds;
   final List<PdfFontStyle>? fontStyle;
+  final double? avgWordLength;
+  final int? wordCount;
   final int lineIndex;
   int? avgSpaceBetweenWords;
-  final List<WordData> wordList;
+  final List<WordData>? wordList;
 
   LineData({
+    this.wordCount,
     required this.text,
-    required this.fontSize,
-    required this.bounds,
-    required this.fontStyle,
+    this.fontSize,
+    this.bounds,
+    this.fontStyle,
     required this.lineIndex,
-    required this.wordList,
+    this.wordList,
+    this.avgWordLength,
+    this.avgSpaceBetweenWords,
   });
 
-  int get wordCount => wordList.length;
+  int get pdfWordCount => wordList!.length;
 
   factory LineData.fromGlyphArray(int lineIndex, List<TextGlyph> glyphs) {
     Map<int, List<TextGlyph>> wordGlyphMap = {};

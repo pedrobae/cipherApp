@@ -5,11 +5,9 @@ import 'package:cordis/utils/section_constants.dart';
 enum SeparatorType { doubleNewLine, bracket, parenthesis, hyphen }
 
 class SectionParser {
-  void parseByDoubleNewLine(ImportVariant variant) {
-    List<String> rawSections = variant.rawText.split('\n\n');
+  void parseByDoubleNewLine(ParsingResult result) {
+    List<String> rawSections = result.rawText.split('\n\n');
 
-    ParsingResult result =
-        variant.parsingResults[ParsingStrategy.doubleNewLine]!;
     for (int i = 0; i < rawSections.length; i++) {
       String sectionContent = rawSections[i].trim();
       if (sectionContent.isEmpty) {
@@ -28,19 +26,17 @@ class SectionParser {
     }
   }
 
-  void parseBySectionLabels(ImportVariant variant) {
-    ParsingResult result =
-        variant.parsingResults[ParsingStrategy.sectionLabels]!;
-    String rawText = variant.rawText;
+  void parseBySectionLabels(ParsingResult result) {
+    String rawText = result.rawText;
     List<Map<String, dynamic>> validMatches = [];
     // Search common label texts
     for (var label in commonSectionLabels.values) {
       for (var labelVariation in label.labelVariations) {
         RegExp regex = RegExp(labelVariation, caseSensitive: false);
-        Iterable<RegExpMatch> matches = regex.allMatches(variant.rawText);
+        Iterable<RegExpMatch> matches = regex.allMatches(result.rawText);
 
         for (var match in matches) {
-          final labelData = _validateLabel(variant.rawText, match);
+          final labelData = _validateLabel(result.rawText, match);
 
           // Possible Label found -  Validate
           if (labelData['isValid']) {
@@ -83,17 +79,14 @@ class SectionParser {
     _checkDuplicates(result);
   }
 
-  void parseByPdfFormatting(ImportVariant variant) {
-    ParsingResult result =
-        variant.parsingResults[ParsingStrategy.pdfFormatting]!;
-
+  void parseByPdfFormatting(ParsingResult result) {
     /// Identifies section break based on line spacing greater than the mean line spacing
     double totalLineSpacing = 0.0;
     int relativeSpacingCount = 0;
-    for (int i = 0; i < variant.lines.length - 1; i++) {
-      final textLine = variant.lines[i]['textLine'] as LineData;
-      final nextLine = variant.lines[i + 1]['textLine'] as LineData;
-      final spacing = nextLine.bounds.top - textLine.bounds.bottom;
+    for (int i = 0; i < result.lines.length - 1; i++) {
+      final textLine = result.lines[i];
+      final nextLine = result.lines[i + 1];
+      final spacing = nextLine.bounds!.top - textLine.bounds!.bottom;
       if (spacing > 0) {
         totalLineSpacing += spacing;
         relativeSpacingCount++;
@@ -101,22 +94,20 @@ class SectionParser {
     }
     double meanLineSpacing = totalLineSpacing / relativeSpacingCount;
     int previousBreakIndex = 0;
-    for (int i = 0; i < variant.lines.length - 1; i++) {
-      final textLine = variant.lines[i]['textLine'] as LineData;
-      final nextLine = variant.lines[i + 1]['textLine'] as LineData;
-      double lineSpacing = nextLine.bounds.top - textLine.bounds.bottom;
+    for (int i = 0; i < result.lines.length - 1; i++) {
+      final textLine = result.lines[i];
+      final nextLine = result.lines[i + 1];
+      double lineSpacing = nextLine.bounds!.top - textLine.bounds!.bottom;
       // Line spacing greater than mean indicates a section break (negative spacing implies column change)
       if (lineSpacing > meanLineSpacing || lineSpacing < 0) {
         // Section break found
         int sectionStart = previousBreakIndex;
         int sectionEnd = i + 1;
 
-        List<LineData> sectionLines = variant.lines
-            .sublist(sectionStart, sectionEnd)
-            .map((lineMap) {
-              return lineMap['textLine'] as LineData;
-            })
-            .toList();
+        List<LineData> sectionLines = result.lines.sublist(
+          sectionStart,
+          sectionEnd,
+        );
 
         _mapSectionFromLinesData(result, sectionLines);
 
@@ -124,13 +115,8 @@ class SectionParser {
       }
     }
     // Handle last section if any lines remain
-    if (previousBreakIndex < variant.lines.length) {
-      List<LineData> sectionLines = variant.lines
-          .sublist(previousBreakIndex)
-          .map((lineMap) {
-            return lineMap['textLine'] as LineData;
-          })
-          .toList();
+    if (previousBreakIndex < result.lines.length) {
+      List<LineData> sectionLines = result.lines.sublist(previousBreakIndex);
 
       _mapSectionFromLinesData(result, sectionLines);
     }

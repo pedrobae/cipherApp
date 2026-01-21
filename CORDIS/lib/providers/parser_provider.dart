@@ -1,5 +1,4 @@
 import 'package:cordis/models/domain/cipher/cipher.dart';
-import 'package:cordis/models/domain/parsed_doc.dart';
 import 'package:cordis/models/domain/parsing_cipher.dart';
 import 'package:cordis/services/parsing/parsing_service_base.dart';
 import 'package:flutter/material.dart';
@@ -10,12 +9,9 @@ class ParserProvider extends ChangeNotifier {
   ParsingCipher? _cipher;
   ParsingCipher? get cipher => _cipher;
 
-  // Consolidated document for UI consumption
-  ParsedCipherDoc? _doc;
-  ParsedCipherDoc? get doc => _doc;
-
   // Chosen Cipher after parsing
-  Cipher? parsedCipher;
+  Cipher? _parsedCipher;
+  Cipher? get parsedCipher => _parsedCipher;
 
   bool _isParsing = false;
   bool get isParsing => _isParsing;
@@ -35,19 +31,12 @@ class ParserProvider extends ChangeNotifier {
       // ===== PRE-PROCESSING STEPS =====
       switch (importedCipher.importType) {
         case ImportType.text:
-          for (var importVariant in _cipher!.importVariants.values) {
-            // Create parsing strategies based on text analysis
-            _parsingService.preProcessText(importVariant);
-
-            // Calculate line metrics
-            _parsingService.calculateLines(importVariant);
-          }
+          // Calculate line metrics
+          _parsingService.calculateLines(importedCipher.result);
           break;
         case ImportType.pdf:
-          for (var importVariant in _cipher!.importVariants.values) {
-            // Average character spacing and font style analysis
-            _parsingService.preProcessPdf(importVariant);
-          }
+          // Average character spacing and font style analysis
+          _parsingService.preProcessPdf(importedCipher.result);
           break;
         case ImportType.image:
           // Image specific parsing can be added here
@@ -55,11 +44,12 @@ class ParserProvider extends ChangeNotifier {
       }
 
       /// ===== PARSING STEPS =====
-      for (var importVariant in _cipher!.importVariants.values) {
-        _parsingService.parse(importVariant);
-      }
+      _parsingService.parse(_cipher!.result);
 
-      _selectCandidates();
+      // Build domain Cipher from parsed sections
+      _parsedCipher = _parsingService.buildCipherFromParsedImportVariant(
+        _cipher!.result,
+      );
 
       _isParsing = false;
       notifyListeners();
@@ -69,35 +59,5 @@ class ParserProvider extends ChangeNotifier {
       notifyListeners();
       return;
     }
-  }
-
-  void _selectCandidates() {
-    List<CipherParseCandidate> candidates = [];
-
-    _cipher!.importVariants.forEach((_, importVariant) {
-      importVariant.parsingResults.forEach((strategy, result) {
-        // Build domain Cipher from parsed sections
-        Cipher cipher = _parsingService.buildCipherFromParsedImportVariant(
-          result,
-          importVariant,
-        );
-
-        // Create candidate
-        CipherParseCandidate candidate = CipherParseCandidate(
-          strategy: strategy,
-          variation: importVariant.variation,
-          cipher: cipher,
-          sectionCount: result.parsedSections.length,
-        );
-
-        candidates.add(candidate);
-      });
-    });
-
-    _doc = ParsedCipherDoc(
-      importType: _cipher!.importType,
-      candidates: candidates,
-    );
-    parsedCipher = candidates.isNotEmpty ? candidates[0].cipher : null;
   }
 }

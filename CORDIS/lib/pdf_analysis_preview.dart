@@ -401,7 +401,10 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
     }
 
     final totalLines = data.length;
-    final totalWords = data.fold<int>(0, (sum, line) => sum + line.wordCount);
+    final totalWords = data.fold<int>(
+      0,
+      (sum, line) => sum + line.pdfWordCount,
+    );
     final avgWordsPerLine = totalLines > 0 ? totalWords / totalLines : 0.0;
     final fontSizes = data.map((l) => l.fontSize ?? 0.0).toSet().toList()
       ..sort();
@@ -416,7 +419,7 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
       0,
       (sum, line) =>
           sum +
-          line.wordList.fold<int>(0, (wSum, word) => wSum + word.text.length),
+          line.wordList!.fold<int>(0, (wSum, word) => wSum + word.text.length),
     );
     final avgWordLength = totalWords > 0 ? totalChars / totalWords : 0.0;
 
@@ -552,7 +555,7 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
       return line.avgSpaceBetweenWords!.toDouble();
     }
 
-    final words = line.wordList;
+    final words = line.wordList!;
     if (words.length < 2) {
       line.avgSpaceBetweenWords ??= 0;
       return 0;
@@ -625,7 +628,7 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
     final spots = data
         .asMap()
         .entries
-        .map((e) => FlSpot(e.key.toDouble() + 1, e.value.bounds.height))
+        .map((e) => FlSpot(e.key.toDouble() + 1, e.value.bounds!.height))
         .toList();
 
     return LineChart(
@@ -668,7 +671,7 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
     final spots = data
         .asMap()
         .entries
-        .map((e) => FlSpot(e.key.toDouble() + 1, e.value.bounds.top))
+        .map((e) => FlSpot(e.key.toDouble() + 1, e.value.bounds!.top))
         .toList();
 
     return LineChart(
@@ -712,8 +715,8 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
     final gaps = <double>[];
     for (int i = 1; i < data.length; i++) {
       // Calculate gap between end of previous line and start of current line
-      final prevBottom = data[i - 1].bounds.top + data[i - 1].bounds.height;
-      final currentTop = data[i].bounds.top;
+      final prevBottom = data[i - 1].bounds!.top + data[i - 1].bounds!.height;
+      final currentTop = data[i].bounds!.top;
       final gap = currentTop - prevBottom;
       spacings.add(FlSpot(i.toDouble(), gap));
       gaps.add(gap);
@@ -942,10 +945,10 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
               Text('Estilo: ${line.fontStyle.toString().split('.').last}'),
               Text('Palavras: ${line.wordCount}'),
               Text(
-                'Bounds: x=${line.bounds.left.toStringAsFixed(1)}, '
-                'y=${line.bounds.top.toStringAsFixed(1)}, '
-                'w=${line.bounds.width.toStringAsFixed(1)}, '
-                'h=${line.bounds.height.toStringAsFixed(1)}',
+                'Bounds: x=${line.bounds!.left.toStringAsFixed(1)}, '
+                'y=${line.bounds!.top.toStringAsFixed(1)}, '
+                'w=${line.bounds!.width.toStringAsFixed(1)}, '
+                'h=${line.bounds!.height.toStringAsFixed(1)}',
               ),
               const Divider(),
               Text(
@@ -1032,7 +1035,7 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
                       ),
                     ),
                   ],
-                  rows: line.wordList
+                  rows: line.wordList!
                       .map(
                         (word) => DataRow(
                           cells: [

@@ -69,21 +69,12 @@ class ImportProvider extends ChangeNotifier {
       switch (_importType) {
         case ImportType.text:
           // Text import: single import variant (textDirect)
-          final lines = (data ?? '').split('\n');
-          _importedCipher = ParsingCipher(importType: ImportType.text);
-
-          final variant = ImportVariant(
-            variation: _importVariation ?? ImportVariation.textDirect,
-            rawText: data ?? '',
-            lines: lines
-                .asMap()
-                .entries
-                .map((entry) => {'lineNumber': entry.key, 'text': entry.value})
-                .toList(),
-          );
-          _importedCipher!.addImportVariant(
-            (_importVariation ?? ImportVariation.textDirect).name,
-            variant,
+          _importedCipher = ParsingCipher(
+            result: ParsingResult(
+              strategy: _parsingStrategy!,
+              rawText: data ?? '',
+            ),
+            importType: ImportType.text,
           );
           break;
 
@@ -93,21 +84,16 @@ class ImportProvider extends ChangeNotifier {
             selectedFile!,
           );
 
-          _importedCipher = ParsingCipher(importType: ImportType.pdf);
-
-          final variant = ImportVariant.fromPdfLines(
-            _importVariation == ImportVariation.pdfNoColumns
-                ? pdfDocument.pageLines[0]!
-                : pdfDocument.pageLinesWithColumns[0]!,
-            strategy: _importVariation!,
+          _importedCipher = ParsingCipher(
+            importType: ImportType.pdf,
+            result: ParsingResult(
+              strategy: _parsingStrategy!,
+              rawText: '',
+              lines: _importVariation == ImportVariation.pdfWithColumns
+                  ? pdfDocument.pageLinesWithColumns[0]!
+                  : pdfDocument.pageLines[0]!,
+            ),
           );
-
-          // Store metadata in all variants
-          variant.metadata['hasColumns'] = pdfDocument.hasColumns[0];
-          variant.metadata['pageCount'] = pdfDocument.pageLines.length;
-
-          _importedCipher!.addImportVariant(_importVariation!.name, variant);
-
           break;
 
         case ImportType.image:

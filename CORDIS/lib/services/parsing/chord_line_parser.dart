@@ -52,7 +52,7 @@ class ChordLineParser {
     }
   }
 
-  void parseByPdfFormatting(ImportVariant variant, ParsingResult result) {
+  void parseByPdfFormatting(ParsingResult result) {
     // Iterates through each section of the variant creating Section objects
     Map<String, Section> parsedSections = result.parsedSections;
     List<Map<String, dynamic>> rawSections = result.rawSections;
@@ -227,9 +227,9 @@ class ChordLineParser {
   String _mergeByPdfFormatting(LineData chordLineData, LineData lyricLineData) {
     // Merges chord line and lyric line into a single chord pro formatted line
     // Using glyph bounds to insert chords into lyrics
-    List<WordData> chordGlyphs = chordLineData.wordList;
+    List<WordData> chordGlyphs = chordLineData.wordList!;
 
-    List<GlyphData> lyricGlyphs = lyricLineData.wordList
+    List<GlyphData> lyricGlyphs = lyricLineData.wordList!
         .expand(
           (word) =>
               word.glyphList +

@@ -1,6 +1,9 @@
 import 'package:cordis/l10n/app_localizations.dart';
+import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:cordis/models/domain/parsing_cipher.dart';
-import 'package:cordis/screens/cipher/cipher_parsing_screen.dart';
+import 'package:cordis/providers/navigation_provider.dart';
+import 'package:cordis/providers/parser_provider.dart';
+import 'package:cordis/screens/cipher/cipher_editor.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:cordis/providers/import_provider.dart';
@@ -35,119 +38,137 @@ class _ImportTextScreenState extends State<ImportTextScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(AppLocalizations.of(context)!.importFromText)),
-      body: Consumer<ImportProvider>(
-        builder: (context, importProvider, child) {
-          // Handle Error State
-          if (importProvider.error != null) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    AppLocalizations.of(context)!.errorMessage(
-                      AppLocalizations.of(context)!.importFromText,
-                      importProvider.error!,
-                    ),
-                    style: const TextStyle(color: Colors.red),
-                  ),
-                  FilledButton.icon(
-                    label: Text(AppLocalizations.of(context)!.tryAgain),
-                    onPressed: () {
-                      importProvider.clearError();
-                    },
-                    icon: const Icon(Icons.refresh),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          // Handle Loading State
-          if (importProvider.isImporting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          // Default State
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                spacing: 16.0,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Expanded(
-                    child: TextField(
-                      expands: true,
-                      maxLines: null,
-                      selectAllOnFocus: true,
-                      onTapOutside: (event) => FocusScope.of(context).unfocus(),
-                      textAlignVertical: TextAlignVertical(y: -1),
-                      controller: _importTextController,
-                      decoration: InputDecoration(
-                        hintText: AppLocalizations.of(context)!.pasteTextPrompt,
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(0),
+      body: Consumer3<ImportProvider, NavigationProvider, ParserProvider>(
+        builder:
+            (
+              context,
+              importProvider,
+              navigationProvider,
+              parserProvider,
+              child,
+            ) {
+              // Handle Error State
+              if (importProvider.error != null) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)!.errorMessage(
+                          AppLocalizations.of(context)!.importFromText,
+                          importProvider.error!,
                         ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(0),
-                          borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.primary,
-                            width: 2,
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                      FilledButton.icon(
+                        label: Text(AppLocalizations.of(context)!.tryAgain),
+                        onPressed: () {
+                          importProvider.clearError();
+                        },
+                        icon: const Icon(Icons.refresh),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              // Handle Loading State
+              if (importProvider.isImporting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              // Default State
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    spacing: 16.0,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          expands: true,
+                          maxLines: null,
+                          selectAllOnFocus: true,
+                          onTapOutside: (event) =>
+                              FocusScope.of(context).unfocus(),
+                          textAlignVertical: TextAlignVertical(y: -1),
+                          controller: _importTextController,
+                          decoration: InputDecoration(
+                            hintText: AppLocalizations.of(
+                              context,
+                            )!.pasteTextPrompt,
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(0),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(0),
+                              borderSide: BorderSide(
+                                color: Theme.of(context).colorScheme.primary,
+                                width: 2,
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        AppLocalizations.of(context)!.parsingStrategy,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                        textAlign: TextAlign.center,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)!.parsingStrategy,
+                            style: TextStyle(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          DropdownButton<ParsingStrategy>(
+                            value: importProvider.parsingStrategy,
+                            items:
+                                importTypeToParsingStrategies[ImportType.text]!
+                                    .map((ParsingStrategy strategy) {
+                                      return DropdownMenuItem<ParsingStrategy>(
+                                        value: strategy,
+                                        child: Text(strategy.getName(context)),
+                                      );
+                                    })
+                                    .toList(),
+                            onChanged: (ParsingStrategy? newStrategy) {
+                              if (newStrategy != null) {
+                                importProvider.setParsingStrategy(newStrategy);
+                              }
+                            },
+                          ),
+                        ],
                       ),
-                      DropdownButton<ParsingStrategy>(
-                        value: importProvider.parsingStrategy,
-                        items: importTypeToParsingStrategies[ImportType.text]!
-                            .map((ParsingStrategy strategy) {
-                              return DropdownMenuItem<ParsingStrategy>(
-                                value: strategy,
-                                child: Text(strategy.getName(context)),
-                              );
-                            })
-                            .toList(),
-                        onChanged: (ParsingStrategy? newStrategy) {
-                          if (newStrategy != null) {
-                            importProvider.setParsingStrategy(newStrategy);
+                      FilledTextButton(
+                        text: AppLocalizations.of(context)!.import,
+                        isDarkButton: true,
+                        onPressed: () async {
+                          final text = _importTextController.text;
+                          if (text.isNotEmpty) {
+                            await importProvider.importText(data: text);
+
+                            parserProvider.parseCipher(
+                              importProvider.importedCipher!,
+                            );
+
+                            // Navigate to parsing screen
+                            navigationProvider.push(
+                              CipherEditor(
+                                versionType: VersionType.import,
+                                versionId: -1,
+                              ),
+                            );
                           }
                         },
                       ),
                     ],
                   ),
-                  FilledTextButton(
-                    text: AppLocalizations.of(context)!.import,
-                    isDarkButton: true,
-                    onPressed: () async {
-                      final text = _importTextController.text;
-                      if (text.isNotEmpty) {
-                        final navigator = Navigator.of(context);
-                        await importProvider.importText(data: text);
-                        // Navigate to parsing screen
-                        navigator.push(
-                          MaterialPageRoute(
-                            builder: (context) => CipherParsingScreen(),
-                          ),
-                        );
-                      }
-                    },
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
+                ),
+              );
+            },
       ),
     );
   }

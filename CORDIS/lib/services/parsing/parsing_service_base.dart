@@ -12,68 +12,59 @@ class ParsingServiceBase {
   final ChordLineParser chordLineParser = ChordLineParser();
   final SectionParser sectionParser = SectionParser();
 
-  void parse(ImportVariant variant) {
-    for (var strategy in variant.parsingResults.keys) {
-      parseSections(variant, strategy);
-      parseMetadata(variant, strategy);
-      parseChords(variant, strategy);
-    }
+  void parse(ParsingResult result) {
+    parseSections(result);
+    parseMetadata(result);
+    parseChords(result);
   }
 
-  void parseSections(ImportVariant variant, ParsingStrategy strategy) {
-    switch (strategy) {
+  void parseSections(ParsingResult result) {
+    switch (result.strategy) {
       case ParsingStrategy.doubleNewLine:
-        sectionParser.parseByDoubleNewLine(variant);
+        sectionParser.parseByDoubleNewLine(result);
         break;
       case ParsingStrategy.sectionLabels:
-        sectionParser.parseBySectionLabels(variant);
+        sectionParser.parseBySectionLabels(result);
         break;
       case ParsingStrategy.pdfFormatting:
-        sectionParser.parseByPdfFormatting(variant);
+        sectionParser.parseByPdfFormatting(result);
         break;
     }
   }
 
-  void parseMetadata(ImportVariant variant, ParsingStrategy strategy) {
-    switch (strategy) {
+  void parseMetadata(ParsingResult result) {
+    switch (result.strategy) {
       case ParsingStrategy.doubleNewLine:
       case ParsingStrategy.sectionLabels:
-        metadataParser.parseBySimpleText(variant, strategy);
+        metadataParser.parseBySimpleText(result);
         break;
       case ParsingStrategy.pdfFormatting:
         break;
     }
   }
 
-  void parseChords(ImportVariant variant, ParsingStrategy strategy) {
-    switch (strategy) {
+  void parseChords(ParsingResult result) {
+    switch (result.strategy) {
       case ParsingStrategy.doubleNewLine:
       case ParsingStrategy.sectionLabels:
-        chordLineParser.parseBySimpleText(variant.parsingResults[strategy]!);
+        chordLineParser.parseBySimpleText(result);
         break;
       case ParsingStrategy.pdfFormatting:
-        chordLineParser.parseByPdfFormatting(
-          variant,
-          variant.parsingResults[strategy]!,
-        );
+        chordLineParser.parseByPdfFormatting(result);
         break;
     }
   }
 
   /// ----- PRE-PROCESSING HELPERS ------
-  void preProcessPdf(ImportVariant variant) {
+  void preProcessPdf(ParsingResult result) {
     /// PRE-PROCESSING STEPS
     /// - Initialize the PDF-specific parsing result
     /// - Identify different font styles used in the document
     /// - Calculate average space between words for each line
-    ParsingResult result = ParsingResult(
-      strategy: ParsingStrategy.pdfFormatting,
-    );
-
-    for (int i = 0; i < variant.lines.length; i++) {
-      final textLine = variant.lines[i]['textLine'] as LineData;
-      final followingLine = (i + 1 < variant.lines.length)
-          ? variant.lines[i + 1]['textLine'] as LineData
+    for (int i = 0; i < result.lines.length; i++) {
+      final textLine = result.lines[i];
+      final followingLine = (i + 1 < result.lines.length)
+          ? result.lines[i + 1]
           : null;
 
       // Keep count of font styles
@@ -97,7 +88,7 @@ class ParsingServiceBase {
 
       // Calculate average space between words and average word length
       final words = textLine.wordList;
-      if (words.length > 1) {
+      if (words!.length > 1) {
         int totalSpace = 0;
         for (int i = 0; i < words.length - 1; i++) {
           totalSpace +=
@@ -113,7 +104,7 @@ class ParsingServiceBase {
     //     - Heuristic: at least 30% of lines use this style
     //     - Heuristic: at least 70% of chord lines have the same following style (lyrics style)
     //     - Heuristic: chord lines have higher average space between words
-    final int totalLines = variant.lines.length;
+    final int totalLines = result.lines.length;
     List<List<PdfFontStyle>> possibleChordStyles = [];
     for (var entry in result.fontStyleCount.entries) {
       final style = entry.key;
@@ -133,8 +124,7 @@ class ParsingServiceBase {
     int highestAvgSpace = -1;
     for (var style in possibleChordStyles) {
       int totalSpace = 0;
-      for (var lineMap in variant.lines) {
-        final textLine = lineMap['textLine'] as LineData;
+      for (var textLine in result.lines) {
         if ((textLine.fontStyle ?? []) == style) {
           totalSpace += textLine.avgSpaceBetweenWords!;
         }
@@ -145,59 +135,50 @@ class ParsingServiceBase {
         result.dominantChordStyle = style;
       }
     }
-
-    variant.parsingResults[ParsingStrategy.pdfFormatting] = result;
   }
 
-  void preProcessText(ImportVariant variant) {
-    /// PRE-PROCESSING STEPS
-    /// - Initialize empty parsing results for text strategies
-    variant.parsingResults[ParsingStrategy.doubleNewLine] = ParsingResult(
-      strategy: ParsingStrategy.doubleNewLine,
-    );
-    variant.parsingResults[ParsingStrategy.sectionLabels] = ParsingResult(
-      strategy: ParsingStrategy.sectionLabels,
-    );
-  }
-
-  void calculateLines(ImportVariant variant) {
-    for (var line in variant.lines) {
+  void calculateLines(ParsingResult result) {
+    final rawLines = result.rawText.split('\n');
+    for (var i = 0; i < rawLines.length; i++) {
+      var line = rawLines[i];
       // Split line text into words using whitespace as delimiter
-      List<String> words = line['text'].split(RegExp(r'\s+')).toList();
-
-      line['wordCount'] = words.length;
+      List<String> words = line.split(RegExp(r'\s+')).toList();
 
       // Calculate average word length
       double avgWordLength = words.isNotEmpty
           ? words.map((w) => w.length).reduce((a, b) => a + b) / words.length
           : 0.0;
 
-      line['avgWordLength'] = avgWordLength;
+      result.lines.add(
+        LineData(
+          wordCount: words.length,
+          avgWordLength: avgWordLength,
+          text: line,
+          lineIndex: i,
+        ),
+      );
     }
   }
 
-  Cipher buildCipherFromParsedImportVariant(
-    ParsingResult result,
-    ImportVariant variant,
-  ) {
+  Cipher buildCipherFromParsedImportVariant(ParsingResult result) {
     return Cipher(
       id: -1, // Temporary ID, will be set in upsert
       versions: [
         Version(
           sections: result.parsedSections,
           songStructure: result.songStructure,
-          bpm: variant.metadata['bpm'] ?? 0,
+          bpm: result.metadata['bpm'] ?? 0,
           versionName: 'Imported',
           cipherId: -1,
           createdAt: DateTime.now(),
-          duration: Duration(seconds: variant.metadata['duration'] ?? 0),
+          duration: Duration(seconds: result.metadata['duration'] ?? 0),
         ),
       ],
       createdAt: DateTime.now(),
-      title: variant.metadata['title'] ?? 'Unknown Title',
-      author: variant.metadata['artist'] ?? 'Unknown Artist',
-      musicKey: variant.metadata['key'] ?? '',
-      language: variant.metadata['language'] ?? '',
+      title: result.metadata['title'] ?? 'Unknown Title',
+      author: result.metadata['artist'] ?? 'Unknown Artist',
+      musicKey: result.metadata['key'] ?? '',
+      language: result.metadata['language'] ?? '',
       isLocal: true,
     );
   }

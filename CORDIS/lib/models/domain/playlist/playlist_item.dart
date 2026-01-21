@@ -1,10 +1,10 @@
 /// Represents a content item in a playlist (cipher version or text section)
-enum PlaylistItemType { cipherVersion, textSection }
+enum PlaylistItemType { version, textSection }
 
 extension PlaylistItemTypeExtension on PlaylistItemType {
   String get name {
     switch (this) {
-      case PlaylistItemType.cipherVersion:
+      case PlaylistItemType.version:
         return 'cipherVersion';
       case PlaylistItemType.textSection:
         return 'textSection';
@@ -14,7 +14,7 @@ extension PlaylistItemTypeExtension on PlaylistItemType {
   static PlaylistItemType getTypeByName(String name) {
     switch (name) {
       case 'cipherVersion':
-        return PlaylistItemType.cipherVersion;
+        return PlaylistItemType.version;
       case 'textSection':
         return PlaylistItemType.textSection;
       default:
@@ -61,14 +61,14 @@ class PlaylistItem {
   }
 
   // Helper constructors
-  PlaylistItem.cipherVersion(
+  PlaylistItem.version(
     int cipherVersionId,
     int position,
     int id,
     Duration duration,
   ) : this(
         id: id,
-        type: PlaylistItemType.cipherVersion,
+        type: PlaylistItemType.version,
         contentId: cipherVersionId,
         position: position,
         duration: duration,
@@ -88,7 +88,7 @@ class PlaylistItem {
       );
 
   // Type checking helpers
-  bool get isCipherVersion => type == PlaylistItemType.cipherVersion;
+  bool get isCipherVersion => type == PlaylistItemType.version;
   bool get isTextSection => type == PlaylistItemType.textSection;
 
   PlaylistItem copyWith({

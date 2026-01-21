@@ -2,7 +2,7 @@ import 'package:cordis/models/domain/cipher/cipher.dart';
 import 'package:cordis/models/domain/cipher/section.dart';
 import 'package:cordis/models/dtos/version_dto.dart';
 
-enum VersionType { import, brandNew, cloud, local }
+enum VersionType { import, brandNew, cloud, local, playlist }
 
 class Version {
   final int? id;
@@ -11,6 +11,7 @@ class Version {
   final String versionName;
   final String? transposedKey;
   final List<String> songStructure; // Changed from String to List<String>
+  final int bpm;
   final Duration duration;
   final DateTime createdAt;
   final Map<String, Section>? sections;
@@ -22,6 +23,7 @@ class Version {
     this.versionName = 'Original',
     this.transposedKey,
     this.songStructure = const [],
+    required this.bpm,
     required this.duration,
     required this.createdAt,
     this.sections,
@@ -41,6 +43,7 @@ class Version {
       songStructure: row['song_structure'] as List<String>,
       transposedKey: row['transposed_key'] as String?,
       versionName: row['version_name'] as String,
+      bpm: row['bpm'] as int,
       duration: row['duration'] != null
           ? Duration(seconds: row['duration'])
           : Duration.zero,
@@ -68,6 +71,7 @@ class Version {
       firebaseId: row['firebase_id'] as String?,
       cipherId: row['cipher_id'] as int,
       songStructure: songStructure,
+      bpm: row['bpm'] as int,
       duration: row['duration'] != null
           ? Duration(seconds: row['duration'])
           : Duration.zero,
@@ -110,7 +114,7 @@ class Version {
       author: cipher.author,
       language: cipher.language,
       originalKey: cipher.musicKey,
-      bpm: cipher.bpm,
+      bpm: bpm,
       duration: duration.inSeconds,
       tags: cipher.tags,
     );
@@ -135,6 +139,7 @@ class Version {
     String? firebaseCipherId,
     List<String>? songStructure,
     Duration? duration,
+    int? bpm,
     String? transposedKey,
     String? versionName,
     DateTime? createdAt,
@@ -147,6 +152,7 @@ class Version {
       songStructure: songStructure ?? this.songStructure,
       transposedKey: transposedKey ?? this.transposedKey,
       duration: duration ?? this.duration,
+      bpm: bpm ?? this.bpm,
       versionName: versionName ?? this.versionName,
       createdAt: createdAt ?? this.createdAt,
       sections: content ?? sections,
@@ -161,6 +167,7 @@ class Version {
       songStructure: [],
       transposedKey: '',
       duration: Duration.zero,
+      bpm: 0,
       sections: {},
       createdAt: DateTime.now(),
     );

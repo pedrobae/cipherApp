@@ -107,8 +107,9 @@ class VersionProvider extends ChangeNotifier {
   }
 
   // ===== CREATE =====
-  /// Creates a new version to an existing cipher =====
-  Future<int?> createVersion(int cipherId) async {
+  /// Creates a new version from the local cache to an existing cipher =====
+  /// If no cipherId is provided, the version will use the cached cipherID or throw an error
+  Future<int?> createVersion(int? cipherId) async {
     if (_isSaving) return null;
 
     _isSaving = true;
@@ -122,8 +123,14 @@ class VersionProvider extends ChangeNotifier {
       }
       // Create version with the correct cipher ID
       final versionWithCipherId = _localVersions[-1]!.copyWith(
-        cipherId: cipherId,
+        cipherId: cipherId ?? _localVersions[-1]!.cipherId,
       );
+
+      if (versionWithCipherId.cipherId == -1) {
+        throw Exception(
+          'Cannot create version: no cipherId provided and cached version has no cipherId.',
+        );
+      }
 
       versionId = await _cipherRepository.insertVersion(versionWithCipherId);
 
@@ -144,9 +151,32 @@ class VersionProvider extends ChangeNotifier {
     return versionId;
   }
 
+  /// Initialize cloud cache from domain object, with ID -1
   void setNewVersionInCache(Version version) {
     _localVersions[-1] = version;
     notifyListeners();
+  }
+
+  /// Inserts a new version into the local database and cache
+  Future<int> insertVersion(Version version) async {
+    int versionId = -1;
+    if (_isSaving) return versionId;
+
+    _isSaving = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      versionId = await _cipherRepository.insertVersion(version);
+      _localVersions[versionId] = version.copyWith(id: versionId);
+      notifyListeners();
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isSaving = false;
+      notifyListeners();
+    }
+    return versionId;
   }
 
   /// ===== READ - Load version from versionId =====
@@ -333,8 +363,9 @@ class VersionProvider extends ChangeNotifier {
 
   // ===== UPSERT =====
   /// Upsert a version into local db (add or update)
-  Future<void> upsertVersion(Version version) async {
-    if (_isSaving) return;
+  Future<int> upsertVersion(Version version) async {
+    int versionId = -1;
+    if (_isSaving) return versionId;
 
     _isSaving = true;
     _error = null;
@@ -342,33 +373,29 @@ class VersionProvider extends ChangeNotifier {
 
     try {
       // Check if version exists by its firebaseId
-      final existingVersionId = await getLocalIdByFirebaseId(
-        version.firebaseId!,
-      );
+      final versionId = await getLocalIdByFirebaseId(version.firebaseId!);
 
-      if (existingVersionId != null) {
+      if (versionId != null) {
         // Update existing version
-        await _cipherRepository.updateVersion(
-          version.copyWith(id: existingVersionId),
-        );
+        await _cipherRepository.updateVersion(version.copyWith(id: versionId));
         for (final section in version.sections!.values) {
           await _cipherRepository.updateSection(
-            section.copyWith(versionId: existingVersionId),
+            section.copyWith(versionId: versionId),
           );
         }
         if (kDebugMode) {
-          print('Updated existing version with id: $existingVersionId');
+          print('Updated existing version with id: $versionId');
         }
       } else {
         // Insert new version
-        final newVersionId = await _cipherRepository.insertVersion(version);
+        final versionId = await _cipherRepository.insertVersion(version);
         for (final section in version.sections!.values) {
           await _cipherRepository.insertSection(
-            section.copyWith(versionId: newVersionId),
+            section.copyWith(versionId: versionId),
           );
         }
         if (kDebugMode) {
-          print('Inserted new version with id: $newVersionId');
+          print('Inserted new version with id: $versionId');
         }
       }
     } catch (e) {
@@ -380,6 +407,7 @@ class VersionProvider extends ChangeNotifier {
       _isSaving = false;
       notifyListeners();
     }
+    return versionId;
   }
 
   // ===== UPDATE - update cipher version =====

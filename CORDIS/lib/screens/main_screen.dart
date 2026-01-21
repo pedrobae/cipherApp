@@ -113,14 +113,16 @@ class MainScreenState extends State<MainScreen> {
                     .toList(),
               ),
             ),
-            body: GestureDetector(
-              onHorizontalDragEnd: (details) {
-                // iOS back gesture (swipe from left edge)
-                if (details.velocity.pixelsPerSecond.dx > 300) {
-                  navigationProvider.pop();
-                }
-              },
-              child: navigationProvider.currentScreen,
+            body: SafeArea(
+              child: GestureDetector(
+                onHorizontalDragEnd: (details) {
+                  // iOS back gesture (swipe from left edge)
+                  if (details.velocity.pixelsPerSecond.dx > 300) {
+                    navigationProvider.pop();
+                  }
+                },
+                child: navigationProvider.currentScreen,
+              ),
             ),
           ),
         );

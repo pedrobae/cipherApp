@@ -336,6 +336,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get quickAction => 'Quick Action';
+
+  @override
   String welcome(Object userName) {
     return 'Hello $userName';
   }

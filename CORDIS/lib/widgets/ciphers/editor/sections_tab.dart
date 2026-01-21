@@ -43,6 +43,7 @@ class _SectionsTabState extends State<SectionsTab> {
                     .toList();
                 break;
               case VersionType.import:
+              case VersionType.playlist:
                 uniqueSections = versionProvider
                     .getSongStructure(-1)
                     .toSet()

@@ -186,6 +186,7 @@ class ParsingServiceBase {
         Version(
           sections: result.parsedSections,
           songStructure: result.songStructure,
+          bpm: variant.metadata['bpm'] ?? 0,
           versionName: 'Imported',
           cipherId: -1,
           createdAt: DateTime.now(),
@@ -195,7 +196,6 @@ class ParsingServiceBase {
       createdAt: DateTime.now(),
       title: variant.metadata['title'] ?? 'Unknown Title',
       author: variant.metadata['artist'] ?? 'Unknown Artist',
-      bpm: variant.metadata['bpm'] ?? 0,
       musicKey: variant.metadata['key'] ?? '',
       language: variant.metadata['language'] ?? '',
       isLocal: true,

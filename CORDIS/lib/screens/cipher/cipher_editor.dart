@@ -1,6 +1,10 @@
 import 'package:cordis/l10n/app_localizations.dart';
+import 'package:cordis/models/domain/cipher/cipher.dart';
 import 'package:cordis/models/domain/cipher/version.dart';
+import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/providers/parser_provider.dart';
+import 'package:cordis/providers/playlist_provider.dart';
+import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/widgets/ciphers/editor/chord_palette.dart';
 import 'package:cordis/widgets/ciphers/editor/delete_dialog.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
@@ -92,17 +96,36 @@ class _CipherEditorState extends State<CipherEditor>
         await sectionProvider.loadSections(widget.versionId!);
         break;
       case VersionType.brandNew:
-        // Nothing to load for brand new cipher/version
+      // Nothing to load for brand new cipher/version
+      case VersionType.playlist:
+        // Create a new copy of the version for editing
+
+        // Load the cipher
+        await cipherProvider.loadCipher(widget.cipherId!);
+        // Load the version
+        final Version originalVersion = versionProvider.getVersionById(
+          widget.versionId!,
+        )!;
+        // Create a copy of the version in cache
+        versionProvider.setNewVersionInCache(originalVersion.copyWith());
+
+        // Set the sections in cache
+        sectionProvider.setNewSectionsInCache(-1, originalVersion.sections!);
         break;
     }
   }
 
   void _navigateStartTab() {
-    if (widget.versionType == VersionType.brandNew ||
-        widget.versionType == VersionType.import) {
-      _tabController.animateTo(0);
-    } else {
-      _tabController.animateTo(1);
+    switch (widget.versionType) {
+      case VersionType.import:
+      case VersionType.brandNew:
+        _tabController.index = 1; // Sections tab
+        break;
+      case VersionType.playlist:
+      case VersionType.cloud:
+      case VersionType.local:
+        _tabController.index = 0; // Info tab
+        break;
     }
   }
 
@@ -117,17 +140,83 @@ class _CipherEditorState extends State<CipherEditor>
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Consumer3<CipherProvider, VersionProvider, SectionProvider>(
+    return Consumer6<
+      CipherProvider,
+      VersionProvider,
+      SectionProvider,
+      SelectionProvider,
+      NavigationProvider,
+      PlaylistProvider
+    >(
       builder:
-          (context, cipherProvider, versionProvider, sectionProvider, child) {
+          (
+            context,
+            cipherProvider,
+            versionProvider,
+            sectionProvider,
+            selectionProvider,
+            navigationProvider,
+            playlistProvider,
+            child,
+          ) {
             return Scaffold(
               appBar: AppBar(
+                leading: BackButton(
+                  onPressed: () {
+                    navigationProvider.pop();
+                    selectionProvider.toggleItemSelection(widget.versionId!);
+                    selectionProvider.enableSelectionMode();
+                  },
+                ),
                 title: Text(
-                  AppLocalizations.of(context)!.cipherEditorTitle,
+                  selectionProvider.isSelectionMode
+                      ? AppLocalizations.of(context)!.addSongToLibrary
+                      : AppLocalizations.of(context)!.cipherEditorTitle,
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w500,
                   ),
                 ),
+                actions: [
+                  TextButton(
+                    onPressed: () async {
+                      for (dynamic versionId
+                          in selectionProvider.selectedItemIds) {
+                        if (versionId.runtimeType == int) {
+                          // LOCAL VERSION: Create a copy of the version in the database
+                          versionId = await versionProvider.createVersion(null);
+                        } else {
+                          // CLOUD VERSION: Upsert the version locally and add to playlist
+                          final cipherId = await cipherProvider.upsertCipher(
+                            Cipher.fromVersionDto(
+                              versionProvider.cloudVersions[versionId]!,
+                            ),
+                          );
+
+                          versionId = await versionProvider.upsertVersion(
+                            versionProvider.cloudVersions[versionId]!.toDomain(
+                              cipherId: cipherId,
+                            ),
+                          );
+                        }
+                        playlistProvider.addVersionToPlaylist(
+                          selectionProvider.targetId!,
+                          versionId,
+                        );
+                      }
+                      selectionProvider.clearSelection();
+                      navigationProvider.pop(); // Close editor
+                      navigationProvider.pop(); // Close cipher library
+                    },
+                    child: Text(
+                      AppLocalizations.of(context)!.save,
+                      style: theme.textTheme.bodyMedium!.copyWith(
+                        fontSize: 20,
+                        color: colorScheme.onSurface,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               body: Column(
                 spacing: 16,
@@ -220,78 +309,81 @@ class _CipherEditorState extends State<CipherEditor>
                     ),
                   ),
                   // Save and Delete/Cancel Buttons
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      left: 16.0,
-                      right: 16.0,
-                      bottom: 16.0,
+                  if (!selectionProvider.isSelectionMode)
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: 16.0,
+                        right: 16.0,
+                        bottom: 16.0,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        spacing: 16,
+                        children: [
+                          FilledTextButton(
+                            isDarkButton: true,
+                            onPressed: () {
+                              if (widget.versionType == VersionType.import ||
+                                  widget.versionType == VersionType.brandNew) {
+                                _createCipher(
+                                  cipherProvider,
+                                  versionProvider,
+                                  sectionProvider,
+                                );
+                              } else {
+                                _saveCipher(
+                                  cipherProvider,
+                                  versionProvider,
+                                  sectionProvider,
+                                );
+                              }
+                            },
+                            text: AppLocalizations.of(context)!.save,
+                          ),
+                          FilledTextButton(
+                            onPressed: () {
+                              if (widget.versionType == VersionType.import ||
+                                  widget.versionType == VersionType.brandNew) {
+                                Navigator.pop(context);
+                              } else {
+                                _showDeleteDialog(widget.cipherId != null);
+                              }
+                            },
+                            text:
+                                (widget.versionType == VersionType.import ||
+                                    widget.versionType == VersionType.brandNew)
+                                ? AppLocalizations.of(context)!.cancel
+                                : AppLocalizations.of(context)!.delete,
+                          ),
+                        ],
+                      ),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      spacing: 16,
+                ],
+              ),
+              floatingActionButton: selectionProvider.isSelectionMode
+                  ? null
+                  : Column(
+                      spacing: 8,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      verticalDirection: VerticalDirection.up,
                       children: [
-                        FilledTextButton(
-                          isDarkButton: true,
-                          onPressed: () {
-                            if (widget.versionType == VersionType.import ||
-                                widget.versionType == VersionType.brandNew) {
-                              _createCipher(
-                                cipherProvider,
-                                versionProvider,
-                                sectionProvider,
-                              );
-                            } else {
-                              _saveCipher(
-                                cipherProvider,
-                                versionProvider,
-                                sectionProvider,
-                              );
-                            }
-                          },
-                          text: AppLocalizations.of(context)!.save,
-                        ),
-                        FilledTextButton(
-                          onPressed: () {
-                            if (widget.versionType == VersionType.import ||
-                                widget.versionType == VersionType.brandNew) {
-                              Navigator.pop(context);
-                            } else {
-                              _showDeleteDialog(widget.cipherId != null);
-                            }
-                          },
-                          text:
-                              (widget.versionType == VersionType.import ||
-                                  widget.versionType == VersionType.brandNew)
-                              ? AppLocalizations.of(context)!.cancel
-                              : AppLocalizations.of(context)!.delete,
-                        ),
+                        if (paletteIsOpen) ...[
+                          ChordPalette(
+                            cipherId: widget.cipherId ?? -1,
+                            versionId: widget.versionId ?? -1,
+                            onClose: _togglePalette,
+                          ),
+                        ],
+                        // Palette FAB
+                        if (_tabController.index == 1 &&
+                            !_tabController.indexIsChanging) ...[
+                          FloatingActionButton(
+                            onPressed: _togglePalette,
+                            child: Icon(Icons.palette),
+                          ),
+                        ],
                       ],
                     ),
-                  ),
-                ],
-              ),
-              floatingActionButton: Column(
-                spacing: 8,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                verticalDirection: VerticalDirection.up,
-                children: [
-                  if (paletteIsOpen) ...[
-                    ChordPalette(
-                      cipherId: widget.cipherId ?? -1,
-                      versionId: widget.versionId ?? -1,
-                      onClose: _togglePalette,
-                    ),
-                  ],
-                  // Palette FAB
-                  if (_tabController.index == 1 &&
-                      !_tabController.indexIsChanging) ...[
-                    FloatingActionButton(
-                      onPressed: _togglePalette,
-                      child: Icon(Icons.palette),
-                    ),
-                  ],
-                ],
-              ),
             );
           },
     );

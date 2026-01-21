@@ -1,5 +1,6 @@
 import 'package:cordis/providers/layout_settings_provider.dart';
 import 'package:cordis/providers/section_provider.dart';
+import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/widgets/ciphers/editor/sections/chord_token.dart';
 import 'package:cordis/widgets/ciphers/editor/sections/edit_section_dialog.dart';
 import 'package:flutter/material.dart';
@@ -53,131 +54,146 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Consumer2<SectionProvider, LayoutSettingsProvider>(
-      builder: (context, sectionProvider, layoutSettingsProvider, child) {
-        final section = sectionProvider.getSection(
-          widget.versionId,
-          widget.sectionCode,
-        )!;
+    return Consumer3<
+      SectionProvider,
+      LayoutSettingsProvider,
+      SelectionProvider
+    >(
+      builder:
+          (
+            context,
+            sectionProvider,
+            layoutSettingsProvider,
+            selectionProvider,
+            child,
+          ) {
+            final section = sectionProvider.getSection(
+              widget.versionId,
+              widget.sectionCode,
+            )!;
 
-        // Tokenize content text
-        final tokens = _tokenizer.tokenize(section.contentText);
+            // Tokenize content text
+            final tokens = _tokenizer.tokenize(section.contentText);
 
-        return Container(
-          decoration: BoxDecoration(
-            color: colorScheme.surface,
-            borderRadius: BorderRadius.circular(0),
-            border: Border.all(color: colorScheme.shadow, width: 1),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              /// HEADER
-              Row(
-                spacing: 8,
+            return Container(
+              decoration: BoxDecoration(
+                color: colorScheme.surface,
+                borderRadius: BorderRadius.circular(0),
+                border: Border.all(color: colorScheme.shadow, width: 1),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  /// Drag Handle icon
-                  Icon(
-                    Icons.drag_indicator,
-                    size: 32,
-                    color: colorScheme.shadow,
-                  ),
+                  /// HEADER
+                  Row(
+                    spacing: 8,
+                    children: [
+                      /// Drag Handle icon
+                      Icon(
+                        Icons.drag_indicator,
+                        size: 32,
+                        color: colorScheme.shadow,
+                      ),
 
-                  /// Section Code badge
-                  Container(
-                    height: 30,
-                    width: 40,
-                    decoration: BoxDecoration(
-                      color: section.contentColor,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Center(
-                      child: Text(
-                        section.contentCode,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: colorScheme.onSurface,
-                          fontSize: 16,
+                      /// Section Code badge
+                      Container(
+                        height: 30,
+                        width: 40,
+                        decoration: BoxDecoration(
+                          color: section.contentColor,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Center(
+                          child: Text(
+                            section.contentCode,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: colorScheme.onSurface,
+                              fontSize: 16,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
 
-                  /// Section Type label
-                  Expanded(
-                    child: Text(
-                      section.contentType,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                        color: colorScheme.onSurface,
+                      /// Section Type label
+                      Expanded(
+                        child: Text(
+                          section.contentType,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                            color: colorScheme.onSurface,
+                          ),
+                        ),
                       ),
-                    ),
+
+                      /// Delete icon (only visible when dragging)
+                      _isDragging
+                          ? DragTarget<ContentToken>(
+                              onAcceptWithDetails: (details) => {
+                                _removeChordAt(
+                                  details.data.position!,
+                                  sectionProvider,
+                                  tokens,
+                                ),
+                              },
+                              builder: (context, candidateData, rejectedData) {
+                                if (candidateData.isNotEmpty) {
+                                  return Icon(Icons.delete, color: Colors.red);
+                                }
+                                return Icon(Icons.delete, color: Colors.grey);
+                              },
+                            )
+                          : const SizedBox.shrink(),
+
+                      /// Edit Section button
+                      selectionProvider.isSelectionMode
+                          ? SizedBox(height: 48)
+                          : IconButton(
+                              onPressed: () => _openEditSectionDialog(),
+                              icon: const Icon(Icons.edit),
+                              tooltip: 'Editar seção',
+                            ),
+                    ],
                   ),
 
-                  /// Delete icon (only visible when dragging)
-                  _isDragging
-                      ? DragTarget<ContentToken>(
-                          onAcceptWithDetails: (details) => {
-                            _removeChordAt(
-                              details.data.position!,
-                              sectionProvider,
-                              tokens,
-                            ),
-                          },
-                          builder: (context, candidateData, rejectedData) {
-                            if (candidateData.isNotEmpty) {
-                              return Icon(Icons.delete, color: Colors.red);
-                            }
-                            return Icon(Icons.delete, color: Colors.grey);
-                          },
-                        )
-                      : const SizedBox.shrink(),
+                  Divider(height: 2, color: colorScheme.shadow),
 
-                  /// Edit Section button
-                  IconButton(
-                    onPressed: () => _openEditSectionDialog(),
-                    icon: const Icon(Icons.edit),
-                    tooltip: 'Editar seção',
+                  /// CONTENT
+                  Builder(
+                    builder: (context) {
+                      final content = _buildTokenWidgets(
+                        context,
+                        sectionProvider,
+                        selectionProvider,
+                        tokens,
+                        layoutSettingsProvider.fontFamily,
+                        section.contentColor,
+                        lineSpacing: 8,
+                        letterSpacing: 0,
+                      );
+                      return Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: content.contentHeight,
+                          child: Stack(children: [...content.tokens]),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
-
-              Divider(height: 2, color: colorScheme.shadow),
-
-              /// CONTENT
-              Builder(
-                builder: (context) {
-                  final content = _buildTokenWidgets(
-                    sectionProvider,
-                    context,
-                    tokens,
-                    layoutSettingsProvider.fontFamily,
-                    section.contentColor,
-                    lineSpacing: 8,
-                    letterSpacing: 0,
-                  );
-                  return Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: content.contentHeight,
-                      child: Stack(children: [...content.tokens]),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-        );
-      },
+            );
+          },
     );
   }
 
   /// Builds the list of positioned widgets, with token widgets as draggable and drag targets
   _ContentTokenized _buildTokenWidgets(
-    SectionProvider sectionProvider,
     BuildContext context,
+    SectionProvider sectionProvider,
+    SelectionProvider selectionProvider,
     List<ContentToken> tokens,
     String fontFamily,
     Color contentColor, {
@@ -205,6 +221,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
           left: currentX,
           top: currentY,
           child: _buildPrecedingChordDragTarget(
+            selectionProvider,
             0,
             sectionProvider,
             fontFamily,
@@ -236,6 +253,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
           wordWidgets.add(
             _WidgetWithSize(
               widget: _buildDraggableChord(
+                selectionProvider,
                 token,
                 position,
                 contentColor,
@@ -439,6 +457,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
               Positioned(
                 top: currentY,
                 child: _buildPrecedingChordDragTarget(
+                  selectionProvider,
                   tokenWidgets.length + wordWidgets.length + 1,
                   sectionProvider,
                   fontFamily,
@@ -477,6 +496,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
   }
 
   Widget _buildDraggableChord(
+    SelectionProvider selectionProvider,
     ContentToken token,
     int position,
     Color contentColor,
@@ -486,6 +506,17 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
     token.position = position;
 
     // GestureDetector to handle long press to drag transition
+    if (selectionProvider.isSelectionMode) {
+      return ChordToken(
+        token: token,
+        sectionColor: contentColor,
+        textStyle: TextStyle(
+          fontSize: _fontSize,
+          color: Colors.white,
+          fontFamily: fontFamily,
+        ),
+      );
+    }
     return Draggable<ContentToken>(
       data: token,
       onDragStarted: _toggleDrag,
@@ -516,12 +547,20 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
   }
 
   DragTarget<ContentToken> _buildPrecedingChordDragTarget(
+    SelectionProvider selectionProvider,
     int position,
     SectionProvider sectionProvider,
     String fontFamily,
     List<ContentToken> tokens,
     Color contentColor,
   ) {
+    if (selectionProvider.isSelectionMode) {
+      return DragTarget<ContentToken>(
+        builder: (context, candidateData, rejectedData) {
+          return SizedBox.shrink();
+        },
+      );
+    }
     return DragTarget<ContentToken>(
       onAcceptWithDetails: (details) {
         _addPrecedingChord(details.data, position, sectionProvider, tokens);

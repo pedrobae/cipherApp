@@ -734,6 +734,12 @@ abstract class AppLocalizations {
   /// **'Editar {object}'**
   String editPlaceholder(Object object);
 
+  /// Label for quick action button
+  ///
+  /// In pt, this message translates to:
+  /// **'Ação Rápida'**
+  String get quickAction;
+
   /// Welcome message with the user's name
   ///
   /// In pt, this message translates to:

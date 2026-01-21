@@ -34,7 +34,7 @@ class PlaylistRepository {
       // 2. Insert playlist items if any
       for (final item in playlist.items) {
         switch (item.type) {
-          case PlaylistItemType.cipherVersion:
+          case PlaylistItemType.version:
             await txn.insert('playlist_version', {
               'version_id': item.contentId,
               'playlist_id': playlistId,
@@ -365,7 +365,7 @@ class PlaylistRepository {
       final position = row['position'] as int;
       final duration = Duration(milliseconds: row['duration'] as int);
 
-      return PlaylistItem.cipherVersion(contentId, position, id, duration);
+      return PlaylistItem.version(contentId, position, id, duration);
     }).toList();
   }
 

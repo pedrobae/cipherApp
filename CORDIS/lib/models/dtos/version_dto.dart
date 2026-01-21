@@ -100,6 +100,7 @@ class VersionDto {
       transposedKey: transposedKey,
       songStructure: songStructure,
       duration: Duration(seconds: duration),
+      bpm: bpm,
       createdAt: updatedAt ?? DateTime.now(),
       sections: sections.map(
         (sectionsCode, section) =>

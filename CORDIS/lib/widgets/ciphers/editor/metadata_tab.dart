@@ -1,6 +1,7 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:cordis/providers/cipher_provider.dart';
+import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/providers/version_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -78,6 +79,7 @@ class _MetadataTabState extends State<MetadataTab> {
           }
         case VersionType.local:
         case VersionType.import:
+        case VersionType.playlist:
           final cipherProvider = context.read<CipherProvider>();
           final cipher = cipherProvider.getCipherById(widget.cipherId ?? -1)!;
 
@@ -98,7 +100,7 @@ class _MetadataTabState extends State<MetadataTab> {
                 controllers[field]!.text = version.versionName;
                 break;
               case InfoField.bpm:
-                controllers[field]!.text = cipher.bpm.toString();
+                controllers[field]!.text = version.bpm.toString();
                 break;
               case InfoField.musicKey:
                 controllers[field]!.text =
@@ -134,6 +136,19 @@ class _MetadataTabState extends State<MetadataTab> {
         return AppLocalizations.of(context)!.musicKey;
       case InfoField.language:
         return AppLocalizations.of(context)!.language;
+    }
+  }
+
+  bool _isEnabled(SelectionProvider selectionProvider, InfoField field) {
+    switch (field) {
+      case InfoField.title:
+      case InfoField.versionName:
+      case InfoField.author:
+        return !selectionProvider.isSelectionMode;
+      case InfoField.bpm:
+      case InfoField.musicKey:
+      case InfoField.language:
+        return true;
     }
   }
 
@@ -206,6 +221,7 @@ class _MetadataTabState extends State<MetadataTab> {
                 break;
               case VersionType.brandNew:
               case VersionType.import:
+              case VersionType.playlist:
                 cipherProvider.cacheCipherUpdates(
                   widget.cipherId ?? -1,
                   field,
@@ -216,6 +232,7 @@ class _MetadataTabState extends State<MetadataTab> {
           },
           controller: _getController(field),
           maxLines: maxLines,
+          enabled: _isEnabled(context.read<SelectionProvider>(), field),
           decoration: InputDecoration(
             visualDensity: VisualDensity.compact,
             hintText:

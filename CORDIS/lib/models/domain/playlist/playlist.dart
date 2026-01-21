@@ -74,7 +74,7 @@ class Playlist {
       itemOrder: items
           .map(
             (item) =>
-                '${item.type == PlaylistItemType.cipherVersion ? 'v' : 't'}:${item.id}',
+                '${item.type == PlaylistItemType.version ? 'v' : 't'}:${item.id}',
           )
           .toList(),
       versions: versions,

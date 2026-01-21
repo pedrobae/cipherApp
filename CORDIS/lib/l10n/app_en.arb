@@ -238,6 +238,8 @@
   "@confirm": {"description": "Confirm button label"},
   "editPlaceholder": "Edit {object}",
   "@editPlaceholder": {"description": "Placeholder text for editing an object", "placeholders": {"object": {}}},
+  "quickAction": "Quick Action",
+  "@quickAction": {"description": "Label for quick action button"},
 
 
   "welcome": "Hello {userName}",

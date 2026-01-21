@@ -21,7 +21,7 @@ class DatabaseHelper {
 
       final db = await openDatabase(
         path,
-        version: 7,
+        version: 9,
         onCreate: _onCreate,
         onUpgrade: _onUpgrade, // Handle migrations
       );
@@ -48,7 +48,6 @@ class DatabaseHelper {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
         author TEXT,
-        bpm INTEGER DEFAULT 0,
         music_key TEXT,
         language TEXT DEFAULT 'por',
         firebase_id TEXT,
@@ -78,6 +77,7 @@ class DatabaseHelper {
         cipher_id INTEGER NOT NULL,
         song_structure TEXT NOT NULL,
         duration INTEGER DEFAULT 0,
+        bpm INTEGER DEFAULT 0,
         transposed_key TEXT,
         version_name TEXT,
         firebase_cipher_id TEXT,
@@ -120,7 +120,6 @@ class DatabaseHelper {
       CREATE TABLE playlist (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
-        description TEXT,
         author_id STRING NOT NULL,
         firebase_id TEXT UNIQUE,
         FOREIGN KEY (author_id) REFERENCES user (id) ON DELETE CASCADE
@@ -326,6 +325,16 @@ class DatabaseHelper {
 
       // Rename temp column to bpm
       await db.execute('ALTER TABLE cipher RENAME COLUMN bpm_temp TO bpm');
+    }
+    if (oldVersion < 9) {
+      // REMOVE DESCRIPTION COLUMN FROM PLAYLIST TABLE
+      await db.execute("ALTER TABLE playlist DROP COLUMN description");
+    }
+    if (oldVersion < 10) {
+      // CHANGE BPM FROM CIPHER TABLE TO VERSION TABLE
+      await db.execute('ALTER TABLE version ADD COLUMN bpm INTEGER DEFAULT 0');
+      // DROP EXISTING DATA IN CIPHER TABLE AND DROP COLUMN
+      await db.execute('ALTER TABLE cipher DROP COLUMN bpm');
     }
   }
 

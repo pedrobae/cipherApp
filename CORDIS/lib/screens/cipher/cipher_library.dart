@@ -1,4 +1,5 @@
 import 'package:cordis/l10n/app_localizations.dart';
+import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/version_provider.dart';
 import 'package:cordis/widgets/ciphers/library/create_cipher_sheet.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
@@ -36,12 +37,13 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Consumer5<
+    return Consumer6<
       CipherProvider,
       UserProvider,
       MyAuthProvider,
       SelectionProvider,
-      VersionProvider
+      VersionProvider,
+      PlaylistProvider
     >(
       builder:
           (
@@ -51,6 +53,7 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
             authProvider,
             selectionProvider,
             versionProvider,
+            playlistProvider,
             child,
           ) {
             return Scaffold(

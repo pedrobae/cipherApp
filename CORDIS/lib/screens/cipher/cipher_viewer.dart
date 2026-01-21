@@ -64,6 +64,9 @@ class _CipherViewerState extends State<CipherViewer>
           );
         }
         break;
+      case VersionType.playlist:
+        // THROW EXCEPTION. YOU CANNOT OPEN THE VIEWER FOR A PLAYLIST VERSION
+        throw Exception('Cannot open CipherViewer for a playlist version.');
     }
   }
 

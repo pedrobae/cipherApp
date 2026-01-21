@@ -232,11 +232,11 @@ class _CipherParsingScreenState extends State<CipherParsingScreen>
                           )!.authorWithPlaceholder(cipher.author),
                           style: theme.textTheme.bodyMedium,
                         ),
-                        if (cipher.bpm != 0)
+                        if (version.bpm != 0)
                           Text(
                             AppLocalizations.of(
                               context,
-                            )!.bpmWithPlaceholder(cipher.bpm),
+                            )!.bpmWithPlaceholder(version.bpm),
                             style: theme.textTheme.bodyMedium,
                           ),
                         if (cipher.musicKey.isNotEmpty)

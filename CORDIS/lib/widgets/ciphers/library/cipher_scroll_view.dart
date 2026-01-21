@@ -1,5 +1,4 @@
 import 'package:cordis/providers/cipher_provider.dart';
-import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/version_provider.dart';
 import 'package:cordis/widgets/ciphers/library/cipher_card.dart';
@@ -33,49 +32,48 @@ class _CipherScrollViewState extends State<CipherScrollView> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer3<CipherProvider, SelectionProvider, VersionProvider>(
-      builder:
-          (context, cipherProvider, selectionProvider, versionProvider, child) {
-            // Handle loading state
-            if (cipherProvider.isLoading || versionProvider.isLoadingCloud) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            // Handle error state
-            if (cipherProvider.error != null) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.error_outline,
-                      size: 64,
-                      color: Theme.of(context).colorScheme.error,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      AppLocalizations.of(context)!.errorMessage(
-                        AppLocalizations.of(context)!.loading,
-                        cipherProvider.error!,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () =>
-                          cipherProvider.loadLocalCiphers(forceReload: true),
-                      child: Text(AppLocalizations.of(context)!.tryAgain),
-                    ),
-                  ],
-                ),
-              );
-            }
-
-            return Stack(
+    return Consumer2<CipherProvider, VersionProvider>(
+      builder: (context, cipherProvider, versionProvider, child) {
+        // Handle loading state
+        if (cipherProvider.isLoading || versionProvider.isLoadingCloud) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        // Handle error state
+        if (cipherProvider.error != null) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Display cipher list
-                _buildCiphersList(cipherProvider, versionProvider),
+                Icon(
+                  Icons.error_outline,
+                  size: 64,
+                  color: Theme.of(context).colorScheme.error,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  AppLocalizations.of(context)!.errorMessage(
+                    AppLocalizations.of(context)!.loading,
+                    cipherProvider.error!,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () =>
+                      cipherProvider.loadLocalCiphers(forceReload: true),
+                  child: Text(AppLocalizations.of(context)!.tryAgain),
+                ),
               ],
-            );
-          },
+            ),
+          );
+        }
+
+        return Stack(
+          children: [
+            // Display cipher list
+            _buildCiphersList(cipherProvider, versionProvider),
+          ],
+        );
+      },
     );
   }
 

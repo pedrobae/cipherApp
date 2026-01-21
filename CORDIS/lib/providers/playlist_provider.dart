@@ -330,7 +330,7 @@ class PlaylistProvider extends ChangeNotifier {
             textItemsToPrune.add(item.id!);
           }
           break;
-        case PlaylistItemType.cipherVersion:
+        case PlaylistItemType.version:
           if (!versionSectionItems.any(
             (versionItem) => (versionItem['contentId'] == item.contentId),
           )) {
@@ -430,6 +430,9 @@ class PlaylistProvider extends ChangeNotifier {
   // ===== CHANGE TRACKING & CLOUD SYNC =====
   /// Track a change for later upload to cloud
   void trackChange(String changeType, int playlistId) {
+    if (!_pendingChanges.containsKey(playlistId)) {
+      _pendingChanges[playlistId] = {};
+    }
     _pendingChanges[playlistId]![changeType] = true;
 
     if (kDebugMode) {

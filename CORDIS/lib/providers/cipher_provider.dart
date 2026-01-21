@@ -208,8 +208,9 @@ class CipherProvider extends ChangeNotifier {
   // ===== UPSERT =====
   /// Upsert a cipher into the database used when syncing a playlist
   /// Returns the local cipher ID
-  Future<void> upsertCipher(Cipher cipher) async {
-    if (_isSaving) return;
+  Future<int> upsertCipher(Cipher cipher) async {
+    int cipherId = -1;
+    if (_isSaving) return cipherId;
 
     _isSaving = true;
     _error = null;
@@ -217,7 +218,7 @@ class CipherProvider extends ChangeNotifier {
 
     try {
       // Check if cipher exists on the cache
-      final existingId = _localCiphers.values
+      cipherId = _localCiphers.values
           .firstWhere(
             (cachedCipher) =>
                 (cachedCipher.title == cipher.title &&
@@ -226,17 +227,15 @@ class CipherProvider extends ChangeNotifier {
           )
           .id;
 
-      int cipherId;
-      if (existingId != -1) {
-        await _cipherRepository.updateCipher(cipher.copyWith(id: existingId));
-        cipherId = existingId;
+      if (cipherId != -1) {
+        await _cipherRepository.updateCipher(cipher.copyWith(id: cipherId));
       } else {
         cipherId = await _cipherRepository.insertPrunedCipher(cipher);
       }
 
       if (kDebugMode) {
         print(
-          'Upserted cipher with Title ${cipher.title} - Existing Cipher ID: $existingId',
+          'Upserted cipher with Title ${cipher.title} - Cipher ID: $cipherId',
         );
       }
 
@@ -251,6 +250,7 @@ class CipherProvider extends ChangeNotifier {
       _isSaving = false;
       notifyListeners();
     }
+    return cipherId;
   }
 
   // ===== UPDATE =====
@@ -292,10 +292,7 @@ class CipherProvider extends ChangeNotifier {
         );
         break;
       case InfoField.bpm:
-        _localCiphers[cipherId] = _localCiphers[cipherId]!.copyWith(
-          bpm: int.tryParse(change) ?? 0,
-        );
-        break;
+      // BPM is not stored in Cipher, so no action here
       case InfoField.musicKey:
         _localCiphers[cipherId] = _localCiphers[cipherId]!.copyWith(
           musicKey: change,

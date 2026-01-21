@@ -2,7 +2,6 @@ import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/screens/cipher/cipher_library.dart';
-import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cordis/models/domain/playlist/playlist.dart';
@@ -87,6 +86,29 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                     color: colorScheme.onSurface,
                   ),
                 ),
+
+                // Save button
+                actions: [
+                  IconButton(
+                    icon: Icon(Icons.save, color: colorScheme.onSurface),
+                    onPressed: () {
+                      // TODO save playlist changes
+                    },
+                  ),
+                ],
+              ),
+              floatingActionButton: FloatingActionButton(
+                onPressed: () {
+                  _openPlaylistEditSheet(
+                    context,
+                    navigationProvider,
+                    selectionProvider,
+                    theme,
+                  );
+                },
+                backgroundColor: colorScheme.onSurface,
+                shape: const CircleBorder(),
+                child: Icon(Icons.add, color: colorScheme.onPrimary),
               ),
               body: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -96,12 +118,8 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                   children: [
                     Expanded(
                       child: SingleChildScrollView(
-                        child: Column(
-                          spacing: 12.0,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            if (playlist.items.isEmpty) ...[
-                              Column(
+                        child: playlist.items.isEmpty
+                            ? Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 spacing: 4,
                                 children: [
@@ -124,55 +142,182 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                                           fontWeight: FontWeight.w500,
                                         ),
                                   ),
-                                  SizedBox(height: 24),
                                 ],
-                              ),
-                            ] else ...[
-                              // ITEMS LIST
-                            ],
-                            // ADD ITEMS BUTTON
-                            FilledTextButton(
-                              text: AppLocalizations.of(context)!.addSong,
-                              isDense: true,
-                              onPressed: () {
-                                selectionProvider.enableSelectionMode();
-                                selectionProvider.setTarget(widget.playlistId);
-
-                                navigationProvider.push(
-                                  const CipherLibraryScreen(),
-                                  isDense: true,
-                                );
-                              },
-                            ),
-                            FilledTextButton(
-                              text: AppLocalizations.of(context)!.addFlowItem,
-                              isDense: true,
-                              onPressed: () {
-                                // TODO add flow items
-                              },
-                            ),
-                          ],
-                        ),
+                              )
+                            // ITEMS LIST
+                            : SizedBox.shrink(), // Placeholder for items list
                       ),
-                    ),
-                    FilledTextButton(
-                      text: AppLocalizations.of(context)!.save,
-                      isDarkButton: true,
-                      onPressed: () {
-                        // TODO save playlist changes
-                      },
-                    ),
-                    FilledTextButton(
-                      text: AppLocalizations.of(context)!.cancel,
-                      onPressed: () {
-                        navigationProvider.pop();
-                      },
                     ),
                   ],
                 ),
               ),
             );
           },
+    );
+  }
+
+  void _openPlaylistEditSheet(
+    BuildContext context,
+    NavigationProvider navigationProvider,
+    SelectionProvider selectionProvider,
+    ThemeData theme,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return BottomSheet(
+          shape: LinearBorder(),
+          onClosing: () {},
+          builder: (BuildContext context) {
+            return Container(
+              padding: const EdgeInsets.all(16.0),
+              color: theme.colorScheme.surface,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                spacing: 8,
+                children: [
+                  // HEADER
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)!.quickAction,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                          color: theme.colorScheme.onSurface,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          Icons.close,
+                          color: theme.colorScheme.onSurface,
+                          size: 32,
+                        ),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ],
+                  ),
+                  // ACTIONS
+                  // ADD SONG TO PLAYLIST
+                  GestureDetector(
+                    onTap: () {
+                      // Enable selection mode
+                      selectionProvider.enableSelectionMode();
+                      selectionProvider.setTarget(widget.playlistId);
+
+                      // Close the bottom sheet
+                      Navigator.of(context).pop();
+
+                      // Navigate to Cipher Library Screen
+                      navigationProvider.push(
+                        CipherLibraryScreen(),
+                        isDense: true,
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 16,
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: theme.colorScheme.surfaceContainer,
+                        ),
+                        borderRadius: BorderRadius.circular(0),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)!.addSong,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              color: theme.colorScheme.onSurface,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          Icon(
+                            Icons.chevron_right,
+                            color: theme.colorScheme.shadow,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // ADD FLOW ITEM TO PLAYLIST
+                  GestureDetector(
+                    onTap: () {},
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 16,
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: theme.colorScheme.surfaceContainer,
+                        ),
+                        borderRadius: BorderRadius.circular(0),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)!.addFlowItem,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              color: theme.colorScheme.onSurface,
+                              fontWeight: FontWeight.w400,
+                              fontSize: 20,
+                            ),
+                          ),
+                          Icon(
+                            Icons.chevron_right,
+                            color: theme.colorScheme.shadow,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // DELETE PLAYLIST
+                  GestureDetector(
+                    onTap: () {},
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 16,
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.red),
+                        borderRadius: BorderRadius.circular(0),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)!.delete,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w500,
+                              color: Colors.red,
+                              fontSize: 20,
+                            ),
+                          ),
+                          Icon(
+                            Icons.chevron_right,
+                            color: theme.colorScheme.shadow,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -187,7 +332,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
       final item = entry.value;
 
       switch (item.type) {
-        case PlaylistItemType.cipherVersion:
+        case PlaylistItemType.version:
           return PlaylistVersionCard(
             playlistId: widget.playlistId,
             versionId: item.contentId!,

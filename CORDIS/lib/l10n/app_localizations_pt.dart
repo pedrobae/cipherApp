@@ -337,6 +337,9 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String get quickAction => 'Ação Rápida';
+
+  @override
   String welcome(Object userName) {
     return 'Olá $userName';
   }

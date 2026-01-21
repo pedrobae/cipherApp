@@ -182,7 +182,7 @@ class _PlaylistPresentationScreenState
 
   Widget _buildItemContent(PlaylistItem item, int itemIndex) {
     switch (item.type) {
-      case 'cipher_version':
+      case PlaylistItemType.version:
         return PresentationCipherSection(
           versionId: item.contentId!,
           onSectionKeysCreated: (versionId, sectionKeys) {
@@ -194,22 +194,8 @@ class _PlaylistPresentationScreenState
             });
           },
         );
-      case 'text_section':
+      case PlaylistItemType.textSection:
         return PresentationTextSection(textSectionId: item.contentId!);
-      default:
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                const Icon(Icons.help, size: 48),
-                const SizedBox(height: 8),
-                Text('Tipo desconhecido: ${item.type}'),
-                Text('ID: ${item.contentId}'),
-              ],
-            ),
-          ),
-        );
     }
   }
 

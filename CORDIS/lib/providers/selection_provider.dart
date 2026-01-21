@@ -1,12 +1,16 @@
+import 'package:cordis/repositories/local_playlist_repository.dart';
 import 'package:flutter/foundation.dart';
 
 class SelectionProvider extends ChangeNotifier {
+  PlaylistRepository playlistRepository = PlaylistRepository();
+
   bool _isSelectionMode = false;
   int? _targetId; // Playlist ID
-  final List<dynamic> _selectedItems = [];
+  final List<dynamic> _selectedItemIds =
+      []; // int for local version / String for cloud version
 
   bool get isSelectionMode => _isSelectionMode;
-  List<dynamic> get selectedItems => _selectedItems;
+  List<dynamic> get selectedItemIds => _selectedItemIds;
   int? get targetId => _targetId;
 
   void enableSelectionMode() {
@@ -16,18 +20,18 @@ class SelectionProvider extends ChangeNotifier {
 
   void disableSelectionMode() {
     _isSelectionMode = false;
-    _selectedItems.clear();
+    _selectedItemIds.clear();
     notifyListeners();
   }
 
   void toggleItemSelection(dynamic item) {
-    if (_selectedItems.contains(item)) {
-      _selectedItems.remove(item);
-      if (_selectedItems.isEmpty) {
+    if (_selectedItemIds.contains(item)) {
+      _selectedItemIds.remove(item);
+      if (_selectedItemIds.isEmpty) {
         disableSelectionMode();
       }
     } else {
-      _selectedItems.add(item);
+      _selectedItemIds.add(item);
     }
     notifyListeners();
   }
@@ -37,6 +41,11 @@ class SelectionProvider extends ChangeNotifier {
   }
 
   bool isItemSelected(dynamic item) {
-    return _selectedItems.contains(item);
+    return _selectedItemIds.contains(item);
+  }
+
+  void clearSelection() {
+    _selectedItemIds.clear();
+    notifyListeners();
   }
 }

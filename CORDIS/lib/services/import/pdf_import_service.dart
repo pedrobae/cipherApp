@@ -36,7 +36,10 @@ class PDFImportService extends ImportService {
   /// Extracts text with detailed formatting information for better parsing
   ///
   /// Returns a list of text lines with font size, boldness, and position metadata
-  Future<DocumentData> extractTextWithFormatting(String path) async {
+  Future<DocumentData> extractTextWithFormatting(
+    String path,
+    String fileName,
+  ) async {
     try {
       final bytes = await File(path).readAsBytes();
       final document = PdfDocument(inputBytes: bytes);
@@ -55,7 +58,10 @@ class PDFImportService extends ImportService {
         });
       }
 
-      final DocumentData documentData = DocumentData.fromGlyphMap(pageGlyphs);
+      final DocumentData documentData = DocumentData.fromGlyphMap(
+        pageGlyphs,
+        fileName,
+      );
       documentData.searchColumns();
       return documentData;
     } catch (e) {

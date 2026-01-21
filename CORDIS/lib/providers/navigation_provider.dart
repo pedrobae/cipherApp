@@ -10,15 +10,22 @@ enum NavigationRoute { home, library, playlists, schedule }
 class NavigationProvider extends ChangeNotifier {
   NavigationRoute _currentRoute = NavigationRoute.home;
   static List<Widget> _screenStack = [const HomeScreen()];
-  static List<bool> _densityStack = [false];
-  static List<VoidCallback> _onPopCallbacks = [() {}];
+  static List<bool> _showAppBarStack = [true];
+  static List<bool> _showDrawerIconStack = [true];
+  static List<bool> _showBottomNavBarStack = [true];
+  static final List<VoidCallback> _onPopCallbacks = [() {}];
   bool _isLoading = false;
   String? _error;
 
   // Getters
   NavigationRoute get currentRoute => _currentRoute;
   int get currentIndex => _currentRoute.index;
-  bool get isDense => _densityStack.isNotEmpty ? _densityStack.last : false;
+  bool get showAppBar =>
+      _showAppBarStack.isNotEmpty ? _showAppBarStack.last : true;
+  bool get showDrawerIcon =>
+      _showDrawerIconStack.isNotEmpty ? _showDrawerIconStack.last : true;
+  bool get showBottomNavBar =>
+      _showBottomNavBarStack.isNotEmpty ? _showBottomNavBarStack.last : true;
   bool get isLoading => _isLoading;
   String? get error => _error;
   Widget get currentScreen =>
@@ -36,7 +43,10 @@ class NavigationProvider extends ChangeNotifier {
         NavigationRoute.playlists => [const PlaylistLibraryScreen()],
         NavigationRoute.schedule => [const ScheduleLibraryScreen()],
       };
-      _densityStack = [false];
+      _showAppBarStack = [true];
+      _showDrawerIconStack = [true];
+      _showBottomNavBarStack = [true];
+      // Clear onPop callbacks
       while (_onPopCallbacks.isNotEmpty) {
         _onPopCallbacks.last();
         _onPopCallbacks.removeLast();
@@ -48,11 +58,15 @@ class NavigationProvider extends ChangeNotifier {
 
   void push(
     Widget screen, {
-    bool isDense = false,
+    bool showAppBar = true,
+    bool showDrawerIcon = true,
+    bool showBottomNavBar = true,
     VoidCallback? onPopCallback,
   }) {
     _screenStack.add(screen);
-    _densityStack.add(isDense);
+    _showAppBarStack.add(showAppBar);
+    _showDrawerIconStack.add(showDrawerIcon);
+    _showBottomNavBarStack.add(showBottomNavBar);
     _onPopCallbacks.add(onPopCallback ?? () {});
     notifyListeners();
   }
@@ -62,7 +76,9 @@ class NavigationProvider extends ChangeNotifier {
       _onPopCallbacks.last();
       _onPopCallbacks.removeLast();
       _screenStack.removeLast();
-      _densityStack.removeLast();
+      _showAppBarStack.removeLast();
+      _showDrawerIconStack.removeLast();
+      _showBottomNavBarStack.removeLast();
       notifyListeners();
     }
   }

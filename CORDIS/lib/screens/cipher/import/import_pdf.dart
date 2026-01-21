@@ -63,21 +63,22 @@ class _ImportPdfScreenState extends State<ImportPdfScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(AppLocalizations.of(context)!.importFromPDF)),
-      body: Consumer3<ImportProvider, ParserProvider, NavigationProvider>(
-        builder:
-            (
-              context,
-              importProvider,
-              parserProvider,
-              navigationProvider,
-              child,
-            ) {
-              final theme = Theme.of(context);
-              final colorScheme = theme.colorScheme;
+    return Consumer3<ImportProvider, ParserProvider, NavigationProvider>(
+      builder:
+          (context, importProvider, parserProvider, navigationProvider, child) {
+            final theme = Theme.of(context);
+            final colorScheme = theme.colorScheme;
 
-              return Padding(
+            return Scaffold(
+              appBar: AppBar(
+                title: Text(AppLocalizations.of(context)!.importFromPDF),
+                leading: BackButton(
+                  onPressed: () {
+                    navigationProvider.pop();
+                  },
+                ),
+              ),
+              body: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   spacing: 16,
@@ -261,9 +262,9 @@ class _ImportPdfScreenState extends State<ImportPdfScreen> {
                     ),
                   ],
                 ),
-              );
-            },
-      ),
+              ),
+            );
+          },
     );
   }
 }

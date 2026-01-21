@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 /// Common Section labels are iterated through on import / parsing to identify sections
 /// MIGHT BE PRUDENT TO MAKE THIS LOCALIZABLE IN THE FUTURE
 /// AREA OF OPTIMIZATION: use a more efficient data structure for lookups
-const Map<String, SectionLabels> commonSectionLabels = {
-  'verse': SectionLabels(
+const Map<String, SectionLabel> commonSectionLabels = {
+  'verse': SectionLabel(
     labelVariations: [
       'verse',
       'verso',
@@ -15,55 +15,55 @@ const Map<String, SectionLabels> commonSectionLabels = {
     code: 'V',
     color: Colors.blue,
   ),
-  'chorus': SectionLabels(
+  'chorus': SectionLabel(
     labelVariations: ['chorus', 'coro', 'refrao', 'refrão'],
     officialLabel: 'Chorus',
     code: 'C',
     color: Colors.red,
   ),
-  'bridge': SectionLabels(
+  'bridge': SectionLabel(
     labelVariations: ['bridge', 'ponte'],
     officialLabel: 'Bridge',
     code: 'B',
     color: Colors.green,
   ),
-  'intro': SectionLabels(
+  'intro': SectionLabel(
     labelVariations: ['intro'],
     officialLabel: 'Intro',
     code: 'I',
     color: Colors.purple,
   ),
-  'outro': SectionLabels(
+  'outro': SectionLabel(
     labelVariations: ['outro'],
     officialLabel: 'Outro',
     code: 'O',
     color: Colors.brown,
   ),
-  'solo': SectionLabels(
+  'solo': SectionLabel(
     labelVariations: ['solo'],
     officialLabel: 'Solo',
     code: 'S',
     color: Colors.amber,
   ),
-  'pre-chorus': SectionLabels(
+  'pre-chorus': SectionLabel(
     labelVariations: ['pre[- ]?chorus', 'pre[- ]?refrao', 'pré[- ]?refrão'],
     officialLabel: 'Pre-Chorus',
     code: 'PC',
     color: Colors.orange,
   ),
-  'tag': SectionLabels(
+  'tag': SectionLabel(
     labelVariations: ['tag'],
     officialLabel: 'Tag',
     code: 'T',
     color: Colors.teal,
   ),
-  'finale': SectionLabels(
+  'finale': SectionLabel(
     labelVariations: ['finale', 'final'],
     officialLabel: 'Finale',
     code: 'F',
     color: Colors.indigo,
   ),
-  'annotations': SectionLabels(
+  'annotations': SectionLabel(
     labelVariations: ['notes', 'anotacoes', 'anotações'],
     officialLabel: 'Annotations',
     code: 'N',
@@ -71,21 +71,21 @@ const Map<String, SectionLabels> commonSectionLabels = {
   ),
 };
 
-class SectionLabels {
+class SectionLabel {
   final List<String> labelVariations;
   final String officialLabel;
   final String code;
   final Color color;
 
-  const SectionLabels({
+  const SectionLabel({
     required this.labelVariations,
     required this.officialLabel,
     required this.code,
     required this.color,
   });
 
-  factory SectionLabels.unknown() {
-    return SectionLabels(
+  factory SectionLabel.unknown() {
+    return SectionLabel(
       labelVariations: [],
       officialLabel: 'Unlabeled Section',
       code: '',

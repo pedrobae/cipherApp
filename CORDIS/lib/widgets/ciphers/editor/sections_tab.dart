@@ -138,7 +138,7 @@ class _SectionsTabState extends State<SectionsTab> {
   }
 
   void _addSection(
-    SectionLabels sectionLabel,
+    SectionLabel sectionLabel,
     SectionProvider sectionProvider,
     VersionProvider versionProvider,
   ) {
@@ -169,7 +169,7 @@ class _SectionsTabState extends State<SectionsTab> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    SectionLabels? selectedLabel;
+    SectionLabel? selectedLabel;
 
     showModalBottomSheet(
       context: context,
@@ -210,7 +210,7 @@ class _SectionsTabState extends State<SectionsTab> {
               SizedBox(height: 8),
 
               // DROPDOWN MENU
-              DropdownButtonFormField<SectionLabels>(
+              DropdownButtonFormField<SectionLabel>(
                 decoration: InputDecoration(
                   labelText: AppLocalizations.of(context)!.selectSectionType,
                   enabledBorder: OutlineInputBorder(
@@ -225,7 +225,7 @@ class _SectionsTabState extends State<SectionsTab> {
                   ),
                 ),
                 items: commonSectionLabels.values.map((sectionLabels) {
-                  return DropdownMenuItem<SectionLabels>(
+                  return DropdownMenuItem<SectionLabel>(
                     value: sectionLabels,
                     child: Text(
                       '${sectionLabels.code} - ${sectionLabels.officialLabel}',

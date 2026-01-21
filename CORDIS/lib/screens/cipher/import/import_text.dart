@@ -36,140 +36,148 @@ class _ImportTextScreenState extends State<ImportTextScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(AppLocalizations.of(context)!.importFromText)),
-      body: Consumer3<ImportProvider, NavigationProvider, ParserProvider>(
-        builder:
-            (
-              context,
-              importProvider,
-              navigationProvider,
-              parserProvider,
-              child,
-            ) {
-              // Handle Error State
-              if (importProvider.error != null) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        AppLocalizations.of(context)!.errorMessage(
-                          AppLocalizations.of(context)!.importFromText,
-                          importProvider.error!,
-                        ),
-                        style: const TextStyle(color: Colors.red),
-                      ),
-                      FilledButton.icon(
-                        label: Text(AppLocalizations.of(context)!.tryAgain),
-                        onPressed: () {
-                          importProvider.clearError();
-                        },
-                        icon: const Icon(Icons.refresh),
-                      ),
-                    ],
-                  ),
-                );
-              }
-
-              // Handle Loading State
-              if (importProvider.isImporting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
-              // Default State
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    spacing: 16.0,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          expands: true,
-                          maxLines: null,
-                          selectAllOnFocus: true,
-                          onTapOutside: (event) =>
-                              FocusScope.of(context).unfocus(),
-                          textAlignVertical: TextAlignVertical(y: -1),
-                          controller: _importTextController,
-                          decoration: InputDecoration(
-                            hintText: AppLocalizations.of(
-                              context,
-                            )!.pasteTextPrompt,
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(0),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(0),
-                              borderSide: BorderSide(
-                                color: Theme.of(context).colorScheme.primary,
-                                width: 2,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Consumer3<ImportProvider, NavigationProvider, ParserProvider>(
+      builder:
+          (context, importProvider, navigationProvider, parserProvider, child) {
+            return Scaffold(
+              appBar: AppBar(
+                title: Text(AppLocalizations.of(context)!.importFromText),
+                leading: BackButton(
+                  onPressed: () {
+                    navigationProvider.pop();
+                  },
+                ),
+              ),
+              body:
+                  // Handle Error State
+                  (importProvider.error != null)
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            AppLocalizations.of(context)!.parsingStrategy,
-                            style: TextStyle(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.onSurfaceVariant,
+                            AppLocalizations.of(context)!.errorMessage(
+                              AppLocalizations.of(context)!.importFromText,
+                              importProvider.error!,
                             ),
-                            textAlign: TextAlign.center,
+                            style: const TextStyle(color: Colors.red),
                           ),
-                          DropdownButton<ParsingStrategy>(
-                            value: importProvider.parsingStrategy,
-                            items:
-                                importTypeToParsingStrategies[ImportType.text]!
-                                    .map((ParsingStrategy strategy) {
-                                      return DropdownMenuItem<ParsingStrategy>(
-                                        value: strategy,
-                                        child: Text(strategy.getName(context)),
-                                      );
-                                    })
-                                    .toList(),
-                            onChanged: (ParsingStrategy? newStrategy) {
-                              if (newStrategy != null) {
-                                importProvider.setParsingStrategy(newStrategy);
-                              }
+                          FilledButton.icon(
+                            label: Text(AppLocalizations.of(context)!.tryAgain),
+                            onPressed: () {
+                              importProvider.clearError();
                             },
+                            icon: const Icon(Icons.refresh),
                           ),
                         ],
                       ),
-                      FilledTextButton(
-                        text: AppLocalizations.of(context)!.import,
-                        isDarkButton: true,
-                        onPressed: () async {
-                          final text = _importTextController.text;
-                          if (text.isNotEmpty) {
-                            await importProvider.importText(data: text);
-
-                            parserProvider.parseCipher(
-                              importProvider.importedCipher!,
-                            );
-
-                            // Navigate to parsing screen
-                            navigationProvider.push(
-                              CipherEditor(
-                                versionType: VersionType.import,
-                                versionId: -1,
+                    )
+                  // Loading State
+                  : importProvider.isImporting
+                  ? const Center(child: CircularProgressIndicator())
+                  // Default State
+                  : Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          spacing: 16.0,
+                          mainAxisSize: MainAxisSize.max,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                expands: true,
+                                maxLines: null,
+                                selectAllOnFocus: true,
+                                onTapOutside: (event) =>
+                                    FocusScope.of(context).unfocus(),
+                                textAlignVertical: TextAlignVertical(y: -1),
+                                controller: _importTextController,
+                                decoration: InputDecoration(
+                                  hintText: AppLocalizations.of(
+                                    context,
+                                  )!.pasteTextPrompt,
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(0),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(0),
+                                    borderSide: BorderSide(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
+                                      width: 2,
+                                    ),
+                                  ),
+                                ),
                               ),
-                            );
-                          }
-                        },
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  AppLocalizations.of(context)!.parsingStrategy,
+                                  style: TextStyle(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                DropdownButton<ParsingStrategy>(
+                                  value: importProvider.parsingStrategy,
+                                  items:
+                                      importTypeToParsingStrategies[ImportType
+                                              .text]!
+                                          .map((ParsingStrategy strategy) {
+                                            return DropdownMenuItem<
+                                              ParsingStrategy
+                                            >(
+                                              value: strategy,
+                                              child: Text(
+                                                strategy.getName(context),
+                                              ),
+                                            );
+                                          })
+                                          .toList(),
+                                  onChanged: (ParsingStrategy? newStrategy) {
+                                    if (newStrategy != null) {
+                                      importProvider.setParsingStrategy(
+                                        newStrategy,
+                                      );
+                                    }
+                                  },
+                                ),
+                              ],
+                            ),
+                            FilledTextButton(
+                              text: AppLocalizations.of(context)!.import,
+                              isDarkButton: true,
+                              onPressed: () async {
+                                final text = _importTextController.text;
+                                if (text.isNotEmpty) {
+                                  await importProvider.importText(data: text);
+
+                                  parserProvider.parseCipher(
+                                    importProvider.importedCipher!,
+                                  );
+
+                                  // Navigate to parsing screen
+                                  navigationProvider.push(
+                                    CipherEditor(
+                                      versionType: VersionType.import,
+                                      versionId: -1,
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
+                          ],
+                        ),
                       ),
-                    ],
-                  ),
-                ),
-              );
-            },
-      ),
+                    ),
+            );
+          },
     );
   }
 }

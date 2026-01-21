@@ -1,6 +1,7 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/models/domain/cipher/cipher.dart';
 import 'package:cordis/models/domain/cipher/version.dart';
+import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/providers/section_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -82,16 +83,15 @@ class _CipherViewerState extends State<CipherViewer>
     );
   }
 
-  void _editCurrentVersion() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => CipherEditor(
-          cipherId: widget.cipherId,
-          versionId: widget.versionId,
-          versionType: widget.versionType,
-        ),
+  void _editCurrentVersion(NavigationProvider navigationProvider) {
+    navigationProvider.push(
+      CipherEditor(
+        cipherId: widget.cipherId,
+        versionId: widget.versionId,
+        versionType: widget.versionType,
       ),
+      showAppBar: false,
+      showDrawerIcon: false,
     );
   }
 
@@ -122,11 +122,12 @@ class _CipherViewerState extends State<CipherViewer>
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Consumer4<
+    return Consumer5<
       CipherProvider,
       VersionProvider,
       SectionProvider,
-      LayoutSettingsProvider
+      LayoutSettingsProvider,
+      NavigationProvider
     >(
       builder:
           (
@@ -135,6 +136,7 @@ class _CipherViewerState extends State<CipherViewer>
             versionProvider,
             sectionProvider,
             settings,
+            navigationProvider,
             child,
           ) {
             // Handle loading states
@@ -222,7 +224,7 @@ class _CipherViewerState extends State<CipherViewer>
                   IconButton(
                     icon: const Icon(Icons.edit),
                     tooltip: 'Edit',
-                    onPressed: _editCurrentVersion,
+                    onPressed: () => _editCurrentVersion(navigationProvider),
                   ),
                 ],
               ),

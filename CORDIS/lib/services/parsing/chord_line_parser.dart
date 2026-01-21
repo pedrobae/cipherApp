@@ -11,12 +11,12 @@ class ChordLineParser {
     List<String> songStructure = result.songStructure;
     int incrementalDefaultCode = 0;
 
-    List<Map<String, dynamic>> rawSections = result.rawSections;
+    List<RawSection> rawSections = result.rawSections;
 
     for (var rawSection in rawSections) {
-      if (rawSection['suggestedTitle'] == 'Metadata') continue;
+      if (rawSection.suggestedLabel == 'Metadata') continue;
 
-      String? code = rawSection['label']?.code;
+      String? code = rawSection.code;
       if (code == null) {
         // Assign a default code if none is found
         code = incrementalDefaultCode.toString();
@@ -24,28 +24,24 @@ class ChordLineParser {
       }
 
       // If the section is marked as duplicate, skip creating a new Section object
-      if (rawSection['duplicatedSectionIndex'] != null) {
+      if (rawSection.duplicateOf != null) {
         // Add the code of the original section to the song structure
-        songStructure.add(
-          rawSections[rawSection['duplicatedSectionIndex']]['code'],
-        );
+        songStructure.add(rawSection.duplicateOf!);
         // Skip to the next section
         continue;
       }
 
       // Keep track of song structure
       songStructure.add(code);
-      rawSection['code'] = code;
+      rawSection.code = code;
 
       // Build the Section object
       Section parsedSection = Section(
         versionId: -1 /* ID will be set on database insertion */,
         contentCode: code,
-        contentColor: rawSection['label']?.color ?? Colors.grey,
-        contentType: rawSection['suggestedTitle'] as String,
-        contentText: _buildContentFromSimpleText(
-          rawSection['content'] as String,
-        ),
+        contentColor: rawSection.color ?? Colors.grey,
+        contentType: rawSection.suggestedLabel,
+        contentText: _buildContentFromSimpleText(rawSection.content),
       );
 
       parsedSections[code] = parsedSection;
@@ -55,47 +51,41 @@ class ChordLineParser {
   void parseByPdfFormatting(ParsingResult result) {
     // Iterates through each section of the variant creating Section objects
     Map<String, Section> parsedSections = result.parsedSections;
-    List<Map<String, dynamic>> rawSections = result.rawSections;
+    List<RawSection> rawSections = result.rawSections;
     List<String> songStructure = result.songStructure;
     int incrementalDefaultCode = 1;
 
     for (var rawSection in rawSections) {
-      if (rawSection['suggestedTitle'] == 'Metadata') continue;
+      if (rawSection.suggestedLabel == 'Metadata') continue;
 
-      String? code = rawSection['label']?.code;
+      String? code = rawSection.code;
       if (code == null || code.isEmpty) {
         // Assign a default code if none is found
         code = incrementalDefaultCode.toString();
         incrementalDefaultCode++;
       }
-      // Append number from suggested title if present to ensure uniqueness
-      final matches = RegExp(r'[0-9]').allMatches(rawSection['suggestedTitle']);
-      if (matches.isNotEmpty) {
-        code = '$code${matches.first.group(0)}';
-      }
 
       // If the section is marked as duplicate, skip creating a new Section object
-      if (rawSection['duplicatedSectionIndex'] != null) {
+      if (rawSection.duplicateOf != null) {
         // Add the code of the original section to the song structure
-        songStructure.add(
-          rawSections[rawSection['duplicatedSectionIndex']]['code'],
-        );
+        songStructure.add(rawSection.duplicateOf!);
+        rawSection.code = code;
         // Skip to the next section
         continue;
       }
 
       // Keep track of song structure
       songStructure.add(code);
-      rawSection['code'] = code;
+      rawSection.code = code;
 
       // Build the Section object
       Section parsedSection = Section(
         versionId: -1 /* ID will be set on database insertion */,
         contentCode: code,
-        contentColor: rawSection['label']?.color ?? Colors.grey,
-        contentType: rawSection['suggestedTitle'] as String,
+        contentColor: rawSection.color ?? Colors.grey,
+        contentType: rawSection.suggestedLabel,
         contentText: _buildContentFromLinesData(
-          rawSection['linesData'] as List<LineData>,
+          rawSection.linesData as List<LineData>,
         ),
       );
 
@@ -133,8 +123,12 @@ class ChordLineParser {
           if (index == 0) {
             content = '$content$lineText\n';
           }
-          // Add the next line as-is
-          content = '$content$nextLineText\n';
+          // Add the next line as-is check if it is the last line, for proper newline handling
+          if (index + 1 == lines.length - 1) {
+            content = '$content$nextLineText';
+          } else {
+            content = '$content$nextLineText\n';
+          }
         }
       }
     }
@@ -143,6 +137,11 @@ class ChordLineParser {
     String lastLineText = lastLineData.text;
     if (_isChordLine(lastLineText)) {
       content = '$content${_formatChordOnlyLine(lastLineText)}';
+    } else {
+      // Check if section is a single lyric line
+      if (lines.length == 1) {
+        content = '$content$lastLineText';
+      }
     }
 
     return content;

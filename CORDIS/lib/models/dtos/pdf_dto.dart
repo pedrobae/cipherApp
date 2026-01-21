@@ -7,6 +7,7 @@ const double newLineThreshold = 2.0; // Tolerance for y-position differences
 const double spaceThreshold = 1.0; // Threshold to detect spaces between words
 
 class DocumentData {
+  final String documentName;
   final Map<int, List<LineData>>
   pageLines; // Original without column reordering
   final Map<int, List<LineData>>
@@ -15,13 +16,17 @@ class DocumentData {
   Map<int, bool> hasColumns; // Whether columns were detected per page
 
   DocumentData({
+    required this.documentName,
     required this.pageLines,
     this.pageLinesWithColumns = const {},
     this.projectedBounds = const {},
     this.hasColumns = const {},
   });
 
-  factory DocumentData.fromGlyphMap(Map<int, List<TextGlyph>> pageGlyphs) {
+  factory DocumentData.fromGlyphMap(
+    Map<int, List<TextGlyph>> pageGlyphs,
+    String docName,
+  ) {
     Map<int, List<LineData>> pages = {};
     Map<int, List<double>> bounds = {};
     Map<int, List<LineData>> pagesWithColumns = {};
@@ -67,6 +72,7 @@ class DocumentData {
     }
 
     return DocumentData(
+      documentName: docName,
       pageLines: pages,
       projectedBounds: bounds,
       pageLinesWithColumns: pagesWithColumns,

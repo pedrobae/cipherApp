@@ -45,8 +45,6 @@ class MainScreenState extends State<MainScreen> {
 
     return Consumer2<MyAuthProvider, NavigationProvider>(
       builder: (context, authProvider, navigationProvider, child) {
-        final isDense = navigationProvider.isDense;
-
         return PopScope(
           canPop: false,
           onPopInvokedWithResult: (didPop, _) {
@@ -54,65 +52,67 @@ class MainScreenState extends State<MainScreen> {
             navigationProvider.pop();
           },
           child: Scaffold(
-            appBar: isDense
-                ? null
-                : AppBar(
+            appBar: navigationProvider.showAppBar
+                ? AppBar(
                     backgroundColor: colorScheme.surfaceContainer,
                     centerTitle: true,
                     title: SvgPicture.asset(
                       'assets/logos/v2_simple_color_white.svg',
                       width: 80,
                     ),
-                  ),
-            drawer: isDense ? null : AppDrawer(),
-            bottomNavigationBar: Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(
-                    color: colorScheme.surfaceContainerLowest,
-                    width: 0.1,
-                  ),
-                ),
-              ),
-              child: BottomNavigationBar(
-                currentIndex: navigationProvider.currentIndex,
-                selectedLabelStyle: TextStyle(
-                  color: colorScheme.primary,
-                  fontSize: 12,
-                ),
-                unselectedLabelStyle: TextStyle(
-                  color: colorScheme.onSurface,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
-                showUnselectedLabels: true,
-                type: BottomNavigationBarType.fixed,
-                elevation: 2,
-                onTap: (index) {
-                  if (mounted) {
-                    navigationProvider.navigateToRoute(
-                      NavigationRoute.values[index],
-                    );
-                  }
-                },
-                items: navigationProvider
-                    .getNavigationItems(
-                      context,
-                      iconSize: 24,
-                      color: colorScheme.onSurface,
-                      activeColor: theme.colorScheme.primary,
-                    )
-                    .map(
-                      (navItem) => BottomNavigationBarItem(
-                        icon: navItem.icon,
-                        label: navItem.title,
-                        backgroundColor: colorScheme.surface,
-                        activeIcon: navItem.activeIcon,
+                  )
+                : null,
+            drawer: navigationProvider.showDrawerIcon ? AppDrawer() : null,
+            bottomNavigationBar: navigationProvider.showBottomNavBar
+                ? Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(
+                          color: colorScheme.surfaceContainerLowest,
+                          width: 0.1,
+                        ),
                       ),
-                    )
-                    .toList(),
-              ),
-            ),
+                    ),
+                    child: BottomNavigationBar(
+                      currentIndex: navigationProvider.currentIndex,
+                      selectedLabelStyle: TextStyle(
+                        color: colorScheme.primary,
+                        fontSize: 12,
+                      ),
+                      unselectedLabelStyle: TextStyle(
+                        color: colorScheme.onSurface,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      showUnselectedLabels: true,
+                      type: BottomNavigationBarType.fixed,
+                      elevation: 2,
+                      onTap: (index) {
+                        if (mounted) {
+                          navigationProvider.navigateToRoute(
+                            NavigationRoute.values[index],
+                          );
+                        }
+                      },
+                      items: navigationProvider
+                          .getNavigationItems(
+                            context,
+                            iconSize: 24,
+                            color: colorScheme.onSurface,
+                            activeColor: theme.colorScheme.primary,
+                          )
+                          .map(
+                            (navItem) => BottomNavigationBarItem(
+                              icon: navItem.icon,
+                              label: navItem.title,
+                              backgroundColor: colorScheme.surface,
+                              activeIcon: navItem.activeIcon,
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  )
+                : null,
             body: SafeArea(
               child: GestureDetector(
                 onHorizontalDragEnd: (details) {

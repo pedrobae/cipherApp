@@ -102,7 +102,8 @@ class _CipherCardState extends State<CipherCard> {
                         versionId: versionId,
                         versionType: VersionType.playlist,
                       ),
-                      isDense: true,
+                      showAppBar: false,
+                      showDrawerIcon: false,
                     );
                   } catch (error) {
                     ScaffoldMessenger.of(context).showSnackBar(

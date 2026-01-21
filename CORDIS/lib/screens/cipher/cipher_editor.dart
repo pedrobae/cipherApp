@@ -340,12 +340,14 @@ class _CipherEditorState extends State<CipherEditor>
                                   cipherProvider,
                                   versionProvider,
                                   sectionProvider,
+                                  navigationProvider,
                                 );
                               } else {
                                 _saveCipher(
                                   cipherProvider,
                                   versionProvider,
                                   sectionProvider,
+                                  navigationProvider,
                                 );
                               }
                             },
@@ -355,7 +357,7 @@ class _CipherEditorState extends State<CipherEditor>
                             onPressed: () {
                               if (widget.versionType == VersionType.import ||
                                   widget.versionType == VersionType.brandNew) {
-                                Navigator.pop(context);
+                                navigationProvider.pop();
                               } else {
                                 _showDeleteDialog(widget.cipherId != null);
                               }
@@ -404,6 +406,7 @@ class _CipherEditorState extends State<CipherEditor>
     CipherProvider cipherProvider,
     VersionProvider versionProvider,
     SectionProvider sectionProvider,
+    NavigationProvider navigation,
   ) async {
     try {
       if (widget.cipherId != null) {
@@ -429,10 +432,9 @@ class _CipherEditorState extends State<CipherEditor>
       await sectionProvider.createSectionsForNewVersion(versionId!);
 
       if (mounted) {
-        Navigator.pop(context, true); // Close screen
+        navigation.pop(); // Close screen
         if (widget.versionType == VersionType.import) {
-          Navigator.pop(context, true); // Close parser screen
-          Navigator.pop(context, true); // Close import screen
+          navigation.pop(); // Close import screen
         }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -463,6 +465,7 @@ class _CipherEditorState extends State<CipherEditor>
     CipherProvider cipherProvider,
     VersionProvider versionProvider,
     SectionProvider sectionProvider,
+    NavigationProvider navigationProvider,
   ) async {
     try {
       await cipherProvider.saveCipher(widget.cipherId!);
@@ -472,11 +475,7 @@ class _CipherEditorState extends State<CipherEditor>
       await sectionProvider.saveSections(widget.versionId!);
 
       if (mounted) {
-        Navigator.pop(context, true); // Close screen
-        if (widget.versionType == VersionType.import) {
-          Navigator.pop(context, true); // Close parser screen
-          Navigator.pop(context, true); // Close import screen
-        }
+        navigationProvider.pop(); // Close screen
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(

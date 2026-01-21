@@ -82,17 +82,23 @@ class ImportProvider extends ChangeNotifier {
           // PDF import: multiple import variants (with/without columns)
           final pdfDocument = await _pdfService.extractTextWithFormatting(
             selectedFile!,
+            selectedFileName!,
           );
 
           _importedCipher = ParsingCipher(
             importType: ImportType.pdf,
             result: ParsingResult(
-              strategy: _parsingStrategy!,
+              strategy: ParsingStrategy.pdfFormatting,
               rawText: '',
-              lines: _importVariation == ImportVariation.pdfWithColumns
-                  ? pdfDocument.pageLinesWithColumns[0]!
-                  : pdfDocument.pageLines[0]!,
             ),
+          );
+
+          _importedCipher!.result.metadata['title'] = pdfDocument.documentName;
+
+          _importedCipher!.result.lines.addAll(
+            _importVariation == ImportVariation.pdfWithColumns
+                ? pdfDocument.pageLinesWithColumns[0]!
+                : pdfDocument.pageLines[0]!,
           );
           break;
 

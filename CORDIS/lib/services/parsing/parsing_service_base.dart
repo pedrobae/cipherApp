@@ -39,6 +39,7 @@ class ParsingServiceBase {
         metadataParser.parseBySimpleText(result);
         break;
       case ParsingStrategy.pdfFormatting:
+        metadataParser.parseByPdfFormatting(result);
         break;
     }
   }

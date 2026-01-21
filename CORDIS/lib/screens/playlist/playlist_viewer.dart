@@ -227,7 +227,8 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                       // Navigate to Cipher Library Screen
                       navigationProvider.push(
                         CipherLibraryScreen(),
-                        isDense: true,
+                        showAppBar: false,
+                        showDrawerIcon: false,
                         onPopCallback: () {
                           // Disable selection mode when returning
                           selectionProvider.disableSelectionMode();

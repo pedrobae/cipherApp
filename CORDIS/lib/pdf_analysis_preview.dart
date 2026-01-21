@@ -104,7 +104,10 @@ class _PdfAnalysisScreenState extends State<PdfAnalysisScreen> {
         });
       }
 
-      final DocumentData documentData = DocumentData.fromGlyphMap(pageGlyphs);
+      final DocumentData documentData = DocumentData.fromGlyphMap(
+        pageGlyphs,
+        name,
+      );
       documentData.searchColumns();
 
       if (mounted) {

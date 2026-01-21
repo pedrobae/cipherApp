@@ -14,13 +14,13 @@ class SectionParser {
         continue; // Skip empty sections
       }
 
-      Map<String, dynamic> section = {
-        'index': i,
-        'content': sectionContent,
-        'numberOfLines': '\n'.allMatches(sectionContent).length + 1,
-        'isDuplicate': false,
-        'suggestedTitle': 'Unlabeled Section',
-      };
+      RawSection section = RawSection(
+        index: i,
+        content: sectionContent,
+        numberOfLines: '\n'.allMatches(sectionContent).length + 1,
+        duplicateOf: null,
+        suggestedLabel: 'Unlabeled Section',
+      );
 
       result.rawSections.add(section);
     }
@@ -41,7 +41,6 @@ class SectionParser {
           // Possible Label found -  Validate
           if (labelData['isValid']) {
             validMatches.add({
-              'officialLabel': label.officialLabel,
               'label': label,
               'labelStart': labelData['labelStart'],
               'labelEnd': labelData['labelEnd'],
@@ -62,19 +61,22 @@ class SectionParser {
       int sectionEnd = nextMatch != null
           ? nextMatch['labelStart']
           : rawText.length;
+      SectionLabel label = match['label'];
 
-      result.rawSections.add({
-        'index': result.rawSections.length,
-        'content': rawText.substring(sectionStart, sectionEnd).trim(),
-        'numberOfLines':
-            '\n'
-                .allMatches(rawText.substring(sectionStart, sectionEnd))
-                .length +
-            1,
-        'suggestedTitle': match['officialLabel'],
-        'isDuplicate': false,
-        'label': match['label'],
-      });
+      result.rawSections.add(
+        RawSection(
+          index: result.rawSections.length,
+          suggestedLabel: label.officialLabel,
+          code: label.code,
+          color: label.color,
+          content: rawText.substring(sectionStart, sectionEnd).trim(),
+          numberOfLines: rawText
+              .substring(sectionStart, sectionEnd)
+              .split('\n')
+              .length,
+          duplicateOf: null,
+        ),
+      );
     }
     _checkDuplicates(result);
   }
@@ -229,31 +231,32 @@ class SectionParser {
 
   void _checkDuplicates(ParsingResult result) {
     // Check for duplicate content and mark them
-    List<Map<String, dynamic>> sections = result.rawSections;
-    Map<String, int> seenContentIndex = {};
+    List<RawSection> sections = result.rawSections;
+    Map<String, int> seenContentCodes = {};
     for (var section in sections) {
-      String content = section['content'];
+      String content = section.content;
 
-      if (seenContentIndex.containsKey(content)) {
-        section['duplicatedSectionIndex'] =
-            seenContentIndex[content]; // Mark as duplicate, with a reference
+      if (seenContentCodes.containsKey(content)) {
+        section.duplicateOf = seenContentCodes[content]
+            .toString(); // Mark as duplicate, with a reference
       } else {
-        seenContentIndex[content] = section['index'];
+        seenContentCodes[content] = section.index;
       }
     }
 
-    // Check for duplicate labels and rename suggestions, adding index suffixes
+    // Check for duplicate labels and rename suggestions, and code adding index suffixes
     Map<String, int> labelCount = {};
     for (var section in sections) {
-      String title = section['suggestedTitle'].toString().toLowerCase();
+      String title = section.suggestedLabel.toLowerCase();
 
-      if (section['suggestedTitle'] == 'Unlabeled Section') {
+      if (section.suggestedLabel == 'Unlabeled Section') {
         continue;
       }
 
       if (labelCount.containsKey(title)) {
         int count = labelCount[title]! + 1;
-        section['suggestedTitle'] = '${section['suggestedTitle']} $count';
+        section.suggestedLabel = '${section.suggestedLabel} $count';
+        section.code = '${section.code} $count';
         labelCount[title] = count;
       } else {
         labelCount[title] = 1;
@@ -271,23 +274,13 @@ class SectionParser {
     // Check first line for label
     bool firstLineHasLabel;
     RegExpMatch? match;
-    SectionLabels label;
-    String labelText = 'Unlabeled Section';
+    SectionLabel label;
     (firstLineHasLabel, match, label) = _containsLabel(linesData[0].text);
 
     if (firstLineHasLabel) {
       final labelData = _validateLabel(linesData[0].text, match!);
 
       if (labelData['isValid']) {
-        // Save extracted label
-        labelText = linesData[0].text
-            .substring(labelData['labelStart'], labelData['labelEnd'])
-            .trim();
-
-        if (labelData['labelWithColon'] == true) {
-          labelText = labelText.substring(0, labelText.length - 1).trim();
-        }
-
         // Remove label from LineData
         linesData[0].text = linesData[0].text
             .substring(labelData['labelEnd'])
@@ -305,24 +298,25 @@ class SectionParser {
     }
     String sectionContent = buffer.toString().trim();
 
-    if (sectionContent.isEmpty) {
+    if (sectionContent.trim().isEmpty) {
       return; // Skip empty sections
     }
 
-    Map<String, dynamic> section = {
-      'index': result.rawSections.length,
-      'content': sectionContent,
-      'numberOfLines': linesData.length,
-      'isDuplicate': false,
-      'suggestedTitle': labelText,
-      'linesData': linesData,
-      'label': label,
-    };
+    RawSection section = RawSection(
+      index: result.rawSections.length,
+      content: sectionContent,
+      numberOfLines: linesData.length,
+      duplicateOf: null,
+      suggestedLabel: label.officialLabel,
+      linesData: linesData,
+      code: label.code,
+      color: label.color,
+    );
 
     result.rawSections.add(section);
   }
 
-  (bool, RegExpMatch?, SectionLabels) _containsLabel(String text) {
+  (bool, RegExpMatch?, SectionLabel) _containsLabel(String text) {
     for (var label in commonSectionLabels.values) {
       for (var labelVariation in label.labelVariations) {
         RegExp regex = RegExp(labelVariation, caseSensitive: false);
@@ -331,7 +325,7 @@ class SectionParser {
         }
       }
     }
-    return (false, null, SectionLabels.unknown());
+    return (false, null, SectionLabel.unknown());
   }
 }
 

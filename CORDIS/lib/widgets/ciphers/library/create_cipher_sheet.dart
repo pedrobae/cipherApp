@@ -1,10 +1,12 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/models/domain/cipher/version.dart';
+import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/screens/cipher/cipher_editor.dart';
 import 'package:cordis/screens/cipher/import/import_pdf.dart';
 import 'package:cordis/screens/cipher/import/import_text.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CreateCipherSheet extends StatelessWidget {
   const CreateCipherSheet({super.key});
@@ -84,10 +86,11 @@ class CreateCipherSheet extends StatelessWidget {
                 text: AppLocalizations.of(context)!.importFromText,
                 onPressed: () {
                   Navigator.of(context).pop();
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const ImportTextScreen(),
-                    ),
+                  context.read<NavigationProvider>().push(
+                    const ImportTextScreen(),
+                    showAppBar: false,
+                    showDrawerIcon: false,
+                    showBottomNavBar: false,
                   );
                 },
               ),
@@ -95,10 +98,11 @@ class CreateCipherSheet extends StatelessWidget {
                 text: AppLocalizations.of(context)!.importFromPDF,
                 onPressed: () {
                   Navigator.of(context).pop();
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const ImportPdfScreen(),
-                    ),
+                  context.read<NavigationProvider>().push(
+                    const ImportPdfScreen(),
+                    showAppBar: false,
+                    showDrawerIcon: false,
+                    showBottomNavBar: false,
                   );
                 },
               ),

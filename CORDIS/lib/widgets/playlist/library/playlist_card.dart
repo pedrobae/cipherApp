@@ -28,7 +28,8 @@ class PlaylistCard extends StatelessWidget {
           onTap: () {
             navigationProvider.push(
               PlaylistViewer(playlistId: playlistId),
-              isDense: true,
+              showAppBar: false,
+              showDrawerIcon: false,
             );
           },
           child: Container(

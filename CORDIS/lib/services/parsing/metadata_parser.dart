@@ -5,7 +5,7 @@ class MetadataParser {
     // Iterates through sections
     for (var section in result.rawSections) {
       // Simple heuristic: if the section is labeled it doesn't contain metadata
-      if (section['suggestedTitle'] != 'Unlabeled Section') break;
+      if (section.suggestedLabel != 'Unlabeled Section') break;
 
       bool foundMetadata = false;
       // Look for colon-separated key-value pairs
@@ -13,24 +13,39 @@ class MetadataParser {
       if (_checkForHyphens(result, section)) foundMetadata = true;
 
       // Mark section as metadata if any metadata found
-      if (foundMetadata) section['suggestedTitle'] = 'Metadata';
+      if (foundMetadata) section.suggestedLabel = 'Metadata';
     }
 
     // If title is missing, checks the first section's lines looking at the number of words and average word length
     if (result.metadata['title'] == null || result.metadata['title']!.isEmpty) {
-      for (var line in result.rawSections[0]['lines']) {
+      for (var line in result.lines.take(result.rawSections[0].numberOfLines)) {
         // Maybe the map is wrong
-        if (line['wordCount'] <= 7 && line['avgWordLength'] >= 3.0) {
-          result.metadata['title'] = line['text'];
-          result.rawSections[0]['suggestedTitle'] = 'Metadata';
+        if (line.wordCount! <= 7 && line.avgWordLength! >= 3.0) {
+          result.metadata['title'] = line.text;
+          result.rawSections[0].suggestedLabel = 'Metadata';
           break;
         }
       }
     }
   }
 
-  bool _checkForColons(ParsingResult result, Map<String, dynamic> section) {
-    final lines = section['content'].split('\n');
+  void parseByPdfFormatting(ParsingResult result) {
+    // Analizes the first section
+    final firstSection = result.rawSections[0];
+    bool foundMetadata = false;
+
+    if (firstSection.suggestedLabel == 'Unlabeled Section') {
+      // Look for colon-separated key-value pairs
+      if (_checkForColons(result, firstSection)) foundMetadata = true;
+      if (_checkForHyphens(result, firstSection)) foundMetadata = true;
+
+      // Mark section as metadata if any metadata found
+      if (foundMetadata) firstSection.suggestedLabel = 'Metadata';
+    }
+  }
+
+  bool _checkForColons(ParsingResult result, RawSection section) {
+    final lines = section.content.split('\n');
 
     bool foundMetadata = false;
     for (var line in lines) {
@@ -49,8 +64,8 @@ class MetadataParser {
     return foundMetadata;
   }
 
-  bool _checkForHyphens(ParsingResult result, Map<String, dynamic> section) {
-    final lines = section['content'].split('\n');
+  bool _checkForHyphens(ParsingResult result, RawSection section) {
+    final lines = section.content.split('\n');
 
     bool foundMetadata = false;
     for (var line in lines) {

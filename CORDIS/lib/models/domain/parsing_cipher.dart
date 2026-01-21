@@ -72,13 +72,12 @@ Map<ImportType, List<ImportVariation>> importTypeToVariations = {
 class ParsingResult {
   final ParsingStrategy strategy;
   final String rawText;
-  final List<LineData> lines;
-  final Map<String, dynamic> metadata;
 
-  final List<Map<String, dynamic>> rawSections = [];
+  final List<LineData> lines = [];
+  final Map<String, dynamic> metadata = {};
+  final List<RawSection> rawSections = [];
   final Map<String, Section> parsedSections = {};
   final List<String> songStructure = [];
-  final Map<String, dynamic> strategyMetadata;
   List<PdfFontStyle>? dominantChordStyle;
 
   /// PDF-specific formatting analysis (only populated for PDF imports)
@@ -86,13 +85,7 @@ class ParsingResult {
   final Map<List<PdfFontStyle>, Map<List<PdfFontStyle>, int>>
   followingStyleCounts = {};
 
-  ParsingResult({
-    required this.strategy,
-    required this.rawText,
-    this.metadata = const {},
-    this.strategyMetadata = const {},
-    this.lines = const [],
-  });
+  ParsingResult({required this.strategy, required this.rawText});
 
   /// Check if this result has any parsed content
   bool get hasContent => parsedSections.isNotEmpty || rawSections.isNotEmpty;
@@ -110,4 +103,26 @@ class ParsingCipher {
   Map<String, dynamic> metadata = {};
 
   ParsingCipher({required this.importType, required this.result});
+}
+
+class RawSection {
+  String suggestedLabel;
+  String? code;
+  Color? color;
+  String content;
+  List<LineData>? linesData;
+  int index;
+  int numberOfLines;
+  String? duplicateOf; // If duplicate, holds the code of the original section
+
+  RawSection({
+    required this.suggestedLabel,
+    this.code,
+    this.color,
+    required this.content,
+    required this.index,
+    required this.numberOfLines,
+    this.linesData,
+    this.duplicateOf,
+  });
 }

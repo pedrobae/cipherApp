@@ -205,8 +205,9 @@ class _CipherEditorState extends State<CipherEditor>
                             );
                           }
                           // Create Section entries for the new version
-                          await sectionProvider.createSectionsForNewVersion(
+                          await sectionProvider.createSectionsCopy(
                             versionId,
+                            widget.versionId!,
                           );
                           await sectionProvider.loadSections(versionId);
                           playlistProvider.addVersionToPlaylist(
@@ -429,7 +430,7 @@ class _CipherEditorState extends State<CipherEditor>
         }
       }
 
-      await sectionProvider.createSectionsForNewVersion(versionId!);
+      await sectionProvider.createSections(versionId!);
 
       if (mounted) {
         navigation.pop(); // Close screen

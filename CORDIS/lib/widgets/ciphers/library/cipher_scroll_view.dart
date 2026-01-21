@@ -122,14 +122,24 @@ class _CipherScrollViewState extends State<CipherScrollView> {
                       index - cipherProvider.filteredLocalCipherCount;
                   final version = versionProvider.filteredCloudVersions.values
                       .toList()[cloudIndex];
-                  return CloudCipherCard(version: version);
+                  return Padding(
+                    padding: const EdgeInsets.only(
+                      bottom: 8.0,
+                    ), // Spacing between cards
+                    child: CloudCipherCard(version: version),
+                  );
                 }
 
                 final cipherList = cipherProvider.filteredLocalCiphers.values
                     .toList();
 
                 final cipher = cipherList[index];
-                return CipherCard(cipherId: cipher.id);
+                return Padding(
+                  padding: const EdgeInsets.only(
+                    bottom: 8.0,
+                  ), // Spacing between cards
+                  child: CipherCard(cipherId: cipher.id),
+                );
               },
             ),
     );

@@ -109,8 +109,8 @@ class _CipherEditorState extends State<CipherEditor>
         // Create a copy of the version in cache
         versionProvider.setNewVersionInCache(originalVersion.copyWith());
 
-        // Set the sections in cache
-        sectionProvider.setNewSectionsInCache(-1, originalVersion.sections!);
+        // Load the sections in cache
+        await sectionProvider.loadSections(widget.versionId!);
         break;
     }
   }
@@ -161,13 +161,17 @@ class _CipherEditorState extends State<CipherEditor>
           ) {
             return Scaffold(
               appBar: AppBar(
-                leading: BackButton(
-                  onPressed: () {
-                    navigationProvider.pop();
-                    selectionProvider.toggleItemSelection(widget.versionId!);
-                    selectionProvider.enableSelectionMode();
-                  },
-                ),
+                leading: selectionProvider.isSelectionMode
+                    ? BackButton(
+                        onPressed: () {
+                          navigationProvider.pop();
+                          selectionProvider.toggleItemSelection(
+                            widget.versionId!,
+                          );
+                          selectionProvider.enableSelectionMode();
+                        },
+                      )
+                    : null,
                 title: Text(
                   selectionProvider.isSelectionMode
                       ? AppLocalizations.of(context)!.addSongToLibrary
@@ -177,45 +181,52 @@ class _CipherEditorState extends State<CipherEditor>
                   ),
                 ),
                 actions: [
-                  TextButton(
-                    onPressed: () async {
-                      for (dynamic versionId
-                          in selectionProvider.selectedItemIds) {
-                        if (versionId.runtimeType == int) {
-                          // LOCAL VERSION: Create a copy of the version in the database
-                          versionId = await versionProvider.createVersion(null);
-                        } else {
-                          // CLOUD VERSION: Upsert the version locally and add to playlist
-                          final cipherId = await cipherProvider.upsertCipher(
-                            Cipher.fromVersionDto(
-                              versionProvider.cloudVersions[versionId]!,
-                            ),
-                          );
+                  if (selectionProvider.isSelectionMode)
+                    TextButton(
+                      onPressed: () async {
+                        for (dynamic versionId
+                            in selectionProvider.selectedItemIds) {
+                          if (versionId.runtimeType == int) {
+                            // LOCAL VERSION: Create a copy of the version in the database
+                            versionId = await versionProvider.createVersion(
+                              null,
+                            );
+                          } else {
+                            // CLOUD VERSION: Upsert the version locally and add to playlist
+                            final cipherId = await cipherProvider.upsertCipher(
+                              Cipher.fromVersionDto(
+                                versionProvider.cloudVersions[versionId]!,
+                              ),
+                            );
 
-                          versionId = await versionProvider.upsertVersion(
-                            versionProvider.cloudVersions[versionId]!.toDomain(
-                              cipherId: cipherId,
-                            ),
+                            versionId = await versionProvider.upsertVersion(
+                              versionProvider.cloudVersions[versionId]!
+                                  .toDomain(cipherId: cipherId),
+                            );
+                          }
+                          // Create Section entries for the new version
+                          await sectionProvider.createSectionsForNewVersion(
+                            versionId,
+                          );
+                          await sectionProvider.loadSections(versionId);
+                          playlistProvider.addVersionToPlaylist(
+                            selectionProvider.targetId!,
+                            versionId,
                           );
                         }
-                        playlistProvider.addVersionToPlaylist(
-                          selectionProvider.targetId!,
-                          versionId,
-                        );
-                      }
-                      selectionProvider.clearSelection();
-                      navigationProvider.pop(); // Close editor
-                      navigationProvider.pop(); // Close cipher library
-                    },
-                    child: Text(
-                      AppLocalizations.of(context)!.save,
-                      style: theme.textTheme.bodyMedium!.copyWith(
-                        fontSize: 20,
-                        color: colorScheme.onSurface,
-                        fontWeight: FontWeight.w400,
+                        selectionProvider.clearSelection();
+                        navigationProvider.pop(); // Close editor
+                        navigationProvider.pop(); // Close cipher library
+                      },
+                      child: Text(
+                        AppLocalizations.of(context)!.save,
+                        style: theme.textTheme.bodyMedium!.copyWith(
+                          fontSize: 20,
+                          color: colorScheme.onSurface,
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
               body: Column(

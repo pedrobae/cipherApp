@@ -21,7 +21,6 @@ class SelectionProvider extends ChangeNotifier {
   void disableSelectionMode() {
     _isSelectionMode = false;
     _selectedItemIds.clear();
-    notifyListeners();
   }
 
   void toggleItemSelection(dynamic item) {
@@ -38,6 +37,10 @@ class SelectionProvider extends ChangeNotifier {
 
   void setTarget(int id) {
     _targetId = id;
+  }
+
+  void clearTarget() {
+    _targetId = null;
   }
 
   bool isItemSelected(dynamic item) {

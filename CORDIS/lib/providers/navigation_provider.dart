@@ -11,6 +11,7 @@ class NavigationProvider extends ChangeNotifier {
   NavigationRoute _currentRoute = NavigationRoute.home;
   static List<Widget> _screenStack = [const HomeScreen()];
   static List<bool> _densityStack = [false];
+  static List<VoidCallback> _onPopCallbacks = [() {}];
   bool _isLoading = false;
   String? _error;
 
@@ -36,19 +37,30 @@ class NavigationProvider extends ChangeNotifier {
         NavigationRoute.schedule => [const ScheduleLibraryScreen()],
       };
       _densityStack = [false];
+      while (_onPopCallbacks.isNotEmpty) {
+        _onPopCallbacks.last();
+        _onPopCallbacks.removeLast();
+      }
       _error = null; // Clear any previous errors
       notifyListeners();
     }
   }
 
-  void push(Widget screen, {bool isDense = false}) {
+  void push(
+    Widget screen, {
+    bool isDense = false,
+    VoidCallback? onPopCallback,
+  }) {
     _screenStack.add(screen);
     _densityStack.add(isDense);
+    _onPopCallbacks.add(onPopCallback ?? () {});
     notifyListeners();
   }
 
   void pop() {
     if (_screenStack.length > 1) {
+      _onPopCallbacks.last();
+      _onPopCallbacks.removeLast();
       _screenStack.removeLast();
       _densityStack.removeLast();
       notifyListeners();

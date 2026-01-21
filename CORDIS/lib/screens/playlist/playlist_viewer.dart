@@ -228,6 +228,11 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                       navigationProvider.push(
                         CipherLibraryScreen(),
                         isDense: true,
+                        onPopCallback: () {
+                          // Disable selection mode when returning
+                          selectionProvider.disableSelectionMode();
+                          selectionProvider.clearTarget();
+                        },
                       );
                     },
                     child: Container(

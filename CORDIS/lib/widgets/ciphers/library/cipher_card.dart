@@ -207,7 +207,19 @@ class _CipherCardState extends State<CipherCard> {
                       ),
                     ),
                     // ACTIONS
-                    IconButton(onPressed: () {}, icon: Icon(Icons.more_vert)),
+                    IconButton(
+                      onPressed: () {
+                        // TODO: implement actions menu
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Funcionalidade em desenvolvimento 🚧',
+                            ),
+                          ),
+                        );
+                      },
+                      icon: Icon(Icons.more_vert),
+                    ),
                   ],
                 ),
               ),

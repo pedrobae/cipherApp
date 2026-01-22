@@ -196,8 +196,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               // TODO: Implement forgot password functionality
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
+                                  backgroundColor: Colors.amberAccent,
                                   content: Text(
-                                    'Funcionalidade em desenvolvimento 🚧',
+                                    'Funcionalidade em desenvolvimento,',
+                                    style: TextStyle(color: Colors.black),
                                   ),
                                 ),
                               );

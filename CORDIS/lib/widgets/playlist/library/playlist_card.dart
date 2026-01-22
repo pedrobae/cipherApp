@@ -88,7 +88,11 @@ class PlaylistCard extends StatelessWidget {
                     // TODO - Show playlist actions
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('Funcionalidade em desenvolvimento 🚧'),
+                        backgroundColor: Colors.amberAccent,
+                        content: Text(
+                          'Funcionalidade em desenvolvimento,',
+                          style: TextStyle(color: Colors.black),
+                        ),
                       ),
                     );
                   },

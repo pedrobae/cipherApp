@@ -93,8 +93,10 @@ class ScheduleCard extends StatelessWidget {
                         // TODO: Implement schedule actions
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
+                            backgroundColor: Colors.amberAccent,
                             content: Text(
-                              'Funcionalidade em desenvolvimento 🚧',
+                              'Funcionalidade em desenvolvimento,',
+                              style: TextStyle(color: Colors.black),
                             ),
                           ),
                         );
@@ -111,7 +113,11 @@ class ScheduleCard extends StatelessWidget {
                   // TODO: Implement navigation to schedule view
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Funcionalidade em desenvolvimento 🚧'),
+                      backgroundColor: Colors.amberAccent,
+                      content: Text(
+                        'Funcionalidade em desenvolvimento,',
+                        style: TextStyle(color: Colors.black),
+                      ),
                     ),
                   );
                 },
@@ -122,7 +128,11 @@ class ScheduleCard extends StatelessWidget {
                   // TODO: Implement share functionality
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Funcionalidade em desenvolvimento 🚧'),
+                      backgroundColor: Colors.amberAccent,
+                      content: Text(
+                        'Funcionalidade em desenvolvimento,',
+                        style: TextStyle(color: Colors.black),
+                      ),
                     ),
                   );
                 },

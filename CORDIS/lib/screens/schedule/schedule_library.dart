@@ -72,7 +72,11 @@ class _ScheduleLibraryScreenState extends State<ScheduleLibraryScreen> {
                   //TODO: Implement create new Schedule functionality
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Funcionalidade em desenvolvimento 🚧'),
+                      backgroundColor: Colors.amberAccent,
+                      content: Text(
+                        'Funcionalidade em desenvolvimento,',
+                        style: TextStyle(color: Colors.black),
+                      ),
                     ),
                   );
                 },

@@ -15,6 +15,8 @@ class MyAuthProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
   String? get userName => _user?.displayName;
+  String? get userEmail => _user?.email;
+  String? get photoURL => _user?.photoURL;
 
   MyAuthProvider() {
     // Listen to auth state changes and check admin status

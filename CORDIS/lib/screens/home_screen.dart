@@ -143,8 +143,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           // TODO: Implement navigation to create playlist
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
+                              backgroundColor: Colors.amberAccent,
                               content: Text(
-                                'Funcionalidade em desenvolvimento 🚧',
+                                'Funcionalidade em desenvolvimento,',
+                                style: TextStyle(color: Colors.black),
                               ),
                             ),
                           );
@@ -171,8 +173,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           // TODO: Implement navigation assign schedule
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
+                              backgroundColor: Colors.amberAccent,
                               content: Text(
-                                'Funcionalidade em desenvolvimento 🚧',
+                                'Funcionalidade em desenvolvimento,',
+                                style: TextStyle(color: Colors.black),
                               ),
                             ),
                           );

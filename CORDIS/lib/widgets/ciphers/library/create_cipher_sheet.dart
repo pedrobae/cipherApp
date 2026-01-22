@@ -114,7 +114,11 @@ class CreateCipherSheet extends StatelessWidget {
                   Navigator.of(context).pop();
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Funcionalidade em desenvolvimento 🚧'),
+                      backgroundColor: Colors.amberAccent,
+                      content: Text(
+                        'Funcionalidade em desenvolvimento,',
+                        style: TextStyle(color: Colors.black),
+                      ),
                     ),
                   );
                 },

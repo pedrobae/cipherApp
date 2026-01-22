@@ -209,8 +209,10 @@ class _CipherCardState extends State<CipherCard> {
                         // TODO: implement actions menu
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
+                            backgroundColor: Colors.amberAccent,
                             content: Text(
-                              'Funcionalidade em desenvolvimento 🚧',
+                              'Funcionalidade em desenvolvimento,',
+                              style: TextStyle(color: Colors.black),
                             ),
                           ),
                         );

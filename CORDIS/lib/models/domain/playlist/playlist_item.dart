@@ -74,15 +74,11 @@ class PlaylistItem {
         duration: duration,
       );
 
-  PlaylistItem.textSection(
-    int textSectionId,
-    int position,
-    int id,
-    Duration duration,
-  ) : this(
+  PlaylistItem.flowItem(int flowItemId, int position, int id, Duration duration)
+    : this(
         id: id,
         type: PlaylistItemType.textSection,
-        contentId: textSectionId,
+        contentId: flowItemId,
         position: position,
         duration: duration,
       );

@@ -49,7 +49,7 @@ class FlowItem {
     );
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toSQLite(FlowItem flowItem) {
     return {
       'id': id,
       'firebase_id': firebaseId,
@@ -57,6 +57,7 @@ class FlowItem {
       'title': title,
       'content': contentText,
       'position': position,
+      'duration': duration.inSeconds,
     };
   }
 

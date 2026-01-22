@@ -36,15 +36,13 @@ class _FlowItemEditorState extends State<FlowItemEditor> {
     });
   }
 
-  Future<void> _syncFlowItem() async {
+  void _syncFlowItem() {
     if (widget.flowItemId != null) {
       final flowItemProvider = Provider.of<FlowItemProvider>(
         context,
         listen: false,
       );
-      final flowItem = await flowItemProvider.getFlowItemById(
-        widget.flowItemId!,
-      );
+      final flowItem = flowItemProvider.getFlowItem(widget.flowItemId!);
       if (flowItem != null) {
         titleController.text = flowItem.title;
         contentController.text = flowItem.contentText;
@@ -104,9 +102,10 @@ class _FlowItemEditorState extends State<FlowItemEditor> {
                       // SAVE FLOW ITEM
                       flowItemProvider.upsertFlowItem(
                         FlowItem(
+                          id: widget.flowItemId,
                           firebaseId: widget.flowItemId != null
                               ? flowItemProvider
-                                    .getFlowItemById(widget.flowItemId!)!
+                                    .getFlowItem(widget.flowItemId!)!
                                     .firebaseId
                               : '',
                           playlistId: widget.playlistId,

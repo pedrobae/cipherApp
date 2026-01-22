@@ -5,22 +5,10 @@ class FlowItemRepository {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
 
   // ===== CREATE =====
-  Future<int> createFlowItem(
-    int playlistId,
-    String? firebaseContentId,
-    String title,
-    String content,
-    int position,
-  ) async {
+  Future<int> createFlowItem(FlowItem flowItem) async {
     final db = await _databaseHelper.database;
 
-    return await db.insert('playlist_text', {
-      'playlist_id': playlistId,
-      'firebase_id': firebaseContentId,
-      'title': title,
-      'content': content,
-      'position': position,
-    });
+    return await db.insert('playlist_text', flowItem.toSQLite(flowItem));
   }
 
   // ===== READ =====
@@ -91,6 +79,7 @@ class FlowItemRepository {
     String? title,
     String? content,
     int? position,
+    int? duration,
   }) async {
     final db = await _databaseHelper.database;
 
@@ -100,6 +89,7 @@ class FlowItemRepository {
       if (title != null) updates['title'] = title;
       if (content != null) updates['content'] = content;
       if (position != null) updates['position'] = position;
+      if (duration != null) updates['duration'] = duration;
 
       if (updates.isNotEmpty) {
         final result = await txn.update(

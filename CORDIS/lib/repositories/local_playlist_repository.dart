@@ -325,7 +325,7 @@ class PlaylistRepository {
   Future<List<PlaylistItem>> getTextItemsOfPlaylist(int playlistId) async {
     final db = await _databaseHelper.database;
 
-    final textSectionResults = await db.rawQuery(
+    final flowItemResults = await db.rawQuery(
       '''
         SELECT id as content_id, position, duration, id
         FROM playlist_text
@@ -335,13 +335,13 @@ class PlaylistRepository {
       [playlistId],
     );
 
-    return textSectionResults.map((row) {
+    return flowItemResults.map((row) {
       final id = row['id'] as int;
       final contentId = row['content_id'] as int;
       final position = row['position'] as int;
-      final duration = Duration(milliseconds: row['duration'] as int);
+      final duration = Duration(seconds: row['duration'] as int);
 
-      return PlaylistItem.textSection(contentId, position, id, duration);
+      return PlaylistItem.flowItem(contentId, position, id, duration);
     }).toList();
   }
 

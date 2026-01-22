@@ -13,9 +13,9 @@ import 'package:cordis/providers/version_provider.dart';
 
 import 'package:cordis/screens/cipher/cipher_library.dart';
 
-import 'package:cordis/widgets/playlist/flow_item_editor.dart';
+import 'package:cordis/widgets/flow_item_editor.dart';
 import 'package:cordis/widgets/playlist/playlist_version_card.dart';
-import 'package:cordis/widgets/playlist/text_section_card.dart';
+import 'package:cordis/widgets/playlist/flow_item_card.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -361,7 +361,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
             index: item.position,
           );
         case PlaylistItemType.textSection:
-          return TextSectionCard(
+          return FlowItemCard(
             flowItemId: item.contentId!,
             playlistId: widget.playlistId,
           );

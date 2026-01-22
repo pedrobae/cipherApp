@@ -92,7 +92,7 @@ class FlowItemProvider extends ChangeNotifier {
     return flowItem?.id;
   }
 
-  FlowItem? getFlowItemById(int id) {
+  FlowItem? getFlowItem(int id) {
     // Check cache first
     if (_flowItems.containsKey(id)) {
       return _flowItems[id];
@@ -118,13 +118,7 @@ class FlowItemProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      int id = await _flowItemRepo.createFlowItem(
-        flowItem.playlistId,
-        null,
-        flowItem.title,
-        flowItem.contentText,
-        flowItem.position,
-      );
+      int id = await _flowItemRepo.createFlowItem(flowItem);
       await _loadFlowItem(id, forceReload: true);
     } catch (e) {
       _error = e.toString();
@@ -145,24 +139,27 @@ class FlowItemProvider extends ChangeNotifier {
 
     try {
       // Check if exists
-      final localId = await getLocalIdByFirebaseId(flowItem.firebaseId);
+      bool exists = false;
+      int? localId;
+      if (flowItem.id != null) {
+        exists = _flowItems.containsKey(flowItem.id!);
+        localId = flowItem.id;
+      } else {
+        localId = await getLocalIdByFirebaseId(flowItem.firebaseId);
+        exists = localId != null;
+      }
 
-      if (localId == null) {
+      if (!exists) {
         // Create new
-        await _flowItemRepo.createFlowItem(
-          flowItem.playlistId,
-          flowItem.firebaseId,
-          flowItem.title,
-          flowItem.contentText,
-          flowItem.position,
-        );
+        await _flowItemRepo.createFlowItem(flowItem);
       } else {
         // Update existing
         await _flowItemRepo.updateFlowItem(
-          localId,
+          localId!,
           title: flowItem.title,
           content: flowItem.contentText,
           position: flowItem.position,
+          duration: flowItem.duration.inSeconds,
         );
       }
 

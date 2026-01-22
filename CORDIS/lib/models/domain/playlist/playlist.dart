@@ -1,4 +1,4 @@
-import 'package:cordis/models/domain/playlist/playlist_text_section.dart';
+import 'package:cordis/models/domain/playlist/flow_item.dart';
 import 'package:cordis/models/dtos/playlist_dto.dart';
 import 'package:cordis/models/dtos/version_dto.dart';
 import 'package:flutter/foundation.dart';
@@ -53,7 +53,7 @@ class Playlist {
   PlaylistDto toDto(
     String ownerFirebaseId,
     List<VersionDto> versions,
-    List<TextSection> textSections,
+    List<FlowItem> textSections,
   ) {
     return PlaylistDto(
       firebaseId: firebaseId,

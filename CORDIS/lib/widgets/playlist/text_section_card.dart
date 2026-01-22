@@ -1,14 +1,14 @@
-import 'package:cordis/providers/text_section_provider.dart';
+import 'package:cordis/providers/flow_item_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class TextSectionCard extends StatefulWidget {
-  final int textSectionId;
+  final int flowItemId;
   final int playlistId;
 
   const TextSectionCard({
     super.key,
-    required this.textSectionId,
+    required this.flowItemId,
     required this.playlistId,
   });
 
@@ -19,7 +19,7 @@ class TextSectionCard extends StatefulWidget {
 class _TextSectionCardState extends State<TextSectionCard> {
   @override
   Widget build(BuildContext context) {
-    final textSectionProvider = context.watch<TextSectionProvider>();
+    final flowItemProvider = context.watch<FlowItemProvider>();
 
     return InkWell(
       child: Card(
@@ -35,17 +35,15 @@ class _TextSectionCardState extends State<TextSectionCard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      textSectionProvider
-                              .textSections[widget.textSectionId]
-                              ?.title ??
+                      flowItemProvider.flowItems[widget.flowItemId]?.title ??
                           'ERROR LOADING',
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     const SizedBox(height: 8),
                     // REORDERABLE SECTION CHIPS
                     Text(
-                      textSectionProvider
-                              .textSections[widget.textSectionId]
+                      flowItemProvider
+                              .flowItems[widget.flowItemId]
                               ?.contentText ??
                           '',
                       style: Theme.of(context).textTheme.bodyMedium,

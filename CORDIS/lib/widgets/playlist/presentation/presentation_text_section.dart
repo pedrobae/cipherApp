@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../providers/text_section_provider.dart';
+import '../../../providers/flow_item_provider.dart';
 import '../../../providers/layout_settings_provider.dart';
 
 class PresentationTextSection extends StatelessWidget {
-  final int textSectionId;
+  final int flowItemId;
 
-  const PresentationTextSection({super.key, required this.textSectionId});
+  const PresentationTextSection({super.key, required this.flowItemId});
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<TextSectionProvider, LayoutSettingsProvider>(
-      builder: (context, textSectionProvider, layoutProvider, child) {
-        if (textSectionProvider.isLoading) {
+    return Consumer2<FlowItemProvider, LayoutSettingsProvider>(
+      builder: (context, flowItemProvider, layoutProvider, child) {
+        if (flowItemProvider.isLoading) {
           return const Card(
             child: Padding(
               padding: EdgeInsets.all(32),
@@ -21,7 +21,7 @@ class PresentationTextSection extends StatelessWidget {
           );
         }
 
-        final textSection = textSectionProvider.textSections[textSectionId];
+        final textSection = flowItemProvider.flowItems[flowItemId];
 
         if (textSection == null) {
           return Card(
@@ -40,7 +40,7 @@ class PresentationTextSection extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'ID: $textSectionId',
+                    'ID: $flowItemId',
                     style: TextStyle(color: Colors.red.shade600, fontSize: 12),
                   ),
                 ],

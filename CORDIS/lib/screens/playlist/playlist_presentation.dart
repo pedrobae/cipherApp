@@ -195,7 +195,7 @@ class _PlaylistPresentationScreenState
           },
         );
       case PlaylistItemType.textSection:
-        return PresentationTextSection(textSectionId: item.contentId!);
+        return PresentationTextSection(flowItemId: item.contentId!);
     }
   }
 

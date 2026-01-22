@@ -1,7 +1,7 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/my_auth_provider.dart';
 import 'package:cordis/providers/section_provider.dart';
-import 'package:cordis/providers/text_section_provider.dart';
+import 'package:cordis/providers/flow_item_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/providers/version_provider.dart';
 import 'package:cordis/utils/app_theme.dart';
@@ -287,7 +287,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context.read<VersionProvider>().clearCache();
       context.read<SectionProvider>().clearCache();
       context.read<UserProvider>().clearCache();
-      context.read<TextSectionProvider>().clearCache();
+      context.read<FlowItemProvider>().clearCache();
 
       // Force reload all providers from database
       await Future.wait([

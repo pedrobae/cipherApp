@@ -41,8 +41,10 @@
   "@about": {"description": "About navigation tab"},
 
 
-  "title": "Song Title",
+  "title": "Title",
   "@title": {"description": "Song title field label"},
+  "titleHint": "Enter title ...",
+  "@titleHint": {"description": "Hint text for song title input"},
   "author": "Author",
   "@author": {"description": "Song author field label"},
   "musicKey": "Key",
@@ -57,6 +59,10 @@
   "@versionName": {"description": "Version name field label"},
   "versions": " versions",
   "@versions": {"description": "Label for number of versions of a cipher (lowercase 'v')"},
+  "estimatedTime": "Estimated Time",
+  "@estimatedTime": {"description": "Estimated time field label"},
+  "notesOptional": "Notes (Optional)",
+  "@notesOptional": {"description": "Notes field label with optional indication"},
 
 
   "sections": "Sections",
@@ -153,6 +159,10 @@
   "@addSong": {"description": "Add song button label"},
   "addFlowItem": "Add Flow Item",
   "@addFlowItem": {"description": "Add flow item button label"},
+  "editFlowItem": "Edit Flow Item",
+  "@editFlowItem": {"description": "Edit flow item appBar label"},
+  "createFlowItem": "Create Flow Item",
+  "@createFlowItem": {"description": "Create flow item appBar label"},
 
   
   "nextUp": "Next Up",
@@ -273,5 +283,9 @@
 
 
   "errorMessage": "Error during {job}: {errorDetails}",
-  "@errorMessage": {"description": "Generic error message with placeholders", "placeholders": {"job": {}, "errorDetails": {}}}
+  "@errorMessage": {"description": "Generic error message with placeholders", "placeholders": {"job": {}, "errorDetails": {}}},
+  "invalidTimeFormat": "Invalid time format. Please use MM:SS.",
+  "@invalidTimeFormat": {"description": "Error message for invalid time format"},
+  "fieldRequired": "This field is required.",
+  "@fieldRequired": {"description": "Validation message indicating a required field"}
 }

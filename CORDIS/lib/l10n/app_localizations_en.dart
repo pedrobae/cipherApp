@@ -60,7 +60,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get about => 'About';
 
   @override
-  String get title => 'Song Title';
+  String get title => 'Title';
+
+  @override
+  String get titleHint => 'Enter title ...';
 
   @override
   String get author => 'Author';
@@ -82,6 +85,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get versions => ' versions';
+
+  @override
+  String get estimatedTime => 'Estimated Time';
+
+  @override
+  String get notesOptional => 'Notes (Optional)';
 
   @override
   String get sections => 'Sections';
@@ -215,6 +224,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addFlowItem => 'Add Flow Item';
+
+  @override
+  String get editFlowItem => 'Edit Flow Item';
+
+  @override
+  String get createFlowItem => 'Create Flow Item';
 
   @override
   String get nextUp => 'Next Up';
@@ -392,4 +407,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String errorMessage(Object job, Object errorDetails) {
     return 'Error during $job: $errorDetails';
   }
+
+  @override
+  String get invalidTimeFormat => 'Invalid time format. Please use MM:SS.';
+
+  @override
+  String get fieldRequired => 'This field is required.';
 }

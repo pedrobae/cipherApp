@@ -17,7 +17,7 @@ import 'package:cordis/providers/section_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/providers/settings_provider.dart';
 import 'package:cordis/providers/schedule_provider.dart';
-import 'package:cordis/providers/text_section_provider.dart';
+import 'package:cordis/providers/flow_item_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/providers/version_provider.dart';
 
@@ -63,7 +63,7 @@ class MyApp extends StatelessWidget {
           create: (_) => SettingsProvider()..loadSettings(),
         ),
         ChangeNotifierProvider(create: (_) => ScheduleProvider()),
-        ChangeNotifierProvider(create: (_) => TextSectionProvider()),
+        ChangeNotifierProvider(create: (_) => FlowItemProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()..loadUsers()),
         ChangeNotifierProvider(create: (_) => VersionProvider()),
       ],

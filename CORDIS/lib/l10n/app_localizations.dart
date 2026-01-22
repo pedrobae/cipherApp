@@ -206,6 +206,12 @@ abstract class AppLocalizations {
   /// **'Título'**
   String get title;
 
+  /// Hint text for song title input
+  ///
+  /// In pt, this message translates to:
+  /// **'Insira o título...'**
+  String get titleHint;
+
   /// Song author field label
   ///
   /// In pt, this message translates to:
@@ -247,6 +253,18 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **' versões'**
   String get versions;
+
+  /// Estimated time field label
+  ///
+  /// In pt, this message translates to:
+  /// **'Tempo Estimado'**
+  String get estimatedTime;
+
+  /// Notes field label with optional indication
+  ///
+  /// In pt, this message translates to:
+  /// **'Anotações (Opcional)'**
+  String get notesOptional;
 
   /// Sections field label
   ///
@@ -505,6 +523,18 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Adicionar Texto'**
   String get addFlowItem;
+
+  /// Edit flow item appBar label
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar Texto'**
+  String get editFlowItem;
+
+  /// Create flow item appBar label
+  ///
+  /// In pt, this message translates to:
+  /// **'Criar Texto'**
+  String get createFlowItem;
 
   /// Next scheduled item label
   ///
@@ -817,6 +847,18 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Erro durante {job}: {errorDetails}'**
   String errorMessage(Object job, Object errorDetails);
+
+  /// Error message for invalid time format
+  ///
+  /// In pt, this message translates to:
+  /// **'Formato de tempo inválido. Por favor, use MM:SS.'**
+  String get invalidTimeFormat;
+
+  /// Validation message indicating a required field
+  ///
+  /// In pt, this message translates to:
+  /// **'Este campo é obrigatório.'**
+  String get fieldRequired;
 }
 
 class _AppLocalizationsDelegate

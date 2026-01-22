@@ -1,17 +1,24 @@
 import 'package:cordis/l10n/app_localizations.dart';
-import 'package:cordis/providers/navigation_provider.dart';
-import 'package:cordis/providers/selection_provider.dart';
-import 'package:cordis/screens/cipher/cipher_library.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+
 import 'package:cordis/models/domain/playlist/playlist.dart';
 import 'package:cordis/models/domain/playlist/playlist_item.dart';
-import 'package:cordis/providers/playlist_provider.dart';
-import 'package:cordis/providers/version_provider.dart';
+
+import 'package:cordis/providers/flow_item_provider.dart';
 import 'package:cordis/providers/my_auth_provider.dart';
+import 'package:cordis/providers/navigation_provider.dart';
+import 'package:cordis/providers/playlist_provider.dart';
+import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
+import 'package:cordis/providers/version_provider.dart';
+
+import 'package:cordis/screens/cipher/cipher_library.dart';
+
+import 'package:cordis/widgets/playlist/flow_item_editor.dart';
 import 'package:cordis/widgets/playlist/playlist_version_card.dart';
 import 'package:cordis/widgets/playlist/text_section_card.dart';
+
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class PlaylistViewer extends StatefulWidget {
   final int playlistId; // Receive the playlist ID from the parent
@@ -29,12 +36,15 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final playlistProvider = context.read<PlaylistProvider>();
       final versionProvider = context.read<VersionProvider>();
+      final flowItemProvider = context.read<FlowItemProvider>();
 
       await playlistProvider.loadPlaylist(widget.playlistId);
 
       await versionProvider.loadVersionsForPlaylist(
         playlistProvider.getPlaylistById(widget.playlistId)!.items,
       );
+
+      await flowItemProvider.loadFlowItemByPlaylistId(widget.playlistId);
     });
   }
 
@@ -244,7 +254,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                             AppLocalizations.of(context)!.addSong,
                             style: theme.textTheme.titleMedium?.copyWith(
                               color: theme.colorScheme.onSurface,
-                              fontSize: 20,
+                              fontSize: 18,
                               fontWeight: FontWeight.w400,
                             ),
                           ),
@@ -258,7 +268,14 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                   ),
                   // ADD FLOW ITEM TO PLAYLIST
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      navigationProvider.push(
+                        FlowItemEditor(playlistId: widget.playlistId),
+                        showAppBar: false,
+                        showDrawerIcon: false,
+                      );
+                    },
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8,
@@ -278,7 +295,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                             style: theme.textTheme.titleMedium?.copyWith(
                               color: theme.colorScheme.onSurface,
                               fontWeight: FontWeight.w400,
-                              fontSize: 20,
+                              fontSize: 18,
                             ),
                           ),
                           Icon(
@@ -309,13 +326,10 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w500,
                               color: Colors.red,
-                              fontSize: 20,
+                              fontSize: 18,
                             ),
                           ),
-                          Icon(
-                            Icons.chevron_right,
-                            color: theme.colorScheme.shadow,
-                          ),
+                          Icon(Icons.chevron_right, color: Colors.red),
                         ],
                       ),
                     ),
@@ -348,7 +362,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
           );
         case PlaylistItemType.textSection:
           return TextSectionCard(
-            textSectionId: item.contentId!,
+            flowItemId: item.contentId!,
             playlistId: widget.playlistId,
           );
       }

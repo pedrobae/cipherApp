@@ -1,11 +1,11 @@
 import '../helpers/database.dart';
-import '../models/domain/playlist/playlist_text_section.dart';
+import '../models/domain/playlist/flow_item.dart';
 
-class TextSectionRepository {
+class FlowItemRepository {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
 
   // ===== CREATE =====
-  Future<int> createPlaylistText(
+  Future<int> createFlowItem(
     int playlistId,
     String? firebaseContentId,
     String title,
@@ -24,7 +24,7 @@ class TextSectionRepository {
   }
 
   // ===== READ =====
-  Future<TextSection?> getTextSection(int id) async {
+  Future<FlowItem?> getFlowItem(int id) async {
     final db = await _databaseHelper.database;
 
     final results = await db.query(
@@ -34,12 +34,12 @@ class TextSectionRepository {
     );
 
     if (results.isNotEmpty) {
-      return TextSection.fromFirestore(results.first);
+      return FlowItem.fromFirestore(results.first);
     }
     return null;
   }
 
-  Future<TextSection?> getTextSectionByFirebaseId(String firebaseId) async {
+  Future<FlowItem?> getFlowItemByFirebaseId(String firebaseId) async {
     final db = await _databaseHelper.database;
 
     final results = await db.query(
@@ -49,14 +49,14 @@ class TextSectionRepository {
     );
 
     if (results.isNotEmpty) {
-      return TextSection.fromFirestore(results.first);
+      return FlowItem.fromFirestore(results.first);
     }
     return null;
   }
 
-  Future<Map<int, TextSection>> getTextSectionsByIds(List<int> ids) async {
+  Future<Map<int, FlowItem>> getFlowItemsByIds(List<int> ids) async {
     final db = await _databaseHelper.database;
-    Map<int, TextSection> textSections = {};
+    Map<int, FlowItem> flowItems = {};
 
     final placeholders = List.filled(ids.length, '?').join(',');
     final results = await db.query(
@@ -66,14 +66,27 @@ class TextSectionRepository {
     );
 
     for (final row in results) {
-      textSections[row['id'] as int] = TextSection.fromFirestore(row);
+      flowItems[row['id'] as int] = FlowItem.fromFirestore(row);
     }
 
-    return textSections;
+    return flowItems;
+  }
+
+  Future<List<FlowItem>> getFlowItemsByPlaylistId(int playlistId) async {
+    final db = await _databaseHelper.database;
+
+    final results = await db.query(
+      'playlist_text',
+      where: 'playlist_id = ?',
+      whereArgs: [playlistId],
+      orderBy: 'position ASC',
+    );
+
+    return results.map((row) => FlowItem.fromFirestore(row)).toList();
   }
 
   // ===== UPDATE =====
-  Future<void> updatePlaylistText(
+  Future<void> updateFlowItem(
     int id, {
     String? title,
     String? content,
@@ -106,7 +119,7 @@ class TextSectionRepository {
   }
 
   // ===== DELETE =====
-  Future<void> deletePlaylistText(int id) async {
+  Future<void> deleteFlowItem(int id) async {
     final db = await _databaseHelper.database;
 
     await db.transaction((txn) async {

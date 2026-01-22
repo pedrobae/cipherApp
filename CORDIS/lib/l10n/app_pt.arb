@@ -43,6 +43,8 @@
 
   "title": "Título",
   "@title": {"description": "Song title field label"},
+  "titleHint": "Insira o título...",
+  "@titleHint": {"description": "Hint text for song title input"},
   "author": "Autor",
   "@author": {"description": "Song author field label"},
   "musicKey": "Tom",
@@ -57,6 +59,10 @@
   "@versionName": {"description": "Version name field label"},
   "versions": " versões",
   "@versions": {"description": "Label for number of versions of a cipher (lowercase 'v')"},
+  "estimatedTime": "Tempo Estimado",
+  "@estimatedTime": {"description": "Estimated time field label"},
+  "notesOptional": "Anotações (Opcional)",
+  "@notesOptional": {"description": "Notes field label with optional indication"},
 
 
   "sections": "Seções",
@@ -153,7 +159,10 @@
   "@addSong": {"description": "Add song button label"},
   "addFlowItem": "Adicionar Texto",
   "@addFlowItem": {"description": "Add flow item button label"},
-
+  "editFlowItem": "Editar Texto",
+  "@editFlowItem": {"description": "Edit flow item appBar label"},
+  "createFlowItem": "Criar Texto",
+  "@createFlowItem": {"description": "Create flow item appBar label"},
 
   "nextUp": "Próxima Agenda",
   "@nextUp": {"description": "Next scheduled item label"},
@@ -273,5 +282,9 @@
 
 
   "errorMessage": "Erro durante {job}: {errorDetails}",
-  "@errorMessage": {"description": "Generic error message with placeholders", "placeholders": {"job": {}, "errorDetails": {}}}
+  "@errorMessage": {"description": "Generic error message with placeholders", "placeholders": {"job": {}, "errorDetails": {}}},
+  "invalidTimeFormat": "Formato de tempo inválido. Por favor, use MM:SS.",
+  "@invalidTimeFormat": {"description": "Error message for invalid time format"},
+  "fieldRequired": "Este campo é obrigatório.",
+  "@fieldRequired": {"description": "Validation message indicating a required field"}
 }

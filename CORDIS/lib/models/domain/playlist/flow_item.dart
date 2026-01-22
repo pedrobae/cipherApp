@@ -1,6 +1,6 @@
 import 'package:cordis/helpers/codes.dart';
 
-class TextSection {
+class FlowItem {
   final int? id;
   final String firebaseId;
   final int playlistId;
@@ -9,7 +9,7 @@ class TextSection {
   final Duration duration;
   final int position;
 
-  TextSection({
+  FlowItem({
     this.id,
     required this.firebaseId,
     required this.playlistId,
@@ -19,13 +19,13 @@ class TextSection {
     required this.position,
   });
 
-  factory TextSection.fromSqlite({
+  factory FlowItem.fromSqlite({
     required int playlistId,
     required String title,
     required String contentText,
     required int position,
   }) {
-    return TextSection(
+    return FlowItem(
       firebaseId: generateFirebaseId(),
       playlistId: playlistId,
       duration: Duration(),
@@ -35,8 +35,8 @@ class TextSection {
     );
   }
 
-  factory TextSection.fromFirestore(Map<String, dynamic> json) {
-    return TextSection(
+  factory FlowItem.fromFirestore(Map<String, dynamic> json) {
+    return FlowItem(
       id: json['id'],
       playlistId: json['playlist_id'],
       firebaseId: json['firebase_id'] ?? generateFirebaseId(),

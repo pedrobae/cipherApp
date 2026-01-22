@@ -242,7 +242,8 @@ class _ImportPdfScreenState extends State<ImportPdfScreen> {
                     FilledTextButton(
                       isDisabled:
                           (importProvider.selectedFile == null ||
-                          importProvider.isImporting),
+                          importProvider.isImporting ||
+                          importProvider.importVariation == null),
                       onPressed: () async {
                         await importProvider.importText();
 

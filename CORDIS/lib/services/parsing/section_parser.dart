@@ -255,8 +255,8 @@ class SectionParser {
 
       if (labelCount.containsKey(title)) {
         int count = labelCount[title]! + 1;
-        section.suggestedLabel = '${section.suggestedLabel}$count';
-        section.code = '${section.code} $count';
+        section.suggestedLabel = '${section.suggestedLabel} $count';
+        section.code = '${section.code}$count';
         labelCount[title] = count;
       } else {
         labelCount[title] = 1;

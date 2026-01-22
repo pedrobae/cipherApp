@@ -1,5 +1,6 @@
 import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/screens/playlist/playlist_viewer.dart';
+import 'package:cordis/utils/date_utils.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
@@ -67,7 +68,7 @@ class PlaylistCard extends StatelessWidget {
                           ),
                           itemCount > 0
                               ? Text(
-                                  '${AppLocalizations.of(context)!.duration}: ${playlist.getDurationString()}',
+                                  '${AppLocalizations.of(context)!.duration}: ${DateTimeUtils.formatDuration(playlist.getTotalDuration())}',
                                   style: Theme.of(context).textTheme.bodyMedium!
                                       .copyWith(
                                         color: Theme.of(

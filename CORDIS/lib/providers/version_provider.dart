@@ -262,7 +262,9 @@ class VersionProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final version = await _cloudVersionRepository.getVersionById(firebaseId);
+      final version = await _cloudVersionRepository.getUserVersionById(
+        firebaseId,
+      );
       if (version != null) {
         _cloudVersions[firebaseId] = version;
         _filterCloudVersions();
@@ -305,8 +307,42 @@ class VersionProvider extends ChangeNotifier {
     }
   }
 
+  /// Load a version into cache by its Firebase ID
+  Future<void> loadCloudUserVersionByFirebaseId(String firebaseId) async {
+    if (_isLoadingCloud) return;
+
+    _isLoadingCloud = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final version = await _cloudVersionRepository.getUserVersionById(
+        firebaseId,
+      );
+      if (version == null) {
+        throw Exception('Version with id $firebaseId not found in cloud');
+      }
+
+      _cloudVersions[firebaseId] = version;
+      _filterCloudVersions();
+      if (kDebugMode) {
+        print(
+          'Loaded the cloud version: ${_cloudVersions[firebaseId]?.versionName} into cache',
+        );
+      }
+    } catch (e) {
+      _error = e.toString();
+      if (kDebugMode) {
+        print('Error loading cloud cipher version by id: $e');
+      }
+    } finally {
+      _isLoadingCloud = false;
+      notifyListeners();
+    }
+  }
+
   /// Load a version into cache by its local ID
-  Future<void> loadVersionById(int versionId) async {
+  Future<void> loadLocalVersionById(int versionId) async {
     if (_isLoading) return;
 
     _isLoading = true;
@@ -423,7 +459,7 @@ class VersionProvider extends ChangeNotifier {
 
     try {
       await _cipherRepository.updateVersion(version);
-      loadVersionById(version.id!);
+      loadLocalVersionById(version.id!);
 
       if (kDebugMode) {
         print('Updated version with id: ${version.id}');
@@ -699,7 +735,10 @@ class VersionProvider extends ChangeNotifier {
   }
 
   // Check if a version is already cached
-  bool isVersionCached(int versionId) {
+  bool isVersionCached(dynamic versionId) {
+    if (versionId is String) {
+      return _cloudVersions.containsKey(versionId);
+    }
     return _localVersions.containsKey(versionId);
   }
 

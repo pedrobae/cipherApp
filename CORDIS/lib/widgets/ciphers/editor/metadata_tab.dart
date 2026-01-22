@@ -19,12 +19,14 @@ class MetadataTab extends StatefulWidget {
   final int? cipherId;
   final dynamic versionId;
   final VersionType versionType;
+  final bool isEnabled;
 
   const MetadataTab({
     super.key,
     this.cipherId,
     this.versionId,
     required this.versionType,
+    this.isEnabled = true,
   });
 
   @override
@@ -144,6 +146,7 @@ class _MetadataTabState extends State<MetadataTab> {
       case InfoField.title:
       case InfoField.versionName:
       case InfoField.author:
+        if (!widget.isEnabled) return false;
         return !selectionProvider.isSelectionMode;
       case InfoField.bpm:
       case InfoField.musicKey:
@@ -237,7 +240,7 @@ class _MetadataTabState extends State<MetadataTab> {
             visualDensity: VisualDensity.compact,
             hintText:
                 '${AppLocalizations.of(context)!.hintPrefixO}${_getLabel(field)}${AppLocalizations.of(context)!.hintSuffix}',
-            hintStyle: TextStyle(color: colorScheme.surfaceContainerLowest),
+            hintStyle: TextStyle(color: colorScheme.onSurface),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(0),
               borderSide: BorderSide(

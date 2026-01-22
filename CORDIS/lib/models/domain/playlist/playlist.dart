@@ -32,20 +32,8 @@ class Playlist {
     );
   }
 
-  String getDurationString() {
-    final totalDuration = items.fold(Duration.zero, (a, b) => a + b.duration);
-
-    final hours = totalDuration.inHours;
-    final minutes = totalDuration.inMinutes.remainder(60);
-    final seconds = totalDuration.inSeconds.remainder(60);
-
-    if (hours > 0) {
-      return '${hours}h ${minutes}m ${seconds}s';
-    } else if (minutes > 0) {
-      return '${minutes}m ${seconds}s';
-    } else {
-      return '${seconds}s';
-    }
+  Duration getTotalDuration() {
+    return items.fold(Duration.zero, (a, b) => a + b.duration);
   }
 
   Map<String, dynamic> toJson() {

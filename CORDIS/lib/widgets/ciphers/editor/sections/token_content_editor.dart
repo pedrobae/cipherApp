@@ -33,11 +33,13 @@ class _ContentTokenized {
 class TokenContentEditor extends StatefulWidget {
   final dynamic versionId;
   final String sectionCode;
+  final bool isEnabled;
 
   const TokenContentEditor({
     super.key,
     required this.versionId,
     required this.sectionCode,
+    this.isEnabled = true,
   });
 
   @override
@@ -48,6 +50,11 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
   final TokenizationService _tokenizer = TokenizationService();
 
   bool _isDragging = false;
+
+  bool _isEnabled(SelectionProvider selectionProvider) {
+    if (!widget.isEnabled) return false;
+    return !selectionProvider.isSelectionMode;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -147,13 +154,13 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
                           : const SizedBox.shrink(),
 
                       /// Edit Section button
-                      selectionProvider.isSelectionMode
-                          ? SizedBox(height: 48)
-                          : IconButton(
+                      _isEnabled(selectionProvider)
+                          ? IconButton(
                               onPressed: () => _openEditSectionDialog(),
                               icon: const Icon(Icons.edit),
                               tooltip: 'Editar seção',
-                            ),
+                            )
+                          : SizedBox(height: 48),
                     ],
                   ),
 
@@ -506,44 +513,43 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
     token.position = position;
 
     // GestureDetector to handle long press to drag transition
-    if (selectionProvider.isSelectionMode) {
-      return ChordToken(
-        token: token,
-        sectionColor: contentColor,
-        textStyle: TextStyle(
-          fontSize: _fontSize,
-          color: Colors.white,
-          fontFamily: fontFamily,
-        ),
-      );
-    }
-    return Draggable<ContentToken>(
-      data: token,
-      onDragStarted: _toggleDrag,
-      onDragEnd: (details) => _toggleDrag(),
-      feedback: Material(
-        color: Colors.transparent,
-        child: ChordToken(
-          token: token,
-          sectionColor: contentColor.withValues(alpha: .5),
-          textStyle: TextStyle(
-            fontSize: _fontSize,
-            color: Colors.white,
-            fontFamily: fontFamily,
-          ),
-        ),
-      ),
-      childWhenDragging: SizedBox.shrink(),
-      child: ChordToken(
-        token: token,
-        sectionColor: contentColor,
-        textStyle: TextStyle(
-          fontSize: _fontSize,
-          color: Colors.white,
-          fontFamily: fontFamily,
-        ),
-      ),
-    );
+    return _isEnabled(selectionProvider)
+        ? Draggable<ContentToken>(
+            data: token,
+            onDragStarted: _toggleDrag,
+            onDragEnd: (details) => _toggleDrag(),
+            feedback: Material(
+              color: Colors.transparent,
+              child: ChordToken(
+                token: token,
+                sectionColor: contentColor.withValues(alpha: .5),
+                textStyle: TextStyle(
+                  fontSize: _fontSize,
+                  color: Colors.white,
+                  fontFamily: fontFamily,
+                ),
+              ),
+            ),
+            childWhenDragging: SizedBox.shrink(),
+            child: ChordToken(
+              token: token,
+              sectionColor: contentColor,
+              textStyle: TextStyle(
+                fontSize: _fontSize,
+                color: Colors.white,
+                fontFamily: fontFamily,
+              ),
+            ),
+          )
+        : ChordToken(
+            token: token,
+            sectionColor: contentColor,
+            textStyle: TextStyle(
+              fontSize: _fontSize,
+              color: Colors.white,
+              fontFamily: fontFamily,
+            ),
+          );
   }
 
   DragTarget<ContentToken> _buildPrecedingChordDragTarget(
@@ -554,48 +560,52 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
     List<ContentToken> tokens,
     Color contentColor,
   ) {
-    if (selectionProvider.isSelectionMode) {
-      return DragTarget<ContentToken>(
-        builder: (context, candidateData, rejectedData) {
-          return SizedBox.shrink();
-        },
-      );
-    }
-    return DragTarget<ContentToken>(
-      onAcceptWithDetails: (details) {
-        _addPrecedingChord(details.data, position, sectionProvider, tokens);
-        if (details.data.position != null) {
-          int index = details.data.position!;
-          if (index > position) {
-            index += 2; // Adjust for two insertions (Chord + Space)
-          }
-          _removeChordAt(index, sectionProvider, tokens);
-        }
-      },
-      builder: (context, candidateData, rejectedData) {
-        if (candidateData.isNotEmpty) {
-          return ChordToken(
-            token: candidateData.first!,
-            sectionColor: contentColor,
-            textStyle: TextStyle(
-              fontSize: _fontSize,
-              color: Colors.white,
-              fontFamily: fontFamily,
-            ),
+    return _isEnabled(selectionProvider)
+        ? DragTarget<ContentToken>(
+            onAcceptWithDetails: (details) {
+              _addPrecedingChord(
+                details.data,
+                position,
+                sectionProvider,
+                tokens,
+              );
+              if (details.data.position != null) {
+                int index = details.data.position!;
+                if (index > position) {
+                  index += 2; // Adjust for two insertions (Chord + Space)
+                }
+                _removeChordAt(index, sectionProvider, tokens);
+              }
+            },
+            builder: (context, candidateData, rejectedData) {
+              if (candidateData.isNotEmpty) {
+                return ChordToken(
+                  token: candidateData.first!,
+                  sectionColor: contentColor,
+                  textStyle: TextStyle(
+                    fontSize: _fontSize,
+                    color: Colors.white,
+                    fontFamily: fontFamily,
+                  ),
+                );
+              } else {
+                return Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    border: BorderDirectional(
+                      bottom: BorderSide(color: Colors.grey.shade400, width: 2),
+                    ),
+                  ),
+                );
+              }
+            },
+          )
+        : DragTarget<ContentToken>(
+            builder: (context, candidateData, rejectedData) {
+              return SizedBox.shrink();
+            },
           );
-        } else {
-          return Container(
-            width: 24,
-            height: 24,
-            decoration: BoxDecoration(
-              border: BorderDirectional(
-                bottom: BorderSide(color: Colors.grey.shade400, width: 2),
-              ),
-            ),
-          );
-        }
-      },
-    );
   }
 
   Widget _buildLyricDragTarget(

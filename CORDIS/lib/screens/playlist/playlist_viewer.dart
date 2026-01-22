@@ -79,21 +79,11 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                 title: Text(
                   playlist.name,
                   style: theme.textTheme.titleMedium?.copyWith(
-                    fontSize: 18,
+                    fontSize: 20,
                     fontWeight: FontWeight.w500,
                     color: colorScheme.onSurface,
                   ),
                 ),
-
-                // Save button
-                actions: [
-                  IconButton(
-                    icon: Icon(Icons.save, color: colorScheme.onSurface),
-                    onPressed: () {
-                      // TODO save playlist changes
-                    },
-                  ),
-                ],
               ),
               floatingActionButton: FloatingActionButton(
                 onPressed: () {
@@ -154,7 +144,10 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                                   );
 
                                   return SingleChildScrollView(
-                                    child: Column(children: [...items]),
+                                    child: Column(
+                                      spacing: 16,
+                                      children: [...items],
+                                    ),
                                   );
                                 },
                               ),
@@ -355,12 +348,6 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
             playlistId: widget.playlistId,
             versionId: item.contentId!,
             index: item.position,
-            onDelete: () {},
-            onCopy: () => playlistProvider.duplicateVersion(
-              widget.playlistId,
-              item.contentId!,
-              userProvider.getLocalIdByFirebaseId(authProvider.id!)!,
-            ),
           );
         case PlaylistItemType.textSection:
           return TextSectionCard(

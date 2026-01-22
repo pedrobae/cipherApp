@@ -1,28 +1,32 @@
+import 'dart:math';
+
+import 'package:cordis/l10n/app_localizations.dart';
+import 'package:cordis/models/domain/cipher/section.dart';
 import 'package:cordis/models/domain/cipher/version.dart';
+import 'package:cordis/providers/my_auth_provider.dart';
+import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/section_provider.dart';
-import 'package:cordis/screens/playlist/playlist_presentation.dart';
+import 'package:cordis/providers/user_provider.dart';
+import 'package:cordis/screens/cipher/cipher_editor.dart';
+import 'package:cordis/utils/date_utils.dart';
+import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cordis/screens/cipher/cipher_viewer.dart';
 import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/version_provider.dart';
 import 'package:cordis/widgets/ciphers/editor/custom_reorderable_delayed.dart';
 
 class PlaylistVersionCard extends StatefulWidget {
   final int playlistId;
-  final int versionId;
+  final dynamic versionId;
   final int index;
-  final VoidCallback onDelete;
-  final VoidCallback onCopy;
 
   const PlaylistVersionCard({
     super.key,
     required this.playlistId,
     required this.index,
     required this.versionId,
-    required this.onDelete,
-    required this.onCopy,
   });
 
   @override
@@ -35,17 +39,35 @@ class _PlaylistVersionCardState extends State<PlaylistVersionCard> {
     super.initState();
     // Pre-load cipher data if not already loaded
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final cipherProvider = context.read<CipherProvider>();
       final versionProvider = context.read<VersionProvider>();
       final sectionProvider = context.read<SectionProvider>();
+      final cipherProvider = context.read<CipherProvider>();
 
-      // Ensure the cipher is loaded (loads all ciphers if not already loaded)
-      cipherProvider.loadLocalCiphers();
+      // Ensure cipher is loaded for local versions
+      if (widget.versionId is int) {
+        await cipherProvider.loadCipherOfVersion(widget.versionId);
+      }
 
       // Ensure the specific version is loaded
       if (!versionProvider.isVersionCached(widget.versionId)) {
-        await versionProvider.loadVersionById(widget.versionId);
-        await sectionProvider.loadSections(widget.versionId);
+        if (widget.versionId is String) {
+          await versionProvider.loadCloudUserVersionByFirebaseId(
+            widget.versionId,
+          );
+          sectionProvider.setNewSectionsInCache(
+            widget.versionId,
+            versionProvider
+                .getCloudVersionByFirebaseId(widget.versionId)!
+                .sections
+                .map(
+                  (key, section) =>
+                      MapEntry(key, Section.fromFirestore(section)),
+                ),
+          );
+        } else {
+          await versionProvider.loadLocalVersionById(widget.versionId);
+          await sectionProvider.loadLocalSections(widget.versionId);
+        }
       }
     });
   }
@@ -63,8 +85,7 @@ class _PlaylistVersionCardState extends State<PlaylistVersionCard> {
     updatedStructure.insert(newIndex, item);
 
     // Persist to database
-    final versionProvider = context.read<VersionProvider>();
-    versionProvider.saveUpdatedSongStructure(
+    context.read<VersionProvider>().saveUpdatedSongStructure(
       widget.versionId,
       updatedStructure,
     );
@@ -72,59 +93,101 @@ class _PlaylistVersionCardState extends State<PlaylistVersionCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<VersionProvider>(
-      builder: (context, versionProvider, child) {
-        final version = versionProvider.getLocalVersionById(widget.versionId)!;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
-        // If version is not cached yet, show loading indicator
-        final songStructure = version.songStructure
-            .map((s) => s.trim())
-            .where((s) => s.isNotEmpty)
-            .toList();
+    return Consumer6<
+      VersionProvider,
+      CipherProvider,
+      PlaylistProvider,
+      NavigationProvider,
+      UserProvider,
+      MyAuthProvider
+    >(
+      builder:
+          (
+            context,
+            versionProvider,
+            cipherProvider,
+            playlistProvider,
+            navigationProvider,
+            userProvider,
+            authProvider,
+            child,
+          ) {
+            dynamic version;
+            bool isCloud;
 
-        return Consumer2<CipherProvider, PlaylistProvider>(
-          builder: (context, cipherProvider, playlistProvider, child) {
-            final cipher = cipherProvider.getCipherById(version.cipherId)!;
+            if (widget.versionId is String) {
+              version = versionProvider.getCloudVersionByFirebaseId(
+                widget.versionId,
+              );
+              isCloud = true;
+            } else {
+              version = versionProvider.getLocalVersionById(widget.versionId);
+              isCloud = false;
+            }
 
-            return InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PlaylistPresentationScreen(
-                      playlistId: widget.playlistId,
-                      initialSectionIndex: widget.index,
-                    ),
-                  ),
-                );
-              },
-              child: Card(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                elevation: 4,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
+            // If version is not cached yet, show loading indicator
+            if (version == null) {
+              return Center(child: CircularProgressIndicator());
+            }
+
+            final List<String> songStructure = version.songStructure;
+
+            return Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: colorScheme.surfaceContainerLowest),
+                borderRadius: BorderRadius.circular(0),
+              ),
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                spacing: 8,
+                children: [
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
                         child: Column(
+                          spacing: 4,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Text(
+                              isCloud
+                                  ? version.title
+                                  : cipherProvider
+                                        .getCipherById(version.cipherId)!
+                                        .title,
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                              softWrap: true,
+                            ),
                             Wrap(
-                              crossAxisAlignment: WrapCrossAlignment.end,
-                              spacing: 10,
+                              spacing: 8,
                               children: [
                                 Text(
-                                  cipher.title,
-                                  style: Theme.of(context).textTheme.titleLarge,
+                                  '${AppLocalizations.of(context)!.musicKey}: ${isCloud ? version.transposedKey ?? version.originalKey : version.transposedKey ?? cipherProvider.getCipherById(version.cipherId)!.musicKey}',
+                                  style: theme.textTheme.bodyLarge,
                                 ),
-                                Text('Tom: ${version.transposedKey ?? 'N/A'}'),
+                                Text(
+                                  '${version.bpm} ${AppLocalizations.of(context)!.bpm}',
+                                  style: theme.textTheme.bodyLarge,
+                                ),
+                                Text(
+                                  DateTimeUtils.formatDuration(
+                                    isCloud
+                                        ? Duration(seconds: version.duration)
+                                        : version.duration,
+                                  ),
+                                  style: theme.textTheme.bodyLarge,
+                                ),
                               ],
                             ),
-                            const SizedBox(height: 8),
                             // REORDERABLE SECTION CHIPS
-                            SizedBox(
-                              height: 40,
+                            ConstrainedBox(
+                              constraints: BoxConstraints(maxHeight: 25),
                               child: ReorderableListView.builder(
                                 shrinkWrap: true,
                                 proxyDecorator: (child, index, animation) =>
@@ -142,41 +205,67 @@ class _PlaylistVersionCardState extends State<PlaylistVersionCard> {
                                   oldIndex,
                                   newIndex,
                                 ),
-                                itemBuilder: (context, index) {
+                                itemBuilder: (_, index) {
                                   final sectionCode = songStructure[index];
-                                  final section =
-                                      version.sections![sectionCode];
+                                  final Section section = isCloud
+                                      ? Section.fromFirestore(
+                                          version.sections[sectionCode]!,
+                                        )
+                                      : version.sections![sectionCode];
                                   // To ensure unique keys for identical section codes,
-                                  final occurrenceCount = songStructure
+                                  final occurrenceIndex = songStructure
                                       .take(index + 1)
                                       .where((code) => code == sectionCode)
                                       .length;
 
+                                  // Painter for sections with large codes
+                                  final textPainter = TextPainter(
+                                    text: TextSpan(
+                                      text: sectionCode,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    maxLines: 1,
+                                    textDirection: TextDirection.ltr,
+                                  )..layout();
+
                                   return CustomReorderableDelayed(
                                     delay: Duration(milliseconds: 100),
                                     key: ValueKey(
-                                      'cipher_${widget.versionId}_section_${sectionCode}_occurrence_$occurrenceCount',
+                                      'cipher_${widget.versionId}_section_${sectionCode}_occurrence_$occurrenceIndex',
                                     ),
                                     index: index,
-                                    child: SizedBox(
+                                    child: Container(
                                       height: 25,
-                                      child: Chip(
-                                        padding: EdgeInsets.all(1),
-                                        visualDensity: VisualDensity(
-                                          horizontal:
-                                              VisualDensity.minimumDensity,
+                                      width: max(
+                                        25,
+                                        textPainter.size.width + 8,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(0),
+                                        color: section.contentColor.withValues(
+                                          alpha: 0.8,
                                         ),
-                                        label: Text(
+                                        border: BoxBorder.all(
+                                          color: section.contentColor,
+                                          width: 2,
+                                        ),
+                                      ),
+                                      margin: const EdgeInsets.only(right: 4),
+                                      child: Center(
+                                        child: Text(
+                                          strutStyle: StrutStyle(
+                                            forceStrutHeight: true,
+                                          ),
                                           sectionCode,
                                           style: TextStyle(
-                                            fontSize: 12,
+                                            fontSize: 14,
                                             fontWeight: FontWeight.bold,
                                             color: Colors.white,
                                           ),
                                         ),
-                                        backgroundColor:
-                                            section?.contentColor ??
-                                            Colors.grey,
                                       ),
                                     ),
                                   );
@@ -187,22 +276,24 @@ class _PlaylistVersionCardState extends State<PlaylistVersionCard> {
                         ),
                       ),
                       PopupMenuButton<String>(
+                        iconSize: 30,
                         onSelected: (value) {
                           switch (value) {
                             case 'delete':
-                              widget.onDelete.call();
-                            case 'copy':
-                              widget.onCopy.call();
-                            case 'edit':
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => CipherViewer(
-                                    cipherId: cipher.id,
-                                    versionId: version.id!,
-                                    versionType: VersionType.local,
-                                  ),
-                                ),
+                              playlistProvider.removeVersionFromPlaylist(
+                                widget.versionId,
+                                widget.playlistId,
                               );
+                              break;
+                            case 'copy':
+                              playlistProvider.duplicateVersion(
+                                widget.playlistId,
+                                widget.versionId,
+                                userProvider.getLocalIdByFirebaseId(
+                                  authProvider.id!,
+                                )!,
+                              );
+                              break;
                           }
                         },
                         itemBuilder: (context) => [
@@ -226,26 +317,30 @@ class _PlaylistVersionCardState extends State<PlaylistVersionCard> {
                               ],
                             ),
                           ),
-                          PopupMenuItem(
-                            value: 'edit',
-                            child: Row(
-                              children: [
-                                Icon(Icons.edit),
-                                SizedBox(width: 8),
-                                Text('Editar'),
-                              ],
-                            ),
-                          ),
                         ],
                       ),
                     ],
                   ),
-                ),
+                  FilledTextButton(
+                    text: AppLocalizations.of(context)!.view,
+                    isDense: true,
+                    onPressed: () {
+                      navigationProvider.push(
+                        CipherEditor(
+                          versionType: isCloud
+                              ? VersionType.playlist
+                              : VersionType.playlist,
+                          versionId: widget.versionId,
+                          cipherId: isCloud ? null : version.cipherId,
+                          isEnabled: false,
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
             );
           },
-        );
-      },
     );
   }
 }

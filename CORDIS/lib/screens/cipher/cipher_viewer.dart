@@ -51,7 +51,7 @@ class _CipherViewerState extends State<CipherViewer>
         break;
       case VersionType.local:
         if (widget.versionId != null) {
-          await sectionProvider.loadSections(widget.versionId);
+          await sectionProvider.loadLocalSections(widget.versionId);
         }
         break;
       case VersionType.cloud:

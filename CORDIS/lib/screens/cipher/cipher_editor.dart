@@ -20,12 +20,14 @@ class CipherEditor extends StatefulWidget {
   final int? cipherId; // Null for new cipher
   final dynamic versionId; // Null for new version // could be int or String
   final VersionType versionType;
+  final bool isEnabled;
 
   const CipherEditor({
     super.key,
     this.cipherId,
     this.versionId,
     required this.versionType,
+    this.isEnabled = true,
   });
 
   @override
@@ -93,7 +95,7 @@ class _CipherEditorState extends State<CipherEditor>
         // Load the version
         await versionProvider.loadVersion(widget.versionId!);
         // Load sections
-        await sectionProvider.loadSections(widget.versionId!);
+        await sectionProvider.loadLocalSections(widget.versionId!);
         break;
       case VersionType.brandNew:
       // Nothing to load for brand new cipher/version
@@ -110,7 +112,7 @@ class _CipherEditorState extends State<CipherEditor>
         versionProvider.setNewVersionInCache(originalVersion.copyWith());
 
         // Load the sections in cache
-        await sectionProvider.loadSections(widget.versionId!);
+        await sectionProvider.loadLocalSections(widget.versionId!);
         break;
     }
   }
@@ -209,7 +211,7 @@ class _CipherEditorState extends State<CipherEditor>
                             versionId,
                             widget.versionId!,
                           );
-                          await sectionProvider.loadSections(versionId);
+                          await sectionProvider.loadLocalSections(versionId);
                           playlistProvider.addVersionToPlaylist(
                             selectionProvider.targetId!,
                             versionId,
@@ -305,6 +307,7 @@ class _CipherEditorState extends State<CipherEditor>
                                 cipherId: widget.cipherId,
                                 versionId: widget.versionId,
                                 versionType: widget.versionType,
+                                isEnabled: widget.isEnabled,
                               ),
                             ],
                           ),
@@ -315,6 +318,7 @@ class _CipherEditorState extends State<CipherEditor>
                           child: SectionsTab(
                             versionId: widget.versionId,
                             versionType: widget.versionType,
+                            isEnabled: widget.isEnabled,
                           ),
                         ),
                       ],

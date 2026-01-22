@@ -114,7 +114,7 @@ class CloudVersionRepository {
   }
 
   /// Fetch a specific version by its ID (requires authentication)
-  Future<VersionDto?> getVersionById(String versionId) async {
+  Future<VersionDto?> getUserVersionById(String versionId) async {
     await _guardHelper.requireAuth();
 
     var doc = await _firestoreService.fetchDocumentById(

@@ -1,5 +1,6 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/models/domain/cipher/version.dart';
+import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -13,8 +14,14 @@ import 'package:cordis/utils/section_constants.dart';
 class SectionsTab extends StatefulWidget {
   final dynamic versionId;
   final VersionType versionType;
+  final bool isEnabled;
 
-  const SectionsTab({super.key, this.versionId, required this.versionType});
+  const SectionsTab({
+    super.key,
+    this.versionId,
+    required this.versionType,
+    this.isEnabled = true,
+  });
 
   @override
   State<SectionsTab> createState() => _SectionsTabState();
@@ -24,9 +31,21 @@ class _SectionsTabState extends State<SectionsTab> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    return Consumer3<SectionProvider, VersionProvider, CipherProvider>(
+    return Consumer4<
+      SectionProvider,
+      VersionProvider,
+      CipherProvider,
+      SelectionProvider
+    >(
       builder:
-          (context, sectionProvider, versionProvider, cipherProvider, child) {
+          (
+            context,
+            sectionProvider,
+            versionProvider,
+            cipherProvider,
+            selectionProvider,
+            child,
+          ) {
             List<String> uniqueSections;
             switch (widget.versionType) {
               case VersionType.local:
@@ -127,6 +146,7 @@ class _SectionsTabState extends State<SectionsTab> {
                         return TokenContentEditor(
                           versionId: widget.versionId,
                           sectionCode: sectionCode,
+                          isEnabled: widget.isEnabled,
                         );
                       }),
                   ],

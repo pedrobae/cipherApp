@@ -58,7 +58,7 @@ class SectionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Set new sections in cache (used when importing)
+  // Set new sections in cache (used when importing or on cloud load)
   void setNewSectionsInCache(
     dynamic versionKey,
     Map<String, Section> sections,
@@ -93,7 +93,7 @@ class SectionProvider extends ChangeNotifier {
 
   // ====== READ =====
   /// Load sections for a given version from the database
-  Future<void> loadSections(int versionId) async {
+  Future<void> loadLocalSections(int versionId) async {
     if (_isLoading) return;
 
     _isLoading = true;

@@ -53,10 +53,10 @@ class ChordHelper {
 
   List<String> getVariationsForChord(String chord, int index) {
     bool useFlats;
-    if (chord.contains('#')) {
-      useFlats = false;
-    } else {
+    if (chord.contains('b') || chord.contains('F')) {
       useFlats = true;
+    } else {
+      useFlats = false;
     }
 
     switch (index) {

@@ -214,15 +214,6 @@ class _ChordPaletteState extends State<ChordPalette> {
     _overlayEntry = OverlayEntry(
       builder: (context) => Stack(
         children: [
-          // Transparent barrier to dismiss on tap outside
-          Positioned.fill(
-            child: GestureDetector(
-              onTap: _removeOverlay,
-              behavior: HitTestBehavior.translucent,
-              child: Container(color: Colors.transparent),
-            ),
-          ),
-          // Variations popup
           Positioned(
             left: leftPosition,
             top: details.globalPosition.dy - details.localPosition.dy - 40,
@@ -247,16 +238,10 @@ class _ChordPaletteState extends State<ChordPalette> {
                     for (final variation in chordVariations)
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: GestureDetector(
-                          onTap: () {
-                            _removeOverlay();
-                            // Variation selected - could trigger insertion here if needed
-                          },
-                          child: _buildDraggableChordToken(
-                            variation,
-                            colorScheme.primaryContainer,
-                            colorScheme.onPrimaryContainer,
-                          ),
+                        child: _buildDraggableChordToken(
+                          variation,
+                          colorScheme.primaryContainer,
+                          colorScheme.onPrimaryContainer,
                         ),
                       ),
                   ],

@@ -119,30 +119,26 @@ class _CipherCardState extends State<CipherCard> {
                     );
                   }
                 } else {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => CipherViewer(
-                        cipherId: widget.cipherId,
-                        versionId: versionProvider.getIdOfOldestVersionOfCipher(
-                          widget.cipherId,
-                        ),
-                        versionType: VersionType.local,
+                  navigationProvider.push(
+                    CipherViewer(
+                      cipherId: widget.cipherId,
+                      versionId: versionProvider.getIdOfOldestVersionOfCipher(
+                        widget.cipherId,
                       ),
+                      versionType: VersionType.local,
                     ),
                   );
                 }
               },
               onLongPress: () async {
                 if (!selectionProvider.isSelectionMode) {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => CipherEditor(
-                        cipherId: widget.cipherId,
-                        versionId: versionProvider.getIdOfOldestVersionOfCipher(
-                          widget.cipherId,
-                        ),
-                        versionType: VersionType.local,
+                  navigationProvider.push(
+                    CipherEditor(
+                      cipherId: widget.cipherId,
+                      versionId: versionProvider.getIdOfOldestVersionOfCipher(
+                        widget.cipherId,
                       ),
+                      versionType: VersionType.local,
                     ),
                   );
                 } else {

@@ -93,7 +93,9 @@ class ImportProvider extends ChangeNotifier {
             ),
           );
 
-          _importedCipher!.result.metadata['title'] = pdfDocument.documentName;
+          _importedCipher!.result.metadata['title'] = pdfDocument.documentName
+              .split('.') // remove file extension
+              .first;
 
           _importedCipher!.result.lines.addAll(
             _importVariation == ImportVariation.pdfWithColumns

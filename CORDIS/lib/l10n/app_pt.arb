@@ -193,6 +193,8 @@
   "@importedFrom": {"description": "Text indicating the source from which the song was imported", "placeholders": {"importType": {}}},
   "addSongToLibrary": "Adicionar Música",
   "@addSongToLibrary": {"description": "Add song to library button label"},
+  "playlistVersionName": "Versão do {playlistName}",
+  "@playlistVersionName": {"description": "Default name for a playlist's new version", "placeholders": {"playlistName": {}}},
 
   "parsingStrategy": "Estratégia de Processamento",
   "@parsingStrategy": {"description": "Title for parsing strategy selection"},

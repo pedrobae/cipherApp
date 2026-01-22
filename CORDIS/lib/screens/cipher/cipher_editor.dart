@@ -60,11 +60,12 @@ class _CipherEditorState extends State<CipherEditor>
   Future<void> _loadData() async {
     final cipherProvider = context.read<CipherProvider>();
     final versionProvider = context.read<VersionProvider>();
-    final parserProvider = context.read<ParserProvider>();
     final sectionProvider = context.read<SectionProvider>();
 
     switch (widget.versionType) {
       case VersionType.import:
+        final parserProvider = context.read<ParserProvider>();
+
         // Load imported cipher data
         final cipher = parserProvider.parsedCipher!;
 
@@ -100,19 +101,37 @@ class _CipherEditorState extends State<CipherEditor>
       case VersionType.brandNew:
       // Nothing to load for brand new cipher/version
       case VersionType.playlist:
-        // Create a new copy of the version for editing
+        final selectionProvider = context.read<SelectionProvider>();
+        final playlistProvider = context.read<PlaylistProvider>();
 
-        // Load the cipher
-        await cipherProvider.loadCipher(widget.cipherId!);
+        final String playlistName = playlistProvider
+            .getPlaylistById(selectionProvider.targetId!)!
+            .name;
+
+        // Create a new copy of the version for editing
         // Load the version
         final Version originalVersion = versionProvider.getVersionById(
           widget.versionId!,
         )!;
         // Create a copy of the version in cache
-        versionProvider.setNewVersionInCache(originalVersion.copyWith());
+        versionProvider.setNewVersionInCache(
+          originalVersion.copyWith(
+            versionName: AppLocalizations.of(
+              context,
+            )!.playlistVersionName(playlistName),
+          ),
+        );
+
+        // Load the cipher
+        await cipherProvider.loadCipher(widget.cipherId!);
 
         // Load the sections in cache
         await sectionProvider.loadLocalSections(widget.versionId!);
+
+        sectionProvider.setNewSectionsInCache(
+          -1,
+          sectionProvider.getSections(widget.versionId!),
+        );
         break;
     }
   }
@@ -207,10 +226,7 @@ class _CipherEditorState extends State<CipherEditor>
                             );
                           }
                           // Create Section entries for the new version
-                          await sectionProvider.createSectionsCopy(
-                            versionId,
-                            widget.versionId!,
-                          );
+                          await sectionProvider.createSections(versionId);
                           await sectionProvider.loadLocalSections(versionId);
                           playlistProvider.addVersionToPlaylist(
                             selectionProvider.targetId!,
@@ -316,7 +332,10 @@ class _CipherEditorState extends State<CipherEditor>
                         SingleChildScrollView(
                           padding: const EdgeInsets.all(16.0),
                           child: SectionsTab(
-                            versionId: widget.versionId,
+                            versionId:
+                                widget.versionType == VersionType.playlist
+                                ? -1
+                                : widget.versionId,
                             versionType: widget.versionType,
                             isEnabled: widget.isEnabled,
                           ),

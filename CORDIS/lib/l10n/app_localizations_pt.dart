@@ -275,6 +275,11 @@ class AppLocalizationsPt extends AppLocalizations {
   String get addSongToLibrary => 'Adicionar Música';
 
   @override
+  String playlistVersionName(Object playlistName) {
+    return 'Versão do $playlistName';
+  }
+
+  @override
   String get parsingStrategy => 'Estratégia de Processamento';
 
   @override

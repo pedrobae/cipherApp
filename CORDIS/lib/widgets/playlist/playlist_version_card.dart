@@ -168,7 +168,10 @@ class _PlaylistVersionCardState extends State<PlaylistVersionCard> {
                               spacing: 8,
                               children: [
                                 Text(
-                                  '${AppLocalizations.of(context)!.musicKey}: ${isCloud ? version.transposedKey ?? version.originalKey : version.transposedKey ?? cipherProvider.getCipherById(version.cipherId)!.musicKey}',
+                                  '${AppLocalizations.of(context)!.musicKey}: ${ //
+                                  isCloud //
+                                      ? version.transposedKey ?? version.originalKey //
+                                            : version.transposedKey ?? cipherProvider.getCipherById(version.cipherId)!.musicKey}',
                                   style: theme.textTheme.bodyLarge,
                                 ),
                                 Text(

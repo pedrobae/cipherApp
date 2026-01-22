@@ -274,6 +274,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addSongToLibrary => 'Add Song to Library';
 
   @override
+  String playlistVersionName(Object playlistName) {
+    return '$playlistName\'s Version';
+  }
+
+  @override
   String get parsingStrategy => 'Parsing Strategy';
 
   @override

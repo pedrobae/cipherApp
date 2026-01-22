@@ -614,6 +614,12 @@ abstract class AppLocalizations {
   /// **'Adicionar Música'**
   String get addSongToLibrary;
 
+  /// Default name for a playlist's new version
+  ///
+  /// In pt, this message translates to:
+  /// **'Versão do {playlistName}'**
+  String playlistVersionName(Object playlistName);
+
   /// Title for parsing strategy selection
   ///
   /// In pt, this message translates to:

@@ -99,7 +99,7 @@ class CipherProvider extends ChangeNotifier {
     } catch (e) {
       _error = e.toString();
       if (kDebugMode) {
-        print('Error loading ciphers: $e');
+        print('Error loading cipher: $e');
       }
     } finally {
       _isLoading = false;
@@ -123,7 +123,7 @@ class CipherProvider extends ChangeNotifier {
     } catch (e) {
       _error = e.toString();
       if (kDebugMode) {
-        print('Error loading ciphers: $e');
+        print('Error loading cipher of Version: $e');
       }
     } finally {
       _isLoading = false;

@@ -8,7 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class CipherScrollView extends StatefulWidget {
-  const CipherScrollView({super.key});
+  final int? playlistId;
+  const CipherScrollView({super.key, this.playlistId});
 
   @override
   State<CipherScrollView> createState() => _CipherScrollViewState();
@@ -126,7 +127,10 @@ class _CipherScrollViewState extends State<CipherScrollView> {
                     padding: const EdgeInsets.only(
                       bottom: 8.0,
                     ), // Spacing between cards
-                    child: CloudCipherCard(version: version),
+                    child: CloudCipherCard(
+                      version: version,
+                      playlistId: widget.playlistId,
+                    ),
                   );
                 }
 
@@ -138,7 +142,10 @@ class _CipherScrollViewState extends State<CipherScrollView> {
                   padding: const EdgeInsets.only(
                     bottom: 8.0,
                   ), // Spacing between cards
-                  child: CipherCard(cipherId: cipher.id),
+                  child: CipherCard(
+                    cipherId: cipher.id,
+                    playlistId: widget.playlistId,
+                  ),
                 );
               },
             ),

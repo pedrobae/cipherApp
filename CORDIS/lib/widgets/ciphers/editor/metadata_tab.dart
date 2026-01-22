@@ -49,9 +49,11 @@ class _MetadataTabState extends State<MetadataTab> {
 
   void _syncWithProviderData() {
     if (mounted) {
+      final versionProvider = context.read<VersionProvider>();
+      final cipherProvider = context.read<CipherProvider>();
+
       switch (widget.versionType) {
         case VersionType.cloud:
-          final versionProvider = context.read<VersionProvider>();
           final version = versionProvider.getCloudVersionByFirebaseId(
             widget.versionId!,
           )!;
@@ -81,14 +83,38 @@ class _MetadataTabState extends State<MetadataTab> {
           }
         case VersionType.local:
         case VersionType.import:
-        case VersionType.playlist:
-          final cipherProvider = context.read<CipherProvider>();
           final cipher = cipherProvider.getCipherById(widget.cipherId ?? -1)!;
-
-          final versionProvider = context.read<VersionProvider>();
           final version = versionProvider.getLocalVersionById(
             (widget.versionId as int?) ?? -1,
           )!;
+
+          for (var field in InfoField.values) {
+            switch (field) {
+              case InfoField.title:
+                controllers[field]!.text = cipher.title;
+                break;
+              case InfoField.author:
+                controllers[field]!.text = cipher.author;
+                break;
+              case InfoField.versionName:
+                controllers[field]!.text = version.versionName;
+                break;
+              case InfoField.bpm:
+                controllers[field]!.text = version.bpm.toString();
+                break;
+              case InfoField.musicKey:
+                controllers[field]!.text =
+                    version.transposedKey ?? cipher.musicKey;
+                break;
+              case InfoField.language:
+                controllers[field]!.text = cipher.language;
+                break;
+            }
+          }
+        case VersionType.playlist:
+          final cipher = cipherProvider.getCipherById(widget.cipherId ?? -1)!;
+
+          final version = versionProvider.getLocalVersionById(-1)!;
 
           for (var field in InfoField.values) {
             switch (field) {

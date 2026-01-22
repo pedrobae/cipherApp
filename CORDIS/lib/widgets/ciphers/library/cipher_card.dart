@@ -13,8 +13,9 @@ import 'package:provider/provider.dart';
 
 class CipherCard extends StatefulWidget {
   final int cipherId;
+  final int? playlistId;
 
-  const CipherCard({super.key, required this.cipherId});
+  const CipherCard({super.key, required this.cipherId, this.playlistId});
 
   @override
   State<CipherCard> createState() => _CipherCardState();
@@ -101,6 +102,7 @@ class _CipherCardState extends State<CipherCard> {
                         cipherId: widget.cipherId,
                         versionId: versionId,
                         versionType: VersionType.playlist,
+                        playlistId: widget.playlistId,
                       ),
                       showAppBar: false,
                       showDrawerIcon: false,

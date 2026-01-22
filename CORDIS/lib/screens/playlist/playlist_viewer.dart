@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cordis/models/domain/playlist/playlist.dart';
 import 'package:cordis/models/domain/playlist/playlist_item.dart';
-import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/version_provider.dart';
 import 'package:cordis/providers/my_auth_provider.dart';
@@ -44,9 +43,8 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Consumer6<
+    return Consumer5<
       PlaylistProvider,
-      CipherProvider,
       UserProvider,
       MyAuthProvider,
       NavigationProvider,
@@ -56,7 +54,6 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
           (
             context,
             playlistProvider,
-            cipherProvider,
             userProvider,
             authProvider,
             navigationProvider,
@@ -219,7 +216,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
 
                       // Navigate to Cipher Library Screen
                       navigationProvider.push(
-                        CipherLibraryScreen(),
+                        CipherLibraryScreen(playlistId: widget.playlistId),
                         showAppBar: false,
                         showDrawerIcon: false,
                         onPopCallback: () {

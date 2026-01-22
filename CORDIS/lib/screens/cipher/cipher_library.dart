@@ -13,7 +13,9 @@ import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/widgets/ciphers/library/cipher_scroll_view.dart';
 
 class CipherLibraryScreen extends StatefulWidget {
-  const CipherLibraryScreen({super.key});
+  final int? playlistId;
+
+  const CipherLibraryScreen({super.key, this.playlistId});
 
   @override
   State<CipherLibraryScreen> createState() => _CipherLibraryScreenState();
@@ -102,7 +104,9 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
                         versionProvider.searchCachedCloudVersions(value);
                       },
                     ),
-                    Expanded(child: CipherScrollView()),
+                    Expanded(
+                      child: CipherScrollView(playlistId: widget.playlistId),
+                    ),
 
                     // CREATE CIPHER BUTTON
                     selectionProvider.isSelectionMode

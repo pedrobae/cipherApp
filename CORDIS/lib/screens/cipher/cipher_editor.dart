@@ -19,6 +19,7 @@ import 'package:cordis/widgets/ciphers/editor/sections_tab.dart';
 class CipherEditor extends StatefulWidget {
   final int? cipherId; // Null for new cipher
   final dynamic versionId; // Null for new version // could be int or String
+  final int? playlistId;
   final VersionType versionType;
   final bool isEnabled;
 
@@ -26,6 +27,7 @@ class CipherEditor extends StatefulWidget {
     super.key,
     this.cipherId,
     this.versionId,
+    this.playlistId,
     required this.versionType,
     this.isEnabled = true,
   });
@@ -101,11 +103,10 @@ class _CipherEditorState extends State<CipherEditor>
       case VersionType.brandNew:
       // Nothing to load for brand new cipher/version
       case VersionType.playlist:
-        final selectionProvider = context.read<SelectionProvider>();
         final playlistProvider = context.read<PlaylistProvider>();
 
         final String playlistName = playlistProvider
-            .getPlaylistById(selectionProvider.targetId!)!
+            .getPlaylistById(widget.playlistId!)!
             .name;
 
         // Create a new copy of the version for editing

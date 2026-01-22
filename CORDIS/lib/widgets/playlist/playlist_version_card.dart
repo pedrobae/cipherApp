@@ -331,8 +331,8 @@ class _PlaylistVersionCardState extends State<PlaylistVersionCard> {
                       navigationProvider.push(
                         CipherEditor(
                           versionType: isCloud
-                              ? VersionType.playlist
-                              : VersionType.playlist,
+                              ? VersionType.cloud
+                              : VersionType.local,
                           versionId: widget.versionId,
                           cipherId: isCloud ? null : version.cipherId,
                           isEnabled: false,

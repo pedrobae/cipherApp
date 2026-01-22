@@ -8,8 +8,9 @@ import 'package:cordis/providers/selection_provider.dart';
 
 class CloudCipherCard extends StatelessWidget {
   final VersionDto version;
+  final int? playlistId;
 
-  const CloudCipherCard({super.key, required this.version});
+  const CloudCipherCard({super.key, required this.version, this.playlistId});
 
   @override
   Widget build(BuildContext context) {

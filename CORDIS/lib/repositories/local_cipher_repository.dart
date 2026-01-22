@@ -118,7 +118,7 @@ class LocalCipherRepository {
       whereArgs: [versionId],
       columns: ['cipher_id'],
     );
-    return getCipherById(result[0] as int);
+    return getCipherById(result[0]['cipher_id'] as int);
   }
 
   // ===== UPDATE =====

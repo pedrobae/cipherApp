@@ -1,4 +1,6 @@
 import 'package:cordis/l10n/app_localizations.dart';
+import 'package:cordis/providers/my_auth_provider.dart';
+import 'package:cordis/providers/section_provider.dart';
 import 'package:cordis/providers/text_section_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/providers/version_provider.dart';
@@ -232,9 +234,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
       await dbHelper.resetDatabase();
 
       // Check if widget is still mounted before using context
-      if (mounted) await context.read<CipherProvider>().loadLocalCiphers();
+      if (mounted) {
+        await context.read<VersionProvider>().loadCloudVersions(
+          forceReload: true,
+        );
+      }
 
-      if (mounted) await context.read<PlaylistProvider>().loadPlaylists();
+      if (mounted) {
+        await context.read<UserProvider>().ensureUsersExist([
+          context.read<MyAuthProvider>().id!,
+        ]);
+      }
 
       // Check mounted again after async operations
       if (!mounted) return;
@@ -275,12 +285,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context.read<CipherProvider>().clearCache();
       context.read<PlaylistProvider>().clearCache();
       context.read<VersionProvider>().clearCache();
+      context.read<SectionProvider>().clearCache();
       context.read<UserProvider>().clearCache();
       context.read<TextSectionProvider>().clearCache();
 
       // Force reload all providers from database
       await Future.wait([
         context.read<CipherProvider>().loadLocalCiphers(forceReload: true),
+        context.read<VersionProvider>().loadCloudVersions(),
         context.read<PlaylistProvider>().loadPlaylists(),
         context.read<UserProvider>().loadUsers(),
       ]);

@@ -264,6 +264,14 @@ class AppLocalizationsPt extends AppLocalizations {
       'Por favor, crie uma agenda selecionando uma playlist abaixo.';
 
   @override
+  String get fillScheduleDetailsInstruction =>
+      'Por favor, preencha os detalhes da agenda.';
+
+  @override
+  String get createRolesAndAssignUsersInstruction =>
+      'Por favor, crie funções e atribua Membros à agenda.';
+
+  @override
   String get nextUp => 'Próxima Agenda';
 
   @override
@@ -375,6 +383,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get confirm => 'Confirmar';
+
+  @override
+  String get keepGoing => 'Continuar';
 
   @override
   String get quickAction => 'Ação Rápida';

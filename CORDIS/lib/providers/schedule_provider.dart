@@ -1,7 +1,8 @@
+import 'package:cordis/models/domain/playlist/playlist.dart';
 import 'package:cordis/models/domain/schedule.dart';
 import 'package:cordis/models/dtos/schedule_dto.dart';
 import 'package:cordis/repositories/local_schedule_repository.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 class ScheduleProvider extends ChangeNotifier {
   final LocalScheduleRepository _localScheduleRepository =
@@ -19,6 +20,8 @@ class ScheduleProvider extends ChangeNotifier {
 
   bool _isLoading = false;
   bool _isLoadingCloud = false;
+  bool _isSaving = false;
+  // bool _isSavingToCloud = false;
 
   // Getters
   Map<dynamic, dynamic> get schedules => _schedules;
@@ -59,6 +62,67 @@ class ScheduleProvider extends ChangeNotifier {
   bool get isLoadingCloud => _isLoadingCloud;
 
   // ===== CREATE =====
+  void cacheBrandNewSchedule(Playlist playlist, String ownerFirebaseId) {
+    _schedules[-1] = Schedule(
+      id: -1,
+      ownerFirebaseId: ownerFirebaseId,
+      name: '',
+      date: DateTime.fromMicrosecondsSinceEpoch(0),
+      time: TimeOfDay(hour: 0, minute: 0),
+      location: '',
+      playlist: playlist,
+      roles: [],
+    );
+  }
+
+  void cacheScheduleDetails({
+    required String name,
+    required DateTime date,
+    required TimeOfDay time,
+    required String location,
+    String? notes,
+  }) {
+    final schedule = _schedules[-1] as Schedule;
+    _schedules[-1] = Schedule(
+      id: schedule.id,
+      ownerFirebaseId: schedule.ownerFirebaseId,
+      name: name,
+      date: date,
+      time: time,
+      location: location,
+      playlist: schedule.playlist,
+      roles: schedule.roles,
+      notes: notes,
+    );
+  }
+
+  Future<bool> createFromCache() async {
+    if (_isSaving) return false;
+
+    _isSaving = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final schedule = _schedules[-1] as Schedule;
+
+      final localId = await _localScheduleRepository.insertSchedule(schedule);
+      _schedules.remove(-1);
+
+      await loadLocalSchedule(localId);
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isSaving = false;
+      notifyListeners();
+    }
+    if (_error == null) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   // ===== READ =====
   /// Loads schedules from the local repository.
   Future<void> loadLocalSchedules() async {
@@ -79,7 +143,7 @@ class ScheduleProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> loadScheduleById(int id) async {
+  Future<void> loadLocalSchedule(int id) async {
     if (_isLoading) return;
 
     _isLoading = true;

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/my_auth_provider.dart';
 import 'package:cordis/providers/navigation_provider.dart';
@@ -32,6 +34,8 @@ class _EditPlaylistScreenState extends State<EditPlaylistScreen> {
       );
       final playlist = playlistProvider.getPlaylistById(widget.playlistId!)!;
       playlistNameController.text = playlist.name;
+    } else {
+      isEditing = false;
     }
   }
 

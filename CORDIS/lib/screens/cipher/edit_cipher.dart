@@ -182,17 +182,11 @@ class _EditCipherScreenState extends State<EditCipherScreen>
           ) {
             return Scaffold(
               appBar: AppBar(
-                leading: selectionProvider.isSelectionMode
-                    ? BackButton(
-                        onPressed: () {
-                          navigationProvider.pop();
-                          selectionProvider.toggleItemSelection(
-                            widget.versionId!,
-                          );
-                          selectionProvider.enableSelectionMode();
-                        },
-                      )
-                    : null,
+                leading: BackButton(
+                  onPressed: () {
+                    navigationProvider.pop();
+                  },
+                ),
                 title: Text(
                   selectionProvider.isSelectionMode
                       ? AppLocalizations.of(

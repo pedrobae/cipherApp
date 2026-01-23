@@ -23,15 +23,13 @@ class SelectionProvider extends ChangeNotifier {
     _selectedItemIds.clear();
   }
 
-  void toggleItemSelection(dynamic item) {
-    if (_selectedItemIds.contains(item)) {
-      _selectedItemIds.remove(item);
-      if (_selectedItemIds.isEmpty) {
-        disableSelectionMode();
-      }
-    } else {
-      _selectedItemIds.add(item);
-    }
+  void select(dynamic item) {
+    _selectedItemIds.add(item);
+    notifyListeners();
+  }
+
+  void deselect(dynamic item) {
+    _selectedItemIds.remove(item);
     notifyListeners();
   }
 
@@ -43,7 +41,7 @@ class SelectionProvider extends ChangeNotifier {
     _targetId = null;
   }
 
-  bool isItemSelected(dynamic item) {
+  bool isSelected(dynamic item) {
     return _selectedItemIds.contains(item);
   }
 

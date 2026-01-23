@@ -11,6 +11,7 @@ class Schedule {
   final String location;
   final Playlist? playlist;
   final List<Role> roles;
+  final String? notes;
 
   Schedule({
     required this.id,
@@ -22,6 +23,7 @@ class Schedule {
     required this.location,
     required this.playlist,
     required this.roles,
+    this.notes,
   });
 
   factory Schedule.fromSqlite(Map<String, dynamic> map, List<Role> roles) {
@@ -40,6 +42,7 @@ class Schedule {
           ? Playlist.fromJson(map['playlist'] as Map<String, dynamic>)
           : null,
       roles: roles,
+      notes: map['notes'] as String?,
     );
   }
 
@@ -53,6 +56,7 @@ class Schedule {
           '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}',
       'location': location,
       'playlistId': playlist?.id,
+      'notes': notes,
     };
   }
 }

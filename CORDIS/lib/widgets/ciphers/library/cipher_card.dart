@@ -97,7 +97,7 @@ class _CipherCardState extends State<CipherCard> {
               onTap: () {
                 if (selectionProvider.isSelectionMode) {
                   try {
-                    selectionProvider.toggleItemSelection(versionId);
+                    selectionProvider.select(versionId);
                     navigationProvider.push(
                       EditCipherScreen(
                         cipherId: widget.cipherId,
@@ -107,6 +107,10 @@ class _CipherCardState extends State<CipherCard> {
                       ),
                       showAppBar: false,
                       showDrawerIcon: false,
+                      onPopCallback: () {
+                        selectionProvider.deselect(versionId);
+                        selectionProvider.enableSelectionMode();
+                      },
                     );
                   } catch (error) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -147,7 +151,7 @@ class _CipherCardState extends State<CipherCard> {
                     ),
                   );
                 } else {
-                  selectionProvider.toggleItemSelection(
+                  selectionProvider.select(
                     versionProvider.getIdOfOldestVersionOfCipher(
                       widget.cipherId,
                     ),

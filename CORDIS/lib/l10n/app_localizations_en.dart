@@ -263,6 +263,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Please create a schedule by selecting a playlist below.';
 
   @override
+  String get fillScheduleDetailsInstruction =>
+      'Please fill in the schedule details.';
+
+  @override
+  String get createRolesAndAssignUsersInstruction =>
+      'Please create roles and assign Members to the schedule.';
+
+  @override
   String get nextUp => 'Next Up';
 
   @override
@@ -374,6 +382,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get confirm => 'Confirm';
+
+  @override
+  String get keepGoing => 'Continue';
 
   @override
   String get quickAction => 'Quick Action';

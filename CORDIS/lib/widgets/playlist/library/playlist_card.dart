@@ -1,4 +1,5 @@
 import 'package:cordis/providers/navigation_provider.dart';
+import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/screens/playlist/view_playlist.dart';
 import 'package:cordis/utils/date_utils.dart';
 import 'package:cordis/widgets/playlist/library/playlist_card_actions.dart';
@@ -19,8 +20,8 @@ class PlaylistCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Consumer2<PlaylistProvider, NavigationProvider>(
-      builder: (context, playlistProvider, navigationProvider, child) {
+    return Consumer3<PlaylistProvider, NavigationProvider, SelectionProvider>(
+      builder: (context, playlistProvider, navigationProvider, selectionProvider, child) {
         final playlist = playlistProvider.getPlaylistById(playlistId)!;
 
         final itemCount = playlist.items.length;
@@ -28,11 +29,13 @@ class PlaylistCard extends StatelessWidget {
         // Card content
         return GestureDetector(
           onTap: () {
-            navigationProvider.push(
-              ViewPlaylistScreen(playlistId: playlistId),
-              showAppBar: false,
-              showDrawerIcon: false,
-            );
+            selectionProvider.isSelectionMode
+                ? null
+                : navigationProvider.push(
+                    ViewPlaylistScreen(playlistId: playlistId),
+                    showAppBar: false,
+                    showDrawerIcon: false,
+                  );
           },
           child: Container(
             decoration: BoxDecoration(
@@ -41,6 +44,25 @@ class PlaylistCard extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
+                // SELECTION CHECKBOX
+                selectionProvider.isSelectionMode
+                    ? Checkbox(
+                        value: selectionProvider.isSelected(playlistId),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                        onChanged: (isSelected) {
+                          if (isSelected == null) return;
+
+                          if (isSelected) {
+                            selectionProvider.select(playlistId);
+                          } else {
+                            selectionProvider.deselect(playlistId);
+                          }
+                        },
+                      )
+                    : const SizedBox.shrink(),
+
                 // INFO
                 Expanded(
                   child: Column(
@@ -84,10 +106,12 @@ class PlaylistCard extends StatelessWidget {
                   ),
                 ),
                 // ACTIONS
-                IconButton(
-                  onPressed: () => _openPlaylistActionsSheet(context),
-                  icon: Icon(Icons.more_vert),
-                ),
+                selectionProvider.isSelectionMode
+                    ? const SizedBox.shrink()
+                    : IconButton(
+                        onPressed: () => _openPlaylistActionsSheet(context),
+                        icon: Icon(Icons.more_vert),
+                      ),
               ],
             ),
           ),

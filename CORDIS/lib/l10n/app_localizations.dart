@@ -572,6 +572,18 @@ abstract class AppLocalizations {
   /// **'Por favor, crie uma agenda selecionando uma playlist abaixo.'**
   String get selectPlaylistForScheduleInstruction;
 
+  /// Instruction to fill in schedule details
+  ///
+  /// In pt, this message translates to:
+  /// **'Por favor, preencha os detalhes da agenda.'**
+  String get fillScheduleDetailsInstruction;
+
+  /// Instruction to create roles and assign users
+  ///
+  /// In pt, this message translates to:
+  /// **'Por favor, crie funções e atribua Membros à agenda.'**
+  String get createRolesAndAssignUsersInstruction;
+
   /// Next scheduled item label
   ///
   /// In pt, this message translates to:
@@ -787,6 +799,12 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Confirmar'**
   String get confirm;
+
+  /// Continue button label
+  ///
+  /// In pt, this message translates to:
+  /// **'Continuar'**
+  String get keepGoing;
 
   /// Label for quick action button
   ///

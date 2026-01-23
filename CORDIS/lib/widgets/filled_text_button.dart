@@ -71,7 +71,11 @@ class FilledTextButton extends StatelessWidget {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,
-              color: isDarkButton ? colorScheme.surface : colorScheme.onSurface,
+              color: isDisabled
+                  ? Colors.black
+                  : (isDarkButton
+                        ? colorScheme.surface
+                        : colorScheme.onSurface),
             ),
           ),
         ],

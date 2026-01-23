@@ -183,6 +183,10 @@
   "@schedulePlaylist": {"description": "Create schedule screen title"},
   "selectPlaylistForScheduleInstruction": "Please create a schedule by selecting a playlist below.",
   "@selectPlaylistForScheduleInstruction": {"description": "Instruction to select a playlist for scheduling"},
+  "fillScheduleDetailsInstruction": "Please fill in the schedule details.",
+  "@fillScheduleDetailsInstruction": {"description": "Instruction to fill in schedule details"},
+  "createRolesAndAssignUsersInstruction": "Please create roles and assign Members to the schedule.",
+  "@createRolesAndAssignUsersInstruction": {"description": "Instruction to create roles and assign users"},
   "nextUp": "Next Up",
   "@nextUp": {"description": "Next scheduled item label"},
   "nextThisMonth": "Next This Month",
@@ -264,11 +268,14 @@
   "@cancel": {"description": "Cancel button label"},
   "confirm": "Confirm",
   "@confirm": {"description": "Confirm button label"},
+  "keepGoing": "Continue",
+  "@keepGoing": {"description": "Continue button label"},
   "quickAction": "Quick Action",
   "@quickAction": {"description": "Label for quick action button"},
   "copySuffix": "(Copy)",
   "@copySuffix": {"description": "Suffix indicating copy action"},
 
+  
   "delete": "Delete",
   "@delete": {"description": "Delete button label"},
   "deleteConfirmationTitle": "Confirm Deletion",
@@ -277,6 +284,7 @@
   "@deleteConfirmationMessage": {"description": "Message asking for confirmation to delete an object", "placeholders": {"object": {}}},
   "deleteWarningMessage": "This action cannot be undone.",
   "@deleteWarningMessage": {"description": "Warning message when deleting"},
+
 
   "welcome": "Hello {userName}",
   "@welcome": {"description": "Welcome message with the user's name", "placeholders": {"userName": {}}},

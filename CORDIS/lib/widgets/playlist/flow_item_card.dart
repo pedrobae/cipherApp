@@ -2,6 +2,7 @@ import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/flow_item_provider.dart';
 import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/utils/date_utils.dart';
+import 'package:cordis/widgets/ciphers/editor/custom_reorderable_delayed.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:cordis/widgets/flow_item_editor.dart';
 import 'package:flutter/material.dart';
@@ -34,55 +35,84 @@ class FlowItemCard extends StatelessWidget {
         }
 
         return Container(
-          padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
+            color: colorScheme.surface,
             borderRadius: BorderRadius.circular(0),
             border: Border.all(color: colorScheme.surfaceContainerLowest),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          padding: const EdgeInsets.only(left: 8),
+          margin: const EdgeInsets.only(bottom: 16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            spacing: 8,
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          flowItem.title,
-                          style: textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Text(
-                          DateTimeUtils.formatDuration(flowItem.duration),
-                          style: textTheme.bodyLarge,
-                        ),
-                      ],
-                    ),
-                  ),
-                  IconButton(
-                    // maybe switch to PopupMenuButton
-                    onPressed: () {
-                      // TODO - show flowItem actions
-                    },
-                    icon: Icon(Icons.more_vert_rounded, size: 30),
-                  ),
-                ],
+              CustomReorderableDelayed(
+                key: key,
+                delay: Duration(milliseconds: 100),
+                index: flowItem.position,
+                child: Icon(Icons.drag_indicator),
               ),
-              FilledTextButton(
-                text: AppLocalizations.of(context)!.view,
-                isDense: true,
-                onPressed: () {
-                  navigationProvider.push(
-                    FlowItemEditor(
-                      playlistId: playlistId,
-                      flowItemId: flowItemId,
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: BorderDirectional(
+                      start: BorderSide(
+                        color: colorScheme.surfaceContainerLowest,
+                        width: 1,
+                      ),
                     ),
-                    showAppBar: false,
-                    showDrawerIcon: false,
-                  );
-                },
+                  ),
+                  padding: const EdgeInsets.all(8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  flowItem.title,
+                                  style: textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                Text(
+                                  DateTimeUtils.formatDuration(
+                                    flowItem.duration,
+                                  ),
+                                  style: textTheme.bodyLarge,
+                                ),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            // maybe switch to PopupMenuButton
+                            onPressed: () {
+                              // TODO - show flowItem actions
+                            },
+                            icon: Icon(Icons.more_vert_rounded, size: 30),
+                          ),
+                        ],
+                      ),
+                      FilledTextButton(
+                        text: AppLocalizations.of(context)!.view,
+                        isDense: true,
+                        onPressed: () {
+                          navigationProvider.push(
+                            FlowItemEditor(
+                              playlistId: playlistId,
+                              flowItemId: flowItemId,
+                            ),
+                            showAppBar: false,
+                            showDrawerIcon: false,
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),

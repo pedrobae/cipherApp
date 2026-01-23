@@ -137,208 +137,280 @@ class _PlaylistVersionCardState extends State<PlaylistVersionCard> {
 
             return Container(
               decoration: BoxDecoration(
+                color: colorScheme.surface,
                 border: Border.all(color: colorScheme.surfaceContainerLowest),
                 borderRadius: BorderRadius.circular(0),
               ),
-              padding: const EdgeInsets.all(8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+              padding: const EdgeInsets.only(left: 8),
+              margin: const EdgeInsets.only(bottom: 16),
+              child: Row(
                 spacing: 8,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          spacing: 4,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              isCloud
-                                  ? version.title
-                                  : cipherProvider
-                                        .getCipherById(version.cipherId)!
-                                        .title,
-                              style: theme.textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.w600,
-                              ),
-                              softWrap: true,
-                            ),
-                            Wrap(
-                              spacing: 8,
-                              children: [
-                                Text(
-                                  '${AppLocalizations.of(context)!.musicKey}: ${ //
-                                  isCloud //
-                                      ? version.transposedKey ?? version.originalKey //
-                                            : version.transposedKey ?? cipherProvider.getCipherById(version.cipherId)!.musicKey}',
-                                  style: theme.textTheme.bodyLarge,
-                                ),
-                                Text(
-                                  '${version.bpm} ${AppLocalizations.of(context)!.bpm}',
-                                  style: theme.textTheme.bodyLarge,
-                                ),
-                                Text(
-                                  DateTimeUtils.formatDuration(
-                                    isCloud
-                                        ? Duration(seconds: version.duration)
-                                        : version.duration,
-                                  ),
-                                  style: theme.textTheme.bodyLarge,
-                                ),
-                              ],
-                            ),
-                            // REORDERABLE SECTION CHIPS
-                            ConstrainedBox(
-                              constraints: BoxConstraints(maxHeight: 25),
-                              child: ReorderableListView.builder(
-                                shrinkWrap: true,
-                                proxyDecorator: (child, index, animation) =>
-                                    Material(
-                                      type: MaterialType.transparency,
-                                      child: child,
-                                    ),
-                                buildDefaultDragHandles: false,
-                                physics: const ClampingScrollPhysics(),
-                                scrollDirection: Axis.horizontal,
-                                itemCount: songStructure.length,
-                                onReorder: (oldIndex, newIndex) => _onReorder(
-                                  context,
-                                  songStructure,
-                                  oldIndex,
-                                  newIndex,
-                                ),
-                                itemBuilder: (_, index) {
-                                  final sectionCode = songStructure[index];
-                                  final Section section = isCloud
-                                      ? Section.fromFirestore(
-                                          version.sections[sectionCode]!,
-                                        )
-                                      : version.sections![sectionCode];
-                                  // To ensure unique keys for identical section codes,
-                                  final occurrenceIndex = songStructure
-                                      .take(index + 1)
-                                      .where((code) => code == sectionCode)
-                                      .length;
-
-                                  // Painter for sections with large codes
-                                  final textPainter = TextPainter(
-                                    text: TextSpan(
-                                      text: sectionCode,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    maxLines: 1,
-                                    textDirection: TextDirection.ltr,
-                                  )..layout();
-
-                                  return CustomReorderableDelayed(
-                                    delay: Duration(milliseconds: 100),
-                                    key: ValueKey(
-                                      'cipher_${widget.versionId}_section_${sectionCode}_occurrence_$occurrenceIndex',
-                                    ),
-                                    index: index,
-                                    child: Container(
-                                      height: 25,
-                                      width: max(
-                                        25,
-                                        textPainter.size.width + 8,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(0),
-                                        color: section.contentColor.withValues(
-                                          alpha: 0.8,
-                                        ),
-                                        border: BoxBorder.all(
-                                          color: section.contentColor,
-                                          width: 2,
-                                        ),
-                                      ),
-                                      margin: const EdgeInsets.only(right: 4),
-                                      child: Center(
-                                        child: Text(
-                                          strutStyle: StrutStyle(
-                                            forceStrutHeight: true,
-                                          ),
-                                          sectionCode,
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
+                  CustomReorderableDelayed(
+                    delay: Duration(milliseconds: 100),
+                    index: widget.index,
+                    child: Icon(Icons.drag_indicator),
+                  ),
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: BorderDirectional(
+                          start: BorderSide(
+                            color: colorScheme.surfaceContainerLowest,
+                            width: 1,
+                          ),
                         ),
                       ),
-                      PopupMenuButton<String>(
-                        iconSize: 30,
-                        onSelected: (value) {
-                          switch (value) {
-                            case 'delete':
-                              playlistProvider.removeVersionFromPlaylist(
-                                widget.versionId,
-                                widget.playlistId,
-                              );
-                              break;
-                            case 'copy':
-                              playlistProvider.duplicateVersion(
-                                widget.playlistId,
-                                widget.versionId,
-                                userProvider.getLocalIdByFirebaseId(
-                                  authProvider.id!,
-                                )!,
-                              );
-                              break;
-                          }
-                        },
-                        itemBuilder: (context) => [
-                          PopupMenuItem(
-                            value: 'delete',
-                            child: Row(
-                              children: [
-                                Icon(Icons.delete, color: Colors.red),
-                                SizedBox(width: 8),
-                                Text('Excluir'),
-                              ],
-                            ),
+                      padding: const EdgeInsets.all(8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        spacing: 8,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  spacing: 4,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      isCloud
+                                          ? version.title
+                                          : cipherProvider
+                                                .getCipherById(
+                                                  version.cipherId,
+                                                )!
+                                                .title,
+                                      style: theme.textTheme.titleLarge
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                      softWrap: true,
+                                    ),
+                                    Wrap(
+                                      spacing: 8,
+                                      children: [
+                                        Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              '${AppLocalizations.of(context)!.musicKey}: ',
+                                              style: theme.textTheme.bodyLarge,
+                                            ),
+                                            Text(
+                                              isCloud
+                                                  ? (version.transposedKey ??
+                                                        version.originalKey)
+                                                  : (version.transposedKey ??
+                                                        cipherProvider
+                                                            .getCipherById(
+                                                              version.cipherId,
+                                                            )!
+                                                            .musicKey),
+                                              style: theme.textTheme.bodyLarge
+                                                  ?.copyWith(
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              '${AppLocalizations.of(context)!.bpm}: ',
+                                              style: theme.textTheme.bodyLarge,
+                                            ),
+                                            Text(
+                                              version.bpm.toString(),
+                                              style: theme.textTheme.bodyLarge
+                                                  ?.copyWith(
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                        Text(
+                                          DateTimeUtils.formatDuration(
+                                            isCloud
+                                                ? Duration(
+                                                    seconds: version.duration,
+                                                  )
+                                                : version.duration,
+                                          ),
+                                          style: theme.textTheme.bodyLarge,
+                                        ),
+                                      ],
+                                    ),
+                                    // REORDERABLE SECTION CHIPS
+                                    ConstrainedBox(
+                                      constraints: BoxConstraints(
+                                        maxHeight: 25,
+                                      ),
+                                      child: ReorderableListView.builder(
+                                        shrinkWrap: true,
+                                        proxyDecorator:
+                                            (child, index, animation) =>
+                                                Material(
+                                                  type:
+                                                      MaterialType.transparency,
+                                                  child: child,
+                                                ),
+                                        buildDefaultDragHandles: false,
+                                        physics: const ClampingScrollPhysics(),
+                                        scrollDirection: Axis.horizontal,
+                                        itemCount: songStructure.length,
+                                        onReorder: (oldIndex, newIndex) =>
+                                            _onReorder(
+                                              context,
+                                              songStructure,
+                                              oldIndex,
+                                              newIndex,
+                                            ),
+                                        itemBuilder: (_, index) {
+                                          final sectionCode =
+                                              songStructure[index];
+                                          final Section section = isCloud
+                                              ? Section.fromFirestore(
+                                                  version
+                                                      .sections[sectionCode]!,
+                                                )
+                                              : version.sections![sectionCode];
+                                          // To ensure unique keys for identical section codes,
+                                          final occurrenceIndex = songStructure
+                                              .take(index + 1)
+                                              .where(
+                                                (code) => code == sectionCode,
+                                              )
+                                              .length;
+
+                                          // Painter for sections with large codes
+                                          final textPainter = TextPainter(
+                                            text: TextSpan(
+                                              text: sectionCode,
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            maxLines: 1,
+                                            textDirection: TextDirection.ltr,
+                                          )..layout();
+
+                                          return CustomReorderableDelayed(
+                                            delay: Duration(milliseconds: 100),
+                                            key: ValueKey(
+                                              'cipher_${widget.versionId}_section_${sectionCode}_occurrence_$occurrenceIndex',
+                                            ),
+                                            index: index,
+                                            child: Container(
+                                              height: 25,
+                                              width: max(
+                                                25,
+                                                textPainter.size.width + 8,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(0),
+                                                color: section.contentColor
+                                                    .withValues(alpha: 0.8),
+                                                border: BoxBorder.all(
+                                                  color: section.contentColor,
+                                                  width: 2,
+                                                ),
+                                              ),
+                                              margin: const EdgeInsets.only(
+                                                right: 4,
+                                              ),
+                                              child: Center(
+                                                child: Text(
+                                                  strutStyle: StrutStyle(
+                                                    forceStrutHeight: true,
+                                                  ),
+                                                  sectionCode,
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              PopupMenuButton<String>(
+                                iconSize: 30,
+                                onSelected: (value) {
+                                  switch (value) {
+                                    case 'delete':
+                                      playlistProvider
+                                          .removeVersionFromPlaylist(
+                                            widget.versionId,
+                                            widget.playlistId,
+                                          );
+                                      break;
+                                    case 'copy':
+                                      playlistProvider.duplicateVersion(
+                                        widget.playlistId,
+                                        widget.versionId,
+                                        userProvider.getLocalIdByFirebaseId(
+                                          authProvider.id!,
+                                        )!,
+                                      );
+                                      break;
+                                  }
+                                },
+                                itemBuilder: (context) => [
+                                  PopupMenuItem(
+                                    value: 'delete',
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.delete, color: Colors.red),
+                                        SizedBox(width: 8),
+                                        Text('Excluir'),
+                                      ],
+                                    ),
+                                  ),
+                                  PopupMenuItem(
+                                    value: 'copy',
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.copy),
+                                        SizedBox(width: 8),
+                                        Text('Duplicar'),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
-                          PopupMenuItem(
-                            value: 'copy',
-                            child: Row(
-                              children: [
-                                Icon(Icons.copy),
-                                SizedBox(width: 8),
-                                Text('Duplicar'),
-                              ],
-                            ),
+                          FilledTextButton(
+                            text: AppLocalizations.of(context)!.view,
+                            isDense: true,
+                            onPressed: () {
+                              navigationProvider.push(
+                                CipherEditor(
+                                  versionType: isCloud
+                                      ? VersionType.cloud
+                                      : VersionType.local,
+                                  versionId: widget.versionId,
+                                  cipherId: isCloud ? null : version.cipherId,
+                                  isEnabled: false,
+                                ),
+                              );
+                            },
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                  FilledTextButton(
-                    text: AppLocalizations.of(context)!.view,
-                    isDense: true,
-                    onPressed: () {
-                      navigationProvider.push(
-                        CipherEditor(
-                          versionType: isCloud
-                              ? VersionType.cloud
-                              : VersionType.local,
-                          versionId: widget.versionId,
-                          cipherId: isCloud ? null : version.cipherId,
-                          isEnabled: false,
-                        ),
-                      );
-                    },
+                    ),
                   ),
                 ],
               ),

@@ -193,7 +193,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           GestureDetector(
                             onTap: () {
-                              // TODO: Implement forgot password functionality
+                              // TODO - implement password reset
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   backgroundColor: Colors.amberAccent,
@@ -203,6 +203,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 ),
                               );
+                              // Navigator.of(context).push(
+                              //   MaterialPageRoute(
+                              //     builder: (context) {
+                              //       return PasswordResetScreen(
+                              //         loginEmail: _emailController.text,
+                              //       );
+                              //     },
+                              //   ),
+                              // );
                             },
                             child: Text(
                               AppLocalizations.of(context)!.forgotPassword,

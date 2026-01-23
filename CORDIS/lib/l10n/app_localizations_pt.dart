@@ -373,6 +373,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get quickAction => 'Ação Rápida';
 
   @override
+  String get copySuffix => '(Cópia)';
+
+  @override
   String get delete => 'Excluir';
 
   @override

@@ -119,7 +119,27 @@ class MyAuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> logOut() async {
+  /// Reset password for given email
+  Future<void> sendPasswordResetEmail(String email) async {
+    if (isLoading) return;
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _authService.sendPasswordResetEmail(email);
+    } catch (e) {
+      _error = 'Erro ao enviar email de recuperação: $e';
+      if (kDebugMode) {
+        print('Erro ao enviar email de recuperação: $e');
+      }
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> signOut() async {
     if (isLoading) return;
     _isLoading = true;
     _error = null;

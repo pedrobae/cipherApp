@@ -130,7 +130,10 @@ class FlowItemCard extends StatelessWidget {
           shape: LinearBorder(),
           onClosing: () {},
           builder: (context) {
-            return FlowItemCardActionsSheet(flowItemId: flowItemId);
+            return FlowItemCardActionsSheet(
+              flowItemId: flowItemId,
+              playlistId: playlistId,
+            );
           },
         );
       },

@@ -134,7 +134,7 @@ class AppDrawer extends StatelessWidget {
                     behavior: HitTestBehavior.opaque,
                     onTap: () {
                       Navigator.of(context).pop();
-                      authProvider.logOut();
+                      authProvider.signOut();
                     },
                     child: Row(
                       spacing: 16,

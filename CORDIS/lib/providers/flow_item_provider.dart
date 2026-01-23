@@ -173,6 +173,44 @@ class FlowItemProvider extends ChangeNotifier {
     }
   }
 
+  /// Duplicate a Flow Item by ID
+  Future<void> duplicateFlowItem(
+    int id,
+    String titleSuffix,
+    int position,
+  ) async {
+    if (_isSaving) return;
+
+    _isSaving = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final original = _flowItems[id];
+      if (original == null) {
+        throw Exception('Flow Item with ID $id not found for duplication.');
+      }
+
+      final duplicate = FlowItem(
+        firebaseId: '', // Dont copy Firebase ID for new item
+        playlistId: original.playlistId,
+        title: '${original.title} $titleSuffix',
+        contentText: original.contentText,
+        position: position,
+        duration: original.duration,
+      );
+
+      int newId = await _flowItemRepo.createFlowItem(duplicate);
+      await _loadFlowItem(newId, forceReload: true);
+    } catch (e) {
+      _error = e.toString();
+      rethrow;
+    } finally {
+      _isSaving = false;
+      notifyListeners();
+    }
+  }
+
   // ===== UPDATE =====
   // Update a Flow Item with new data (title/content)
   Future<void> updateFlowItem(

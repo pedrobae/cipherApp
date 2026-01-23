@@ -380,19 +380,40 @@ class _EditCipherScreenState extends State<EditCipherScreen>
                             text: AppLocalizations.of(context)!.save,
                           ),
                           FilledTextButton(
-                            onPressed: () {
-                              if (widget.versionType == VersionType.import ||
-                                  widget.versionType == VersionType.brandNew) {
-                                navigationProvider.pop();
-                              } else {
-                                // TODO - implement delete cipher/version
+                            onPressed: () async {
+                              switch (widget.versionType) {
+                                case VersionType.import:
+                                case VersionType.brandNew:
+                                case VersionType.cloud:
+                                  navigationProvider.pop();
+                                  break;
+                                case VersionType.local:
+                                  // Delete local cipher
+                                  await cipherProvider.deleteCipher(
+                                    widget.cipherId!,
+                                  );
+                                  versionProvider.clearVersionsOfCipher(
+                                    widget.cipherId!,
+                                  );
+                                  break;
+                                case VersionType.playlist:
+                                  // Delete playlist version copy
+                                  await versionProvider.deleteVersion(
+                                    widget.versionId!,
+                                  );
+                                  navigationProvider.pop();
+                                  break;
                               }
                             },
-                            text:
-                                (widget.versionType == VersionType.import ||
-                                    widget.versionType == VersionType.brandNew)
-                                ? AppLocalizations.of(context)!.cancel
-                                : AppLocalizations.of(context)!.delete,
+                            text: switch (widget.versionType) {
+                              VersionType.import ||
+                              VersionType.brandNew ||
+                              VersionType.cloud => AppLocalizations.of(
+                                context,
+                              )!.cancel,
+                              VersionType.local || VersionType.playlist =>
+                                AppLocalizations.of(context)!.delete,
+                            },
                           ),
                         ],
                       ),

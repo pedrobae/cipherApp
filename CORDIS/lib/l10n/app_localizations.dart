@@ -782,6 +782,12 @@ abstract class AppLocalizations {
   /// **'Ação Rápida'**
   String get quickAction;
 
+  /// Suffix indicating copy action
+  ///
+  /// In pt, this message translates to:
+  /// **'(Cópia)'**
+  String get copySuffix;
+
   /// Delete button label
   ///
   /// In pt, this message translates to:

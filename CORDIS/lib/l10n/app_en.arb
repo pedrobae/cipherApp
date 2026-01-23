@@ -262,6 +262,8 @@
   "@confirm": {"description": "Confirm button label"},
   "quickAction": "Quick Action",
   "@quickAction": {"description": "Label for quick action button"},
+  "copySuffix": "(Copy)",
+  "@copySuffix": {"description": "Suffix indicating copy action"},
 
   "delete": "Delete",
   "@delete": {"description": "Delete button label"},

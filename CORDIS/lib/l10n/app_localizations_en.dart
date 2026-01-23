@@ -372,6 +372,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get quickAction => 'Quick Action';
 
   @override
+  String get copySuffix => '(Copy)';
+
+  @override
   String get delete => 'Delete';
 
   @override

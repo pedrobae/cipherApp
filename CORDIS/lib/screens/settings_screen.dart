@@ -386,7 +386,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         : null,
                     child: Card(
                       color: count > 0
-                          ? Theme.of(context).colorScheme.surfaceVariant
+                          ? Theme.of(context).colorScheme.surfaceTint
                           : null,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(

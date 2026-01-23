@@ -256,7 +256,11 @@
   "@confirm": {"description": "Confirm button label"},
   "quickAction": "Ação Rápida",
   "@quickAction": {"description": "Label for quick action button"},
-    "delete": "Excluir",
+  "copySuffix": "(Cópia)",
+  "@copySuffix": {"description": "Suffix indicating copy action"},
+  
+
+  "delete": "Excluir",
   "@delete": {"description": "Delete button label"},
   "deleteConfirmationTitle": "Confirmar Exclusão",
   "@deleteConfirmationTitle": {"description": "Title for delete confirmation dialog"},

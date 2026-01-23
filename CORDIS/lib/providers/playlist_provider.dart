@@ -134,11 +134,8 @@ class PlaylistProvider extends ChangeNotifier {
 
   // ===== UPDATE =====
   // Update a Playlist with new data (name/description)
-  Future<void> updateMetadata(int id, String? name, String? description) async {
-    await _playlistRepository.updatePlaylist(id, {
-      'name': name,
-      'description': description,
-    });
+  Future<void> updateName(int id, String name) async {
+    await _playlistRepository.updatePlaylist(id, {'name': name});
 
     // Track metadata changes
     trackChange('metadata', id);

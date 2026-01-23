@@ -4,6 +4,7 @@ import 'package:cordis/providers/flow_item_provider.dart';
 import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/version_provider.dart';
+import 'package:cordis/screens/playlist/edit_playlist.dart';
 import 'package:cordis/widgets/delete_confirmation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -69,7 +70,10 @@ class PlaylistCardActionsSheet extends StatelessWidget {
                   // RENAME PLAYLIST
                   GestureDetector(
                     onTap: () {
-                      // TODO implement rename playlist
+                      Navigator.of(context).pop(); // Close the bottom sheet
+                      navigationProvider.push(
+                        EditPlaylistScreen(playlistId: playlistId),
+                      );
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(

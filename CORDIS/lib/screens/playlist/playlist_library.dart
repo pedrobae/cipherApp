@@ -1,6 +1,6 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/navigation_provider.dart';
-import 'package:cordis/screens/playlist/create_playlist.dart';
+import 'package:cordis/screens/playlist/edit_playlist.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:cordis/widgets/playlist/library/playlist_scroll_view.dart';
 import 'package:flutter/material.dart';
@@ -67,7 +67,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen> {
               // Create Playlist Button
               FilledTextButton(
                 onPressed: () {
-                  navigationProvider.push(CreatePlaylistScreen());
+                  navigationProvider.push(EditPlaylistScreen());
                 },
                 text: AppLocalizations.of(context)!.create,
                 isDarkButton: true,

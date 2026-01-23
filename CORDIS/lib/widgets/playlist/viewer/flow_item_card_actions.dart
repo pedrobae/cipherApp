@@ -68,8 +68,8 @@ class FlowItemCardActionsSheet extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        AppLocalizations.of(context)!.editPlaceholder(
-                          AppLocalizations.of(context)!.playlist,
+                        AppLocalizations.of(context)!.duplicatePlaceholder(
+                          AppLocalizations.of(context)!.flowItem,
                         ),
                         style: textTheme.titleMedium?.copyWith(
                           color: colorScheme.onSurface,

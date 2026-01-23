@@ -248,6 +248,12 @@ abstract class AppLocalizations {
   /// **'Idioma'**
   String get language;
 
+  /// Version label
+  ///
+  /// In pt, this message translates to:
+  /// **'Versão'**
+  String get version;
+
   /// Version name field label
   ///
   /// In pt, this message translates to:
@@ -416,6 +422,18 @@ abstract class AppLocalizations {
   /// **'Nenhuma cifra encontrada'**
   String get noCiphersFound;
 
+  /// Playlist label
+  ///
+  /// In pt, this message translates to:
+  /// **'Playlist'**
+  String get playlist;
+
+  /// Flow item label
+  ///
+  /// In pt, this message translates to:
+  /// **'Texto'**
+  String get flowItem;
+
   /// Prompt to name the playlist
   ///
   /// In pt, this message translates to:
@@ -439,18 +457,6 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Insira o nome da playlist'**
   String get playlistNameHint;
-
-  /// Playlist label
-  ///
-  /// In pt, this message translates to:
-  /// **'Playlist'**
-  String get playlist;
-
-  /// Flow item label
-  ///
-  /// In pt, this message translates to:
-  /// **'Texto'**
-  String get flowItem;
 
   /// Hint text for searching playlists
   ///
@@ -547,6 +553,12 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Salvar {object}'**
   String savePlaceholder(Object object);
+
+  /// Duplicate object button label
+  ///
+  /// In pt, this message translates to:
+  /// **'Duplicar {object}'**
+  String duplicatePlaceholder(Object object);
 
   /// Next scheduled item label
   ///

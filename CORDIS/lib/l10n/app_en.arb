@@ -57,6 +57,10 @@
   "@duration": {"description": "Song duration field label"},
   "language": "Language",
   "@language": {"description": "Song language field label"},
+
+
+  "version": "Version",
+  "@version": {"description": "Version label"},
   "versionName": "Version Name",
   "@versionName": {"description": "Version name field label"},
   "versions": " versions",
@@ -126,6 +130,10 @@
   "@noCiphersFound": {"description": "Message displayed when no ciphers are found"},
 
 
+  "playlist": "Playlist",
+  "@playlist": {"description": "Playlist label"},
+  "flowItem": "Flow Item",
+  "@flowItem": {"description": "Flow item label"},
   "namePlaylistPrompt": "Name your playlist",
   "@namePlaylistPrompt": {"description": "Prompt to name the playlist"},
   "createPlaylistInstructions": "Create an empty playlist first, you can add songs and flow items later.",
@@ -134,10 +142,6 @@
   "@playlistNameLabel": {"description": "Label for playlist name input field"},
   "playlistNameHint": "Enter a playlist name",
   "@playlistNameHint": {"description": "Hint text for playlist name input field"},
-  "playlist": "Playlist",
-  "@playlist": {"description": "Playlist label"},
-  "flowItem": "Flow Item",
-  "@flowItem": {"description": "Flow item label"},
   "searchPlaylist": "Search playlists...",
   "@searchPlaylist": {"description": "Hint text for searching playlists"},
   "noPlaylistsFound": "No playlists found",
@@ -171,6 +175,8 @@
   "@createPlaceholder": {"description": "Create object button label", "placeholders": {"object": {}}},
   "savePlaceholder": "Save {object}",
   "@savePlaceholder": {"description": "Save object button label", "placeholders": {"object": {}}},
+  "duplicatePlaceholder": "Duplicate {object}",
+  "@duplicatePlaceholder": {"description": "Duplicate object button label", "placeholders": {"object": {}}},
 
   
   "nextUp": "Next Up",

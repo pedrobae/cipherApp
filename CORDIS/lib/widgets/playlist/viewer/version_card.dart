@@ -11,6 +11,7 @@ import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/screens/cipher/edit_cipher.dart';
 import 'package:cordis/utils/date_utils.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
+import 'package:cordis/widgets/playlist/viewer/version_card_actions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cordis/providers/cipher_provider.dart';
@@ -345,50 +346,12 @@ class _PlaylistVersionCardState extends State<PlaylistVersionCard> {
                                   ],
                                 ),
                               ),
-                              PopupMenuButton<String>(
+                              IconButton(
                                 iconSize: 30,
-                                onSelected: (value) {
-                                  switch (value) {
-                                    case 'delete':
-                                      playlistProvider
-                                          .removeVersionFromPlaylist(
-                                            widget.versionId,
-                                            widget.playlistId,
-                                          );
-                                      break;
-                                    case 'copy':
-                                      playlistProvider.duplicateVersion(
-                                        widget.playlistId,
-                                        widget.versionId,
-                                        userProvider.getLocalIdByFirebaseId(
-                                          authProvider.id!,
-                                        )!,
-                                      );
-                                      break;
-                                  }
+                                icon: Icon(Icons.more_vert_rounded),
+                                onPressed: () {
+                                  _openVersionActions(context);
                                 },
-                                itemBuilder: (context) => [
-                                  PopupMenuItem(
-                                    value: 'delete',
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.delete, color: Colors.red),
-                                        SizedBox(width: 8),
-                                        Text('Excluir'),
-                                      ],
-                                    ),
-                                  ),
-                                  PopupMenuItem(
-                                    value: 'copy',
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.copy),
-                                        SizedBox(width: 8),
-                                        Text('Duplicar'),
-                                      ],
-                                    ),
-                                  ),
-                                ],
                               ),
                             ],
                           ),
@@ -416,6 +379,25 @@ class _PlaylistVersionCardState extends State<PlaylistVersionCard> {
               ),
             );
           },
+    );
+  }
+
+  void _openVersionActions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return BottomSheet(
+          shape: LinearBorder(),
+          onClosing: () {},
+          builder: (context) {
+            return VersionCardActionsSheet(
+              versionId: widget.versionId,
+              playlistId: widget.playlistId,
+            );
+          },
+        );
+      },
     );
   }
 }

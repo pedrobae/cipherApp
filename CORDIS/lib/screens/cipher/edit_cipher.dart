@@ -6,7 +6,6 @@ import 'package:cordis/providers/parser_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/widgets/ciphers/editor/chord_palette.dart';
-import 'package:cordis/widgets/ciphers/editor/delete_dialog.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -386,7 +385,7 @@ class _EditCipherScreenState extends State<EditCipherScreen>
                                   widget.versionType == VersionType.brandNew) {
                                 navigationProvider.pop();
                               } else {
-                                _showDeleteDialog(widget.cipherId != null);
+                                // TODO - implement delete cipher/version
                               }
                             },
                             text:
@@ -521,19 +520,6 @@ class _EditCipherScreenState extends State<EditCipherScreen>
         );
       }
     }
-  }
-
-  void _showDeleteDialog(bool deleteCipher) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return DeleteDialog(
-          deleteCipher: deleteCipher,
-          cipherId: widget.cipherId,
-          versionId: widget.versionId,
-        );
-      },
-    );
   }
 
   void _togglePalette() {

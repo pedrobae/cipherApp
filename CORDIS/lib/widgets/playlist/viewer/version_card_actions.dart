@@ -1,25 +1,31 @@
 import 'package:cordis/l10n/app_localizations.dart';
-import 'package:cordis/models/domain/playlist/playlist_item.dart';
-import 'package:cordis/providers/flow_item_provider.dart';
+import 'package:cordis/providers/my_auth_provider.dart';
 import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
+import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/providers/version_provider.dart';
 import 'package:cordis/widgets/delete_confirmation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class PlaylistCardActionsSheet extends StatelessWidget {
+class VersionCardActionsSheet extends StatelessWidget {
+  final int versionId;
   final int playlistId;
 
-  const PlaylistCardActionsSheet({super.key, required this.playlistId});
+  const VersionCardActionsSheet({
+    super.key,
+    required this.versionId,
+    required this.playlistId,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Consumer4<
+    return Consumer5<
       NavigationProvider,
       PlaylistProvider,
       VersionProvider,
-      FlowItemProvider
+      UserProvider,
+      MyAuthProvider
     >(
       builder:
           (
@@ -27,7 +33,8 @@ class PlaylistCardActionsSheet extends StatelessWidget {
             navigationProvider,
             playlistProvider,
             versionProvider,
-            flowItemProvider,
+            userProvider,
+            authProvider,
             child,
           ) {
             final textTheme = Theme.of(context).textTheme;
@@ -66,10 +73,14 @@ class PlaylistCardActionsSheet extends StatelessWidget {
                     ],
                   ),
                   // ACTIONS
-                  // RENAME PLAYLIST
+                  // DUPLICATE VERSION
                   GestureDetector(
                     onTap: () {
-                      // TODO implement rename playlist
+                      playlistProvider.duplicateVersion(
+                        playlistId,
+                        versionId,
+                        userProvider.getLocalIdByFirebaseId(authProvider.id!)!,
+                      );
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(
@@ -84,8 +95,8 @@ class PlaylistCardActionsSheet extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            AppLocalizations.of(context)!.editPlaceholder(
-                              AppLocalizations.of(context)!.playlist,
+                            AppLocalizations.of(context)!.duplicatePlaceholder(
+                              AppLocalizations.of(context)!.version,
                             ),
                             style: textTheme.titleMedium?.copyWith(
                               color: colorScheme.onSurface,
@@ -98,23 +109,21 @@ class PlaylistCardActionsSheet extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // DELETE PLAYLIST
+                  // DELETE FLOW ITEM
                   GestureDetector(
                     onTap: () {
                       Navigator.of(context).pop(); // Close the bottom sheet
                       showDialog(
                         context: context,
                         builder: (dialogContext) => DeleteConfirmationDialog(
-                          itemType: AppLocalizations.of(context)!.playlist,
+                          itemType: AppLocalizations.of(context)!.version,
                           isDangerous: true,
                           onConfirm: () async {
-                            await _deletePlaylist(
-                              context,
-                              playlistProvider,
-                              versionProvider,
-                              navigationProvider,
-                              flowItemProvider,
+                            playlistProvider.removeVersionFromPlaylist(
+                              versionId,
+                              playlistId,
                             );
+                            await versionProvider.deleteVersion(versionId);
                           },
                         ),
                       );
@@ -143,15 +152,6 @@ class PlaylistCardActionsSheet extends StatelessWidget {
                                     fontSize: 18,
                                   ),
                                 ),
-                                Text(
-                                  AppLocalizations.of(
-                                    context,
-                                  )!.deletePlaylistDescription,
-                                  style: textTheme.bodyMedium?.copyWith(
-                                    color: Colors.red,
-                                    fontSize: 13,
-                                  ),
-                                ),
                               ],
                             ),
                           ),
@@ -165,23 +165,5 @@ class PlaylistCardActionsSheet extends StatelessWidget {
             );
           },
     );
-  }
-
-  Future<void> _deletePlaylist(
-    BuildContext context,
-    PlaylistProvider playlistProvider,
-    VersionProvider versionProvider,
-    NavigationProvider navigationProvider,
-    FlowItemProvider flowItemProvider,
-  ) async {
-    for (var item in playlistProvider.getPlaylistById(playlistId)!.items) {
-      if (item.type == PlaylistItemType.version) {
-        await versionProvider.deleteVersion(item.contentId!);
-      } else if (item.type == PlaylistItemType.flowItem) {
-        await flowItemProvider.deleteFlowItem(item.contentId!);
-      }
-    }
-    await playlistProvider.deletePlaylist(playlistId);
-    navigationProvider.pop();
   }
 }

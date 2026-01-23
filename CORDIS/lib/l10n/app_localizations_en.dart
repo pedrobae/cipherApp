@@ -84,6 +84,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get language => 'Language';
 
   @override
+  String get version => 'Version';
+
+  @override
   String get versionName => 'Version Name';
 
   @override
@@ -171,6 +174,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noCiphersFound => 'No Song Map found';
 
   @override
+  String get playlist => 'Playlist';
+
+  @override
+  String get flowItem => 'Flow Item';
+
+  @override
   String get namePlaylistPrompt => 'Name your playlist';
 
   @override
@@ -182,12 +191,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get playlistNameHint => 'Enter a playlist name';
-
-  @override
-  String get playlist => 'Playlist';
-
-  @override
-  String get flowItem => 'Flow Item';
 
   @override
   String get searchPlaylist => 'Search playlists...';
@@ -245,6 +248,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String savePlaceholder(Object object) {
     return 'Save $object';
+  }
+
+  @override
+  String duplicatePlaceholder(Object object) {
+    return 'Duplicate $object';
   }
 
   @override

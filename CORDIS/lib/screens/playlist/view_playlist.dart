@@ -13,7 +13,7 @@ import 'package:cordis/providers/version_provider.dart';
 
 import 'package:cordis/widgets/playlist/viewer/edit_playlist_sheet.dart';
 
-import 'package:cordis/widgets/playlist/viewer/playlist_version_card.dart';
+import 'package:cordis/widgets/playlist/viewer/version_card.dart';
 import 'package:cordis/widgets/playlist/viewer/flow_item_card.dart';
 
 import 'package:flutter/material.dart';

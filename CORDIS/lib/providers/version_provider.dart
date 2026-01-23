@@ -623,8 +623,8 @@ class VersionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// ===== DELETE - cipher version =====
-  Future<void> deleteCipherVersion(int versionId) async {
+  /// ===== DELETE - Version =====
+  Future<void> deleteVersion(int versionId) async {
     if (_isSaving) return;
 
     _isSaving = true;

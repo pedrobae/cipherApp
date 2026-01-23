@@ -4,6 +4,14 @@
 
 set -e
 
+# Check if Flutter is installed, if not install it
+if ! command -v flutter &> /dev/null; then
+    echo "Installing Flutter..."
+    git clone https://github.com/flutter/flutter.git -b stable ~/flutter
+    export PATH="$PATH:$HOME/flutter/bin"
+    flutter config --no-analytics
+fi
+
 echo "Cleaning Flutter build artifacts..."
 flutter clean
 

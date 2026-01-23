@@ -2,7 +2,7 @@ name: cordis
 description: "Chord Map Application."
 publish_to: 'none'
 
-version: 1.0.0+4
+version: 1.0.0+5
 
 environment:
   sdk: ^3.8.1
@@ -122,5 +122,6 @@ flutter:
         - asset: assets/fonts/formaDJRMicro/FormaDJRMicro-ExtraLightItalic-Testing.otf
           weight: 200
           style: italic
+
 
 

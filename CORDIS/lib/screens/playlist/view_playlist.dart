@@ -19,16 +19,16 @@ import 'package:cordis/widgets/playlist/viewer/flow_item_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class PlaylistViewer extends StatefulWidget {
+class ViewPlaylistScreen extends StatefulWidget {
   final int playlistId; // Receive the playlist ID from the parent
 
-  const PlaylistViewer({super.key, required this.playlistId});
+  const ViewPlaylistScreen({super.key, required this.playlistId});
 
   @override
-  State<PlaylistViewer> createState() => _PlaylistViewerState();
+  State<ViewPlaylistScreen> createState() => _ViewPlaylistScreenState();
 }
 
-class _PlaylistViewerState extends State<PlaylistViewer> {
+class _ViewPlaylistScreenState extends State<ViewPlaylistScreen> {
   @override
   void initState() {
     super.initState();

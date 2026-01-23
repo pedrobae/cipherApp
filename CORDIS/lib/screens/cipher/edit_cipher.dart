@@ -16,14 +16,14 @@ import 'package:cordis/providers/section_provider.dart';
 import 'package:cordis/widgets/ciphers/editor/metadata_tab.dart';
 import 'package:cordis/widgets/ciphers/editor/sections_tab.dart';
 
-class CipherEditor extends StatefulWidget {
+class EditCipherScreen extends StatefulWidget {
   final int? cipherId; // Null for new cipher
   final dynamic versionId; // Null for new version // could be int or String
   final int? playlistId;
   final VersionType versionType;
   final bool isEnabled;
 
-  const CipherEditor({
+  const EditCipherScreen({
     super.key,
     this.cipherId,
     this.versionId,
@@ -33,10 +33,10 @@ class CipherEditor extends StatefulWidget {
   });
 
   @override
-  State<CipherEditor> createState() => _CipherEditorState();
+  State<EditCipherScreen> createState() => _EditCipherScreenState();
 }
 
-class _CipherEditorState extends State<CipherEditor>
+class _EditCipherScreenState extends State<EditCipherScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   bool paletteIsOpen = false;

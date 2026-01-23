@@ -1,7 +1,7 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:cordis/providers/navigation_provider.dart';
-import 'package:cordis/screens/cipher/cipher_editor.dart';
+import 'package:cordis/screens/cipher/edit_cipher.dart';
 import 'package:cordis/screens/cipher/import/import_pdf.dart';
 import 'package:cordis/screens/cipher/import/import_text.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
@@ -58,8 +58,9 @@ class CreateCipherSheet extends StatelessWidget {
                   Navigator.of(context).pop();
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) =>
-                          const CipherEditor(versionType: VersionType.brandNew),
+                      builder: (context) => const EditCipherScreen(
+                        versionType: VersionType.brandNew,
+                      ),
                     ),
                   );
                 },

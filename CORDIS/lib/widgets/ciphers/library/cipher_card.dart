@@ -6,8 +6,8 @@ import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/providers/version_provider.dart';
-import 'package:cordis/screens/cipher/cipher_editor.dart';
-import 'package:cordis/screens/cipher/cipher_viewer.dart';
+import 'package:cordis/screens/cipher/edit_cipher.dart';
+import 'package:cordis/screens/cipher/view_cipher.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -98,7 +98,7 @@ class _CipherCardState extends State<CipherCard> {
                   try {
                     selectionProvider.toggleItemSelection(versionId);
                     navigationProvider.push(
-                      CipherEditor(
+                      EditCipherScreen(
                         cipherId: widget.cipherId,
                         versionId: versionId,
                         versionType: VersionType.playlist,
@@ -122,7 +122,7 @@ class _CipherCardState extends State<CipherCard> {
                   }
                 } else {
                   navigationProvider.push(
-                    CipherViewer(
+                    ViewCipherScreen(
                       cipherId: widget.cipherId,
                       versionId: versionProvider.getIdOfOldestVersionOfCipher(
                         widget.cipherId,
@@ -135,7 +135,7 @@ class _CipherCardState extends State<CipherCard> {
               onLongPress: () async {
                 if (!selectionProvider.isSelectionMode) {
                   navigationProvider.push(
-                    CipherEditor(
+                    EditCipherScreen(
                       cipherId: widget.cipherId,
                       versionId: versionProvider.getIdOfOldestVersionOfCipher(
                         widget.cipherId,

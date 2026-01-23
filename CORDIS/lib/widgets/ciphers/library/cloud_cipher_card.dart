@@ -1,7 +1,7 @@
 import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:cordis/models/dtos/version_dto.dart';
 import 'package:cordis/l10n/app_localizations.dart';
-import 'package:cordis/screens/cipher/cipher_viewer.dart';
+import 'package:cordis/screens/cipher/view_cipher.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
@@ -23,7 +23,7 @@ class CloudCipherCard extends StatelessWidget {
           onTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => CipherViewer(
+                builder: (context) => ViewCipherScreen(
                   cipherId: null,
                   versionId: version.firebaseId!,
                   versionType: VersionType.cloud,

@@ -8,16 +8,16 @@ import 'package:provider/provider.dart';
 import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/layout_settings_provider.dart';
 import 'package:cordis/providers/version_provider.dart';
-import 'package:cordis/screens/cipher/cipher_editor.dart';
+import 'package:cordis/screens/cipher/edit_cipher.dart';
 import 'package:cordis/widgets/settings/layout_settings.dart';
 import 'package:cordis/widgets/ciphers/viewer/content_view.dart';
 
-class CipherViewer extends StatefulWidget {
+class ViewCipherScreen extends StatefulWidget {
   final int? cipherId;
   final dynamic versionId;
   final VersionType versionType;
 
-  const CipherViewer({
+  const ViewCipherScreen({
     super.key,
     required this.cipherId,
     this.versionId,
@@ -25,10 +25,10 @@ class CipherViewer extends StatefulWidget {
   });
 
   @override
-  State<CipherViewer> createState() => _CipherViewerState();
+  State<ViewCipherScreen> createState() => _ViewCipherScreenState();
 }
 
-class _CipherViewerState extends State<CipherViewer>
+class _ViewCipherScreenState extends State<ViewCipherScreen>
     with SingleTickerProviderStateMixin {
   bool _hasSetOriginalKey = false;
 
@@ -73,7 +73,7 @@ class _CipherViewerState extends State<CipherViewer>
 
   void _editCurrentVersion(NavigationProvider navigationProvider) {
     navigationProvider.push(
-      CipherEditor(
+      EditCipherScreen(
         cipherId: widget.cipherId,
         versionId: widget.versionId,
         versionType: widget.versionType,

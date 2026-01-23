@@ -3,7 +3,7 @@ import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:cordis/models/domain/parsing_cipher.dart';
 import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/providers/parser_provider.dart';
-import 'package:cordis/screens/cipher/cipher_editor.dart';
+import 'package:cordis/screens/cipher/edit_cipher.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:cordis/providers/import_provider.dart';
@@ -164,7 +164,7 @@ class _ImportTextScreenState extends State<ImportTextScreen> {
 
                                   // Navigate to parsing screen
                                   navigationProvider.push(
-                                    CipherEditor(
+                                    EditCipherScreen(
                                       versionType: VersionType.import,
                                       versionId: -1,
                                     ),

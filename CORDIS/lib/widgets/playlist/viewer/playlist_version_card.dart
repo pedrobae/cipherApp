@@ -8,7 +8,7 @@ import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/section_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
-import 'package:cordis/screens/cipher/cipher_editor.dart';
+import 'package:cordis/screens/cipher/edit_cipher.dart';
 import 'package:cordis/utils/date_utils.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:flutter/material.dart';
@@ -397,7 +397,7 @@ class _PlaylistVersionCardState extends State<PlaylistVersionCard> {
                             isDense: true,
                             onPressed: () {
                               navigationProvider.push(
-                                CipherEditor(
+                                EditCipherScreen(
                                   versionType: isCloud
                                       ? VersionType.cloud
                                       : VersionType.local,

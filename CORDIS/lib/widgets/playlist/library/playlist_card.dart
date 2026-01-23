@@ -1,5 +1,5 @@
 import 'package:cordis/providers/navigation_provider.dart';
-import 'package:cordis/screens/playlist/playlist_viewer.dart';
+import 'package:cordis/screens/playlist/view_playlist.dart';
 import 'package:cordis/utils/date_utils.dart';
 import 'package:flutter/material.dart';
 
@@ -28,7 +28,7 @@ class PlaylistCard extends StatelessWidget {
         return GestureDetector(
           onTap: () {
             navigationProvider.push(
-              PlaylistViewer(playlistId: playlistId),
+              ViewPlaylistScreen(playlistId: playlistId),
               showAppBar: false,
               showDrawerIcon: false,
             );

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -15,13 +16,15 @@ class MainScreen extends StatefulWidget {
 }
 
 class MainScreenState extends State<MainScreen> {
+  int _previousIndex = 0;
+
   @override
   void initState() {
     super.initState();
+    final authProvider = context.read<MyAuthProvider>();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        context.read<MyAuthProvider>().addListener(_authListener);
-      }
+      if (mounted) authProvider.addListener(_authListener);
     });
   }
 
@@ -74,7 +77,7 @@ class MainScreenState extends State<MainScreen> {
                       ),
                     ),
                     child: BottomNavigationBar(
-                      currentIndex: navigationProvider.currentIndex,
+                      currentIndex: navigationProvider.currentRoute.index,
                       selectedLabelStyle: TextStyle(
                         color: colorScheme.primary,
                         fontSize: 12,
@@ -121,7 +124,52 @@ class MainScreenState extends State<MainScreen> {
                     navigationProvider.pop();
                   }
                 },
-                child: navigationProvider.currentScreen,
+                child: Consumer<NavigationProvider>(
+                  builder: (context, navProvider, _) {
+                    final currentIndex = navProvider.currentRoute.index;
+                    final direction = currentIndex > _previousIndex
+                        ? -1.0
+                        : 1.0;
+                    _previousIndex = currentIndex;
+
+                    return AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 400),
+                      transitionBuilder: (child, animation) {
+                        final isNewScreen =
+                            child.key == ValueKey(navProvider.currentRoute);
+                        final slideDirection = isNewScreen
+                            ? -direction
+                            : direction;
+
+                        return SlideTransition(
+                          position:
+                              Tween<Offset>(
+                                begin: Offset(slideDirection, 0),
+                                end: Offset.zero,
+                              ).animate(
+                                CurvedAnimation(
+                                  parent: animation,
+                                  curve: Curves.easeInOutCubic,
+                                ),
+                              ),
+                          child: child,
+                        );
+                      },
+                      layoutBuilder: (currentChild, previousChildren) {
+                        return Stack(
+                          children: <Widget>[
+                            ...previousChildren,
+                            currentChild ?? const SizedBox.shrink(),
+                          ],
+                        );
+                      },
+                      child: KeyedSubtree(
+                        key: ValueKey(navProvider.currentRoute),
+                        child: navProvider.currentScreen,
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
           ),

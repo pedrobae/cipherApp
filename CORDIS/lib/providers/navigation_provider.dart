@@ -9,27 +9,32 @@ enum NavigationRoute { home, library, playlists, schedule }
 
 class NavigationProvider extends ChangeNotifier {
   NavigationRoute _currentRoute = NavigationRoute.home;
-  static List<Widget> _screenStack = [const HomeScreen()];
-  static List<bool> _showAppBarStack = [true];
-  static List<bool> _showDrawerIconStack = [true];
-  static List<bool> _showBottomNavBarStack = [true];
-  static final List<VoidCallback> _onPopCallbacks = [() {}];
+
+  static final List<Widget> _screenStack = [];
+  static final List<bool> _showAppBarStack = [];
+  static final List<bool> _showDrawerIconStack = [];
+  static final List<bool> _showBottomNavBarStack = [];
+
+  static final List<VoidCallback> _onPopCallbacks = [];
+
   bool _isLoading = false;
   String? _error;
 
   // Getters
   NavigationRoute get currentRoute => _currentRoute;
-  int get currentIndex => _currentRoute.index;
+
+  Widget get currentScreen => _screenStack.isNotEmpty
+      ? _screenStack.last
+      : _getScreenForRoute(_currentRoute);
   bool get showAppBar =>
       _showAppBarStack.isNotEmpty ? _showAppBarStack.last : true;
   bool get showDrawerIcon =>
       _showDrawerIconStack.isNotEmpty ? _showDrawerIconStack.last : true;
   bool get showBottomNavBar =>
       _showBottomNavBarStack.isNotEmpty ? _showBottomNavBarStack.last : true;
+
   bool get isLoading => _isLoading;
   String? get error => _error;
-  Widget get currentScreen =>
-      _screenStack.isNotEmpty ? _screenStack.last : const HomeScreen();
 
   /// USED BY THE MAIN SCREEN TO NAVIGATE BETWEEN CONTENT TABS
 
@@ -37,20 +42,17 @@ class NavigationProvider extends ChangeNotifier {
   void navigateToRoute(NavigationRoute route) {
     if (_currentRoute != route) {
       _currentRoute = route;
-      _screenStack = switch (route) {
-        NavigationRoute.home => [const HomeScreen()],
-        NavigationRoute.library => [const CipherLibraryScreen()],
-        NavigationRoute.playlists => [const PlaylistLibraryScreen()],
-        NavigationRoute.schedule => [const ScheduleLibraryScreen()],
-      };
-      _showAppBarStack = [true];
-      _showDrawerIconStack = [true];
-      _showBottomNavBarStack = [true];
+      _screenStack.clear();
+      _showAppBarStack.clear();
+      _showDrawerIconStack.clear();
+      _showBottomNavBarStack.clear();
+
       // Clear onPop callbacks
       while (_onPopCallbacks.isNotEmpty) {
         _onPopCallbacks.last();
         _onPopCallbacks.removeLast();
       }
+
       _error = null; // Clear any previous errors
       notifyListeners();
     }
@@ -72,7 +74,7 @@ class NavigationProvider extends ChangeNotifier {
   }
 
   void pop() {
-    if (_screenStack.length > 1) {
+    if (_screenStack.isNotEmpty) {
       _onPopCallbacks.last();
       _onPopCallbacks.removeLast();
       _screenStack.removeLast();
@@ -102,6 +104,19 @@ class NavigationProvider extends ChangeNotifier {
       _error = null; // Clear errors when starting to load
     }
     notifyListeners();
+  }
+
+  Widget _getScreenForRoute(NavigationRoute route) {
+    switch (route) {
+      case NavigationRoute.home:
+        return HomeScreen();
+      case NavigationRoute.library:
+        return CipherLibraryScreen();
+      case NavigationRoute.playlists:
+        return PlaylistLibraryScreen();
+      case NavigationRoute.schedule:
+        return ScheduleLibraryScreen();
+    }
   }
 
   NavigationItem getNavigationItem(

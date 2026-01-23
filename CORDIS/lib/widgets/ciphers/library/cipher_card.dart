@@ -129,6 +129,8 @@ class _CipherCardState extends State<CipherCard> {
                       ),
                       versionType: VersionType.local,
                     ),
+                    showAppBar: false,
+                    showDrawerIcon: false,
                   );
                 }
               },

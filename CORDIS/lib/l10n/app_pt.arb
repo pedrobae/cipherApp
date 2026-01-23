@@ -175,6 +175,10 @@
   "duplicatePlaceholder": "Duplicar {object}",
   "@duplicatePlaceholder": {"description": "Duplicate object button label", "placeholders": {"object": {}}},
 
+  "schedulePlaylist": "Agendar Playlist",
+  "@schedulePlaylist": {"description": "Create schedule screen title"},
+  "selectPlaylistForScheduleInstruction": "Por favor, crie uma agenda selecionando uma playlist abaixo.",
+  "@selectPlaylistForScheduleInstruction": {"description": "Instruction to select a playlist for scheduling"},
   "nextUp": "Próxima Agenda",
   "@nextUp": {"description": "Next scheduled item label"},
   "nextThisMonth": "Ainda neste Mês",
@@ -296,6 +300,8 @@
   "@hintPrefixA": {"description": "Prefix to be used on text fields with feminine nouns"},
   "hintSuffix": " aqui...",
   "@hintSuffix": {"description": "Suffix to be used on text fields"},
+  "stepXofY": "Passo {current} de {total}",
+  "@stepXofY": {"description": "Indicates the current step out of total steps", "placeholders": {"current": {}, "total": {}}},
 
 
   "errorMessage": "Erro durante {job}: {errorDetails}",

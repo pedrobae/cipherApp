@@ -560,6 +560,18 @@ abstract class AppLocalizations {
   /// **'Duplicar {object}'**
   String duplicatePlaceholder(Object object);
 
+  /// Create schedule screen title
+  ///
+  /// In pt, this message translates to:
+  /// **'Agendar Playlist'**
+  String get schedulePlaylist;
+
+  /// Instruction to select a playlist for scheduling
+  ///
+  /// In pt, this message translates to:
+  /// **'Por favor, crie uma agenda selecionando uma playlist abaixo.'**
+  String get selectPlaylistForScheduleInstruction;
+
   /// Next scheduled item label
   ///
   /// In pt, this message translates to:
@@ -877,6 +889,12 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **' aqui...'**
   String get hintSuffix;
+
+  /// Indicates the current step out of total steps
+  ///
+  /// In pt, this message translates to:
+  /// **'Passo {current} de {total}'**
+  String stepXofY(Object current, Object total);
 
   /// Generic error message with placeholders
   ///

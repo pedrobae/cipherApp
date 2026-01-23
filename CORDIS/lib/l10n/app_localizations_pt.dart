@@ -257,6 +257,13 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String get schedulePlaylist => 'Agendar Playlist';
+
+  @override
+  String get selectPlaylistForScheduleInstruction =>
+      'Por favor, crie uma agenda selecionando uma playlist abaixo.';
+
+  @override
   String get nextUp => 'Próxima Agenda';
 
   @override
@@ -434,6 +441,11 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get hintSuffix => ' aqui...';
+
+  @override
+  String stepXofY(Object current, Object total) {
+    return 'Passo $current de $total';
+  }
 
   @override
   String errorMessage(Object job, Object errorDetails) {

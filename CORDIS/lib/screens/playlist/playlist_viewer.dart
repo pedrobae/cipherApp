@@ -11,10 +11,10 @@ import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/providers/version_provider.dart';
 
-import 'package:cordis/screens/playlist/edit_playlist_sheet.dart';
+import 'package:cordis/widgets/playlist/viewer/edit_playlist_sheet.dart';
 
-import 'package:cordis/widgets/playlist/playlist_version_card.dart';
-import 'package:cordis/widgets/playlist/flow_item_card.dart';
+import 'package:cordis/widgets/playlist/viewer/playlist_version_card.dart';
+import 'package:cordis/widgets/playlist/viewer/flow_item_card.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

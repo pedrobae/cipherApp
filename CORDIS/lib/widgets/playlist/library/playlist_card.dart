@@ -1,6 +1,7 @@
 import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/screens/playlist/view_playlist.dart';
 import 'package:cordis/utils/date_utils.dart';
+import 'package:cordis/widgets/playlist/library/playlist_card_actions.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
@@ -84,23 +85,28 @@ class PlaylistCard extends StatelessWidget {
                 ),
                 // ACTIONS
                 IconButton(
-                  onPressed: () {
-                    // TODO - Show playlist actions
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        backgroundColor: Colors.amberAccent,
-                        content: Text(
-                          'Funcionalidade em desenvolvimento,',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                    );
-                  },
+                  onPressed: () => _openPlaylistActionsSheet(context),
                   icon: Icon(Icons.more_vert),
                 ),
               ],
             ),
           ),
+        );
+      },
+    );
+  }
+
+  void _openPlaylistActionsSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return BottomSheet(
+          shape: LinearBorder(),
+          onClosing: () {},
+          builder: (context) {
+            return PlaylistCardActionsSheet(playlistId: playlistId);
+          },
         );
       },
     );

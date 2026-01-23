@@ -26,6 +26,9 @@ class DatabaseHelper {
         onUpgrade: _onUpgrade, // Handle migrations
       );
 
+      // Enable foreign key constraints to enforce CASCADE delete
+      await db.execute('PRAGMA foreign_keys = ON');
+
       return db;
     } catch (e) {
       rethrow;

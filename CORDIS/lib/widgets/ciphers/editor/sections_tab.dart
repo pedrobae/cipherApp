@@ -100,7 +100,9 @@ class _SectionsTabState extends State<SectionsTab> {
 
                         // ADD SECTION BUTTON
                         IconButton(
-                          tooltip: AppLocalizations.of(context)!.addSection,
+                          tooltip: AppLocalizations.of(context)!.addPlaceholder(
+                            AppLocalizations.of(context)!.section,
+                          ),
                           icon: const Icon(Icons.add),
                           color: colorScheme.onSurface.withValues(alpha: 0.7),
                           onPressed: () {
@@ -220,7 +222,9 @@ class _SectionsTabState extends State<SectionsTab> {
 
               // LABEL
               Text(
-                AppLocalizations.of(context)!.addSection,
+                AppLocalizations.of(
+                  context,
+                )!.addPlaceholder(AppLocalizations.of(context)!.section),
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w500,
                   fontSize: 18,

@@ -327,7 +327,7 @@ class PlaylistProvider extends ChangeNotifier {
 
     for (final item in playlist.items) {
       switch (item.type) {
-        case PlaylistItemType.textSection:
+        case PlaylistItemType.flowItem:
           if (!textSectionItems.any(
             (textItem) =>
                 (textItem['firebaseContentId'] == item.firebaseContentId),

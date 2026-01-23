@@ -207,8 +207,8 @@ class FlowItemProvider extends ChangeNotifier {
   }
 
   // ===== DELETE =====
-  // Delete a text section
-  Future<void> deleteTextSection(int id) async {
+  // Delete a Flow Item by ID
+  Future<void> deleteFlowItem(int id) async {
     if (_isDeleting) return;
 
     _isDeleting = true;

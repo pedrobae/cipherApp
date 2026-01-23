@@ -81,8 +81,12 @@ class _FlowItemEditorState extends State<FlowItemEditor> {
               appBar: AppBar(
                 title: Text(
                   widget.flowItemId != null
-                      ? AppLocalizations.of(context)!.editFlowItem
-                      : AppLocalizations.of(context)!.createFlowItem,
+                      ? AppLocalizations.of(context)!.editPlaceholder(
+                          AppLocalizations.of(context)!.flowItem,
+                        )
+                      : AppLocalizations.of(context)!.createPlaceholder(
+                          AppLocalizations.of(context)!.flowItem,
+                        ),
                   style: textTheme.titleMedium,
                 ),
                 leading: BackButton(

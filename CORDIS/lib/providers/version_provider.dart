@@ -644,6 +644,11 @@ class VersionProvider extends ChangeNotifier {
     }
   }
 
+  void clearVersionsOfCipher(int cipherId) {
+    _localVersions.removeWhere((id, version) => version.cipherId == cipherId);
+    notifyListeners();
+  }
+
   /// ===== SAVE =====
   // Persist the cache to the database
   Future<void> saveVersion({dynamic versionId}) async {

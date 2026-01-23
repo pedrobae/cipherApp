@@ -8,6 +8,7 @@ import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/providers/version_provider.dart';
 import 'package:cordis/screens/cipher/edit_cipher.dart';
 import 'package:cordis/screens/cipher/view_cipher.dart';
+import 'package:cordis/widgets/ciphers/library/cipher_card_actions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -32,8 +33,8 @@ class _CipherCardState extends State<CipherCard> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Consumer5<
       CipherProvider,
@@ -116,7 +117,7 @@ class _CipherCardState extends State<CipherCard> {
                             error.toString(),
                           ),
                         ),
-                        backgroundColor: Theme.of(context).colorScheme.error,
+                        backgroundColor: colorScheme.error,
                       ),
                     );
                   }
@@ -166,61 +167,41 @@ class _CipherCardState extends State<CipherCard> {
                         spacing: 2.0,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            cipher.title,
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
+                          Text(cipher.title, style: textTheme.titleMedium),
                           Row(
                             spacing: 16.0,
                             children: [
                               Text(
                                 '${AppLocalizations.of(context)!.musicKey}: ${cipher.musicKey}',
-                                style: Theme.of(context).textTheme.bodyMedium,
+                                style: textTheme.bodyMedium,
                               ),
                               version.bpm != 0
                                   ? Text(
                                       version.bpm.toString(),
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.bodyMedium,
+                                      style: textTheme.bodyMedium,
                                     )
                                   : Text('-'),
                               duration != Duration.zero
                                   ? Text(
                                       version.duration,
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.bodyMedium,
+                                      style: textTheme.bodyMedium,
                                     )
                                   : Text('-'),
                             ],
                           ),
                           Text(
                             '$versionCount${AppLocalizations.of(context)!.versions}',
-                            style: Theme.of(context).textTheme.bodyMedium!
-                                .copyWith(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.surfaceContainerLowest,
-                                ),
+                            style: textTheme.bodyMedium!.copyWith(
+                              color: colorScheme.surfaceContainerLowest,
+                            ),
                           ),
                         ],
                       ),
                     ),
                     // ACTIONS
                     IconButton(
-                      onPressed: () {
-                        // TODO: implement actions menu
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            backgroundColor: Colors.amberAccent,
-                            content: Text(
-                              'Funcionalidade em desenvolvimento,',
-                              style: TextStyle(color: Colors.black),
-                            ),
-                          ),
-                        );
-                      },
+                      onPressed: () =>
+                          _openCipherActionsSheet(context, selectionProvider),
                       icon: Icon(Icons.more_vert),
                     ),
                   ],
@@ -228,6 +209,30 @@ class _CipherCardState extends State<CipherCard> {
               ),
             );
           },
+    );
+  }
+
+  void _openCipherActionsSheet(
+    BuildContext context,
+    SelectionProvider selectionProvider,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return BottomSheet(
+          shape: LinearBorder(),
+          onClosing: () {},
+          builder: (context) {
+            return CipherCardActionsSheet(
+              cipherId: widget.cipherId,
+              versionType: selectionProvider.isSelectionMode
+                  ? VersionType.playlist
+                  : VersionType.local,
+            );
+          },
+        );
+      },
     );
   }
 }

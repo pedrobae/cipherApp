@@ -377,22 +377,57 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const SizedBox(height: 8),
                 ...tableCounts.entries.map((entry) {
                   final count = entry.value;
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 2),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(entry.key),
-                        Text(
-                          count == -1 ? 'Erro' : count.toString(),
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: count == -1
-                                ? Theme.of(context).colorScheme.error
-                                : null,
-                          ),
+                  return GestureDetector(
+                    onTap: count > 0
+                        ? () {
+                            Navigator.pop(context);
+                            _showTableData(entry.key);
+                          }
+                        : null,
+                    child: Card(
+                      color: count > 0
+                          ? Theme.of(context).colorScheme.surfaceVariant
+                          : null,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
                         ),
-                      ],
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                entry.key,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: count > 0
+                                      ? null
+                                      : Theme.of(context).colorScheme.onSurface
+                                            .withValues(alpha: 0.5),
+                                ),
+                              ),
+                            ),
+                            Text(
+                              count == -1 ? 'Erro' : count.toString(),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: count == -1
+                                    ? Theme.of(context).colorScheme.error
+                                    : Theme.of(context).colorScheme.primary,
+                              ),
+                            ),
+                            if (count > 0) ...[
+                              const SizedBox(width: 8),
+                              Icon(
+                                Icons.arrow_forward_ios,
+                                size: 16,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
                     ),
                   );
                 }),
@@ -413,6 +448,72 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Erro ao acessar banco: $e'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+    }
+  }
+
+  Future<void> _showTableData(String tableName) async {
+    try {
+      final dbHelper = DatabaseHelper();
+      final db = await dbHelper.database;
+
+      final rows = await db.query(tableName, limit: 100);
+
+      if (!mounted) return;
+
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Dados da tabela: $tableName'),
+          content: SingleChildScrollView(
+            child: rows.isEmpty
+                ? const Text('Nenhum dado encontrado')
+                : SizedBox(
+                    width: double.maxFinite,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: DataTable(
+                        columns: rows.first.keys
+                            .map((column) => DataColumn(label: Text(column)))
+                            .toList(),
+                        rows: rows
+                            .map(
+                              (row) => DataRow(
+                                cells: row.values
+                                    .map(
+                                      (value) => DataCell(
+                                        Text(
+                                          value?.toString() ?? 'null',
+                                          maxLines: 3,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(fontSize: 12),
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ),
+                  ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Voltar'),
+            ),
+          ],
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro ao carregar dados: $e'),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );

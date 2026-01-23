@@ -60,6 +60,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get about => 'About';
 
   @override
+  String get cipher => 'Song';
+
+  @override
   String get title => 'Title';
 
   @override
@@ -100,9 +103,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get songStructure => 'Song Structure';
-
-  @override
-  String get addSection => 'Add Section';
 
   @override
   String get selectSectionType => 'Select your Section';
@@ -155,6 +155,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Could not create cipher: existing cipher found.';
 
   @override
+  String get deleteCipherDescription =>
+      'When deleting a song, all its versions will also be deleted. This action cannot be undone.';
+
+  @override
   String get searchCiphers => 'Search title, author...';
 
   @override
@@ -165,9 +169,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noCiphersFound => 'No Song Map found';
-
-  @override
-  String get createPlaylist => 'Create Playlist';
 
   @override
   String get namePlaylistPrompt => 'Name your playlist';
@@ -186,6 +187,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get playlist => 'Playlist';
 
   @override
+  String get flowItem => 'Flow Item';
+
+  @override
   String get searchPlaylist => 'Search playlists...';
 
   @override
@@ -200,6 +204,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get emptyPlaylistInstructions =>
       'Please add Song and Flow items to build your playlist.';
+
+  @override
+  String get deletePlaylistDescription =>
+      'When deleting a playlist, all of its items will also be deleted. This action cannot be undone.';
 
   @override
   String get item => 'item';
@@ -220,16 +228,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get view => 'View';
 
   @override
-  String get addSong => 'Add Song';
+  String createPlaceholder(Object object) {
+    return 'Create $object';
+  }
 
   @override
-  String get addFlowItem => 'Add Flow Item';
+  String editPlaceholder(Object object) {
+    return 'Edit $object';
+  }
 
   @override
-  String get editFlowItem => 'Edit Flow Item';
+  String addPlaceholder(Object object) {
+    return 'Add $object';
+  }
 
   @override
-  String get createFlowItem => 'Create Flow Item';
+  String savePlaceholder(Object object) {
+    return 'Save $object';
+  }
 
   @override
   String get nextUp => 'Next Up';
@@ -284,9 +300,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String importedFrom(Object importType) {
     return 'Song imported from $importType';
   }
-
-  @override
-  String get addSongToLibrary => 'Add Song to Library';
 
   @override
   String playlistVersionName(Object playlistName) {
@@ -345,18 +358,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cancel => 'Cancel';
 
   @override
-  String get delete => 'Delete';
-
-  @override
   String get confirm => 'Confirm';
 
   @override
-  String editPlaceholder(Object object) {
-    return 'Edit $object';
+  String get quickAction => 'Quick Action';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get deleteConfirmationTitle => 'Confirm Deletion';
+
+  @override
+  String deleteConfirmationMessage(Object object) {
+    return 'Are you sure you want to delete this $object?';
   }
 
   @override
-  String get quickAction => 'Quick Action';
+  String get deleteWarningMessage => 'This action cannot be undone.';
 
   @override
   String welcome(Object userName) {

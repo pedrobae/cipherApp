@@ -146,7 +146,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           FilledTextButton(
                             isDarkButton: true,
-                            text: AppLocalizations.of(context)!.createPlaylist,
+                            text: AppLocalizations.of(context)!
+                                .createPlaceholder(
+                                  AppLocalizations.of(context)!.playlist,
+                                ),
                             onPressed: () {
                               navigationProvider.navigateToRoute(
                                 NavigationRoute.playlists,
@@ -155,9 +158,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             },
                           ),
                           FilledTextButton(
-                            text: AppLocalizations.of(
-                              context,
-                            )!.addSongToLibrary,
+                            text: AppLocalizations.of(context)!.addPlaceholder(
+                              AppLocalizations.of(context)!.cipher,
+                            ),
                             onPressed: () {
                               navigationProvider.navigateToRoute(
                                 NavigationRoute.library,

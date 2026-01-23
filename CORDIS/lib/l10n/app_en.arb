@@ -41,6 +41,8 @@
   "@about": {"description": "About navigation tab"},
 
 
+  "cipher": "Song",
+  "@cipher": {"description": "Cipher/Song label"},
   "title": "Title",
   "@title": {"description": "Song title field label"},
   "titleHint": "Enter title ...",
@@ -99,6 +101,7 @@
   "@info": {"description": "Information button/tab label"},
 
 
+
   "cipherCreatedSuccessfully": "Cipher created successfully!",
   "@cipherCreatedSuccessfully": {"description": "Success message when cipher is created"},
   "cipherSavedSuccessfully": "Cipher saved successfully!",
@@ -109,6 +112,8 @@
   "@failedToCreateVersion": {"description": "Error message when version creation fails"},
   "cannotCreateCipherExistingCipher": "Could not create cipher: existing cipher found.",
   "@cannotCreateCipherExistingCipher": {"description": "Error message when trying to create duplicate cipher"},
+  "deleteCipherDescription": "When deleting a song, all its versions will also be deleted. This action cannot be undone.",
+  "@deleteCipherDescription": {"description": "Description for deleting a cipher warning"},
 
 
   "searchCiphers": "Search title, author...",
@@ -121,8 +126,6 @@
   "@noCiphersFound": {"description": "Message displayed when no ciphers are found"},
 
 
-  "createPlaylist": "Create Playlist",
-  "@createPlaylist": {"description": "Create playlist button label"},
   "namePlaylistPrompt": "Name your playlist",
   "@namePlaylistPrompt": {"description": "Prompt to name the playlist"},
   "createPlaylistInstructions": "Create an empty playlist first, you can add songs and flow items later.",
@@ -133,6 +136,8 @@
   "@playlistNameHint": {"description": "Hint text for playlist name input field"},
   "playlist": "Playlist",
   "@playlist": {"description": "Playlist label"},
+  "flowItem": "Flow Item",
+  "@flowItem": {"description": "Flow item label"},
   "searchPlaylist": "Search playlists...",
   "@searchPlaylist": {"description": "Hint text for searching playlists"},
   "noPlaylistsFound": "No playlists found",
@@ -143,6 +148,9 @@
   "@emptyPlaylist": {"description": "Message displayed when a playlist is empty"},
   "emptyPlaylistInstructions": "Please add Song and Flow items to build your playlist.",
   "@emptyPlaylistInstructions": {"description": "Instructions for adding items to an empty playlist"},
+  "deletePlaylistDescription": "When deleting a playlist, all of its items will also be deleted. This action cannot be undone.",
+  "@deletePlaylistDescription": {"description": "Description for deleting a playlist warning"},
+
   "item": "item",
   "@item": {"description": "Singular item label"},
   "items": "items",
@@ -155,14 +163,14 @@
   "@share": {"description": "Share button label"},
   "view": "View",
   "@view": {"description": "View button label"},
-  "addSong": "Add Song",
-  "@addSong": {"description": "Add song button label"},
-  "addFlowItem": "Add Flow Item",
-  "@addFlowItem": {"description": "Add flow item button label"},
-  "editFlowItem": "Edit Flow Item",
-  "@editFlowItem": {"description": "Edit flow item appBar label"},
-  "createFlowItem": "Create Flow Item",
-  "@createFlowItem": {"description": "Create flow item appBar label"},
+  "addPlaceholder": "Add {object}",
+  "@addPlaceholder": {"description": "Add object button label", "placeholders": {"object": {}}},
+  "editPlaceholder": "Edit {object}",
+  "@editPlaceholder": {"description": "Edit object button label", "placeholders": {"object": {}}},
+  "createPlaceholder": "Create {object}",
+  "@createPlaceholder": {"description": "Create object button label", "placeholders": {"object": {}}},
+  "savePlaceholder": "Save {object}",
+  "@savePlaceholder": {"description": "Save object button label", "placeholders": {"object": {}}},
 
   
   "nextUp": "Next Up",
@@ -244,15 +252,19 @@
   "@save": {"description": "Save button label"},
   "cancel": "Cancel",
   "@cancel": {"description": "Cancel button label"},
-  "delete": "Delete",
-  "@delete": {"description": "Delete button label"},
   "confirm": "Confirm",
   "@confirm": {"description": "Confirm button label"},
-  "editPlaceholder": "Edit {object}",
-  "@editPlaceholder": {"description": "Placeholder text for editing an object", "placeholders": {"object": {}}},
   "quickAction": "Quick Action",
   "@quickAction": {"description": "Label for quick action button"},
 
+  "delete": "Delete",
+  "@delete": {"description": "Delete button label"},
+  "deleteConfirmationTitle": "Confirm Deletion",
+  "@deleteConfirmationTitle": {"description": "Title for delete confirmation dialog"},
+  "deleteConfirmationMessage": "Are you sure you want to delete this {object}?",
+  "@deleteConfirmationMessage": {"description": "Message asking for confirmation to delete an object", "placeholders": {"object": {}}},
+  "deleteWarningMessage": "This action cannot be undone.",
+  "@deleteWarningMessage": {"description": "Warning message when deleting"},
 
   "welcome": "Hello {userName}",
   "@welcome": {"description": "Welcome message with the user's name", "placeholders": {"userName": {}}},

@@ -5,6 +5,7 @@ import 'package:cordis/utils/date_utils.dart';
 import 'package:cordis/widgets/ciphers/editor/custom_reorderable_delayed.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:cordis/widgets/flow_item_editor.dart';
+import 'package:cordis/widgets/playlist/viewer/flow_item_card_actions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -88,9 +89,8 @@ class FlowItemCard extends StatelessWidget {
                             ),
                           ),
                           IconButton(
-                            // maybe switch to PopupMenuButton
                             onPressed: () {
-                              // TODO - show flowItem actions
+                              _openFlowActionsSheet(context);
                             },
                             icon: Icon(Icons.more_vert_rounded, size: 30),
                           ),
@@ -116,6 +116,22 @@ class FlowItemCard extends StatelessWidget {
               ),
             ],
           ),
+        );
+      },
+    );
+  }
+
+  void _openFlowActionsSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return BottomSheet(
+          shape: LinearBorder(),
+          onClosing: () {},
+          builder: (context) {
+            return FlowItemCardActionsSheet(flowItemId: flowItemId);
+          },
         );
       },
     );

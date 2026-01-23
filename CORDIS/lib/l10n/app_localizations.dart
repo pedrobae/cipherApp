@@ -200,6 +200,12 @@ abstract class AppLocalizations {
   /// **'Sobre'**
   String get about;
 
+  /// Cipher/Song label
+  ///
+  /// In pt, this message translates to:
+  /// **'Cifra'**
+  String get cipher;
+
   /// Song title field label
   ///
   /// In pt, this message translates to:
@@ -283,12 +289,6 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Mapa da Música'**
   String get songStructure;
-
-  /// Add section button label
-  ///
-  /// In pt, this message translates to:
-  /// **'Adicionar Seção'**
-  String get addSection;
 
   /// Prompt to select a section type
   ///
@@ -386,6 +386,12 @@ abstract class AppLocalizations {
   /// **'Não foi possível criar a cifra porque uma cifra com o mesmo ID já existe.'**
   String get cannotCreateCipherExistingCipher;
 
+  /// Description for deleting a cipher warning
+  ///
+  /// In pt, this message translates to:
+  /// **'Ao excluir uma cifra, todas as suas versões também serão excluídas. Esta ação não pode ser desfeita.'**
+  String get deleteCipherDescription;
+
   /// Hint text for cipher search field
   ///
   /// In pt, this message translates to:
@@ -409,12 +415,6 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Nenhuma cifra encontrada'**
   String get noCiphersFound;
-
-  /// Create playlist button label
-  ///
-  /// In pt, this message translates to:
-  /// **'Criar Playlist'**
-  String get createPlaylist;
 
   /// Prompt to name the playlist
   ///
@@ -446,6 +446,12 @@ abstract class AppLocalizations {
   /// **'Playlist'**
   String get playlist;
 
+  /// Flow item label
+  ///
+  /// In pt, this message translates to:
+  /// **'Texto'**
+  String get flowItem;
+
   /// Hint text for searching playlists
   ///
   /// In pt, this message translates to:
@@ -475,6 +481,12 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Por favor, adicione músicas e itens de Texto para construir sua playlist.'**
   String get emptyPlaylistInstructions;
+
+  /// Description for deleting a playlist warning
+  ///
+  /// In pt, this message translates to:
+  /// **'Ao excluir uma playlist, todos os seus itens também serão excluídos. Esta ação não pode ser desfeita.'**
+  String get deletePlaylistDescription;
 
   /// Singular item label
   ///
@@ -512,29 +524,29 @@ abstract class AppLocalizations {
   /// **'Visualizar'**
   String get view;
 
-  /// Add song button label
+  /// Create object button label
   ///
   /// In pt, this message translates to:
-  /// **'Adicionar Música'**
-  String get addSong;
+  /// **'Criar {object}'**
+  String createPlaceholder(Object object);
 
-  /// Add flow item button label
+  /// Edit object button label
   ///
   /// In pt, this message translates to:
-  /// **'Adicionar Texto'**
-  String get addFlowItem;
+  /// **'Editar {object}'**
+  String editPlaceholder(Object object);
 
-  /// Edit flow item appBar label
+  /// Add object button label
   ///
   /// In pt, this message translates to:
-  /// **'Editar Texto'**
-  String get editFlowItem;
+  /// **'Adicionar {object}'**
+  String addPlaceholder(Object object);
 
-  /// Create flow item appBar label
+  /// Save object button label
   ///
   /// In pt, this message translates to:
-  /// **'Criar Texto'**
-  String get createFlowItem;
+  /// **'Salvar {object}'**
+  String savePlaceholder(Object object);
 
   /// Next scheduled item label
   ///
@@ -637,12 +649,6 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Cifra importada de {importType}'**
   String importedFrom(Object importType);
-
-  /// Add song to library button label
-  ///
-  /// In pt, this message translates to:
-  /// **'Adicionar Música'**
-  String get addSongToLibrary;
 
   /// Default name for a playlist's new version
   ///
@@ -752,29 +758,41 @@ abstract class AppLocalizations {
   /// **'Cancelar'**
   String get cancel;
 
-  /// Delete button label
-  ///
-  /// In pt, this message translates to:
-  /// **'Excluir'**
-  String get delete;
-
   /// Confirm button label
   ///
   /// In pt, this message translates to:
   /// **'Confirmar'**
   String get confirm;
 
-  /// Edit placeholder with object name
-  ///
-  /// In pt, this message translates to:
-  /// **'Editar {object}'**
-  String editPlaceholder(Object object);
-
   /// Label for quick action button
   ///
   /// In pt, this message translates to:
   /// **'Ação Rápida'**
   String get quickAction;
+
+  /// Delete button label
+  ///
+  /// In pt, this message translates to:
+  /// **'Excluir'**
+  String get delete;
+
+  /// Title for delete confirmation dialog
+  ///
+  /// In pt, this message translates to:
+  /// **'Confirmar Exclusão'**
+  String get deleteConfirmationTitle;
+
+  /// Message asking for confirmation to delete an object
+  ///
+  /// In pt, this message translates to:
+  /// **'Tem certeza de que deseja excluir este {object}?'**
+  String deleteConfirmationMessage(Object object);
+
+  /// Warning message when deleting
+  ///
+  /// In pt, this message translates to:
+  /// **'ATENÇÃO: Esta ação não pode ser desfeita.'**
+  String get deleteWarningMessage;
 
   /// Welcome message with the user's name
   ///

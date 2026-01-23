@@ -196,7 +196,9 @@ class _EditCipherScreenState extends State<EditCipherScreen>
                     : null,
                 title: Text(
                   selectionProvider.isSelectionMode
-                      ? AppLocalizations.of(context)!.addSongToLibrary
+                      ? AppLocalizations.of(
+                          context,
+                        )!.editPlaceholder(AppLocalizations.of(context)!.cipher)
                       : AppLocalizations.of(context)!.cipherEditorTitle,
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w500,

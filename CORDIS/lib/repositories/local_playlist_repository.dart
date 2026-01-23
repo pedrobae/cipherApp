@@ -42,7 +42,7 @@ class PlaylistRepository {
               'included_at': DateTime.now().toIso8601String(),
             });
             break;
-          case PlaylistItemType.textSection:
+          case PlaylistItemType.flowItem:
             // Handle text sections if they exist
             // For now, just skip as we're removing text sections
             break;

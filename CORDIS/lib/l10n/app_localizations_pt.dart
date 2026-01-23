@@ -61,6 +61,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get about => 'Sobre';
 
   @override
+  String get cipher => 'Cifra';
+
+  @override
   String get title => 'Título';
 
   @override
@@ -101,9 +104,6 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get songStructure => 'Mapa da Música';
-
-  @override
-  String get addSection => 'Adicionar Seção';
 
   @override
   String get selectSectionType => 'Selecione sua Seção';
@@ -156,6 +156,10 @@ class AppLocalizationsPt extends AppLocalizations {
       'Não foi possível criar a cifra porque uma cifra com o mesmo ID já existe.';
 
   @override
+  String get deleteCipherDescription =>
+      'Ao excluir uma cifra, todas as suas versões também serão excluídas. Esta ação não pode ser desfeita.';
+
+  @override
   String get searchCiphers => 'Pesquisar por título, autor...';
 
   @override
@@ -166,9 +170,6 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get noCiphersFound => 'Nenhuma cifra encontrada';
-
-  @override
-  String get createPlaylist => 'Criar Playlist';
 
   @override
   String get namePlaylistPrompt => 'Nomeie sua playlist';
@@ -187,6 +188,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get playlist => 'Playlist';
 
   @override
+  String get flowItem => 'Texto';
+
+  @override
   String get searchPlaylist => 'Pesquisar por nome da playlist...';
 
   @override
@@ -201,6 +205,10 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get emptyPlaylistInstructions =>
       'Por favor, adicione músicas e itens de Texto para construir sua playlist.';
+
+  @override
+  String get deletePlaylistDescription =>
+      'Ao excluir uma playlist, todos os seus itens também serão excluídos. Esta ação não pode ser desfeita.';
 
   @override
   String get item => 'item';
@@ -221,16 +229,24 @@ class AppLocalizationsPt extends AppLocalizations {
   String get view => 'Visualizar';
 
   @override
-  String get addSong => 'Adicionar Música';
+  String createPlaceholder(Object object) {
+    return 'Criar $object';
+  }
 
   @override
-  String get addFlowItem => 'Adicionar Texto';
+  String editPlaceholder(Object object) {
+    return 'Editar $object';
+  }
 
   @override
-  String get editFlowItem => 'Editar Texto';
+  String addPlaceholder(Object object) {
+    return 'Adicionar $object';
+  }
 
   @override
-  String get createFlowItem => 'Criar Texto';
+  String savePlaceholder(Object object) {
+    return 'Salvar $object';
+  }
 
   @override
   String get nextUp => 'Próxima Agenda';
@@ -285,9 +301,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String importedFrom(Object importType) {
     return 'Cifra importada de $importType';
   }
-
-  @override
-  String get addSongToLibrary => 'Adicionar Música';
 
   @override
   String playlistVersionName(Object playlistName) {
@@ -346,18 +359,25 @@ class AppLocalizationsPt extends AppLocalizations {
   String get cancel => 'Cancelar';
 
   @override
-  String get delete => 'Excluir';
-
-  @override
   String get confirm => 'Confirmar';
 
   @override
-  String editPlaceholder(Object object) {
-    return 'Editar $object';
+  String get quickAction => 'Ação Rápida';
+
+  @override
+  String get delete => 'Excluir';
+
+  @override
+  String get deleteConfirmationTitle => 'Confirmar Exclusão';
+
+  @override
+  String deleteConfirmationMessage(Object object) {
+    return 'Tem certeza de que deseja excluir este $object?';
   }
 
   @override
-  String get quickAction => 'Ação Rápida';
+  String get deleteWarningMessage =>
+      'ATENÇÃO: Esta ação não pode ser desfeita.';
 
   @override
   String welcome(Object userName) {

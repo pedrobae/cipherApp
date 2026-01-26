@@ -41,7 +41,6 @@ class FilledTextButton extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     return FilledButton(
       style: FilledButton.styleFrom(
-        fixedSize: isDense ? Size.fromHeight(25) : Size.fromHeight(50),
         backgroundColor: isDarkButton
             ? (isDisabled
                   ? colorScheme.onSurface.withValues(alpha: 0.68)
@@ -52,6 +51,7 @@ class FilledTextButton extends StatelessWidget {
         side: BorderSide(color: colorScheme.onSurface, width: 1.2),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
         padding: isDense ? const EdgeInsets.all(0) : const EdgeInsets.all(12),
+        visualDensity: isDense ? VisualDensity.compact : VisualDensity.standard,
       ),
       onPressed: isDisabled ? null : onPressed,
       child: Row(
@@ -71,7 +71,7 @@ class FilledTextButton extends StatelessWidget {
           Text(
             text,
             style: TextStyle(
-              fontSize: isDense ? 14 : 16,
+              fontSize: isDense ? 14 : 18,
               fontWeight: FontWeight.w500,
               color: isDisabled
                   ? Colors.black

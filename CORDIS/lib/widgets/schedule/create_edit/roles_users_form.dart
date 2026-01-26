@@ -17,6 +17,8 @@ class RolesAndUsersForm extends StatefulWidget {
 class _RolesAndUsersFormState extends State<RolesAndUsersForm> {
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Consumer<ScheduleProvider>(
       builder: (context, scheduleProvider, child) {
         final schedule = scheduleProvider.getScheduleById(widget.scheduleId);
@@ -29,36 +31,123 @@ class _RolesAndUsersFormState extends State<RolesAndUsersForm> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // ROLES LIST
-            if (schedule.roles.isEmpty) ...[
-              Center(
-                child: Column(
-                  children: [
-                    Text(AppLocalizations.of(context)!.noRoles),
-                    SizedBox(height: 16),
-                    Text(AppLocalizations.of(context)!.addRolesInstructions),
-                  ],
-                ),
-              ),
-            ] else ...[
-              Expanded(
-                child: ListView.builder(
-                  itemCount: schedule.roles.length,
-                  itemBuilder: (context, index) {
-                    final role = schedule.roles[index];
-                    return RoleCard(role: role);
-                  },
-                ),
-              ),
-            ],
-
+            Expanded(
+              child: schedule.roles.isEmpty
+                  ? Center(
+                      child: Column(
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)!.noRoles,
+                            style: textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          SizedBox(height: 16),
+                          Text(
+                            AppLocalizations.of(context)!.addRolesInstructions,
+                            style: textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w500,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: schedule.roles.length,
+                      itemBuilder: (context, index) {
+                        final role = schedule.roles[index];
+                        return RoleCard(
+                          scheduleId: widget.scheduleId,
+                          role: role,
+                        );
+                      },
+                    ),
+            ),
             // ADD ROLE BUTTON
             FilledTextButton.icon(
               text: AppLocalizations.of(context)!.role,
               icon: Icons.add,
-              onPressed: () {},
+              onPressed: () =>
+                  _openNewRoleSheet(context, schedule, scheduleProvider),
               isDense: true,
             ),
           ],
+        );
+      },
+    );
+  }
+
+  void _openNewRoleSheet(
+    BuildContext context,
+    dynamic schedule,
+    ScheduleProvider scheduleProvider,
+  ) {
+    final TextEditingController roleNameController = TextEditingController();
+
+    showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (context) {
+        final colorScheme = Theme.of(context).colorScheme;
+
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              color: colorScheme.surface,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(0)),
+            ),
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      AppLocalizations.of(
+                        context,
+                      )!.createPlaceholder(AppLocalizations.of(context)!.role),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.close),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+                TextField(
+                  controller: roleNameController,
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.roleNameHint,
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                SizedBox(height: 16),
+                FilledTextButton(
+                  text: AppLocalizations.of(context)!.save,
+                  isDarkButton: true,
+                  onPressed: () {
+                    final roleName = roleNameController.text.trim();
+                    if (roleName.isNotEmpty) {
+                      scheduleProvider.addRoleToSchedule(
+                        widget.scheduleId,
+                        roleName,
+                      );
+                      Navigator.pop(context);
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
         );
       },
     );

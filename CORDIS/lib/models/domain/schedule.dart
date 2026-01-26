@@ -49,7 +49,7 @@ class Schedule {
   Map<String, dynamic> toSqlite() {
     return {
       'firebase_id': firebaseId,
-      'owner_id': ownerFirebaseId,
+      'owner_firebase_id': ownerFirebaseId,
       'name': name,
       'date': date.toIso8601String(),
       'time':
@@ -58,6 +58,32 @@ class Schedule {
       'playlistId': playlist?.id,
       'annotations': annotations,
     };
+  }
+
+  Schedule copyWith({
+    int? id,
+    String? firebaseId,
+    String? ownerFirebaseId,
+    String? name,
+    DateTime? date,
+    TimeOfDay? time,
+    String? location,
+    Playlist? playlist,
+    List<Role>? roles,
+    String? annotations,
+  }) {
+    return Schedule(
+      id: id ?? this.id,
+      firebaseId: firebaseId ?? this.firebaseId,
+      ownerFirebaseId: ownerFirebaseId ?? this.ownerFirebaseId,
+      name: name ?? this.name,
+      date: date ?? this.date,
+      time: time ?? this.time,
+      location: location ?? this.location,
+      playlist: playlist ?? this.playlist,
+      roles: roles ?? this.roles,
+      annotations: annotations ?? this.annotations,
+    );
   }
 }
 

@@ -26,6 +26,18 @@
   "forgotPasswordSuffix": "Please try again or Request a new one.",
   "@forgotPasswordSuffix": {"description": "Suffix text for forgot password message"},
 
+  "user": "User",
+  "@user": {"description": "User related messages"},
+  "name": "Name",
+  "@name": {"description": "Name field label"},
+  "enterNameHint": "Enter name...",
+  "@enterNameHint": {"description": "Hint text for name input"},
+  "enterEmailHint": "Enter email...",
+  "@enterEmailHint": {"description": "Hint text for email input"},
+  "pleaseEnterNameAndEmail": "Please enter name and email.",
+  "@pleaseEnterNameAndEmail": {"description": "Validation message for name and email"},
+
+
 
   "home": "Home",
   "@home": {"description": "Home navigation tab"},
@@ -213,6 +225,12 @@
   "@noRoles": {"description": "Message displayed when there are no roles defined"},
   "addRolesInstructions": "Add your own roles and people, and assign them to this schedule.",
   "@addRolesInstructions": {"description": "Instructions to add roles and assign users to a schedule"},
+  "roleNameHint": "e.g., Worship Leader, Vocalist",
+  "@roleNameHint": {"description": "Hint text for role name input field"},
+  "member": "Member",
+  "@member": {"description": "Member label"},
+  "assignMembersToRole": "Assign Members to {role}",
+  "@assignMembersToRole": {"description": "Prompt to assign members to a role", "placeholders": {"role": {}}},
   "noMembers": "No members yet.",
   "@noMembers": {"description": "Message displayed when there are no members defined"},
   "xMembers": "{count} members",
@@ -305,6 +323,10 @@
   "@quickAction": {"description": "Label for quick action button"},
   "copySuffix": "(Copy)",
   "@copySuffix": {"description": "Suffix indicating copy action"},
+  "assign": "Assign",
+  "@assign": {"description": "Assign button label"},
+  "clear": "Clear",
+  "@clear": {"description": "Clear button label"},
 
   
   "delete": "Delete",

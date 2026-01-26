@@ -21,7 +21,7 @@ class DatabaseHelper {
 
       final db = await openDatabase(
         path,
-        version: 10,
+        version: 11,
         onCreate: _onCreate,
         onUpgrade: _onUpgrade, // Handle migrations
       );
@@ -180,10 +180,13 @@ class DatabaseHelper {
       CREATE TABLE schedule (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         playlist_id INTEGER NOT NULL,
+        name TEXT NOT NULL,
         date TEXT NOT NULL,
         time TEXT NOT NULL,
         location TEXT,
+        annotations TEXT,
         firebase_id TEXT UNIQUE,
+        owner_firebase_id TEXT NOT NULL,
         FOREIGN KEY (playlist_id) REFERENCES playlist (id) ON DELETE CASCADE
       )
     ''');
@@ -344,6 +347,20 @@ class DatabaseHelper {
       // ADD DURATION COLUMN TO PLAYLIST_TEXT TABLE
       await db.execute(
         'ALTER TABLE playlist_text ADD COLUMN duration INTEGER DEFAULT 0',
+      );
+    }
+    if (oldVersion < 12) {
+      // ADD NAME COLUMN TO SCHEDULE TABLE
+      await db.execute(
+        'ALTER TABLE schedule ADD COLUMN name TEXT NOT NULL DEFAULT ""',
+      );
+
+      // ADD ANNOTATIONS COLUMN TO SCHEDULE TABLE
+      await db.execute('ALTER TABLE schedule ADD COLUMN annotations TEXT');
+
+      // ADD OWNER_FIREBASE_ID COLUMN TO SCHEDULE TABLE
+      await db.execute(
+        'ALTER TABLE schedule ADD COLUMN owner_firebase_id TEXT NOT NULL DEFAULT ""',
       );
     }
   }

@@ -4,7 +4,6 @@ import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/schedule_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
-import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/screens/playlist/playlist_library.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:cordis/widgets/schedule/create_edit/details_form.dart';
@@ -69,10 +68,9 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer6<
+    return Consumer5<
       ScheduleProvider,
       PlaylistProvider,
-      UserProvider,
       MyAuthProvider,
       SelectionProvider,
       NavigationProvider
@@ -82,7 +80,6 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
             context,
             scheduleProvider,
             playlistProvider,
-            userProvider,
             myAuthProvider,
             selectionProvider,
             navigationProvider,
@@ -221,13 +218,15 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
                             break;
                           case 3:
                             // Create Schedule
-                            scheduleProvider.createFromCache().then((success) {
-                              if (success) {
-                                navigationProvider.navigateToRoute(
-                                  NavigationRoute.schedule,
-                                );
-                              }
-                            });
+                            scheduleProvider
+                                .createFromCache(myAuthProvider.id!)
+                                .then((success) {
+                                  if (success) {
+                                    navigationProvider.navigateToRoute(
+                                      NavigationRoute.schedule,
+                                    );
+                                  }
+                                });
                             break;
                           default:
                             null;

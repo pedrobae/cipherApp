@@ -27,6 +27,18 @@
   "@forgotPasswordSuffix": {"description": "Suffix text for forgot password message"},
 
 
+  "user": "Usuário",
+  "@user": {"description": "User related messages"},
+  "name": "Nome",
+  "@name": {"description": "Name field label"},
+  "enterNameHint": "Insira o nome...",
+  "@enterNameHint": {"description": "Hint text for name input"},
+  "enterEmailHint": "Insira o e-mail...",
+  "@enterEmailHint": {"description": "Hint text for email input"},
+  "pleaseEnterNameAndEmail": "Por favor, insira o nome e o e-mail.",
+  "@pleaseEnterNameAndEmail": {"description": "Validation message for name and email"},
+
+
   "home": "Home",
   "@home": {"description": "Home navigation tab"},
   "library": "Biblioteca",
@@ -208,6 +220,12 @@
   "@noRoles": {"description": "Message displayed when there are no roles defined"},
   "addRolesInstructions": "Adicione seus próprios papéis e pessoas, e atribua-as a esta agenda.",
   "@addRolesInstructions": {"description": "Instructions to add roles and assign users to a schedule"},
+  "roleNameHint": "ex.: Dirigente, Vocalista...",
+  "@roleNameHint": {"description": "Hint text for role name input"},
+  "member": "Membro",
+  "@member": {"description": "Member label"},
+  "assignMembersToRole": "Atribuir Membro à {role}",
+  "@assignMembersToRole": {"description": "Prompt to assign members to a role", "placeholders": {"role": {}}},
   "noMembers": "Nenhum Membro Atribuído",
   "@noMembers": {"description": "Message displayed when no members are assigned to a role"},
   "xMembers": "{count} Membros",
@@ -298,6 +316,10 @@
   "@quickAction": {"description": "Label for quick action button"},
   "copySuffix": "(Cópia)",
   "@copySuffix": {"description": "Suffix indicating copy action"},
+  "assign": "Atribuir",
+  "@assign": {"description": "Assign button label"},
+  "clear": "Limpar",
+  "@clear": {"description": "Clear button label"},
   
 
   "delete": "Excluir",

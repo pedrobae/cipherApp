@@ -71,7 +71,7 @@ class MainScreenState extends State<MainScreen> {
                       border: Border(
                         top: BorderSide(
                           color: colorScheme.surfaceContainerLowest,
-                          width: 0.1,
+                          width: 0.5,
                         ),
                       ),
                     ),

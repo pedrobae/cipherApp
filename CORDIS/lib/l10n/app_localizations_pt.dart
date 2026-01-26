@@ -43,6 +43,21 @@ class AppLocalizationsPt extends AppLocalizations {
       'Por favor, tente novamente ou solicite uma nova.';
 
   @override
+  String get user => 'Usuário';
+
+  @override
+  String get name => 'Nome';
+
+  @override
+  String get enterNameHint => 'Insira o nome...';
+
+  @override
+  String get enterEmailHint => 'Insira o e-mail...';
+
+  @override
+  String get pleaseEnterNameAndEmail => 'Por favor, insira o nome e o e-mail.';
+
+  @override
   String get home => 'Home';
 
   @override
@@ -309,6 +324,17 @@ class AppLocalizationsPt extends AppLocalizations {
       'Adicione seus próprios papéis e pessoas, e atribua-as a esta agenda.';
 
   @override
+  String get roleNameHint => 'ex.: Dirigente, Vocalista...';
+
+  @override
+  String get member => 'Membro';
+
+  @override
+  String assignMembersToRole(Object role) {
+    return 'Atribuir Membro à $role';
+  }
+
+  @override
   String get noMembers => 'Nenhum Membro Atribuído';
 
   @override
@@ -437,6 +463,12 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get copySuffix => '(Cópia)';
+
+  @override
+  String get assign => 'Atribuir';
+
+  @override
+  String get clear => 'Limpar';
 
   @override
   String get delete => 'Excluir';

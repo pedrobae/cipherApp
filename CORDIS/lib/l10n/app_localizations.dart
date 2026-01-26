@@ -164,6 +164,36 @@ abstract class AppLocalizations {
   /// **'Por favor, tente novamente ou solicite uma nova.'**
   String get forgotPasswordSuffix;
 
+  /// User related messages
+  ///
+  /// In pt, this message translates to:
+  /// **'Usuário'**
+  String get user;
+
+  /// Name field label
+  ///
+  /// In pt, this message translates to:
+  /// **'Nome'**
+  String get name;
+
+  /// Hint text for name input
+  ///
+  /// In pt, this message translates to:
+  /// **'Insira o nome...'**
+  String get enterNameHint;
+
+  /// Hint text for email input
+  ///
+  /// In pt, this message translates to:
+  /// **'Insira o e-mail...'**
+  String get enterEmailHint;
+
+  /// Validation message for name and email
+  ///
+  /// In pt, this message translates to:
+  /// **'Por favor, insira o nome e o e-mail.'**
+  String get pleaseEnterNameAndEmail;
+
   /// Home navigation tab
   ///
   /// In pt, this message translates to:
@@ -650,6 +680,24 @@ abstract class AppLocalizations {
   /// **'Adicione seus próprios papéis e pessoas, e atribua-as a esta agenda.'**
   String get addRolesInstructions;
 
+  /// Hint text for role name input
+  ///
+  /// In pt, this message translates to:
+  /// **'ex.: Dirigente, Vocalista...'**
+  String get roleNameHint;
+
+  /// Member label
+  ///
+  /// In pt, this message translates to:
+  /// **'Membro'**
+  String get member;
+
+  /// Prompt to assign members to a role
+  ///
+  /// In pt, this message translates to:
+  /// **'Atribuir Membro à {role}'**
+  String assignMembersToRole(Object role);
+
   /// Message displayed when no members are assigned to a role
   ///
   /// In pt, this message translates to:
@@ -895,6 +943,18 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'(Cópia)'**
   String get copySuffix;
+
+  /// Assign button label
+  ///
+  /// In pt, this message translates to:
+  /// **'Atribuir'**
+  String get assign;
+
+  /// Clear button label
+  ///
+  /// In pt, this message translates to:
+  /// **'Limpar'**
+  String get clear;
 
   /// Delete button label
   ///

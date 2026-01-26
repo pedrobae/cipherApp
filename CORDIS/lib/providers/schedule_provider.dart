@@ -100,7 +100,7 @@ class ScheduleProvider extends ChangeNotifier {
     );
   }
 
-  Future<bool> createFromCache() async {
+  Future<bool> createFromCache(String ownerFirebaseId) async {
     if (_isSaving) return false;
 
     _isSaving = true;
@@ -110,7 +110,9 @@ class ScheduleProvider extends ChangeNotifier {
     try {
       final schedule = _schedules[-1] as Schedule;
 
-      final localId = await _localScheduleRepository.insertSchedule(schedule);
+      final localId = await _localScheduleRepository.insertSchedule(
+        schedule.copyWith(ownerFirebaseId: ownerFirebaseId),
+      );
       _schedules.remove(-1);
 
       await loadLocalSchedule(localId);
@@ -185,6 +187,62 @@ class ScheduleProvider extends ChangeNotifier {
   }
 
   // ===== UPDATE =====
+  void addRoleToSchedule(dynamic scheduleId, String roleName) {
+    final schedule = _schedules[scheduleId];
+    if (schedule == null) return;
+
+    if (scheduleId is int) {
+      final newRole = Role(id: -1, name: roleName, memberIds: []);
+      (_schedules[scheduleId] as Schedule).roles.add(newRole);
+    }
+
+    notifyListeners();
+  }
+
+  // ===== MEMBER MANAGEMENT =====
+  /// Adds an existing user to a role in a schedule (local).
+  void addMemberToRole(int scheduleId, int roleId, int userId) {
+    final schedule = _schedules[scheduleId] as Schedule?;
+    if (schedule == null) return;
+
+    final role = schedule.roles.firstWhere((role) => role.id == roleId);
+
+    role.memberIds.add(userId);
+    notifyListeners();
+  }
+
+  void addUnknownMemberToRole(
+    int scheduleId,
+    int roleId,
+    String username,
+    String email,
+  ) {
+    // TODO: Implement adding unknown member to role in local schedule
+  }
+
+  void addMemberToRoleFirebase(
+    String scheduleId,
+    String roleName,
+    String existingUserFirebaseId,
+  ) {
+    final schedule = _schedules[scheduleId] as ScheduleDto?;
+    if (schedule == null) return;
+
+    final role = schedule.roles.firstWhere((role) => role.name == roleName);
+
+    role.memberIds.add(existingUserFirebaseId);
+    notifyListeners();
+  }
+
+  void addUnknownMemberToRoleFirebase(
+    String scheduleId,
+    String roleId,
+    String username,
+    String email,
+  ) {
+    // TODO : Implement adding unknown member to role in cloud schedule
+  }
+
   // ===== DELETE =====
 
   // ===== SEARCH & FILTER =====

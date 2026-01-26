@@ -42,6 +42,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get forgotPasswordSuffix => 'Please try again or Request a new one.';
 
   @override
+  String get user => 'User';
+
+  @override
+  String get name => 'Name';
+
+  @override
+  String get enterNameHint => 'Enter name...';
+
+  @override
+  String get enterEmailHint => 'Enter email...';
+
+  @override
+  String get pleaseEnterNameAndEmail => 'Please enter name and email.';
+
+  @override
   String get home => 'Home';
 
   @override
@@ -305,6 +320,17 @@ class AppLocalizationsEn extends AppLocalizations {
       'Add your own roles and people, and assign them to this schedule.';
 
   @override
+  String get roleNameHint => 'e.g., Worship Leader, Vocalist';
+
+  @override
+  String get member => 'Member';
+
+  @override
+  String assignMembersToRole(Object role) {
+    return 'Assign Members to $role';
+  }
+
+  @override
   String get noMembers => 'No members yet.';
 
   @override
@@ -433,6 +459,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get copySuffix => '(Copy)';
+
+  @override
+  String get assign => 'Assign';
+
+  @override
+  String get clear => 'Clear';
 
   @override
   String get delete => 'Delete';

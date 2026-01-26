@@ -8,6 +8,7 @@ import 'package:cordis/utils/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
+import 'package:sqflite/sqlite_api.dart';
 import '../helpers/database.dart';
 import '../providers/cipher_provider.dart';
 import '../providers/playlist_provider.dart';
@@ -33,8 +34,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         children: [
           // App Settings Section
           _buildSectionHeader('Configurações do App', Icons.settings),
-          const SizedBox(height: 16),
-
           _buildSettingsTile(
             icon: Icons.palette,
             title: 'Tema',
@@ -43,7 +42,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _showThemeDialog(context);
             },
           ),
-          const SizedBox(height: 16),
           _buildSettingsTile(
             icon: Icons.language,
             title: 'Mudar Idioma',
@@ -58,7 +56,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           // Development Tools Section (only in debug mode)
           if (kDebugMode) ...[
             _buildSectionHeader('Ferramentas de Desenvolvimento', Icons.build),
-            const SizedBox(height: 16),
 
             _buildDangerousTile(
               icon: Icons.refresh,
@@ -69,9 +66,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ? null
                   : () => _showResetDatabaseDialog(context),
             ),
-
-            const SizedBox(height: 16),
-
             Card(
               child: ListTile(
                 leading: const Icon(Icons.cached),
@@ -102,7 +96,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           // About Section
           _buildSectionHeader('Sobre', Icons.info),
-          const SizedBox(height: 16),
 
           _buildSettingsTile(
             icon: Icons.info_outline,
@@ -358,13 +351,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
         }
       }
 
+      final int dbVersion = await db.getVersion();
+
       // Check mounted after async operations
       if (!mounted) return;
 
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Informações do Banco de Dados'),
+          title: Text('Informações do Banco de Dados v$dbVersion'),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,

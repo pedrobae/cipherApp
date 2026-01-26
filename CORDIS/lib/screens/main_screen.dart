@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/providers/my_auth_provider.dart';
@@ -58,9 +57,9 @@ class MainScreenState extends State<MainScreen> {
                 ? AppBar(
                     backgroundColor: colorScheme.surfaceContainer,
                     centerTitle: true,
-                    title: SvgPicture.asset(
-                      'assets/logos/v2_simple_color_white.svg',
-                      width: 80,
+                    title: Image.asset(
+                      'assets/logos/app_icon_transparent.png',
+                      height: 40,
                     ),
                   )
                 : null,

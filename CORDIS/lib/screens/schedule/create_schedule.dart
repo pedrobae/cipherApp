@@ -7,6 +7,7 @@ import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/screens/playlist/playlist_library.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
+import 'package:cordis/widgets/schedule/create_edit/details_form.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -19,22 +20,21 @@ class CreateScheduleScreen extends StatefulWidget {
 
 class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
   int creationStep = 1;
+  late ScheduleProvider _scheduleProvider;
 
   @override
   void initState() {
     super.initState();
+    _scheduleProvider = context.read<ScheduleProvider>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        context.read<ScheduleProvider>().addListener(
-          () => _scheduleErrorListener(),
-        );
+        _scheduleProvider.addListener(_scheduleErrorListener);
       }
     });
   }
 
   void _scheduleErrorListener() {
-    final scheduleProvider = context.read<ScheduleProvider>();
-    final error = scheduleProvider.error;
+    final error = _scheduleProvider.error;
     if (error != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -43,6 +43,12 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
         ),
       );
     }
+  }
+
+  @override
+  void dispose() {
+    _scheduleProvider.removeListener(_scheduleErrorListener);
+    super.dispose();
   }
 
   @override
@@ -141,7 +147,7 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
                     // STEP CONTENT
                     switch (creationStep) {
                       1 => Expanded(child: PlaylistLibraryScreen()),
-                      // 2 => Expanded(child: ScheduleDetailsForm()),
+                      2 => Expanded(child: ScheduleForm()),
                       // 3 => Expanded(child: ScheduleRolesAndUsersForm()),
                       _ => SizedBox.shrink(),
                     },

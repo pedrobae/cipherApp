@@ -57,6 +57,7 @@
   "@duration": {"description": "Song duration field label"},
   "language": "Language",
   "@language": {"description": "Song language field label"},
+  
 
 
   "version": "Version",
@@ -178,7 +179,19 @@
   "duplicatePlaceholder": "Duplicate {object}",
   "@duplicatePlaceholder": {"description": "Duplicate object button label", "placeholders": {"object": {}}},
 
-  
+
+  "scheduleName": "Schedule Name",
+  "@scheduleName": {"description": "Label for schedule name input field"},
+  "date": "Date",
+  "@date": {"description": "Date field label"},
+  "startTime": "Start Time",
+  "@startTime": {"description": "Start time field label"},
+  "location": "Location",
+  "@location": {"description": "Location field label"},
+  "annotationsOptional": "Annotations (Optional)",
+  "@annotationsOptional": {"description": "Annotations field label with optional indication"},
+
+
   "schedulePlaylist": "Schedule Playlist",
   "@schedulePlaylist": {"description": "Create schedule screen title"},
   "selectPlaylistForScheduleInstruction": "Please create a schedule by selecting a playlist below.",
@@ -187,6 +200,24 @@
   "@fillScheduleDetailsInstruction": {"description": "Instruction to fill in schedule details"},
   "createRolesAndAssignUsersInstruction": "Please create roles and assign Members to the schedule.",
   "@createRolesAndAssignUsersInstruction": {"description": "Instruction to create roles and assign users"},
+  "pleaseEnterScheduleName": "Please enter a schedule name.",
+  "@pleaseEnterScheduleName": {"description": "Validation message for schedule name"},
+  "pleaseEnterDate": "Please enter a valid date (DD/MM/YYYY).",
+  "@pleaseEnterDate": {"description": "Validation message for date"},
+  "pleaseEnterStartTime": "Please enter a valid start time (HH:MM).",
+  "@pleaseEnterStartTime": {"description": "Validation message for start time"},
+  "pleaseEnterLocation": "Please enter a location.",
+  "@pleaseEnterLocation": {"description": "Validation message for location"},
+
+  "noRoles": "No roles yet.",
+  "@noRoles": {"description": "Message displayed when there are no roles defined"},
+  "addRolesInstructions": "Add your own roles and people, and assign them to this schedule.",
+  "@addRolesInstructions": {"description": "Instructions to add roles and assign users to a schedule"},
+  "noMembers": "No members yet.",
+  "@noMembers": {"description": "Message displayed when there are no members defined"},
+  "xMembers": "{count} members",
+  "@xMembers": {"description": "Label for number of members with placeholder", "placeholders": {"count": {}}},
+
   "nextUp": "Next Up",
   "@nextUp": {"description": "Next scheduled item label"},
   "nextThisMonth": "Next This Month",

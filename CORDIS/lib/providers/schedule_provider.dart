@@ -28,7 +28,10 @@ class ScheduleProvider extends ChangeNotifier {
 
   Map<dynamic, dynamic> get filteredSchedules => _filteredSchedules;
 
-  Schedule? getScheduleById(int id) {
+  /// Returns a schedule by its ID, whether local (int) or cloud (String)
+  /// Returns null if not found.
+  /// Returns Schedule for local IDs and ScheduleDTO for cloud IDs.
+  dynamic getScheduleById(dynamic id) {
     return _schedules[id];
   }
 
@@ -75,12 +78,13 @@ class ScheduleProvider extends ChangeNotifier {
     );
   }
 
-  void cacheScheduleDetails({
+  void cacheScheduleDetails(
+    dynamic scheduleId, {
     required String name,
     required DateTime date,
-    required TimeOfDay time,
+    required TimeOfDay startTime,
     required String location,
-    String? notes,
+    String? annotations,
   }) {
     final schedule = _schedules[-1] as Schedule;
     _schedules[-1] = Schedule(
@@ -88,11 +92,11 @@ class ScheduleProvider extends ChangeNotifier {
       ownerFirebaseId: schedule.ownerFirebaseId,
       name: name,
       date: date,
-      time: time,
+      time: startTime,
       location: location,
       playlist: schedule.playlist,
       roles: schedule.roles,
-      notes: notes,
+      annotations: annotations,
     );
   }
 

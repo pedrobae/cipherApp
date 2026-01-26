@@ -195,7 +195,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   );
                                   selectionProvider.enableSelectionMode();
                                   navigationProvider.push(
-                                    CreateScheduleScreen(),
+                                    CreateScheduleScreen(creationStep: 1),
                                     showAppBar: false,
                                     showDrawerIcon: false,
                                     onPopCallback: () {

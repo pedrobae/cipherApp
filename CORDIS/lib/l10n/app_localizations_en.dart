@@ -256,6 +256,21 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get scheduleName => 'Schedule Name';
+
+  @override
+  String get date => 'Date';
+
+  @override
+  String get startTime => 'Start Time';
+
+  @override
+  String get location => 'Location';
+
+  @override
+  String get annotationsOptional => 'Annotations (Optional)';
+
+  @override
   String get schedulePlaylist => 'Schedule Playlist';
 
   @override
@@ -269,6 +284,33 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get createRolesAndAssignUsersInstruction =>
       'Please create roles and assign Members to the schedule.';
+
+  @override
+  String get pleaseEnterScheduleName => 'Please enter a schedule name.';
+
+  @override
+  String get pleaseEnterDate => 'Please enter a valid date (DD/MM/YYYY).';
+
+  @override
+  String get pleaseEnterStartTime => 'Please enter a valid start time (HH:MM).';
+
+  @override
+  String get pleaseEnterLocation => 'Please enter a location.';
+
+  @override
+  String get noRoles => 'No roles yet.';
+
+  @override
+  String get addRolesInstructions =>
+      'Add your own roles and people, and assign them to this schedule.';
+
+  @override
+  String get noMembers => 'No members yet.';
+
+  @override
+  String xMembers(Object count) {
+    return '$count members';
+  }
 
   @override
   String get nextUp => 'Next Up';

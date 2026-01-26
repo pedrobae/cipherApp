@@ -257,6 +257,21 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String get scheduleName => 'Nome da Agenda';
+
+  @override
+  String get date => 'Data';
+
+  @override
+  String get startTime => 'Hora de Início';
+
+  @override
+  String get location => 'Localização';
+
+  @override
+  String get annotationsOptional => 'Anotações (Opcional)';
+
+  @override
   String get schedulePlaylist => 'Agendar Playlist';
 
   @override
@@ -270,6 +285,36 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get createRolesAndAssignUsersInstruction =>
       'Por favor, crie funções e atribua Membros à agenda.';
+
+  @override
+  String get pleaseEnterScheduleName =>
+      'Por favor, insira um nome para a agenda.';
+
+  @override
+  String get pleaseEnterDate =>
+      'Por favor, insira uma data válida (DD/MM/AAAA).';
+
+  @override
+  String get pleaseEnterStartTime =>
+      'Por favor, insira uma hora de início válida (HH:MM).';
+
+  @override
+  String get pleaseEnterLocation => 'Por favor, insira um local.';
+
+  @override
+  String get noRoles => 'Nenhum Papel Definido';
+
+  @override
+  String get addRolesInstructions =>
+      'Adicione seus próprios papéis e pessoas, e atribua-as a esta agenda.';
+
+  @override
+  String get noMembers => 'Nenhum Membro Atribuído';
+
+  @override
+  String xMembers(Object count) {
+    return '$count Membros';
+  }
 
   @override
   String get nextUp => 'Próxima Agenda';

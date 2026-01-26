@@ -560,6 +560,36 @@ abstract class AppLocalizations {
   /// **'Duplicar {object}'**
   String duplicatePlaceholder(Object object);
 
+  /// Label for schedule name input field
+  ///
+  /// In pt, this message translates to:
+  /// **'Nome da Agenda'**
+  String get scheduleName;
+
+  /// Date field label
+  ///
+  /// In pt, this message translates to:
+  /// **'Data'**
+  String get date;
+
+  /// Start time field label
+  ///
+  /// In pt, this message translates to:
+  /// **'Hora de Início'**
+  String get startTime;
+
+  /// Location field label
+  ///
+  /// In pt, this message translates to:
+  /// **'Localização'**
+  String get location;
+
+  /// Annotations field label with optional indication
+  ///
+  /// In pt, this message translates to:
+  /// **'Anotações (Opcional)'**
+  String get annotationsOptional;
+
   /// Create schedule screen title
   ///
   /// In pt, this message translates to:
@@ -583,6 +613,54 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Por favor, crie funções e atribua Membros à agenda.'**
   String get createRolesAndAssignUsersInstruction;
+
+  /// Validation message for schedule name
+  ///
+  /// In pt, this message translates to:
+  /// **'Por favor, insira um nome para a agenda.'**
+  String get pleaseEnterScheduleName;
+
+  /// Validation message for date
+  ///
+  /// In pt, this message translates to:
+  /// **'Por favor, insira uma data válida (DD/MM/AAAA).'**
+  String get pleaseEnterDate;
+
+  /// Validation message for start time
+  ///
+  /// In pt, this message translates to:
+  /// **'Por favor, insira uma hora de início válida (HH:MM).'**
+  String get pleaseEnterStartTime;
+
+  /// Validation message for location
+  ///
+  /// In pt, this message translates to:
+  /// **'Por favor, insira um local.'**
+  String get pleaseEnterLocation;
+
+  /// Message displayed when there are no roles defined
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum Papel Definido'**
+  String get noRoles;
+
+  /// Instructions to add roles and assign users to a schedule
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicione seus próprios papéis e pessoas, e atribua-as a esta agenda.'**
+  String get addRolesInstructions;
+
+  /// Message displayed when no members are assigned to a role
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum Membro Atribuído'**
+  String get noMembers;
+
+  /// Label for number of members assigned to a role
+  ///
+  /// In pt, this message translates to:
+  /// **'{count} Membros'**
+  String xMembers(Object count);
 
   /// Next scheduled item label
   ///

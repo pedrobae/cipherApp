@@ -9,6 +9,7 @@ class ScheduleDto {
   final String name;
   final Timestamp datetime;
   final String location;
+  final String? annotations;
   final PlaylistDto? playlist;
   final List<RoleDto> roles;
 
@@ -18,6 +19,7 @@ class ScheduleDto {
     required this.name,
     required this.datetime,
     required this.location,
+    this.annotations,
     this.playlist,
     required this.roles,
   });
@@ -29,6 +31,7 @@ class ScheduleDto {
       name: json['name'] as String,
       datetime: json['datetime'] as Timestamp,
       location: json['location'] as String,
+      annotations: json['annotations'] as String?,
       playlist: json['playlist'] != null
           ? PlaylistDto.fromFirestore(json['playlist'] as Map<String, dynamic>)
           : null,
@@ -44,6 +47,7 @@ class ScheduleDto {
       'name': name,
       'datetime': datetime,
       'location': location,
+      'annotations': annotations,
       'playlist': playlist?.toFirestore(),
       'roles': roles.map((role) => role.toFirestore()).toList(),
     };
@@ -58,6 +62,7 @@ class ScheduleDto {
       date: DateTime(dateTime.year, dateTime.month, dateTime.day),
       time: TimeOfDay(hour: dateTime.hour, minute: dateTime.minute),
       location: location,
+      annotations: annotations,
       playlist: playlist?.toDomain([], ownerLocalId),
       roles: roles
           .asMap()
@@ -81,21 +86,19 @@ class ScheduleDto {
 
 class RoleDto {
   final String name;
-  final List<String> memberFirebaseIds;
+  final List<String> memberIds;
 
-  RoleDto({required this.name, required this.memberFirebaseIds});
+  RoleDto({required this.name, required this.memberIds});
 
   factory RoleDto.fromFirestore(Map<String, dynamic> json) {
     return RoleDto(
       name: json['name'] as String,
-      memberFirebaseIds: List<String>.from(
-        json['memberFirebaseIds'] as List<dynamic>,
-      ),
+      memberIds: List<String>.from(json['memberIds'] as List<dynamic>),
     );
   }
 
   Map<String, dynamic> toFirestore() {
-    return {'name': name, 'memberFirebaseIds': memberFirebaseIds};
+    return {'name': name, 'memberIds': memberIds};
   }
 
   Role toDomain(List<int> memberLocalIds) {

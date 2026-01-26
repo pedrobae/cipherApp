@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ScheduleCard extends StatelessWidget {
-  final int scheduleId;
+  final dynamic scheduleId;
   final bool showActions;
 
   const ScheduleCard({

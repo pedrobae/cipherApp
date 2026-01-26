@@ -8,24 +8,32 @@ import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/screens/playlist/playlist_library.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:cordis/widgets/schedule/create_edit/details_form.dart';
+import 'package:cordis/widgets/schedule/create_edit/roles_users_form.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class CreateScheduleScreen extends StatefulWidget {
-  const CreateScheduleScreen({super.key});
+  final int creationStep;
+
+  const CreateScheduleScreen({super.key, required this.creationStep});
 
   @override
   State<CreateScheduleScreen> createState() => _CreateScheduleScreenState();
 }
 
 class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
-  int creationStep = 1;
   late ScheduleProvider _scheduleProvider;
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _startTimeController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
+  final TextEditingController _annotationsController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _scheduleProvider = context.read<ScheduleProvider>();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _scheduleProvider.addListener(_scheduleErrorListener);
@@ -48,6 +56,14 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
   @override
   void dispose() {
     _scheduleProvider.removeListener(_scheduleErrorListener);
+
+    // Dispose all controllers
+    _nameController.dispose();
+    _dateController.dispose();
+    _startTimeController.dispose();
+    _locationController.dispose();
+    _annotationsController.dispose();
+
     super.dispose();
   }
 
@@ -73,28 +89,10 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
             child,
           ) {
             final textTheme = Theme.of(context).textTheme;
-            final colorScheme = Theme.of(context).colorScheme;
 
             return Scaffold(
               appBar: AppBar(
-                leading: BackButton(
-                  onPressed: () {
-                    switch (creationStep) {
-                      case 1:
-                        navigationProvider.pop();
-                      case 2:
-                        setState(() {
-                          creationStep = 1;
-                        });
-                      case 3:
-                        setState(() {
-                          creationStep = 2;
-                        });
-                      default:
-                        null;
-                    }
-                  },
-                ),
+                leading: BackButton(onPressed: () => navigationProvider.pop()),
                 title: Text(
                   AppLocalizations.of(context)!.schedulePlaylist,
                   style: textTheme.titleMedium?.copyWith(
@@ -110,13 +108,15 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
                   children: [
                     // STEP INDICATOR
                     Text(
-                      AppLocalizations.of(context)!.stepXofY(creationStep, 3),
+                      AppLocalizations.of(
+                        context,
+                      )!.stepXofY(widget.creationStep, 3),
                       style: textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     // STEP INSTRUCTION
-                    switch (creationStep) {
+                    switch (widget.creationStep) {
                       1 => Text(
                         AppLocalizations.of(
                           context,
@@ -137,7 +137,7 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
                       ),
                       _ => SizedBox.shrink(),
                     },
-                    switch (creationStep) {
+                    switch (widget.creationStep) {
                       1 => SizedBox(height: 16),
                       2 => SizedBox.shrink(),
                       3 => SizedBox(height: 16),
@@ -145,16 +145,28 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
                     },
 
                     // STEP CONTENT
-                    switch (creationStep) {
+                    switch (widget.creationStep) {
                       1 => Expanded(child: PlaylistLibraryScreen()),
-                      2 => Expanded(child: ScheduleForm()),
-                      // 3 => Expanded(child: ScheduleRolesAndUsersForm()),
+                      2 =>
+                        widget.creationStep == 2
+                            ? Expanded(
+                                child: ScheduleForm(
+                                  scheduleId: -1,
+                                  nameController: _nameController,
+                                  dateController: _dateController,
+                                  startTimeController: _startTimeController,
+                                  locationController: _locationController,
+                                  annotationsController: _annotationsController,
+                                ),
+                              )
+                            : SizedBox.shrink(),
+                      3 => Expanded(child: RolesAndUsersForm(scheduleId: -1)),
                       _ => SizedBox.shrink(),
                     },
 
                     // CONTINUE / CREATE BUTTON
                     FilledTextButton(
-                      text: switch (creationStep) {
+                      text: switch (widget.creationStep) {
                         1 => AppLocalizations.of(context)!.keepGoing,
                         2 => AppLocalizations.of(context)!.keepGoing,
                         3 => AppLocalizations.of(context)!.createPlaceholder(
@@ -163,7 +175,7 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
                         _ => 'ERROR',
                       },
                       onPressed: () {
-                        switch (creationStep) {
+                        switch (widget.creationStep) {
                           case 1:
                             // Cache Brand New Schedule
                             scheduleProvider.cacheBrandNewSchedule(
@@ -174,17 +186,38 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
                             );
 
                             // Proceed to step 2
-                            setState(() {
-                              creationStep = 2;
-                            });
-                            break;
+                            navigationProvider.push(
+                              CreateScheduleScreen(creationStep: 2),
+                              showAppBar: false,
+                              showDrawerIcon: false,
+                            );
                           case 2:
                             // Cache Schedule Details
-                            // TODO
+                            scheduleProvider.cacheScheduleDetails(
+                              -1,
+                              name: _nameController.text,
+                              date: DateTime(
+                                int.parse(_dateController.text.split("/")[2]),
+                                int.parse(_dateController.text.split("/")[1]),
+                                int.parse(_dateController.text.split("/")[0]),
+                              ),
+                              startTime: TimeOfDay(
+                                hour: int.parse(
+                                  _startTimeController.text.split(":")[0],
+                                ),
+                                minute: int.parse(
+                                  _startTimeController.text.split(":")[1],
+                                ),
+                              ),
+                              location: _locationController.text,
+                              annotations: _annotationsController.text,
+                            );
                             // Proceed to step 3
-                            setState(() {
-                              creationStep = 3;
-                            });
+                            navigationProvider.push(
+                              CreateScheduleScreen(creationStep: 3),
+                              showAppBar: false,
+                              showDrawerIcon: false,
+                            );
                             break;
                           case 3:
                             // Create Schedule

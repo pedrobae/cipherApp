@@ -87,7 +87,7 @@ class _ScheduleLibraryScreenState extends State<ScheduleLibraryScreen> {
                     onPressed: () {
                       selectionProvider.enableSelectionMode();
                       navigationProvider.push(
-                        CreateScheduleScreen(),
+                        CreateScheduleScreen(creationStep: 1),
                         showAppBar: false,
                         showDrawerIcon: false,
                         onPopCallback: () {

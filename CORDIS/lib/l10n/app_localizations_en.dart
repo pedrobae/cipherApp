@@ -342,7 +342,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nextUp => 'Next Up';
 
   @override
-  String get nextThisMonth => 'Next This Month';
+  String get nextSchedules => 'Next Schedules';
 
   @override
   String get searchSchedule => 'Search schedule...';

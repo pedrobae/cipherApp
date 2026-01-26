@@ -30,10 +30,12 @@ class _FlowItemEditorState extends State<FlowItemEditor> {
     durationController = TextEditingController();
     final flowItemProvider = context.read<FlowItemProvider>();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _syncFlowItem();
-      flowItemProvider.loadFlowItemById(widget.flowItemId!);
-    });
+    if (widget.flowItemId != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _syncFlowItem();
+        flowItemProvider.loadFlowItemById(widget.flowItemId!);
+      });
+    }
   }
 
   void _syncFlowItem() {

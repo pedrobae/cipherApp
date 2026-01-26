@@ -238,8 +238,8 @@
 
   "nextUp": "Next Up",
   "@nextUp": {"description": "Next scheduled item label"},
-  "nextThisMonth": "Next This Month",
-  "@nextThisMonth": {"description": "Next scheduled item this month label"},
+  "nextSchedules": "Next Schedules",
+  "@nextSchedules": {"description": "Next schedules header"},
   "searchSchedule": "Search schedule...",
   "@searchSchedule": {"description": "Hint text for searching schedule"},
   "assignSchedule": "Assign Schedule",

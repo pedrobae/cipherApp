@@ -716,11 +716,11 @@ abstract class AppLocalizations {
   /// **'Próxima Agenda'**
   String get nextUp;
 
-  /// Next scheduled item this month label
+  /// Next schedules header
   ///
   /// In pt, this message translates to:
-  /// **'Ainda neste Mês'**
-  String get nextThisMonth;
+  /// **'Próximos Eventos'**
+  String get nextSchedules;
 
   /// Hint text for searching schedule
   ///

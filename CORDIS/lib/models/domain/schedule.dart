@@ -55,7 +55,7 @@ class Schedule {
       'time':
           '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}',
       'location': location,
-      'playlistId': playlist?.id,
+      'playlist_id': playlist?.id,
       'annotations': annotations,
     };
   }

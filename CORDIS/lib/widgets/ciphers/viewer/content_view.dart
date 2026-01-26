@@ -74,12 +74,12 @@ class _ContentViewState extends State<ContentView> {
             // Add space at the end of the list for better scrolling
             sectionCardList.add(SizedBox(height: 200));
 
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                spacing: 16,
-                children: [
-                  Column(
+            return Column(
+              spacing: 16,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
@@ -98,7 +98,20 @@ class _ContentViewState extends State<ContentView> {
                       ),
                     ],
                   ),
-                  Expanded(
+                ),
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.surfaceContainerLowest,
+                          width: 0.5,
+                        ),
+                      ),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: SingleChildScrollView(
                       controller: scrollController,
                       child: Column(
@@ -119,8 +132,8 @@ class _ContentViewState extends State<ContentView> {
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             );
           },
     );

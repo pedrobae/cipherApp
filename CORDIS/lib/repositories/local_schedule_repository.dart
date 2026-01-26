@@ -102,4 +102,15 @@ class LocalScheduleRepository {
 
   // ===== UPDATE =====
   // ===== DELETE =====
+  Future<void> deleteSchedule(int id) async {
+    final db = await _databaseHelper.database;
+    await db.delete('schedule', where: 'id = ?', whereArgs: [id]);
+  }
+
+  /// Deletes a role and its member associations from the database.
+  Future<void> deleteRole(int roleId) async {
+    final db = await _databaseHelper.database;
+    await db.delete('role', where: 'id = ?', whereArgs: [roleId]);
+    await db.delete('role_member', where: 'role_id = ?', whereArgs: [roleId]);
+  }
 }

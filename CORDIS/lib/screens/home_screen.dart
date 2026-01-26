@@ -129,6 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ? Center(child: CircularProgressIndicator())
                           : nextSchedule != null
                           ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               spacing: 16,
                               children: [
                                 // SCHEDULE LABEL

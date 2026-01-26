@@ -244,6 +244,27 @@ class ScheduleProvider extends ChangeNotifier {
   }
 
   // ===== DELETE =====
+  /// Deletes a role from a schedule (local).
+  /// Also removes all members assigned to that role.
+  void deleteRole(int scheduleId, int roleId) {
+    final schedule = _schedules[scheduleId] as Schedule?;
+    if (schedule == null || _isLoading) return;
+
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      schedule.roles.removeWhere((role) => role.id == roleId);
+
+      if (roleId != -1) _localScheduleRepository.deleteRole(roleId);
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 
   // ===== SEARCH & FILTER =====
   void setSearchTerm(String? term) {
@@ -257,12 +278,7 @@ class ScheduleProvider extends ChangeNotifier {
     } else {
       Map<dynamic, dynamic> tempFiltered = {};
       for (var entry in _schedules.entries) {
-        final dynamic schedule;
-        if (entry.key.runtimeType == int) {
-          schedule = entry.value as Schedule;
-        } else {
-          schedule = entry.value as ScheduleDto;
-        }
+        final schedule = entry.value;
 
         if (schedule.name.toLowerCase().contains(_searchTerm!) ||
             schedule.location.toLowerCase().contains(_searchTerm!)) {
@@ -275,8 +291,8 @@ class ScheduleProvider extends ChangeNotifier {
   }
 
   // ===== HELPER METHODS =====
-  List<dynamic> getNextThisMonthsSchedules() {
-    List<dynamic> thisMonthsScheduleIds = [];
+  List<dynamic> getNextScheuleIds() {
+    List<dynamic> nextScheduleIds = [];
     final now = DateTime.now();
     _schedules.forEach((key, schedule) {
       bool isCloud = key.runtimeType == String;
@@ -284,12 +300,10 @@ class ScheduleProvider extends ChangeNotifier {
       final scheduleDate = isCloud
           ? (schedule as ScheduleDto).datetime.toDate()
           : (schedule as Schedule).date;
-      if (scheduleDate.isAfter(now) &&
-          scheduleDate.year == now.year &&
-          scheduleDate.month == now.month) {
-        thisMonthsScheduleIds.add(key);
+      if (scheduleDate.isAfter(now)) {
+        nextScheduleIds.add(key);
       }
     });
-    return thisMonthsScheduleIds;
+    return nextScheduleIds;
   }
 }

@@ -27,10 +27,14 @@ class ScheduleCard extends StatelessWidget {
         return Container(
           padding: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(
-            border: Border.all(color: colorScheme.surfaceContainerLowest),
+            border: Border.all(
+              color: colorScheme.surfaceContainerLowest,
+              width: 1,
+            ),
             borderRadius: BorderRadius.circular(0),
           ),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Row(
                 children: [
@@ -109,6 +113,7 @@ class ScheduleCard extends StatelessWidget {
               // BOTTOM BUTTONS
               FilledTextButton(
                 isDarkButton: true,
+                isDense: true,
                 onPressed: () {
                   // TODO: Implement navigation to schedule view
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -137,6 +142,7 @@ class ScheduleCard extends StatelessWidget {
                   );
                 },
                 text: AppLocalizations.of(context)!.share,
+                isDense: true,
               ),
             ],
           ),

@@ -346,7 +346,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get nextUp => 'Próxima Agenda';
 
   @override
-  String get nextThisMonth => 'Ainda neste Mês';
+  String get nextSchedules => 'Próximos Eventos';
 
   @override
   String get searchSchedule => 'Pesquisar nome, local...';

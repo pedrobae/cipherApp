@@ -23,15 +23,18 @@ class _ScheduleScrollViewState extends State<ScheduleScrollView> {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final monthScheduleIds = scheduleProvider.getNextThisMonthsSchedules();
+        final monthScheduleIds = scheduleProvider.getNextScheuleIds();
 
         return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // THIS MONTH'S SCHEDULES HEADER
             monthScheduleIds.isNotEmpty
                 ? Text(
-                    AppLocalizations.of(context)!.nextThisMonth,
-                    style: theme.textTheme.titleMedium,
+                    AppLocalizations.of(context)!.nextSchedules,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
                   )
                 : SizedBox.shrink(),
 

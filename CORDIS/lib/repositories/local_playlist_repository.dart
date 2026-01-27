@@ -66,7 +66,7 @@ class PlaylistRepository {
     List<Playlist> playlists = [];
 
     for (Map<String, dynamic> playlistData in playlistResults) {
-      playlists.add(Playlist.fromJson(playlistData));
+      playlists.add(Playlist.fromSQLite(playlistData));
     }
 
     return playlists;
@@ -85,7 +85,7 @@ class PlaylistRepository {
 
     if (playlistResults.isEmpty) return null;
 
-    return Playlist.fromJson(playlistResults.first);
+    return Playlist.fromSQLite(playlistResults.first);
   }
 
   // ===== UPDATE =====

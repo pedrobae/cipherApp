@@ -1,4 +1,5 @@
 import 'package:cordis/helpers/database.dart';
+import 'package:cordis/models/domain/playlist/playlist.dart';
 import 'package:cordis/models/domain/schedule.dart';
 
 class LocalScheduleRepository {
@@ -45,16 +46,21 @@ class LocalScheduleRepository {
     for (var map in maps) {
       final scheduleId = map['id'] as int;
       final roles = await getRolesForSchedule(scheduleId);
-      final playlist = await db.query(
+      final playlistMap = await db.query(
         'playlist',
         where: 'id = ?',
         whereArgs: [map['playlist_id']],
       );
-      if (playlist.isNotEmpty) {
-        map['playlist'] = playlist.first;
-      }
 
-      schedules.add(Schedule.fromSqlite(map, roles));
+      schedules.add(
+        Schedule.fromSqlite(
+          map,
+          roles,
+          playlistMap.isNotEmpty
+              ? Playlist.fromSQLite(playlistMap.first)
+              : null,
+        ),
+      );
     }
 
     return schedules;
@@ -72,7 +78,18 @@ class LocalScheduleRepository {
 
     final scheduleId = maps.first['id'] as int;
     final roles = await getRolesForSchedule(scheduleId);
-    return Schedule.fromSqlite(maps.first, roles);
+
+    final playlistMap = await db.query(
+      'playlist',
+      where: 'id = ?',
+      whereArgs: [maps.first['playlist_id']],
+    );
+
+    return Schedule.fromSqlite(
+      maps.first,
+      roles,
+      playlistMap.isNotEmpty ? Playlist.fromSQLite(playlistMap.first) : null,
+    );
   }
 
   Future<List<Role>> getRolesForSchedule(int scheduleId) async {

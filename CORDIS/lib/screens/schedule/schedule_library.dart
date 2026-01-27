@@ -81,11 +81,36 @@ class _ScheduleLibraryScreenState extends State<ScheduleLibraryScreen> {
                     },
                   ),
 
-                  Expanded(child: ScheduleScrollView()),
+                  // Loading state
+                  if (scheduleProvider.isLoading) ...[
+                    Expanded(
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          color: colorScheme.primary,
+                        ),
+                      ),
+                    ),
+                    // Error state
+                  ] else if (scheduleProvider.error != null) ...[
+                    Expanded(
+                      child: Center(
+                        child: Text(
+                          scheduleProvider.error!,
+                          style: theme.textTheme.bodyMedium!.copyWith(
+                            color: colorScheme.error,
+                          ),
+                        ),
+                      ),
+                    ),
+                    // Schedule list
+                  ] else ...[
+                    Expanded(child: ScheduleScrollView()),
+                  ],
 
                   FilledTextButton(
                     onPressed: () {
-                      selectionProvider.enableSelectionMode();
+                      selectionProvider
+                          .enableSelectionMode(); // For playlist assignment
                       navigationProvider.push(
                         CreateScheduleScreen(creationStep: 1),
                         showAppBar: false,

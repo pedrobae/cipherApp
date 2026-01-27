@@ -19,7 +19,7 @@ class Playlist {
     this.items = const [],
   });
 
-  factory Playlist.fromJson(Map<String, dynamic> json) {
+  factory Playlist.fromSQLite(Map<String, dynamic> json) {
     return Playlist(
       id: json['id'] as int,
       name: json['name'] as String? ?? '',

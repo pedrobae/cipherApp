@@ -26,7 +26,11 @@ class Schedule {
     this.annotations,
   });
 
-  factory Schedule.fromSqlite(Map<String, dynamic> map, List<Role> roles) {
+  factory Schedule.fromSqlite(
+    Map<String, dynamic> map,
+    List<Role> roles,
+    Playlist? playlist,
+  ) {
     return Schedule(
       id: map['id'] as int,
       firebaseId: map['firebase_id'] as String?,
@@ -38,9 +42,7 @@ class Schedule {
         minute: int.parse((map['time'] as String).split(':')[1]),
       ),
       location: map['location'] as String,
-      playlist: map['playlist'] != null
-          ? Playlist.fromJson(map['playlist'] as Map<String, dynamic>)
-          : null,
+      playlist: playlist,
       roles: roles,
       annotations: map['annotations'] as String?,
     );

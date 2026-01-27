@@ -82,6 +82,26 @@ class ScheduleDto {
 
     return schedule;
   }
+
+  ScheduleDto copyWith({
+    String? name,
+    Timestamp? datetime,
+    String? location,
+    String? annotations,
+    PlaylistDto? playlist,
+    List<RoleDto>? roles,
+  }) {
+    return ScheduleDto(
+      firebaseId: firebaseId,
+      ownerFirebaseId: ownerFirebaseId,
+      name: name ?? this.name,
+      datetime: datetime ?? this.datetime,
+      location: location ?? this.location,
+      annotations: annotations ?? this.annotations,
+      playlist: playlist ?? this.playlist,
+      roles: roles ?? this.roles,
+    );
+  }
 }
 
 class RoleDto {

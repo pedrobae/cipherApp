@@ -190,25 +190,14 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
                             );
                           case 2:
                             // Cache Schedule Details
-                            scheduleProvider.cacheScheduleDetails(
-                              -1,
+                            scheduleProvider.cacheNewScheduleDetails(
                               name: _nameController.text,
-                              date: DateTime(
-                                int.parse(_dateController.text.split("/")[2]),
-                                int.parse(_dateController.text.split("/")[1]),
-                                int.parse(_dateController.text.split("/")[0]),
-                              ),
-                              startTime: TimeOfDay(
-                                hour: int.parse(
-                                  _startTimeController.text.split(":")[0],
-                                ),
-                                minute: int.parse(
-                                  _startTimeController.text.split(":")[1],
-                                ),
-                              ),
+                              date: _dateController.text,
+                              startTime: _startTimeController.text,
                               location: _locationController.text,
                               annotations: _annotationsController.text,
                             );
+
                             // Proceed to step 3
                             navigationProvider.push(
                               CreateScheduleScreen(creationStep: 3),

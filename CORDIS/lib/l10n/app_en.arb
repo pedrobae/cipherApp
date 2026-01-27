@@ -173,8 +173,6 @@
 
   "item": "item",
   "@item": {"description": "Singular item label"},
-  "items": "items",
-  "@items": {"description": "Plural items label"},
   "role": "Role",
   "@role": {"description": "User role label"},
   "generalMember": "General Member",
@@ -206,11 +204,12 @@
   "annotationsOptional": "Annotations (Optional)",
   "@annotationsOptional": {"description": "Annotations field label with optional indication"},
 
-
-  "schedulePlaylist": "Schedule Playlist",
-  "@schedulePlaylist": {"description": "Create schedule screen title"},
+  "changePlaylist": "Change Playlist",
+  "@changePlaylist": {"description": "Change playlist button label"},
   "selectPlaylistForScheduleInstruction": "Please create a schedule by selecting a playlist below.",
   "@selectPlaylistForScheduleInstruction": {"description": "Instruction to select a playlist for scheduling"},
+  "scheduleDetails": "Schedule Details",
+  "@scheduleDetails": {"description": "Schedule details section title"},
   "fillScheduleDetailsInstruction": "Please fill in the schedule details.",
   "@fillScheduleDetailsInstruction": {"description": "Instruction to fill in schedule details"},
   "createRolesAndAssignUsersInstruction": "Please create roles and assign Members to the schedule.",
@@ -248,6 +247,15 @@
   "assignSchedule": "Assign Schedule",
   "@assignSchedule": {"description": "Assign schedule button label"},
 
+  "schedulePlaylist": "Schedule Playlist",
+  "@schedulePlaylist": {"description": "Create schedule screen title"},
+  "noPlaylistAssigned": "No playlist assigned.",
+  "@noPlaylistAssigned": {"description": "Message displayed when no playlist is assigned to a schedule"},
+
+  "scheduleNotFound": "Schedule Not Found",
+  "@scheduleNotFound": {"description": "Title for schedule not found screen"},
+  "scheduleNotFoundMessage": "The requested schedule could not be found.",
+  "@scheduleNotFoundMessage": {"description": "Message displayed when the requested schedule does not exist"},
 
   "create": "Create",
   "@create": {"description": "Create button label"},
@@ -310,6 +318,8 @@
   "@english": {"description": "English language option"},
 
 
+  "load": "Load",
+  "@load": {"description": "Load"},
   "loading": "Loading...",
   "@loading": {"description": "Loading indicator text"},
   "tryAgain": "Try Again",
@@ -372,10 +382,15 @@
   "@stepXofY": {"description": "Indicates the current step out of total steps", "placeholders": {"current": {}, "total": {}}},
 
 
+  "error": "Error",
+  "@error": {"description": "Generic error label"},
   "errorMessage": "Error during {job}: {errorDetails}",
   "@errorMessage": {"description": "Generic error message with placeholders", "placeholders": {"job": {}, "errorDetails": {}}},
   "invalidTimeFormat": "Invalid time format. Please use MM:SS.",
   "@invalidTimeFormat": {"description": "Error message for invalid time format"},
   "fieldRequired": "This field is required.",
-  "@fieldRequired": {"description": "Validation message indicating a required field"}
+  "@fieldRequired": {"description": "Validation message indicating a required field"},
+
+  "pluralPlaceholder": "{label}s",
+  "@pluralPlaceholder": {"description": "Generic plural placeholder for labels", "placeholders": {"label": {}}}
 }

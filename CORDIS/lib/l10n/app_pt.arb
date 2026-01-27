@@ -169,8 +169,7 @@
 
   "item": "item",
   "@item": {"description": "Singular item label"},
-  "items": "itens",
-  "@items": {"description": "Plural items label"},
+
   "role": "Função",
   "@role": {"description": "User role label"},
   "generalMember": "Membro Geral",
@@ -204,8 +203,12 @@
 
   "schedulePlaylist": "Agendar Playlist",
   "@schedulePlaylist": {"description": "Create schedule screen title"},
+  "changePlaylist": "Alterar Playlist",
+  "@changePlaylist": {"description": "Change playlist button label"},
   "selectPlaylistForScheduleInstruction": "Por favor, crie uma agenda selecionando uma playlist abaixo.",
   "@selectPlaylistForScheduleInstruction": {"description": "Instruction to select a playlist for scheduling"},
+  "scheduleDetails": "Detalhes da Agenda",
+  "@scheduleDetails": {"description": "Schedule details section title"},
   "fillScheduleDetailsInstruction": "Por favor, preencha os detalhes da agenda.",
   "@fillScheduleDetailsInstruction": {"description": "Instruction to fill in schedule details"},
   "createRolesAndAssignUsersInstruction": "Por favor, crie funções e atribua Membros à agenda.",
@@ -243,6 +246,13 @@
   "assignSchedule": "Agendar",
   "@assignSchedule": {"description": "Assign schedule button label"},
 
+  "noPlaylistAssigned": "Nenhuma playlist atribuída.",
+  "@noPlaylistAssigned": {"description": "Message displayed when no playlist is assigned to the schedule"},
+
+  "scheduleNotFound": "Agenda Não Encontrada",
+  "@scheduleNotFound": {"description": "Title for schedule not found screen"},
+  "scheduleNotFoundMessage": "A agenda solicitada não pôde ser encontrada.",
+  "@scheduleNotFoundMessage": {"description": "Message displayed when the requested schedule does not exist"},
 
   "create": "Criar",
   "@create": {"description": "Create button label"},
@@ -302,7 +312,9 @@
   "english": "Inglês",
   "@english": {"description": "English language option"},
 
-
+  
+  "load": "Carregamento",
+  "@load": {"description": "Load"},
   "loading": "Carregando...",
   "@loading": {"description": "Loading indicator text"},
   "tryAgain": "Tentar Novamente",
@@ -365,10 +377,15 @@
   "@stepXofY": {"description": "Indicates the current step out of total steps", "placeholders": {"current": {}, "total": {}}},
 
 
+  "error": "Erro",
+  "@error": {"description": "Generic error label"},
   "errorMessage": "Erro durante {job}: {errorDetails}",
   "@errorMessage": {"description": "Generic error message with placeholders", "placeholders": {"job": {}, "errorDetails": {}}},
   "invalidTimeFormat": "Formato de tempo inválido. Por favor, use MM:SS.",
   "@invalidTimeFormat": {"description": "Error message for invalid time format"},
   "fieldRequired": "Este campo é obrigatório.",
-  "@fieldRequired": {"description": "Validation message indicating a required field"}
+  "@fieldRequired": {"description": "Validation message indicating a required field"},
+
+  "pluralPlaceholder": "{label}s",
+  "@pluralPlaceholder": {"description": "Generic plural placeholder for labels", "placeholders": {"label": {}}}
 }

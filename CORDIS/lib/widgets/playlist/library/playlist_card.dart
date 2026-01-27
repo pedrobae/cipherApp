@@ -82,7 +82,9 @@ class PlaylistCard extends StatelessWidget {
                         children: [
                           Text(
                             itemCount != 1
-                                ? '$itemCount ${AppLocalizations.of(context)!.items}'
+                                ? '$itemCount ${AppLocalizations.of(context)!.pluralPlaceholder(
+                                    AppLocalizations.of(context)!.item, //
+                                  )}'
                                 : '$itemCount ${AppLocalizations.of(context)!.item}',
                             style: Theme.of(context).textTheme.bodyMedium!
                                 .copyWith(

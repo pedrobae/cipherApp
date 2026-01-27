@@ -45,6 +45,15 @@ class LocalScheduleRepository {
     for (var map in maps) {
       final scheduleId = map['id'] as int;
       final roles = await getRolesForSchedule(scheduleId);
+      final playlist = await db.query(
+        'playlist',
+        where: 'id = ?',
+        whereArgs: [map['playlist_id']],
+      );
+      if (playlist.isNotEmpty) {
+        map['playlist'] = playlist.first;
+      }
+
       schedules.add(Schedule.fromSqlite(map, roles));
     }
 
@@ -101,6 +110,16 @@ class LocalScheduleRepository {
   }
 
   // ===== UPDATE =====
+  Future<void> updateScheduleDetails(Schedule schedule) async {
+    final db = await _databaseHelper.database;
+    await db.update(
+      'schedule',
+      schedule.toSqlite(),
+      where: 'id = ?',
+      whereArgs: [schedule.id],
+    );
+  }
+
   // ===== DELETE =====
   Future<void> deleteSchedule(int id) async {
     final db = await _databaseHelper.database;

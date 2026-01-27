@@ -536,12 +536,6 @@ abstract class AppLocalizations {
   /// **'item'**
   String get item;
 
-  /// Plural items label
-  ///
-  /// In pt, this message translates to:
-  /// **'itens'**
-  String get items;
-
   /// User role label
   ///
   /// In pt, this message translates to:
@@ -632,11 +626,23 @@ abstract class AppLocalizations {
   /// **'Agendar Playlist'**
   String get schedulePlaylist;
 
+  /// Change playlist button label
+  ///
+  /// In pt, this message translates to:
+  /// **'Alterar Playlist'**
+  String get changePlaylist;
+
   /// Instruction to select a playlist for scheduling
   ///
   /// In pt, this message translates to:
   /// **'Por favor, crie uma agenda selecionando uma playlist abaixo.'**
   String get selectPlaylistForScheduleInstruction;
+
+  /// Schedule details section title
+  ///
+  /// In pt, this message translates to:
+  /// **'Detalhes da Agenda'**
+  String get scheduleDetails;
 
   /// Instruction to fill in schedule details
   ///
@@ -739,6 +745,24 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Agendar'**
   String get assignSchedule;
+
+  /// Message displayed when no playlist is assigned to the schedule
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma playlist atribuída.'**
+  String get noPlaylistAssigned;
+
+  /// Title for schedule not found screen
+  ///
+  /// In pt, this message translates to:
+  /// **'Agenda Não Encontrada'**
+  String get scheduleNotFound;
+
+  /// Message displayed when the requested schedule does not exist
+  ///
+  /// In pt, this message translates to:
+  /// **'A agenda solicitada não pôde ser encontrada.'**
+  String get scheduleNotFoundMessage;
 
   /// Create button label
   ///
@@ -902,6 +926,12 @@ abstract class AppLocalizations {
   /// **'Inglês'**
   String get english;
 
+  /// Load
+  ///
+  /// In pt, this message translates to:
+  /// **'Carregamento'**
+  String get load;
+
   /// Loading indicator text
   ///
   /// In pt, this message translates to:
@@ -1058,6 +1088,12 @@ abstract class AppLocalizations {
   /// **'Passo {current} de {total}'**
   String stepXofY(Object current, Object total);
 
+  /// Generic error label
+  ///
+  /// In pt, this message translates to:
+  /// **'Erro'**
+  String get error;
+
   /// Generic error message with placeholders
   ///
   /// In pt, this message translates to:
@@ -1075,6 +1111,12 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Este campo é obrigatório.'**
   String get fieldRequired;
+
+  /// Generic plural placeholder for labels
+  ///
+  /// In pt, this message translates to:
+  /// **'{label}s'**
+  String pluralPlaceholder(Object label);
 }
 
 class _AppLocalizationsDelegate

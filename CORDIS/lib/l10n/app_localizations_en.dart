@@ -234,9 +234,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get item => 'item';
 
   @override
-  String get items => 'items';
-
-  @override
   String get role => 'Role';
 
   @override
@@ -292,8 +289,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get schedulePlaylist => 'Schedule Playlist';
 
   @override
+  String get changePlaylist => 'Change Playlist';
+
+  @override
   String get selectPlaylistForScheduleInstruction =>
       'Please create a schedule by selecting a playlist below.';
+
+  @override
+  String get scheduleDetails => 'Schedule Details';
 
   @override
   String get fillScheduleDetailsInstruction =>
@@ -352,6 +355,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get assignSchedule => 'Assign Schedule';
+
+  @override
+  String get noPlaylistAssigned => 'No playlist assigned.';
+
+  @override
+  String get scheduleNotFound => 'Schedule Not Found';
+
+  @override
+  String get scheduleNotFoundMessage =>
+      'The requested schedule could not be found.';
 
   @override
   String get create => 'Create';
@@ -438,6 +451,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get english => 'English';
+
+  @override
+  String get load => 'Load';
 
   @override
   String get loading => 'Loading...';
@@ -534,6 +550,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get error => 'Error';
+
+  @override
   String errorMessage(Object job, Object errorDetails) {
     return 'Error during $job: $errorDetails';
   }
@@ -543,4 +562,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fieldRequired => 'This field is required.';
+
+  @override
+  String pluralPlaceholder(Object label) {
+    return '${label}s';
+  }
 }

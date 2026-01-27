@@ -235,9 +235,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get item => 'item';
 
   @override
-  String get items => 'itens';
-
-  @override
   String get role => 'Função';
 
   @override
@@ -293,8 +290,14 @@ class AppLocalizationsPt extends AppLocalizations {
   String get schedulePlaylist => 'Agendar Playlist';
 
   @override
+  String get changePlaylist => 'Alterar Playlist';
+
+  @override
   String get selectPlaylistForScheduleInstruction =>
       'Por favor, crie uma agenda selecionando uma playlist abaixo.';
+
+  @override
+  String get scheduleDetails => 'Detalhes da Agenda';
 
   @override
   String get fillScheduleDetailsInstruction =>
@@ -356,6 +359,16 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get assignSchedule => 'Agendar';
+
+  @override
+  String get noPlaylistAssigned => 'Nenhuma playlist atribuída.';
+
+  @override
+  String get scheduleNotFound => 'Agenda Não Encontrada';
+
+  @override
+  String get scheduleNotFoundMessage =>
+      'A agenda solicitada não pôde ser encontrada.';
 
   @override
   String get create => 'Criar';
@@ -442,6 +455,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get english => 'Inglês';
+
+  @override
+  String get load => 'Carregamento';
 
   @override
   String get loading => 'Carregando...';
@@ -539,6 +555,9 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String get error => 'Erro';
+
+  @override
   String errorMessage(Object job, Object errorDetails) {
     return 'Erro durante $job: $errorDetails';
   }
@@ -549,4 +568,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get fieldRequired => 'Este campo é obrigatório.';
+
+  @override
+  String pluralPlaceholder(Object label) {
+    return '${label}s';
+  }
 }

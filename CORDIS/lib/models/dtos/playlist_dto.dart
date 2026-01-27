@@ -19,6 +19,17 @@ class PlaylistDto {
     this.versions = const [],
   });
 
+  Duration getTotalDuration() {
+    return textSections.fold(
+      Duration.zero,
+      (a, b) =>
+          a +
+          (b['duration'] != null
+              ? Duration(seconds: int.parse(b['duration']!))
+              : Duration.zero),
+    );
+  }
+
   factory PlaylistDto.fromFirestore(Map<String, dynamic> json) {
     return PlaylistDto(
       firebaseId: json['firebaseId'] as String?,

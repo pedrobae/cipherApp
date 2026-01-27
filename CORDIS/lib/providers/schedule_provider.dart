@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cordis/models/domain/playlist/playlist.dart';
 import 'package:cordis/models/domain/schedule.dart';
 import 'package:cordis/models/dtos/schedule_dto.dart';
@@ -78,11 +79,10 @@ class ScheduleProvider extends ChangeNotifier {
     );
   }
 
-  void cacheScheduleDetails(
-    dynamic scheduleId, {
+  void cacheNewScheduleDetails({
     required String name,
-    required DateTime date,
-    required TimeOfDay startTime,
+    required String date,
+    required String startTime,
     required String location,
     String? annotations,
   }) {
@@ -91,8 +91,15 @@ class ScheduleProvider extends ChangeNotifier {
       id: schedule.id,
       ownerFirebaseId: schedule.ownerFirebaseId,
       name: name,
-      date: date,
-      time: startTime,
+      date: DateTime(
+        int.parse(date.split('/')[0]),
+        int.parse(date.split('/')[1]),
+        int.parse(date.split('/')[2]),
+      ),
+      time: TimeOfDay(
+        hour: int.parse(startTime.split(':')[0]),
+        minute: int.parse(startTime.split(':')[1]),
+      ),
       location: location,
       playlist: schedule.playlist,
       roles: schedule.roles,
@@ -197,6 +204,75 @@ class ScheduleProvider extends ChangeNotifier {
     }
 
     notifyListeners();
+  }
+
+  void cacheScheduleDetails(
+    dynamic scheduleId, {
+    required String name,
+    required String date,
+    required String startTime,
+    required String location,
+    String? annotations,
+  }) {
+    final schedule = _schedules[scheduleId];
+    if (schedule == null) return;
+
+    if (scheduleId is int) {
+      _schedules[scheduleId] = (schedule as Schedule).copyWith(
+        name: name,
+        date: DateTime(
+          int.parse(date.split('/')[0]),
+          int.parse(date.split('/')[1]),
+          int.parse(date.split('/')[2]),
+        ),
+        time: TimeOfDay(
+          hour: int.parse(startTime.split(':')[0]),
+          minute: int.parse(startTime.split(':')[1]),
+        ),
+        location: location,
+        annotations: annotations,
+      );
+    } else if (scheduleId is String) {
+      _schedules[scheduleId] = (schedule as ScheduleDto).copyWith(
+        name: name,
+        datetime: Timestamp.fromDate(
+          DateTime(
+            int.parse(date.split('/')[0]),
+            int.parse(date.split('/')[1]),
+            int.parse(date.split('/')[2]),
+            int.parse(startTime.split(':')[0]),
+            int.parse(startTime.split(':')[1]),
+          ),
+        ),
+        location: location,
+        annotations: annotations,
+      );
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> saveScheduleDetails(dynamic scheduleId) async {
+    if (_isSaving) return;
+
+    _isSaving = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final schedule = _schedules[scheduleId];
+      if (scheduleId is int && schedule is Schedule) {
+        await _localScheduleRepository.updateScheduleDetails(schedule);
+      }
+      // else if (scheduleId is String && schedule is ScheduleDto) {
+      //   await _cloudScheduleRepository.updateSchedule(schedule);
+      // }
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isSaving = false;
+      notifyListeners();
+    }
   }
 
   // ===== MEMBER MANAGEMENT =====

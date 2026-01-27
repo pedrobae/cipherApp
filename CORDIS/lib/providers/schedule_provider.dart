@@ -91,9 +91,9 @@ class ScheduleProvider extends ChangeNotifier {
     _schedules[-1] = (_schedules[-1] as Schedule).copyWith(
       name: name,
       date: DateTime(
-        int.parse(date.split('/')[0]),
-        int.parse(date.split('/')[1]),
         int.parse(date.split('/')[2]),
+        int.parse(date.split('/')[1]),
+        int.parse(date.split('/')[0]),
       ),
       time: TimeOfDay(
         hour: int.parse(startTime.split(':')[0]),

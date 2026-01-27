@@ -47,8 +47,8 @@ class Playlist {
 
   PlaylistDto toDto(
     String ownerFirebaseId,
-    List<VersionDto> versions,
-    List<FlowItem> textSections,
+    Map<String, VersionDto> versions,
+    Map<String, FlowItem> flowItems,
   ) {
     return PlaylistDto(
       firebaseId: firebaseId,
@@ -61,9 +61,9 @@ class Playlist {
           )
           .toList(),
       versions: versions,
-      textSections: textSections
-          .map((section) => section.toFirestore())
-          .toList(),
+      flowItems: flowItems.map(
+        (key, item) => MapEntry(key, item.toFirestore()),
+      ),
     );
   }
 

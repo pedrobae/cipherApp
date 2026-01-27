@@ -7,6 +7,7 @@ import 'package:cordis/providers/schedule_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/screens/schedule/edit_schedule.dart';
+import 'package:cordis/screens/schedule/play_schedule.dart';
 import 'package:cordis/utils/date_utils.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:flutter/material.dart';
@@ -138,7 +139,12 @@ class _ViewScheduleScreenState extends State<ViewScheduleScreen> {
                   IconButton(
                     icon: const Icon(Icons.play_circle_fill),
                     onPressed: () {
-                      // TODO: Navigate to play mode screen
+                      navigationProvider.push(
+                        PlayScheduleScreen(scheduleId: widget.scheduleId),
+                        showAppBar: false,
+                        showDrawerIcon: false,
+                        showBottomNavBar: false,
+                      );
                     },
                   ),
                 ],

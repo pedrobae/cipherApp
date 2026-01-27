@@ -468,7 +468,9 @@ class PlaylistProvider extends ChangeNotifier {
 
     if (changes.containsKey('versions')) {
       updatePayload['versions'] = [
-        for (final version in playlistDto.versions) ...[version.toFirestore()],
+        for (final version in playlistDto.versions.values) ...[
+          version.toFirestore(),
+        ],
       ];
     }
     return updatePayload;

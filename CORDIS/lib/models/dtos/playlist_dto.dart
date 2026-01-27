@@ -7,20 +7,20 @@ class PlaylistDto {
   final String name;
   final String ownerId; // Usuário que criou a playlist
   final List<String> itemOrder;
-  final List<Map<String, String>> textSections;
-  final List<VersionDto> versions;
+  final Map<String, Map<String, dynamic>> flowItems;
+  final Map<String, VersionDto> versions;
 
   const PlaylistDto({
     this.firebaseId,
     required this.name,
     required this.ownerId,
     this.itemOrder = const [],
-    this.textSections = const [],
-    this.versions = const [],
+    this.flowItems = const {},
+    this.versions = const {},
   });
 
   Duration getTotalDuration() {
-    return textSections.fold(
+    return flowItems.values.fold(
       Duration.zero,
       (a, b) =>
           a +
@@ -40,12 +40,19 @@ class PlaylistDto {
               ?.map((e) => e as String)
               .toList() ??
           [],
-      textSections: json['textSections'] as List<Map<String, String>>,
+      flowItems: json['flowItems'] as Map<String, Map<String, String>>,
     );
   }
 
   Map<String, dynamic> toFirestore() {
-    return {'name': name, 'itemOrder': itemOrder, 'textSections': textSections};
+    return {
+      'name': name,
+      'itemOrder': itemOrder,
+      'flowItems': flowItems,
+      'versions': versions.map(
+        (key, value) => MapEntry(key, value.toFirestore()),
+      ),
+    };
   }
 
   /// Method to convert PlaylistDto to Playlist domain model items must be inserted first
@@ -60,10 +67,44 @@ class PlaylistDto {
   }
 
   void addVersions(List<VersionDto> newVersions) {
-    versions.addAll(newVersions);
+    for (var version in newVersions) {
+      versions[version.firebaseId!] = version;
+    }
   }
 
-  void removeVersionByFirebaseId(String versionFirebaseId) {
-    versions.removeWhere((v) => v.firebaseId == versionFirebaseId);
+  void removeVersionByKey(String key) {
+    versions.remove(key);
+  }
+
+  List<PlaylistItem> getPlaylistItems() {
+    List<PlaylistItem> playlistItems = [];
+    int position = 1;
+    for (var itemId in itemOrder) {
+      final id = itemId.split(':');
+      if (id[0] == 'f') {
+        playlistItems.add(
+          PlaylistItem(
+            id: -1,
+            firebaseContentId: id[1],
+            type: PlaylistItemType.flowItem,
+            position: position++,
+            duration: Duration(
+              seconds: flowItems[id[1]]?['duration'] as int? ?? 0,
+            ),
+          ),
+        );
+      } else if (id[0] == 'v') {
+        playlistItems.add(
+          PlaylistItem(
+            id: -1,
+            firebaseContentId: id[1],
+            type: PlaylistItemType.version,
+            position: position++,
+            duration: Duration(seconds: versions[id[1]]?.duration ?? 0),
+          ),
+        );
+      }
+    }
+    return playlistItems;
   }
 }

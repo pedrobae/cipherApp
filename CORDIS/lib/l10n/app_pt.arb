@@ -164,6 +164,8 @@
   "@emptyPlaylist": {"description": "Message displayed when a playlist is empty"},
   "emptyPlaylistInstructions": "Por favor, adicione músicas e itens de Texto para construir sua playlist.",
   "@emptyPlaylistInstructions": {"description": "Instructions for adding items to an empty playlist"},
+  "noPlaylistItems": "Nenhum item nesta playlist.",
+  "@noPlaylistItems": {"description": "Message displayed when there are no items in a playlist"},
   "deletePlaylistDescription": "Ao excluir uma playlist, todos os seus itens também serão excluídos. Esta ação não pode ser desfeita.",
   "@deletePlaylistDescription": {"description": "Description for deleting a playlist warning"},
 
@@ -253,6 +255,11 @@
   "@scheduleNotFound": {"description": "Title for schedule not found screen"},
   "scheduleNotFoundMessage": "A agenda solicitada não pôde ser encontrada.",
   "@scheduleNotFoundMessage": {"description": "Message displayed when the requested schedule does not exist"},
+
+  "play": "Tocar",
+  "@play": {"description": "Play button label"},
+  "nextPlaceholder": "Próximo: {title}",
+  "@nextPlaceholder": {"description": "Next item placeholder with title", "placeholders": {"title": {}}},
 
   "create": "Criar",
   "@create": {"description": "Create button label"},

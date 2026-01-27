@@ -105,7 +105,6 @@ class FlowItemCardActionsSheet extends StatelessWidget {
                   // DELETE FLOW ITEM
                   GestureDetector(
                     onTap: () {
-                      Navigator.of(context).pop(); // Close the bottom sheet
                       showModalBottomSheet(
                         context: context,
                         isScrollControlled: true,

@@ -168,6 +168,8 @@
   "@emptyPlaylist": {"description": "Message displayed when a playlist is empty"},
   "emptyPlaylistInstructions": "Please add Song and Flow items to build your playlist.",
   "@emptyPlaylistInstructions": {"description": "Instructions for adding items to an empty playlist"},
+  "noPlaylistItems": "No items in this playlist.",
+  "@noPlaylistItems": {"description": "Message displayed when there are no items in a playlist"},
   "deletePlaylistDescription": "When deleting a playlist, all of its items will also be deleted. This action cannot be undone.",
   "@deletePlaylistDescription": {"description": "Description for deleting a playlist warning"},
 
@@ -256,6 +258,13 @@
   "@scheduleNotFound": {"description": "Title for schedule not found screen"},
   "scheduleNotFoundMessage": "The requested schedule could not be found.",
   "@scheduleNotFoundMessage": {"description": "Message displayed when the requested schedule does not exist"},
+
+  "play": "Play",
+  "@play": {"description": "Play button label"},
+  "nextPlaceholder": "Next: {title}",
+  "@nextPlaceholder": {"description": "Next item placeholder with title", "placeholders": {"title": {}}},
+  
+
 
   "create": "Create",
   "@create": {"description": "Create button label"},

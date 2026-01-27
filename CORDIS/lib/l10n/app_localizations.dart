@@ -524,6 +524,12 @@ abstract class AppLocalizations {
   /// **'Por favor, adicione músicas e itens de Texto para construir sua playlist.'**
   String get emptyPlaylistInstructions;
 
+  /// Message displayed when there are no items in a playlist
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum item nesta playlist.'**
+  String get noPlaylistItems;
+
   /// Description for deleting a playlist warning
   ///
   /// In pt, this message translates to:
@@ -763,6 +769,18 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'A agenda solicitada não pôde ser encontrada.'**
   String get scheduleNotFoundMessage;
+
+  /// Play button label
+  ///
+  /// In pt, this message translates to:
+  /// **'Tocar'**
+  String get play;
+
+  /// Next item placeholder with title
+  ///
+  /// In pt, this message translates to:
+  /// **'Próximo: {title}'**
+  String nextPlaceholder(Object title);
 
   /// Create button label
   ///

@@ -105,7 +105,6 @@ class PlaylistCardActionsSheet extends StatelessWidget {
                   // DELETE PLAYLIST
                   GestureDetector(
                     onTap: () {
-                      Navigator.of(context).pop(); // Close the bottom sheet
                       showModalBottomSheet(
                         isScrollControlled: true,
                         context: context,

@@ -228,6 +228,9 @@ class AppLocalizationsPt extends AppLocalizations {
       'Por favor, adicione músicas e itens de Texto para construir sua playlist.';
 
   @override
+  String get noPlaylistItems => 'Nenhum item nesta playlist.';
+
+  @override
   String get deletePlaylistDescription =>
       'Ao excluir uma playlist, todos os seus itens também serão excluídos. Esta ação não pode ser desfeita.';
 
@@ -369,6 +372,14 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get scheduleNotFoundMessage =>
       'A agenda solicitada não pôde ser encontrada.';
+
+  @override
+  String get play => 'Tocar';
+
+  @override
+  String nextPlaceholder(Object title) {
+    return 'Próximo: $title';
+  }
 
   @override
   String get create => 'Criar';

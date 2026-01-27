@@ -227,6 +227,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Please add Song and Flow items to build your playlist.';
 
   @override
+  String get noPlaylistItems => 'No items in this playlist.';
+
+  @override
   String get deletePlaylistDescription =>
       'When deleting a playlist, all of its items will also be deleted. This action cannot be undone.';
 
@@ -365,6 +368,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get scheduleNotFoundMessage =>
       'The requested schedule could not be found.';
+
+  @override
+  String get play => 'Play';
+
+  @override
+  String nextPlaceholder(Object title) {
+    return 'Next: $title';
+  }
 
   @override
   String get create => 'Create';

@@ -1,12 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cordis/models/domain/schedule.dart';
 import 'package:cordis/models/dtos/schedule_dto.dart';
+import 'package:cordis/repositories/cloud_schedule_repository.dart';
 import 'package:cordis/repositories/local_schedule_repository.dart';
 import 'package:flutter/material.dart';
 
 class ScheduleProvider extends ChangeNotifier {
   final LocalScheduleRepository _localScheduleRepository =
       LocalScheduleRepository();
+  final CloudScheduleRepository _cloudScheduleRepository =
+      CloudScheduleRepository();
 
   ScheduleProvider();
 
@@ -180,6 +183,30 @@ class ScheduleProvider extends ChangeNotifier {
     notifyListeners();
 
     try {} catch (e) {
+      _error = e.toString();
+    } finally {
+      _isLoadingCloud = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> fetchSchedule(String scheduleId) async {
+    if (_isLoadingCloud) return;
+
+    _isLoadingCloud = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final schedule = await _cloudScheduleRepository.fetchScheduleById(
+        scheduleId,
+      );
+      if (schedule != null) {
+        _schedules[scheduleId] = schedule;
+      } else {
+        throw Exception('Schedule not found');
+      }
+    } catch (e) {
       _error = e.toString();
     } finally {
       _isLoadingCloud = false;

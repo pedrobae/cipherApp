@@ -112,7 +112,6 @@ class VersionCardActionsSheet extends StatelessWidget {
                   // DELETE FLOW ITEM
                   GestureDetector(
                     onTap: () {
-                      Navigator.of(context).pop(); // Close the bottom sheet
                       showModalBottomSheet(
                         context: context,
                         isScrollControlled: true,
@@ -131,6 +130,9 @@ class VersionCardActionsSheet extends StatelessWidget {
                                   await versionProvider.deleteVersion(
                                     versionId,
                                   );
+                                  if (context.mounted) {
+                                    Navigator.of(context).pop();
+                                  }
                                 },
                               );
                             },

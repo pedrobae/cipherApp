@@ -1,5 +1,6 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/schedule_provider.dart';
+import 'package:cordis/widgets/delete_confirmation.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:cordis/widgets/schedule/create_edit/users_bottom_sheet.dart';
 import 'package:flutter/material.dart';
@@ -71,7 +72,23 @@ class RoleCard extends StatelessWidget {
               isDense: true,
               onPressed: () {
                 if (scheduleId is String) return; // TODO handle cloud roles
-                scheduleProvider.deleteRole(scheduleId, role.id);
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  builder: (context) {
+                    return BottomSheet(
+                      onClosing: () {},
+                      builder: (context) {
+                        return DeleteConfirmationSheet(
+                          itemType: AppLocalizations.of(context)!.role,
+                          onConfirm: () {
+                            scheduleProvider.deleteRole(scheduleId, role.id);
+                          },
+                        );
+                      },
+                    );
+                  },
+                );
               },
             ),
           ],

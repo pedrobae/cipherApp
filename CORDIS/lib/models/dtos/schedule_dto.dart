@@ -53,7 +53,11 @@ class ScheduleDto {
     };
   }
 
-  Schedule toDomain(int ownerLocalId, List<List<int>> roleMemberIds) {
+  Schedule toDomain(
+    int ownerLocalId,
+    List<List<int>> roleMemberIds,
+    int playlistLocalId,
+  ) {
     final dateTime = datetime.toDate();
     final schedule = Schedule(
       id: -1, // ID will be set by local database
@@ -63,7 +67,7 @@ class ScheduleDto {
       time: TimeOfDay(hour: dateTime.hour, minute: dateTime.minute),
       location: location,
       annotations: annotations,
-      playlist: playlist?.toDomain([], ownerLocalId),
+      playlistId: playlistLocalId,
       roles: roles
           .asMap()
           .map(

@@ -1,7 +1,9 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/my_auth_provider.dart';
+import 'package:cordis/providers/schedule_provider.dart';
 import 'package:cordis/providers/section_provider.dart';
 import 'package:cordis/providers/flow_item_provider.dart';
+import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/providers/version_provider.dart';
 import 'package:cordis/utils/app_theme.dart';
@@ -281,6 +283,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context.read<SectionProvider>().clearCache();
       context.read<UserProvider>().clearCache();
       context.read<FlowItemProvider>().clearCache();
+      context.read<SelectionProvider>().clearCache();
 
       // Force reload all providers from database
       await Future.wait([
@@ -288,6 +291,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         context.read<VersionProvider>().loadCloudVersions(),
         context.read<PlaylistProvider>().loadPlaylists(),
         context.read<UserProvider>().loadUsers(),
+        context.read<ScheduleProvider>().loadLocalSchedules(),
       ]);
 
       if (mounted) {

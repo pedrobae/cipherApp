@@ -1,6 +1,7 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/my_auth_provider.dart';
 import 'package:cordis/providers/navigation_provider.dart';
+import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/schedule_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/screens/schedule/view_schedule.dart';
@@ -23,8 +24,9 @@ class ScheduleCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Consumer4<
+    return Consumer5<
       ScheduleProvider,
+      PlaylistProvider,
       MyAuthProvider,
       UserProvider,
       NavigationProvider
@@ -33,6 +35,7 @@ class ScheduleCard extends StatelessWidget {
           (
             context,
             scheduleProvider,
+            playlistProvider,
             authProvider,
             userProvider,
             navigationProvider,
@@ -46,6 +49,9 @@ class ScheduleCard extends StatelessWidget {
             }
 
             final schedule = scheduleProvider.getScheduleById(scheduleId)!;
+            final playlist = playlistProvider.getPlaylistById(
+              schedule.playlistId,
+            );
             return Container(
               padding: const EdgeInsets.all(8.0),
               decoration: BoxDecoration(
@@ -98,9 +104,9 @@ class ScheduleCard extends StatelessWidget {
                             ),
 
                             // PLAYLIST INFO
-                            schedule.playlist != null
+                            playlist != null
                                 ? Text(
-                                    '${AppLocalizations.of(context)!.playlist}: ${schedule.playlist!.name}',
+                                    '${AppLocalizations.of(context)!.playlist}: ${playlist.name}',
                                     style: theme.textTheme.bodyMedium,
                                   )
                                 : SizedBox.shrink(),

@@ -72,7 +72,7 @@ class PlaylistRepository {
     return playlists;
   }
 
-  /// Gets a single playlist by ID with all relationships
+  /// Gets a single playlist by ID without relationships
   /// Returns null if not found
   Future<Playlist?> getPlaylistById(int playlistId) async {
     final db = await _databaseHelper.database;

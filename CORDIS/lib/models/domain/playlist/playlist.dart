@@ -24,11 +24,6 @@ class Playlist {
       id: json['id'] as int,
       name: json['name'] as String? ?? '',
       createdBy: json['created_by'] as int? ?? 0,
-      items: json['items'] != null
-          ? (json['items'] as List)
-                .map((item) => PlaylistItem.fromJson(item))
-                .toList()
-          : const [],
     );
   }
 
@@ -36,7 +31,7 @@ class Playlist {
     return items.fold(Duration.zero, (a, b) => a + b.duration);
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toSQLite() {
     return {
       'id': id,
       'name': name,

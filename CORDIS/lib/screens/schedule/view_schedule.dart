@@ -2,13 +2,13 @@ import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/models/domain/schedule.dart';
 import 'package:cordis/models/dtos/schedule_dto.dart';
 import 'package:cordis/providers/navigation_provider.dart';
+import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/schedule_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/screens/schedule/edit_schedule.dart';
 import 'package:cordis/utils/date_utils.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
-import 'package:cordis/widgets/schedule/create_edit/details_form.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -22,30 +22,14 @@ class ViewScheduleScreen extends StatefulWidget {
 }
 
 class _ViewScheduleScreenState extends State<ViewScheduleScreen> {
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController dateController = TextEditingController();
-  final TextEditingController startTimeController = TextEditingController();
-  final TextEditingController locationController = TextEditingController();
-  final TextEditingController annotationsController = TextEditingController();
-
-  @override
-  void dispose() {
-    nameController.dispose();
-    dateController.dispose();
-    startTimeController.dispose();
-    locationController.dispose();
-    annotationsController.dispose();
-
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Consumer4<
+    return Consumer5<
       ScheduleProvider,
+      PlaylistProvider,
       NavigationProvider,
       SelectionProvider,
       UserProvider
@@ -54,6 +38,7 @@ class _ViewScheduleScreenState extends State<ViewScheduleScreen> {
           (
             context,
             scheduleProvider,
+            playlistProvider,
             navigationProvider,
             selectionProvider,
             userProvider,
@@ -131,7 +116,9 @@ class _ViewScheduleScreenState extends State<ViewScheduleScreen> {
               );
             }
 
-            final playlist = schedule.playlist; // Playlist or PlaylistDto
+            final playlist = playlistProvider.getPlaylistById(
+              schedule.playlistId,
+            );
 
             int memberCount = 0;
             for (var role in schedule.roles) {
@@ -214,28 +201,8 @@ class _ViewScheduleScreenState extends State<ViewScheduleScreen> {
                             onPressed: () {
                               navigationProvider.push(
                                 EditScheduleScreen(
-                                  content: ScheduleForm(
-                                    nameController: nameController,
-                                    dateController: dateController,
-                                    startTimeController: startTimeController,
-                                    locationController: locationController,
-                                    annotationsController:
-                                        annotationsController,
-                                  ),
-                                  onSave: () {
-                                    scheduleProvider.cacheScheduleDetails(
-                                      schedule.id,
-                                      name: nameController.text,
-                                      date: dateController.text,
-                                      startTime: startTimeController.text,
-                                      location: locationController.text,
-                                      annotations: annotationsController.text,
-                                    );
-                                    scheduleProvider.saveScheduleDetails(
-                                      schedule.id,
-                                    );
-                                    navigationProvider.pop();
-                                  },
+                                  mode: EditScheduleMode.details,
+                                  scheduleId: widget.scheduleId,
                                 ),
                               );
                             },
@@ -259,7 +226,15 @@ class _ViewScheduleScreenState extends State<ViewScheduleScreen> {
                                 context,
                               )!.schedulePlaylist,
                               onPressed: () {
-                                // TODO : Navigate to change playlist screen
+                                selectionProvider.enableSelectionMode(
+                                  targetId: widget.scheduleId,
+                                );
+                                navigationProvider.push(
+                                  EditScheduleScreen(
+                                    mode: EditScheduleMode.playlist,
+                                    scheduleId: widget.scheduleId,
+                                  ),
+                                );
                               },
                               isDense: true,
                               isDarkButton: true,
@@ -267,6 +242,7 @@ class _ViewScheduleScreenState extends State<ViewScheduleScreen> {
                           ] else ...[
                             Text(playlist.name, style: textTheme.titleMedium),
                             Row(
+                              spacing: 16,
                               children: [
                                 Text(
                                   (playlist.items.length == 1)
@@ -276,7 +252,7 @@ class _ViewScheduleScreenState extends State<ViewScheduleScreen> {
                                         )}',
                                 ),
                                 Text(
-                                  '${AppLocalizations.of(context)!.duration}: ${DateTimeUtils.formatDuration(playlist.duration)}',
+                                  '${AppLocalizations.of(context)!.duration}: ${DateTimeUtils.formatDuration(playlist.getTotalDuration())}',
                                 ),
                               ],
                             ),
@@ -287,7 +263,23 @@ class _ViewScheduleScreenState extends State<ViewScheduleScreen> {
                               isDarkButton: true,
                               isDense: true,
                               onPressed: () {
-                                // TODO : Navigate to change playlist screen
+                                selectionProvider.enableSelectionMode(
+                                  targetId: widget.scheduleId,
+                                );
+                                selectionProvider.select(
+                                  scheduleProvider
+                                      .getScheduleById(widget.scheduleId)
+                                      .playlistId,
+                                );
+
+                                navigationProvider.push(
+                                  EditScheduleScreen(
+                                    mode: EditScheduleMode.playlist,
+                                    scheduleId: widget.scheduleId,
+                                  ),
+                                  showAppBar: false,
+                                  showDrawerIcon: false,
+                                );
                               },
                             ),
                           ],
@@ -335,7 +327,12 @@ class _ViewScheduleScreenState extends State<ViewScheduleScreen> {
                             isDarkButton: true,
                             isDense: true,
                             onPressed: () {
-                              // TODO : Navigate to edit members screen
+                              navigationProvider.push(
+                                EditScheduleScreen(
+                                  mode: EditScheduleMode.roleMember,
+                                  scheduleId: widget.scheduleId,
+                                ),
+                              );
                             },
                           ),
                         ],

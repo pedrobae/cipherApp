@@ -1,7 +1,6 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/my_auth_provider.dart';
 import 'package:cordis/providers/navigation_provider.dart';
-import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/schedule_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/screens/playlist/playlist_library.dart';
@@ -68,9 +67,8 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer5<
+    return Consumer4<
       ScheduleProvider,
-      PlaylistProvider,
       MyAuthProvider,
       SelectionProvider,
       NavigationProvider
@@ -79,7 +77,6 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
           (
             context,
             scheduleProvider,
-            playlistProvider,
             myAuthProvider,
             selectionProvider,
             navigationProvider,
@@ -176,9 +173,7 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
                           case 1:
                             // Cache Brand New Schedule
                             scheduleProvider.cacheBrandNewSchedule(
-                              playlistProvider.getPlaylistById(
-                                selectionProvider.selectedItemIds.first,
-                              )!,
+                              selectionProvider.selectedItemIds.first,
                               myAuthProvider.id!,
                             );
 

@@ -13,8 +13,11 @@ class SelectionProvider extends ChangeNotifier {
   List<dynamic> get selectedItemIds => _selectedItemIds;
   int? get targetId => _targetId;
 
-  void enableSelectionMode() {
+  void enableSelectionMode({dynamic targetId}) {
     _isSelectionMode = true;
+    if (targetId != null) {
+      _targetId = targetId;
+    }
     notifyListeners();
   }
 
@@ -48,5 +51,11 @@ class SelectionProvider extends ChangeNotifier {
   void clearSelection() {
     _selectedItemIds.clear();
     notifyListeners();
+  }
+
+  void clearCache() {
+    disableSelectionMode();
+    clearTarget();
+    clearSelection();
   }
 }

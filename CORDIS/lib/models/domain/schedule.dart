@@ -1,4 +1,3 @@
-import 'package:cordis/models/domain/playlist/playlist.dart';
 import 'package:flutter/material.dart';
 
 class Schedule {
@@ -10,7 +9,7 @@ class Schedule {
   final TimeOfDay time;
   final String location;
   final String? annotations;
-  final Playlist? playlist;
+  final int? playlistId;
   final List<Role> roles;
 
   Schedule({
@@ -21,16 +20,12 @@ class Schedule {
     required this.date,
     required this.time,
     required this.location,
-    required this.playlist,
+    required this.playlistId,
     required this.roles,
     this.annotations,
   });
 
-  factory Schedule.fromSqlite(
-    Map<String, dynamic> map,
-    List<Role> roles,
-    Playlist? playlist,
-  ) {
+  factory Schedule.fromSqlite(Map<String, dynamic> map, List<Role> roles) {
     return Schedule(
       id: map['id'] as int,
       firebaseId: map['firebase_id'] as String?,
@@ -42,7 +37,7 @@ class Schedule {
         minute: int.parse((map['time'] as String).split(':')[1]),
       ),
       location: map['location'] as String,
-      playlist: playlist,
+      playlistId: map['playlist_id'] as int?,
       roles: roles,
       annotations: map['annotations'] as String?,
     );
@@ -57,7 +52,7 @@ class Schedule {
       'time':
           '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}',
       'location': location,
-      'playlist_id': playlist?.id,
+      'playlist_id': playlistId,
       'annotations': annotations,
     };
   }
@@ -70,7 +65,7 @@ class Schedule {
     DateTime? date,
     TimeOfDay? time,
     String? location,
-    Playlist? playlist,
+    int? playlistId,
     List<Role>? roles,
     String? annotations,
   }) {
@@ -82,7 +77,7 @@ class Schedule {
       date: date ?? this.date,
       time: time ?? this.time,
       location: location ?? this.location,
-      playlist: playlist ?? this.playlist,
+      playlistId: playlistId ?? this.playlistId,
       roles: roles ?? this.roles,
       annotations: annotations ?? this.annotations,
     );

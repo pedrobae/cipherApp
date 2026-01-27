@@ -1,19 +1,26 @@
 import 'package:cordis/l10n/app_localizations.dart';
+import 'package:cordis/models/domain/schedule.dart';
 import 'package:cordis/providers/navigation_provider.dart';
+import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/schedule_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
+import 'package:cordis/screens/playlist/playlist_library.dart';
+import 'package:cordis/utils/date_utils.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
+import 'package:cordis/widgets/schedule/create_edit/details_form.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+enum EditScheduleMode { details, playlist, roleMember }
+
 class EditScheduleScreen extends StatefulWidget {
-  final Widget content;
-  final VoidCallback onSave;
+  final EditScheduleMode mode;
+  final int scheduleId;
 
   const EditScheduleScreen({
     super.key,
-    required this.content,
-    required this.onSave,
+    required this.mode,
+    required this.scheduleId,
   });
 
   @override
@@ -21,6 +28,12 @@ class EditScheduleScreen extends StatefulWidget {
 }
 
 class _EditScheduleScreenState extends State<EditScheduleScreen> {
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController dateController = TextEditingController();
+  final TextEditingController startTimeController = TextEditingController();
+  final TextEditingController locationController = TextEditingController();
+  final TextEditingController annotationsController = TextEditingController();
+
   late ScheduleProvider _scheduleProvider;
 
   @override
@@ -31,6 +44,8 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _scheduleProvider.addListener(_scheduleErrorListener);
+        final schedule = _scheduleProvider.getScheduleById(widget.scheduleId);
+        _populateControllers(schedule);
       }
     });
   }
@@ -50,56 +65,132 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
   @override
   void dispose() {
     _scheduleProvider.removeListener(_scheduleErrorListener);
+
+    nameController.dispose();
+    dateController.dispose();
+    startTimeController.dispose();
+    locationController.dispose();
+    annotationsController.dispose();
+
     super.dispose();
+  }
+
+  void _populateControllers(dynamic schedule) {
+    if (schedule == null) throw Exception('Schedule not found');
+
+    nameController.text = schedule?.name ?? '';
+    dateController.text = (schedule is Schedule)
+        ? DateTimeUtils.formatDate(schedule.date)
+        : schedule.datetime.toDate().toIso8601String();
+    startTimeController.text = (schedule is Schedule)
+        ? '${schedule.time.hour.toString().padLeft(2, '0')}:${schedule.time.minute.toString().padLeft(2, '0')}'
+        : '${schedule.datetime.toDate().hour.toString().padLeft(2, '0')}:${ //
+          schedule.datetime.toDate().minute.toString().padLeft(2, '0')}';
+    locationController.text = schedule?.location ?? '';
+    annotationsController.text = schedule?.annotations ?? '';
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<SelectionProvider, NavigationProvider>(
-      builder: (context, selectionProvider, navigationProvider, child) {
-        final textTheme = Theme.of(context).textTheme;
+    return Consumer4<
+      SelectionProvider,
+      NavigationProvider,
+      ScheduleProvider,
+      PlaylistProvider
+    >(
+      builder:
+          (
+            context,
+            selectionProvider,
+            navigationProvider,
+            scheduleProvider,
+            playlistProvider,
+            child,
+          ) {
+            final textTheme = Theme.of(context).textTheme;
 
-        return Scaffold(
-          appBar: AppBar(
-            leading: BackButton(onPressed: () => navigationProvider.pop()),
-            title: Text(
-              AppLocalizations.of(
-                context,
-              )!.editPlaceholder(AppLocalizations.of(context)!.scheduleDetails),
-              style: textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w500,
+            return Scaffold(
+              appBar: AppBar(
+                leading: BackButton(onPressed: () => navigationProvider.pop()),
+                title: Text(
+                  AppLocalizations.of(context)!.editPlaceholder(
+                    AppLocalizations.of(context)!.scheduleDetails,
+                  ),
+                  style: textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
               ),
-            ),
-          ),
-          body: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              spacing: 16,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // STEP CONTENT
-                Expanded(child: widget.content),
+              body: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  spacing: 16,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // STEP CONTENT
+                    Expanded(
+                      child: switch (widget.mode) {
+                        EditScheduleMode.details => ScheduleForm(
+                          nameController: nameController,
+                          dateController: dateController,
+                          startTimeController: startTimeController,
+                          locationController: locationController,
+                          annotationsController: annotationsController,
+                        ),
+                        EditScheduleMode.playlist => PlaylistLibraryScreen(),
+                        EditScheduleMode.roleMember => SizedBox(),
+                      },
+                    ),
+                    // SAVE BUTTON
+                    FilledTextButton(
+                      text: AppLocalizations.of(context)!.save,
+                      onPressed: () {
+                        switch (widget.mode) {
+                          case EditScheduleMode.details:
+                            _saveDetails(
+                              navigationProvider,
+                              scheduleProvider,
+                              widget.scheduleId,
+                            );
+                            break;
+                          case EditScheduleMode.playlist:
+                          case EditScheduleMode.roleMember:
+                            break;
+                        }
+                      },
+                      isDisabled:
+                          (selectionProvider.isSelectionMode &&
+                          selectionProvider.selectedItemIds.length != 1),
+                      isDarkButton: true,
+                    ),
 
-                // SAVE BUTTON
-                FilledTextButton(
-                  text: AppLocalizations.of(context)!.save,
-                  onPressed: widget.onSave,
-                  isDisabled:
-                      (selectionProvider.isSelectionMode &&
-                      selectionProvider.selectedItemIds.length != 1),
-                  isDarkButton: true,
+                    // CANCEL BUTTON
+                    FilledTextButton(
+                      text: AppLocalizations.of(context)!.cancel,
+                      onPressed: () => navigationProvider.pop(),
+                    ),
+                  ],
                 ),
-
-                // CANCEL BUTTON
-                FilledTextButton(
-                  text: AppLocalizations.of(context)!.cancel,
-                  onPressed: () => navigationProvider.pop(),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+              ),
+            );
+          },
     );
+  }
+
+  void _saveDetails(
+    NavigationProvider navigationProvider,
+    ScheduleProvider scheduleProvider,
+    int scheduleId,
+  ) {
+    scheduleProvider.cacheScheduleDetails(
+      scheduleId,
+      name: nameController.text,
+      date: dateController.text,
+      startTime: startTimeController.text,
+      location: locationController.text,
+      annotations: annotationsController.text,
+    );
+    scheduleProvider.saveScheduleDetails(scheduleId);
+    navigationProvider.pop();
   }
 }

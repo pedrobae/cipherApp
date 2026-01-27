@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cordis/models/domain/playlist/playlist.dart';
 import 'package:cordis/models/domain/schedule.dart';
 import 'package:cordis/models/dtos/schedule_dto.dart';
 import 'package:cordis/repositories/local_schedule_repository.dart';
@@ -66,7 +65,7 @@ class ScheduleProvider extends ChangeNotifier {
   bool get isLoadingCloud => _isLoadingCloud;
 
   // ===== CREATE =====
-  void cacheBrandNewSchedule(Playlist playlist, String ownerFirebaseId) {
+  void cacheBrandNewSchedule(int playlistId, String ownerFirebaseId) {
     _schedules[-1] = Schedule(
       id: -1,
       ownerFirebaseId: ownerFirebaseId,
@@ -74,7 +73,7 @@ class ScheduleProvider extends ChangeNotifier {
       date: DateTime.fromMicrosecondsSinceEpoch(0),
       time: TimeOfDay(hour: 0, minute: 0),
       location: '',
-      playlist: playlist,
+      playlistId: playlistId,
       roles: [],
     );
   }
@@ -86,10 +85,7 @@ class ScheduleProvider extends ChangeNotifier {
     required String location,
     String? annotations,
   }) {
-    final schedule = _schedules[-1] as Schedule;
-    _schedules[-1] = Schedule(
-      id: schedule.id,
-      ownerFirebaseId: schedule.ownerFirebaseId,
+    _schedules[-1] = (_schedules[-1] as Schedule).copyWith(
       name: name,
       date: DateTime(
         int.parse(date.split('/')[0]),
@@ -101,8 +97,6 @@ class ScheduleProvider extends ChangeNotifier {
         minute: int.parse(startTime.split(':')[1]),
       ),
       location: location,
-      playlist: schedule.playlist,
-      roles: schedule.roles,
       annotations: annotations,
     );
   }
@@ -221,9 +215,9 @@ class ScheduleProvider extends ChangeNotifier {
       _schedules[scheduleId] = (schedule as Schedule).copyWith(
         name: name,
         date: DateTime(
-          int.parse(date.split('/')[0]),
-          int.parse(date.split('/')[1]),
           int.parse(date.split('/')[2]),
+          int.parse(date.split('/')[1]),
+          int.parse(date.split('/')[0]),
         ),
         time: TimeOfDay(
           hour: int.parse(startTime.split(':')[0]),
@@ -350,10 +344,10 @@ class ScheduleProvider extends ChangeNotifier {
   }
 
   // ===== HELPER METHODS =====
-  List<dynamic> getNextScheuleIds() {
+  List<dynamic> getNextScheduleIds() {
     List<dynamic> nextScheduleIds = [];
     final now = DateTime.now();
-    _schedules.forEach((key, schedule) {
+    _filteredSchedules.forEach((key, schedule) {
       bool isCloud = key.runtimeType == String;
 
       final scheduleDate = isCloud

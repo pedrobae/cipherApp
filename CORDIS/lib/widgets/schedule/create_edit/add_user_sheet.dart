@@ -310,7 +310,7 @@ class _AddUserSheetState extends State<AddUserSheet> {
                       text: AppLocalizations.of(
                         context,
                       )!.addPlaceholder(AppLocalizations.of(context)!.member),
-                      isDarkButton: true,
+                      isDark: true,
                     ),
                   ],
                 ),

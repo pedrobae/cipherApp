@@ -169,7 +169,7 @@ class _EditSectionDialogState extends State<EditSectionDialog> {
                 // ACTION BUTTONS
                 FilledTextButton(
                   text: AppLocalizations.of(context)!.save,
-                  isDarkButton: true,
+                  isDark: true,
                   onPressed: () {
                     _updateSection(
                       contentCodeController.text,

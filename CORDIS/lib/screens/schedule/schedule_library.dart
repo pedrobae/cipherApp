@@ -121,7 +121,7 @@ class _ScheduleLibraryScreenState extends State<ScheduleLibraryScreen> {
                       );
                     },
                     text: AppLocalizations.of(context)!.create,
-                    isDarkButton: true,
+                    isDark: true,
                   ),
                 ],
               ),

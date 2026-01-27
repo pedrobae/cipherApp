@@ -152,7 +152,7 @@ class _ImportTextScreenState extends State<ImportTextScreen> {
                             ),
                             FilledTextButton(
                               text: AppLocalizations.of(context)!.import,
-                              isDarkButton: true,
+                              isDark: true,
                               onPressed: () async {
                                 final text = _importTextController.text;
                                 if (text.isNotEmpty) {

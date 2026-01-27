@@ -4,7 +4,7 @@ class FilledTextButton extends StatelessWidget {
   final String text;
   final IconData? icon;
   final VoidCallback onPressed;
-  final bool isDarkButton;
+  final bool isDark;
   final bool isDisabled;
   final bool isDense;
 
@@ -13,7 +13,7 @@ class FilledTextButton extends StatelessWidget {
     required this.text,
     this.icon,
     required this.onPressed,
-    this.isDarkButton = false,
+    this.isDark = false,
     this.isDisabled = false,
     this.isDense = false,
   });
@@ -29,7 +29,7 @@ class FilledTextButton extends StatelessWidget {
     return FilledTextButton(
       text: text,
       onPressed: onPressed,
-      isDarkButton: isDarkButton,
+      isDark: isDarkButton,
       isDisabled: isDisabled,
       isDense: isDense,
       icon: icon,
@@ -41,7 +41,7 @@ class FilledTextButton extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     return FilledButton(
       style: FilledButton.styleFrom(
-        backgroundColor: isDarkButton
+        backgroundColor: isDark
             ? (isDisabled
                   ? colorScheme.onSurface.withValues(alpha: 0.68)
                   : colorScheme.onSurface)
@@ -63,7 +63,7 @@ class FilledTextButton extends StatelessWidget {
             Icon(
               icon,
               size: isDense ? 18 : 20,
-              color: isDarkButton ? colorScheme.surface : colorScheme.onSurface,
+              color: isDark ? colorScheme.surface : colorScheme.onSurface,
               fontWeight: FontWeight.w500,
             ),
             const SizedBox(width: 8),
@@ -75,9 +75,7 @@ class FilledTextButton extends StatelessWidget {
               fontWeight: FontWeight.w500,
               color: isDisabled
                   ? Colors.black
-                  : (isDarkButton
-                        ? colorScheme.surface
-                        : colorScheme.onSurface),
+                  : (isDark ? colorScheme.surface : colorScheme.onSurface),
             ),
           ),
         ],

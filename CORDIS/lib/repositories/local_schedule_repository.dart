@@ -103,7 +103,7 @@ class LocalScheduleRepository {
   }
 
   // ===== UPDATE =====
-  Future<void> updateScheduleDetails(Schedule schedule) async {
+  Future<void> updateSchedule(Schedule schedule) async {
     final db = await _databaseHelper.database;
     await db.update(
       'schedule',

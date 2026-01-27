@@ -126,7 +126,7 @@ class _ImportPdfScreenState extends State<ImportPdfScreen> {
                         importProvider.isImporting ? null : _pickPdfFile();
                       },
                       text: AppLocalizations.of(context)!.selectPDFFile,
-                      isDarkButton: true,
+                      isDark: true,
                     ),
 
                     const SizedBox(height: 16),

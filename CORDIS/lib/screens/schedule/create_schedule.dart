@@ -217,7 +217,7 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
                         }
                       },
                       isDisabled: selectionProvider.selectedItemIds.length != 1,
-                      isDarkButton: true,
+                      isDark: true,
                     ),
                   ],
                 ),

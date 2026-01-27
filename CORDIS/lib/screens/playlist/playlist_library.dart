@@ -88,7 +88,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen> {
                         navigationProvider.push(EditPlaylistScreen());
                       },
                       text: AppLocalizations.of(context)!.create,
-                      isDarkButton: true,
+                      isDark: true,
                     ),
                 ],
               ),

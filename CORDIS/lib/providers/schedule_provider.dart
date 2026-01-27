@@ -200,6 +200,17 @@ class ScheduleProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void assignPlaylistToLocalSchedule(int scheduleId, int playlistId) {
+    final schedule = _schedules[scheduleId];
+    if (schedule == null) return;
+
+    _schedules[scheduleId] = (_schedules[scheduleId] as Schedule).copyWith(
+      playlistId: playlistId,
+    );
+
+    notifyListeners();
+  }
+
   void cacheScheduleDetails(
     dynamic scheduleId, {
     required String name,
@@ -246,7 +257,7 @@ class ScheduleProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> saveScheduleDetails(dynamic scheduleId) async {
+  Future<void> saveLocalSchedule(dynamic scheduleId) async {
     if (_isSaving) return;
 
     _isSaving = true;
@@ -256,7 +267,7 @@ class ScheduleProvider extends ChangeNotifier {
     try {
       final schedule = _schedules[scheduleId];
       if (scheduleId is int && schedule is Schedule) {
-        await _localScheduleRepository.updateScheduleDetails(schedule);
+        await _localScheduleRepository.updateSchedule(schedule);
       }
       // else if (scheduleId is String && schedule is ScheduleDto) {
       //   await _cloudScheduleRepository.updateSchedule(schedule);

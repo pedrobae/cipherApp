@@ -268,7 +268,7 @@ class _SectionsTabState extends State<SectionsTab> {
                 onPressed: () {
                   _addSection(selectedLabel!, sectionProvider, versionProvider);
                 },
-                isDarkButton: true,
+                isDark: true,
               ),
 
               SizedBox(height: 40),

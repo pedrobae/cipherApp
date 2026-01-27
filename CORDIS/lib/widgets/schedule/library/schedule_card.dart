@@ -140,7 +140,7 @@ class ScheduleCard extends StatelessWidget {
                   ),
                   // BOTTOM BUTTONS
                   FilledTextButton(
-                    isDarkButton: true,
+                    isDark: true,
                     isDense: true,
                     onPressed: () {
                       navigationProvider.push(

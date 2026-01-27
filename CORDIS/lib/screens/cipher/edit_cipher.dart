@@ -352,7 +352,7 @@ class _EditCipherScreenState extends State<EditCipherScreen>
                         spacing: 16,
                         children: [
                           FilledTextButton(
-                            isDarkButton: true,
+                            isDark: true,
                             onPressed: () {
                               if (widget.versionType == VersionType.import ||
                                   widget.versionType == VersionType.brandNew) {

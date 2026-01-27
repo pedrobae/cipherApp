@@ -156,7 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             spacing: 16,
                             children: [
                               FilledTextButton(
-                                isDarkButton: true,
+                                isDark: true,
                                 text: AppLocalizations.of(context)!
                                     .createPlaceholder(
                                       AppLocalizations.of(context)!.playlist,

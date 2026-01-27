@@ -133,7 +133,7 @@ class _RolesAndUsersFormState extends State<RolesAndUsersForm> {
                 SizedBox(height: 16),
                 FilledTextButton(
                   text: AppLocalizations.of(context)!.save,
-                  isDarkButton: true,
+                  isDark: true,
                   onPressed: () {
                     final roleName = roleNameController.text.trim();
                     if (roleName.isNotEmpty) {

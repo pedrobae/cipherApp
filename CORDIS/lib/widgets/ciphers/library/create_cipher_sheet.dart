@@ -53,7 +53,7 @@ class CreateCipherSheet extends StatelessWidget {
               ),
               FilledTextButton(
                 text: AppLocalizations.of(context)!.createManually,
-                isDarkButton: true,
+                isDark: true,
                 onPressed: () {
                   Navigator.of(context).pop();
                   Navigator.of(context).push(

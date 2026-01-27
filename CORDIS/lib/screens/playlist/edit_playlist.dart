@@ -117,7 +117,7 @@ class _EditPlaylistScreenState extends State<EditPlaylistScreen> {
                     children: [
                       FilledTextButton(
                         text: AppLocalizations.of(context)!.create,
-                        isDarkButton: true,
+                        isDark: true,
                         onPressed: () async {
                           isEditing
                               ? await playlistProvider.updateName(

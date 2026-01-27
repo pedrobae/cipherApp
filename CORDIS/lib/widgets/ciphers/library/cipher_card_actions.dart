@@ -32,7 +32,6 @@ class CipherCardActionsSheet extends StatelessWidget {
             final textTheme = Theme.of(context).textTheme;
             final colorScheme = Theme.of(context).colorScheme;
 
-            // Your widget build logic here
             return Container(
               padding: const EdgeInsets.all(16.0),
               color: colorScheme.surface,
@@ -111,18 +110,24 @@ class CipherCardActionsSheet extends StatelessWidget {
                   // DELETE CIPHER
                   GestureDetector(
                     onTap: () {
-                      Navigator.of(context).pop(); // Close the bottom sheet
-                      showDialog(
+                      showModalBottomSheet(
                         context: context,
-                        builder: (dialogContext) => DeleteConfirmationDialog(
-                          itemType: AppLocalizations.of(context)!.cipher,
-                          isDangerous: true,
-                          onConfirm: () async {
-                            await cipherProvider.deleteCipher(cipherId);
-                            versionProvider.clearVersionsOfCipher(cipherId);
-                            navigationProvider.pop();
-                          },
-                        ),
+                        isScrollControlled: true,
+                        builder: (context) {
+                          return BottomSheet(
+                            shape: LinearBorder(),
+                            onClosing: () {},
+                            builder: (context) {
+                              return DeleteConfirmationSheet(
+                                itemType: AppLocalizations.of(context)!.cipher,
+                                onConfirm: () {
+                                  cipherProvider.deleteCipher(cipherId);
+                                  Navigator.of(context).pop();
+                                },
+                              );
+                            },
+                          );
+                        },
                       );
                     },
                     child: Container(

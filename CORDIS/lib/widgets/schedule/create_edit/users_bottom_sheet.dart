@@ -133,7 +133,7 @@ class _UsersBottomSheetState extends State<UsersBottomSheet> {
               // SAVE BUTTON
               FilledTextButton(
                 text: AppLocalizations.of(context)!.save,
-                isDarkButton: true,
+                isDark: true,
                 onPressed: () {
                   Navigator.of(context).pop();
                 },

@@ -56,7 +56,7 @@ class RoleCard extends StatelessWidget {
             FilledTextButton(
               text: AppLocalizations.of(context)!.assign,
               isDense: true,
-              isDarkButton: true,
+              isDark: true,
               onPressed: () => _openAssignMemberSheet(context, role),
             ),
 

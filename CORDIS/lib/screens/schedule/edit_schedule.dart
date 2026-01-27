@@ -8,6 +8,7 @@ import 'package:cordis/screens/playlist/playlist_library.dart';
 import 'package:cordis/utils/date_utils.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:cordis/widgets/schedule/create_edit/details_form.dart';
+import 'package:cordis/widgets/schedule/create_edit/roles_users_form.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -127,7 +128,7 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
                   spacing: 16,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // STEP CONTENT
+                    // MODE CONTENT
                     Expanded(
                       child: switch (widget.mode) {
                         EditScheduleMode.details => ScheduleForm(
@@ -138,7 +139,9 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
                           annotationsController: annotationsController,
                         ),
                         EditScheduleMode.playlist => PlaylistLibraryScreen(),
-                        EditScheduleMode.roleMember => SizedBox(),
+                        EditScheduleMode.roleMember => RolesAndUsersForm(
+                          scheduleId: widget.scheduleId,
+                        ),
                       },
                     ),
                     // SAVE BUTTON
@@ -154,14 +157,21 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
                             );
                             break;
                           case EditScheduleMode.playlist:
+                            _savePlaylist(
+                              navigationProvider,
+                              scheduleProvider,
+                              playlistProvider,
+                              selectionProvider,
+                            );
                           case EditScheduleMode.roleMember:
                             break;
                         }
+                        navigationProvider.pop();
                       },
                       isDisabled:
                           (selectionProvider.isSelectionMode &&
                           selectionProvider.selectedItemIds.length != 1),
-                      isDarkButton: true,
+                      isDark: true,
                     ),
 
                     // CANCEL BUTTON
@@ -190,7 +200,28 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
       location: locationController.text,
       annotations: annotationsController.text,
     );
-    scheduleProvider.saveScheduleDetails(scheduleId);
-    navigationProvider.pop();
+    scheduleProvider.saveLocalSchedule(scheduleId);
+  }
+
+  void _savePlaylist(
+    NavigationProvider navigationProvider,
+    ScheduleProvider scheduleProvider,
+    PlaylistProvider playlistProvider,
+    SelectionProvider selectionProvider,
+  ) {
+    if (selectionProvider.selectedItemIds.isEmpty) return;
+
+    final selectedPlaylistId = selectionProvider.selectedItemIds.first as int;
+    final selectedPlaylist = playlistProvider.getPlaylistById(
+      selectedPlaylistId,
+    );
+    if (selectedPlaylist == null) return;
+
+    scheduleProvider.assignPlaylistToLocalSchedule(
+      widget.scheduleId,
+      selectedPlaylistId,
+    );
+
+    scheduleProvider.saveLocalSchedule(widget.scheduleId);
   }
 }

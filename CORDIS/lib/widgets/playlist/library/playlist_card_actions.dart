@@ -106,21 +106,34 @@ class PlaylistCardActionsSheet extends StatelessWidget {
                   GestureDetector(
                     onTap: () {
                       Navigator.of(context).pop(); // Close the bottom sheet
-                      showDialog(
+                      showModalBottomSheet(
+                        isScrollControlled: true,
                         context: context,
-                        builder: (dialogContext) => DeleteConfirmationDialog(
-                          itemType: AppLocalizations.of(context)!.playlist,
-                          isDangerous: true,
-                          onConfirm: () async {
-                            await _deletePlaylist(
-                              context,
-                              playlistProvider,
-                              versionProvider,
-                              navigationProvider,
-                              flowItemProvider,
-                            );
-                          },
-                        ),
+                        builder: (context) {
+                          return BottomSheet(
+                            shape: LinearBorder(),
+                            onClosing: () {},
+                            builder: (context) {
+                              return DeleteConfirmationSheet(
+                                itemType: AppLocalizations.of(
+                                  context,
+                                )!.playlist,
+                                onConfirm: () async {
+                                  await _deletePlaylist(
+                                    context,
+                                    playlistProvider,
+                                    versionProvider,
+                                    navigationProvider,
+                                    flowItemProvider,
+                                  );
+                                  if (context.mounted) {
+                                    Navigator.of(context).pop();
+                                  }
+                                },
+                              );
+                            },
+                          );
+                        },
                       );
                     },
                     child: Container(

@@ -116,7 +116,7 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
                               _showCreateCipherSheet();
                             },
                             text: AppLocalizations.of(context)!.create,
-                            isDarkButton: true,
+                            isDark: true,
                           ),
                   ],
                 ),

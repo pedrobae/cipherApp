@@ -196,7 +196,7 @@ class _ViewScheduleScreenState extends State<ViewScheduleScreen> {
                             text: AppLocalizations.of(context)!.editPlaceholder(
                               AppLocalizations.of(context)!.scheduleDetails,
                             ),
-                            isDarkButton: true,
+                            isDark: true,
                             isDense: true,
                             onPressed: () {
                               navigationProvider.push(
@@ -204,6 +204,8 @@ class _ViewScheduleScreenState extends State<ViewScheduleScreen> {
                                   mode: EditScheduleMode.details,
                                   scheduleId: widget.scheduleId,
                                 ),
+                                showAppBar: false,
+                                showDrawerIcon: false,
                               );
                             },
                           ),
@@ -234,10 +236,14 @@ class _ViewScheduleScreenState extends State<ViewScheduleScreen> {
                                     mode: EditScheduleMode.playlist,
                                     scheduleId: widget.scheduleId,
                                   ),
+                                  showAppBar: false,
+                                  showDrawerIcon: false,
+                                  onPopCallback: () =>
+                                      selectionProvider.disableSelectionMode(),
                                 );
                               },
                               isDense: true,
-                              isDarkButton: true,
+                              isDark: true,
                             ),
                           ] else ...[
                             Text(playlist.name, style: textTheme.titleMedium),
@@ -260,7 +266,7 @@ class _ViewScheduleScreenState extends State<ViewScheduleScreen> {
                               text: AppLocalizations.of(
                                 context,
                               )!.changePlaylist,
-                              isDarkButton: true,
+                              isDark: true,
                               isDense: true,
                               onPressed: () {
                                 selectionProvider.enableSelectionMode(
@@ -279,6 +285,8 @@ class _ViewScheduleScreenState extends State<ViewScheduleScreen> {
                                   ),
                                   showAppBar: false,
                                   showDrawerIcon: false,
+                                  onPopCallback: () =>
+                                      selectionProvider.disableSelectionMode(),
                                 );
                               },
                             ),
@@ -324,7 +332,7 @@ class _ViewScheduleScreenState extends State<ViewScheduleScreen> {
                             text: AppLocalizations.of(
                               context,
                             )!.editPlaceholder(''),
-                            isDarkButton: true,
+                            isDark: true,
                             isDense: true,
                             onPressed: () {
                               navigationProvider.push(
@@ -332,6 +340,8 @@ class _ViewScheduleScreenState extends State<ViewScheduleScreen> {
                                   mode: EditScheduleMode.roleMember,
                                   scheduleId: widget.scheduleId,
                                 ),
+                                showAppBar: false,
+                                showDrawerIcon: false,
                               );
                             },
                           ),

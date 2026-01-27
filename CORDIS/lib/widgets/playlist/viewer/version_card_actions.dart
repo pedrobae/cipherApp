@@ -113,19 +113,29 @@ class VersionCardActionsSheet extends StatelessWidget {
                   GestureDetector(
                     onTap: () {
                       Navigator.of(context).pop(); // Close the bottom sheet
-                      showDialog(
+                      showModalBottomSheet(
                         context: context,
-                        builder: (dialogContext) => DeleteConfirmationDialog(
-                          itemType: AppLocalizations.of(context)!.version,
-                          isDangerous: true,
-                          onConfirm: () async {
-                            playlistProvider.removeVersionFromPlaylist(
-                              versionId,
-                              playlistId,
-                            );
-                            await versionProvider.deleteVersion(versionId);
-                          },
-                        ),
+                        isScrollControlled: true,
+                        builder: (context) {
+                          return BottomSheet(
+                            onClosing: () {},
+                            builder: (context) {
+                              return DeleteConfirmationSheet(
+                                itemType: AppLocalizations.of(context)!.version,
+                                isDangerous: true,
+                                onConfirm: () async {
+                                  playlistProvider.removeVersionFromPlaylist(
+                                    versionId,
+                                    playlistId,
+                                  );
+                                  await versionProvider.deleteVersion(
+                                    versionId,
+                                  );
+                                },
+                              );
+                            },
+                          );
+                        },
                       );
                     },
                     child: Container(

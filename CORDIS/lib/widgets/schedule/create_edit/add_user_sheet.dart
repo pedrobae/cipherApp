@@ -151,17 +151,17 @@ class _AddUserSheetState extends State<AddUserSheet> {
             ),
           );
         }
-        return;
+      } else {
+        scheduleProvider.addMemberToRoleFirebase(
+          widget.scheduleId,
+          widget.role.name,
+          user.firebaseId,
+        );
       }
-
-      scheduleProvider.addMemberToRoleFirebase(
-        widget.scheduleId,
-        widget.role.name,
-        user.firebaseId,
-      );
     }
-
-    Navigator.of(context).pop();
+    if (context.mounted) {
+      Navigator.of(context).pop();
+    }
   }
 
   @override

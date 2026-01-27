@@ -104,6 +104,12 @@ abstract class AppLocalizations {
   /// **'CORDIS'**
   String get appName;
 
+  /// Company name
+  ///
+  /// In pt, this message translates to:
+  /// **'New Heart Music Ministries'**
+  String get newHeart;
+
   /// Authentication related messages
   ///
   /// In pt, this message translates to:

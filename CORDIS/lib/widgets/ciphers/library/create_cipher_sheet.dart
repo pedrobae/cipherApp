@@ -9,7 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class CreateCipherSheet extends StatelessWidget {
-  const CreateCipherSheet({super.key});
+  final bool secret;
+  const CreateCipherSheet({super.key, this.secret = false});
 
   @override
   Widget build(BuildContext context) {
@@ -83,18 +84,19 @@ class CreateCipherSheet extends StatelessWidget {
                   fontSize: 18,
                 ),
               ),
-              FilledTextButton(
-                text: AppLocalizations.of(context)!.importFromText,
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  context.read<NavigationProvider>().push(
-                    const ImportTextScreen(),
-                    showAppBar: false,
-                    showDrawerIcon: false,
-                    showBottomNavBar: false,
-                  );
-                },
-              ),
+              if (secret)
+                FilledTextButton(
+                  text: AppLocalizations.of(context)!.importFromText,
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    context.read<NavigationProvider>().push(
+                      const ImportTextScreen(),
+                      showAppBar: false,
+                      showDrawerIcon: false,
+                      showBottomNavBar: false,
+                    );
+                  },
+                ),
               FilledTextButton(
                 text: AppLocalizations.of(context)!.importFromPDF,
                 onPressed: () {
@@ -107,22 +109,23 @@ class CreateCipherSheet extends StatelessWidget {
                   );
                 },
               ),
-              FilledTextButton(
-                text: AppLocalizations.of(context)!.importFromImage,
-                onPressed: () {
-                  // for now show coming soon snackbar from the settings screen
-                  Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      backgroundColor: Colors.amberAccent,
-                      content: Text(
-                        'Funcionalidade em desenvolvimento,',
-                        style: TextStyle(color: Colors.black),
+              if (secret)
+                FilledTextButton(
+                  text: AppLocalizations.of(context)!.importFromImage,
+                  onPressed: () {
+                    // for now show coming soon snackbar from the settings screen
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        backgroundColor: Colors.amberAccent,
+                        content: Text(
+                          'Funcionalidade em desenvolvimento,',
+                          style: TextStyle(color: Colors.black),
+                        ),
                       ),
-                    ),
-                  );
-                },
-              ),
+                    );
+                  },
+                ),
             ],
           ),
         ],

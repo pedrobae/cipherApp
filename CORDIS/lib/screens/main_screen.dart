@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/providers/my_auth_provider.dart';
 
-import 'package:cordis/widgets/app_drawer.dart';
+import 'package:cordis/widgets/side_menu.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -63,7 +63,7 @@ class MainScreenState extends State<MainScreen> {
                     ),
                   )
                 : null,
-            drawer: navigationProvider.showDrawerIcon ? AppDrawer() : null,
+            drawer: navigationProvider.showDrawerIcon ? SideMenu() : null,
             bottomNavigationBar: navigationProvider.showBottomNavBar
                 ? Container(
                     decoration: BoxDecoration(

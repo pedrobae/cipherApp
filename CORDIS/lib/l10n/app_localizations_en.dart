@@ -12,6 +12,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appName => 'CORDIS';
 
   @override
+  String get newHeart => 'New Heart Music Ministries';
+
+  @override
   String get authentication => 'Authentication';
 
   @override

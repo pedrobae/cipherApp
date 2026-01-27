@@ -4,6 +4,8 @@
   "appName": "CORDIS",
   "@appName": {"description": "Application name"},
 
+  "newHeart" : "New Heart Music Ministries",
+  "@newHeart" : {"description": "Company name"},
 
   "authentication": "Autenticação",
   "@authentication": {"description": "Authentication related messages"},

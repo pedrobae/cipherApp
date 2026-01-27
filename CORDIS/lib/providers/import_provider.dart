@@ -105,7 +105,6 @@ class ImportProvider extends ChangeNotifier {
           break;
 
         case ImportType.image:
-          // TODO: Implement image import logic
           await _imageService.extractText(selectedFile!);
           break;
 

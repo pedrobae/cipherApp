@@ -18,10 +18,17 @@ class ScheduleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Consumer3<ScheduleProvider, MyAuthProvider, UserProvider>(
       builder: (context, scheduleProvider, authProvider, userProvider, child) {
-        final theme = Theme.of(context);
-        final colorScheme = theme.colorScheme;
+        // LOADING STATE
+        if (scheduleProvider.isLoading || userProvider.isLoading) {
+          return Center(
+            child: CircularProgressIndicator(color: colorScheme.primary),
+          );
+        }
 
         final schedule = scheduleProvider.getScheduleById(scheduleId)!;
         return Container(

@@ -39,9 +39,8 @@ class User {
     );
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toSQLite() {
     return {
-      'id': id,
       'username': username,
       'mail': mail,
       'profile_photo': profilePhoto,

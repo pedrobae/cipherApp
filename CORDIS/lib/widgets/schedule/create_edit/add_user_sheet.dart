@@ -111,7 +111,7 @@ class _AddUserSheetState extends State<AddUserSheet> {
     });
   }
 
-  void _addUser(BuildContext context) {
+  void _addUser(BuildContext context) async {
     final username = _usernameController.text.trim();
     final email = _emailController.text.trim();
 
@@ -128,42 +128,37 @@ class _AddUserSheetState extends State<AddUserSheet> {
     final scheduleProvider = context.read<ScheduleProvider>();
 
     // Check if user exists in known users
-    final existingUser = userProvider.knownUsers.firstWhereOrNull(
+    dynamic user = userProvider.knownUsers.firstWhereOrNull(
       (user) => user.mail.toLowerCase() == email.toLowerCase(),
     );
 
     if (widget.role is Role) {
-      if (existingUser != null) {
-        scheduleProvider.addMemberToRole(
-          widget.scheduleId,
-          widget.role.id,
-          existingUser.id!,
-        );
-      } else {
-        // Add unknown user directly
-        scheduleProvider.addUnknownMemberToRole(
-          widget.scheduleId,
-          widget.role.id,
-          username,
-          email,
-        );
-      }
+      user ??= await userProvider.createLocalUnknownUser(username, email);
+
+      scheduleProvider.addMemberToRole(
+        widget.scheduleId,
+        widget.role.id,
+        user.id!,
+      );
     } else {
-      if (existingUser != null) {
-        scheduleProvider.addMemberToRoleFirebase(
-          widget.scheduleId,
-          widget.role.name,
-          existingUser.firebaseId!,
-        );
-      } else {
-        // Add unknown user directly
-        scheduleProvider.addUnknownMemberToRoleFirebase(
-          widget.scheduleId,
-          widget.role.id,
-          username,
-          email,
-        );
+      user ??= await userProvider.fetchUserDtoByEmail(email);
+
+      if (user == null) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.userNotFoundInCloud),
+            ),
+          );
+        }
+        return;
       }
+
+      scheduleProvider.addMemberToRoleFirebase(
+        widget.scheduleId,
+        widget.role.name,
+        user.firebaseId,
+      );
     }
 
     Navigator.of(context).pop();

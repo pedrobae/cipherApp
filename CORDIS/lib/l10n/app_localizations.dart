@@ -194,6 +194,12 @@ abstract class AppLocalizations {
   /// **'Por favor, insira o nome e o e-mail.'**
   String get pleaseEnterNameAndEmail;
 
+  /// Message displayed when a user is not found in the cloud
+  ///
+  /// In pt, this message translates to:
+  /// **'Usuário não encontrado na nuvem.'**
+  String get userNotFoundInCloud;
+
   /// Home navigation tab
   ///
   /// In pt, this message translates to:

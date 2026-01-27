@@ -57,6 +57,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pleaseEnterNameAndEmail => 'Please enter name and email.';
 
   @override
+  String get userNotFoundInCloud => 'User not found in cloud.';
+
+  @override
   String get home => 'Home';
 
   @override

@@ -110,7 +110,6 @@ class CreateCipherSheet extends StatelessWidget {
               FilledTextButton(
                 text: AppLocalizations.of(context)!.importFromImage,
                 onPressed: () {
-                  // TODO: Implement image import
                   // for now show coming soon snackbar from the settings screen
                   Navigator.of(context).pop();
                   ScaffoldMessenger.of(context).showSnackBar(

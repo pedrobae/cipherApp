@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cordis/models/domain/user.dart';
+import 'package:cordis/models/dtos/user_dto.dart';
 import 'package:cordis/repositories/local_user_repository.dart';
 import 'package:cordis/repositories/cloud_user_repository.dart';
 import 'package:flutter/foundation.dart';
@@ -74,6 +75,21 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
+  Future<User> createLocalUnknownUser(String username, String email) async {
+    final newUser = User(
+      id: -1,
+      username: username,
+      mail: email,
+      firebaseId: null,
+    );
+
+    final userId = await _localUserRepository.createUser(newUser);
+    final savedUser = newUser.copyWith(id: userId);
+    _knownUsers.add(savedUser);
+    notifyListeners();
+    return savedUser;
+  }
+
   // ==== READ =====
   /// Load users from local SQLite db
   Future<void> loadUsers() async {
@@ -99,6 +115,30 @@ class UserProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  ///
+  Future<UserDto?> fetchUserDtoByEmail(String email) async {
+    if (_isLoading) return null;
+
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    UserDto? userDto;
+
+    try {
+      userDto = await _cloudUserRepository.fetchUserByEmail(email);
+    } catch (e) {
+      if (kDebugMode) {
+        print('User with Email $email not found on firestore.');
+      }
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+    return userDto;
   }
 
   /// Search users

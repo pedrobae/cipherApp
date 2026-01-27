@@ -211,18 +211,10 @@ class ScheduleProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addUnknownMemberToRole(
-    int scheduleId,
-    int roleId,
-    String username,
-    String email,
-  ) {
-    // TODO: Implement adding unknown member to role in local schedule
-  }
-
   void addMemberToRoleFirebase(
     String scheduleId,
-    String roleName,
+    String
+    roleName, // Cloud roles dont have IDs, as they are nested on schedules
     String existingUserFirebaseId,
   ) {
     final schedule = _schedules[scheduleId] as ScheduleDto?;
@@ -232,15 +224,6 @@ class ScheduleProvider extends ChangeNotifier {
 
     role.memberIds.add(existingUserFirebaseId);
     notifyListeners();
-  }
-
-  void addUnknownMemberToRoleFirebase(
-    String scheduleId,
-    String roleId,
-    String username,
-    String email,
-  ) {
-    // TODO : Implement adding unknown member to role in cloud schedule
   }
 
   // ===== DELETE =====

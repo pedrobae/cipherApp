@@ -58,6 +58,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get pleaseEnterNameAndEmail => 'Por favor, insira o nome e o e-mail.';
 
   @override
+  String get userNotFoundInCloud => 'Usuário não encontrado na nuvem.';
+
+  @override
   String get home => 'Home';
 
   @override

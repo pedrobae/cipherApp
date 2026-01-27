@@ -38,6 +38,9 @@
   "pleaseEnterNameAndEmail": "Por favor, insira o nome e o e-mail.",
   "@pleaseEnterNameAndEmail": {"description": "Validation message for name and email"},
 
+  "userNotFoundInCloud": "Usuário não encontrado na nuvem.",
+  "@userNotFoundInCloud": {"description": "Message displayed when a user is not found in the cloud"},
+
 
   "home": "Home",
   "@home": {"description": "Home navigation tab"},

@@ -762,7 +762,13 @@ abstract class AppLocalizations {
   ///
   /// In pt, this message translates to:
   /// **'Próximos Eventos'**
-  String get nextSchedules;
+  String get futureSchedules;
+
+  /// Past schedules header
+  ///
+  /// In pt, this message translates to:
+  /// **'Eventos Passados'**
+  String get pastSchedules;
 
   /// Hint text for searching schedule
   ///

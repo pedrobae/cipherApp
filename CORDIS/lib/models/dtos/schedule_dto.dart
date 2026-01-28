@@ -54,7 +54,6 @@ class ScheduleDto {
       'annotations': annotations,
       'playlist': playlist?.toFirestore(),
       'roles': roles.map((role) => role.toFirestore()).toList(),
-      // TODO: ADD VERSIONS AND FLOW ITEMS
     };
   }
 

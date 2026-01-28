@@ -28,7 +28,7 @@ class User {
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'] as int,
-      firebaseId: json['firebase_id'] as String,
+      firebaseId: json['firebase_id'] as String?,
       username: json['username'] as String,
       mail: json['mail'] as String,
       profilePhoto: json['profile_photo'] as String?,

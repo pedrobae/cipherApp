@@ -365,7 +365,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nextUp => 'Next Up';
 
   @override
-  String get nextSchedules => 'Next Schedules';
+  String get futureSchedules => 'Next Schedules';
+
+  @override
+  String get pastSchedules => 'Past Schedules';
 
   @override
   String get searchSchedule => 'Search schedule...';

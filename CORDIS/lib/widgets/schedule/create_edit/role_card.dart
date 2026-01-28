@@ -72,7 +72,7 @@ class RoleCard extends StatelessWidget {
               text: AppLocalizations.of(context)!.delete,
               isDense: true,
               onPressed: () {
-                if (scheduleId is String) return; // TODO handle cloud roles
+                if (scheduleId is String) return; // TODO handle roleDTOs
                 showModalBottomSheet(
                   context: context,
                   isScrollControlled: true,

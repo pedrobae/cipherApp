@@ -73,8 +73,8 @@ class ScheduleProvider extends ChangeNotifier {
       id: -1,
       ownerFirebaseId: ownerFirebaseId,
       name: '',
-      date: DateTime.fromMicrosecondsSinceEpoch(0),
-      time: TimeOfDay(hour: 0, minute: 0),
+      date: DateTime.now(),
+      time: TimeOfDay.now(),
       location: '',
       playlistId: playlistId,
       roles: [],
@@ -132,6 +132,75 @@ class ScheduleProvider extends ChangeNotifier {
       return true;
     } else {
       return false;
+    }
+  }
+
+  /// Duplicates an existing schedule (local or cloud) with new details.
+  Future<void> duplicateSchedule(
+    dynamic scheduleId,
+    String name,
+    String date,
+    String startTime,
+    String location,
+    String? roomVenue,
+  ) async {
+    if (_isSaving) return;
+
+    _isSaving = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final originalSchedule = _schedules[scheduleId];
+      if (originalSchedule == null) {
+        throw Exception('Original schedule not found');
+      }
+
+      if (scheduleId is int && originalSchedule is Schedule) {
+        final newSchedule = originalSchedule.copyWith(
+          name: name,
+          date: DateTime(
+            int.parse(date.split('/')[2]),
+            int.parse(date.split('/')[1]),
+            int.parse(date.split('/')[0]),
+          ),
+          time: TimeOfDay(
+            hour: int.parse(startTime.split(':')[0]),
+            minute: int.parse(startTime.split(':')[1]),
+          ),
+          location: location,
+          roomVenue: roomVenue,
+        );
+
+        final newLocalId = await _localScheduleRepository.insertSchedule(
+          newSchedule,
+        );
+        await loadLocalSchedule(newLocalId);
+      } else if (scheduleId is String && originalSchedule is ScheduleDto) {
+        // final newScheduleDto = originalSchedule.copyWith(
+        //   name: name,
+        //   datetime: Timestamp.fromDate(
+        //     DateTime(
+        //       int.parse(date.split('/')[0]),
+        //       int.parse(date.split('/')[1]),
+        //       int.parse(date.split('/')[2]),
+        //       int.parse(startTime.split(':')[0]),
+        //       int.parse(startTime.split(':')[1]),
+        //     ),
+        //   ),
+        //   location: location,
+        //   roomVenue: roomVenue,
+        // );
+
+        // TODO: Handle cloud duplication
+        // Insert into cloud repository (not implemented here)
+        // await _cloudScheduleRepository.insertSchedule(newScheduleDto);
+      }
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isSaving = false;
+      notifyListeners();
     }
   }
 
@@ -381,6 +450,34 @@ class ScheduleProvider extends ChangeNotifier {
     }
   }
 
+  /// Deletes a schedule.
+  Future<void> deleteSchedule(dynamic scheduleId) async {
+    if (_isLoading) return;
+
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final schedule = _schedules[scheduleId];
+      if (scheduleId is int && schedule is Schedule) {
+        await _localScheduleRepository.deleteSchedule(scheduleId);
+      }
+      // TODO handle cloud deletion
+      // else if (scheduleId is String && schedule is ScheduleDto) {
+      //   await _cloudScheduleRepository.deleteSchedule(scheduleId);
+      // }
+
+      _schedules.remove(scheduleId);
+      _filterSchedules();
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   // ===== SEARCH & FILTER =====
   void setSearchTerm(String? term) {
     _searchTerm = term?.toLowerCase();
@@ -406,19 +503,33 @@ class ScheduleProvider extends ChangeNotifier {
   }
 
   // ===== HELPER METHODS =====
-  List<dynamic> getNextScheduleIds() {
-    List<dynamic> nextScheduleIds = [];
-    final now = DateTime.now();
-    _filteredSchedules.forEach((key, schedule) {
-      bool isCloud = key.runtimeType == String;
+  Map<dynamic, dynamic> get futureSchedules {
+    final futureSchedules = {};
 
-      final scheduleDate = isCloud
-          ? (schedule as ScheduleDto).datetime.toDate()
-          : (schedule as Schedule).date;
-      if (scheduleDate.isAfter(now)) {
-        nextScheduleIds.add(key);
+    for (var schedule in _filteredSchedules.values) {
+      if (schedule.date.isAfter(DateTime.now()) ||
+          (schedule.date.isAtSameMomentAs(DateTime.now()) &&
+              (schedule.time.hour > TimeOfDay.now().hour ||
+                  (schedule.time.hour == TimeOfDay.now().hour &&
+                      schedule.time.minute > TimeOfDay.now().minute)))) {
+        futureSchedules[schedule.id] = schedule;
       }
-    });
-    return nextScheduleIds;
+    }
+    return futureSchedules;
+  }
+
+  Map<dynamic, dynamic> get pastSchedules {
+    final pastSchedules = {};
+
+    for (var schedule in _filteredSchedules.values) {
+      if (schedule.date.isBefore(DateTime.now()) ||
+          (schedule.date.isAtSameMomentAs(DateTime.now()) &&
+              (schedule.time.hour < TimeOfDay.now().hour ||
+                  (schedule.time.hour == TimeOfDay.now().hour &&
+                      schedule.time.minute < TimeOfDay.now().minute)))) {
+        pastSchedules[schedule.id] = schedule;
+      }
+    }
+    return pastSchedules;
   }
 }

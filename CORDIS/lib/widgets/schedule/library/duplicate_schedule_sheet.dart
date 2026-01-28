@@ -65,60 +65,69 @@ class _DuplicateScheduleSheetState extends State<DuplicateScheduleSheet> {
             borderRadius: BorderRadius.vertical(top: Radius.circular(0)),
           ),
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
-            spacing: 16,
-            children: [
-              // HEADER
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    AppLocalizations.of(context)!.duplicatePlaceholder(
-                      AppLocalizations.of(context)!.schedule,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              spacing: 16,
+              children: [
+                // HEADER
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      AppLocalizations.of(context)!.duplicatePlaceholder(
+                        AppLocalizations.of(context)!.schedule,
+                      ),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
+                    IconButton(
+                      icon: Icon(Icons.close),
+                      onPressed: () => Navigator.of(context).pop(),
                     ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.close),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                ],
-              ),
+                  ],
+                ),
 
-              // FORM
-              ScheduleForm(
-                nameController: nameController,
-                dateController: dateController,
-                startTimeController: startTimeController,
-                locationController: locationController,
-                roomVenueController: roomVenueController,
-              ),
+                // FORM
+                ScheduleForm(
+                  nameController: nameController,
+                  dateController: dateController,
+                  startTimeController: startTimeController,
+                  locationController: locationController,
+                  roomVenueController: roomVenueController,
+                ),
 
-              // ACTIONS
-              // confirm
-              FilledTextButton(
-                text: AppLocalizations.of(context)!.keepGoing,
-                isDark: true,
-                onPressed: () {
-                  // TODO implement duplication logic
-                  Navigator.of(context).pop();
-                },
-              ),
+                // ACTIONS
+                // confirm
+                FilledTextButton(
+                  text: AppLocalizations.of(context)!.keepGoing,
+                  isDark: true,
+                  onPressed: () {
+                    scheduleProvider.duplicateSchedule(
+                      widget.scheduleId,
+                      nameController.text,
+                      dateController.text,
+                      startTimeController.text,
+                      locationController.text,
+                      roomVenueController.text,
+                    );
+                    Navigator.of(context).pop();
+                  },
+                ),
 
-              // cancel
-              FilledTextButton(
-                text: AppLocalizations.of(context)!.cancel,
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
+                // cancel
+                FilledTextButton(
+                  text: AppLocalizations.of(context)!.cancel,
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
 
-              SizedBox(height: 16),
-            ],
+                SizedBox(height: 16),
+              ],
+            ),
           ),
         );
       },

@@ -252,8 +252,10 @@
 
   "nextUp": "Next Up",
   "@nextUp": {"description": "Next scheduled item label"},
-  "nextSchedules": "Next Schedules",
-  "@nextSchedules": {"description": "Next schedules header"},
+  "futureSchedules": "Next Schedules",
+  "@futureSchedules": {"description": "Next schedules header"},
+  "pastSchedules": "Past Schedules",
+  "@pastSchedules": {"description": "Past schedules header"},
   "searchSchedule": "Search schedule...",
   "@searchSchedule": {"description": "Hint text for searching schedule"},
   "assignSchedule": "Assign Schedule",

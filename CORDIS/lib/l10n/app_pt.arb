@@ -250,8 +250,10 @@
 
   "nextUp": "Próxima Agenda",
   "@nextUp": {"description": "Next scheduled item label"},
-  "nextSchedules": "Próximos Eventos",
-  "@nextSchedules": {"description": "Next schedules header"},
+  "futureSchedules": "Próximos Eventos",
+  "@futureSchedules": {"description": "Next schedules header"},
+  "pastSchedules": "Eventos Passados",
+  "@pastSchedules": {"description": "Past schedules header"},
   "searchSchedule": "Pesquisar nome, local...",
   "@searchSchedule": {"description": "Hint text for searching schedule"},
   "assignSchedule": "Agendar",

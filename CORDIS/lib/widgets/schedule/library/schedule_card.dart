@@ -5,6 +5,7 @@ import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/schedule_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/screens/schedule/view_schedule.dart';
+import 'package:cordis/widgets/delete_confirmation.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:cordis/widgets/schedule/library/duplicate_schedule_sheet.dart';
 import 'package:flutter/material.dart';
@@ -123,8 +124,11 @@ class ScheduleCard extends StatelessWidget {
                       ),
                       if (showActions) ...[
                         IconButton(
-                          onPressed: () =>
-                              _openScheduleActionsSheet(context, scheduleId),
+                          onPressed: () => _openScheduleActionsSheet(
+                            context,
+                            scheduleId,
+                            scheduleProvider,
+                          ),
                           icon: Icon(Icons.more_vert),
                         ),
                       ],
@@ -166,7 +170,11 @@ class ScheduleCard extends StatelessWidget {
     );
   }
 
-  void _openScheduleActionsSheet(BuildContext context, dynamic scheduleId) {
+  void _openScheduleActionsSheet(
+    BuildContext context,
+    dynamic scheduleId,
+    ScheduleProvider scheduleProvider,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -199,6 +207,7 @@ class ScheduleCard extends StatelessWidget {
               ),
 
               // ACTIONS
+              // duplicate
               FilledTextButton.trailingIcon(
                 text: AppLocalizations.of(context)!.duplicatePlaceholder(''),
                 tooltip: AppLocalizations.of(
@@ -209,11 +218,23 @@ class ScheduleCard extends StatelessWidget {
                 trailingIcon: Icons.chevron_right,
                 isDiscrete: true,
               ),
+              // delete
               FilledTextButton.trailingIcon(
                 text: AppLocalizations.of(context)!.delete,
                 tooltip: AppLocalizations.of(context)!.deleteScheduleTooltip,
                 onPressed: () {
-                  // TODO: Implement delete functionality
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (context) {
+                      return DeleteConfirmationSheet(
+                        itemType: AppLocalizations.of(context)!.schedule,
+                        onConfirm: () {
+                          Navigator.of(context).pop();
+                          scheduleProvider.deleteSchedule(scheduleId);
+                        },
+                      );
+                    },
+                  );
                 },
                 trailingIcon: Icons.chevron_right,
                 isDangerous: true,
@@ -233,7 +254,12 @@ class ScheduleCard extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       builder: (BuildContext context) {
-        return DuplicateScheduleSheet(scheduleId: scheduleId);
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: DuplicateScheduleSheet(scheduleId: scheduleId),
+        );
       },
     );
   }

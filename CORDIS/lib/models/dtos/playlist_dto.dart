@@ -41,6 +41,11 @@ class PlaylistDto {
               .toList() ??
           [],
       flowItems: json['flowItems'] as Map<String, Map<String, String>>,
+      versions:
+          (json['versions'] as Map<String, dynamic>?)?.map(
+            (key, value) => MapEntry(key, VersionDto.fromFirestore(value, key)),
+          ) ??
+          {},
     );
   }
 

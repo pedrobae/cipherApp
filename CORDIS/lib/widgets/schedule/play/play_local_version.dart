@@ -81,7 +81,16 @@ class _PlayLocalVersionState extends State<PlayLocalVersion> {
           ) {
             final version = versionProvider.getLocalVersionById(
               widget.versionId,
-            )!;
+            );
+
+            // LOADING STATE
+            if (versionProvider.isLoading ||
+                sectionProvider.isLoading ||
+                version == null) {
+              return Center(
+                child: CircularProgressIndicator(color: colorScheme.primary),
+              );
+            }
 
             final cipher = cipherProvider.getCipherById(version.cipherId)!;
 

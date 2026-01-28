@@ -86,7 +86,7 @@ class Schedule {
 
 class Role {
   final int id;
-  final String name;
+  String name;
   final List<int> memberIds;
 
   Role({required this.id, required this.name, required this.memberIds});

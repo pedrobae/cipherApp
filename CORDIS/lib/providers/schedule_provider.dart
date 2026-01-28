@@ -227,6 +227,25 @@ class ScheduleProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateRoleName(dynamic scheduleId, String oldName, String newName) {
+    final schedule = _schedules[scheduleId];
+    if (schedule == null) return;
+
+    if (scheduleId is int) {
+      final role = (schedule as Schedule).roles.firstWhere(
+        (role) => role.name == oldName,
+      );
+      role.name = newName;
+    } else if (scheduleId is String) {
+      final role = (schedule as ScheduleDto).roles.firstWhere(
+        (role) => role.name == oldName,
+      );
+      role.name = newName;
+    }
+
+    notifyListeners();
+  }
+
   void assignPlaylistToLocalSchedule(int scheduleId, int playlistId) {
     final schedule = _schedules[scheduleId];
     if (schedule == null) return;

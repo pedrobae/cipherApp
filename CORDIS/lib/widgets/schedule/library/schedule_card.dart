@@ -75,6 +75,7 @@ class ScheduleCard extends StatelessWidget {
                               schedule.name,
                               style: theme.textTheme.titleMedium!.copyWith(
                                 fontWeight: FontWeight.w600,
+                                color: colorScheme.onSurface,
                               ),
                             ),
 

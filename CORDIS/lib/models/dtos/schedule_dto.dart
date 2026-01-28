@@ -109,7 +109,7 @@ class ScheduleDto {
 }
 
 class RoleDto {
-  final String name;
+  String name;
   final List<String> memberIds;
 
   RoleDto({required this.name, required this.memberIds});

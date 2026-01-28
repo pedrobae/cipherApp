@@ -94,118 +94,93 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   final nextSchedule = scheduleProvider.getNextSchedule();
                   // HOME SCREEN
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    spacing: 24,
+                  return Stack(
                     children: [
-                      // Current date
-                      Text(
-                        DateFormat(
-                          'EEEE, MMM d',
-                          locale.languageCode,
-                        ).format(DateTime.now()),
-                        style: theme.textTheme.bodyMedium!.copyWith(
-                          color: colorScheme.onSurface,
-                          fontSize: 14,
-                        ),
-                      ),
-
-                      // Welcome message
-                      Text(
-                        authProvider.userName != null
-                            ? AppLocalizations.of(
-                                context,
-                              )!.welcome(authProvider.userName as Object)
-                            : AppLocalizations.of(context)!.anonymousWelcome,
-                        style: Theme.of(context).textTheme.headlineLarge!
-                            .copyWith(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 24,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        spacing: 24,
+                        children: [
+                          // Current date
+                          Text(
+                            DateFormat(
+                              'EEEE, MMM d',
+                              locale.languageCode,
+                            ).format(DateTime.now()),
+                            style: theme.textTheme.bodyMedium!.copyWith(
+                              color: colorScheme.onSurface,
+                              fontSize: 14,
                             ),
-                      ),
+                          ),
 
-                      // NEXT SCHEDULE
-                      scheduleProvider.isLoading
-                          ? Center(child: CircularProgressIndicator())
-                          : nextSchedule != null
-                          ? Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              spacing: 16,
-                              children: [
-                                // SCHEDULE LABEL
-                                Text(
-                                  AppLocalizations.of(context)!.nextUp,
-                                  style: theme.textTheme.titleMedium!.copyWith(
-                                    color: colorScheme.onSurface,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                          // Welcome message
+                          Text(
+                            authProvider.userName != null
+                                ? AppLocalizations.of(
+                                    context,
+                                  )!.welcome(authProvider.userName as Object)
+                                : AppLocalizations.of(
+                                    context,
+                                  )!.anonymousWelcome,
+                            style: Theme.of(context).textTheme.headlineLarge!
+                                .copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 24,
                                 ),
-                                // SCHEDULE CARD
-                                ScheduleCard(scheduleId: nextSchedule.id),
-                              ],
-                            )
-                          : SizedBox.shrink(),
+                          ),
 
-                      // DIRECT CREATION BUTTONS
-                      Expanded(
-                        child: Center(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            mainAxisSize: MainAxisSize.min,
-                            spacing: 16,
-                            children: [
-                              FilledTextButton(
-                                isDark: true,
-                                text: AppLocalizations.of(context)!
-                                    .createPlaceholder(
-                                      AppLocalizations.of(context)!.playlist,
+                          // NEXT SCHEDULE
+                          scheduleProvider.isLoading
+                              ? Center(child: CircularProgressIndicator())
+                              : nextSchedule != null
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  spacing: 16,
+                                  children: [
+                                    // SCHEDULE LABEL
+                                    Text(
+                                      AppLocalizations.of(context)!.nextUp,
+                                      style: theme.textTheme.titleMedium!
+                                          .copyWith(
+                                            color: colorScheme.onSurface,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                     ),
-                                onPressed: () {
-                                  navigationProvider.navigateToRoute(
-                                    NavigationRoute.playlists,
-                                  );
-                                  navigationProvider.push(EditPlaylistScreen());
-                                },
-                              ),
-                              FilledTextButton(
-                                text: AppLocalizations.of(context)!
-                                    .addPlaceholder(
-                                      AppLocalizations.of(context)!.cipher,
-                                    ),
-                                onPressed: () {
-                                  navigationProvider.navigateToRoute(
-                                    NavigationRoute.library,
-                                  );
-                                  showModalBottomSheet(
-                                    context: context,
-                                    isScrollControlled: true,
-                                    builder: (context) {
-                                      return CreateCipherSheet();
-                                    },
-                                  );
-                                },
-                              ),
-                              FilledTextButton(
-                                text: AppLocalizations.of(
-                                  context,
-                                )!.assignSchedule,
-                                onPressed: () {
-                                  navigationProvider.navigateToRoute(
-                                    NavigationRoute.schedule,
-                                  );
-                                  selectionProvider.enableSelectionMode();
-                                  navigationProvider.push(
-                                    CreateScheduleScreen(creationStep: 1),
-                                    showAppBar: false,
-                                    showDrawerIcon: false,
-                                    onPopCallback: () {
-                                      selectionProvider.disableSelectionMode();
-                                    },
-                                  );
-                                },
-                              ),
-                            ],
+                                    // SCHEDULE CARD
+                                    ScheduleCard(scheduleId: nextSchedule.id),
+                                  ],
+                                )
+                              : SizedBox.shrink(),
+                        ],
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: GestureDetector(
+                          onTap: () => _showQuickActionsSheet(
+                            context,
+                            navigationProvider,
+                            selectionProvider,
+                          ),
+                          child: Container(
+                            width: 56,
+                            height: 56,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: colorScheme.onSurface,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: colorScheme.surfaceContainerLowest,
+                                  spreadRadius: 2,
+                                  blurRadius: 6,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: Icon(
+                              Icons.add,
+                              color: colorScheme.onPrimary,
+                            ),
                           ),
                         ),
                       ),
@@ -213,6 +188,104 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 },
           ),
+    );
+  }
+
+  void _showQuickActionsSheet(
+    BuildContext context,
+    NavigationProvider navigationProvider,
+    SelectionProvider selectionProvider,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(0),
+          ),
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            spacing: 8,
+            children: [
+              // HEADER
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!.quickAction,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 18,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+
+              // ACTIONS
+              // DIRECT CREATION BUTTONS
+              FilledTextButton.trailingIcon(
+                trailingIcon: Icons.chevron_right,
+                isDiscrete: true,
+                text: AppLocalizations.of(
+                  context,
+                )!.createPlaceholder(AppLocalizations.of(context)!.playlist),
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the bottom sheet
+                  navigationProvider.navigateToRoute(NavigationRoute.playlists);
+                  navigationProvider.push(EditPlaylistScreen());
+                },
+              ),
+              FilledTextButton.trailingIcon(
+                trailingIcon: Icons.chevron_right,
+                isDiscrete: true,
+                text: AppLocalizations.of(
+                  context,
+                )!.addPlaceholder(AppLocalizations.of(context)!.cipher),
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the bottom sheet
+                  navigationProvider.navigateToRoute(NavigationRoute.library);
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    builder: (context) {
+                      return CreateCipherSheet();
+                    },
+                  );
+                },
+              ),
+              FilledTextButton.trailingIcon(
+                trailingIcon: Icons.chevron_right,
+                isDiscrete: true,
+                text: AppLocalizations.of(context)!.assignSchedule,
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the bottom sheet
+                  navigationProvider.navigateToRoute(NavigationRoute.schedule);
+                  selectionProvider.enableSelectionMode();
+                  navigationProvider.push(
+                    CreateScheduleScreen(creationStep: 1),
+                    showAppBar: false,
+                    showDrawerIcon: false,
+                    onPopCallback: () {
+                      selectionProvider.disableSelectionMode();
+                    },
+                  );
+                },
+              ),
+              SizedBox(height: 16),
+            ],
+          ),
+        );
+      },
     );
   }
 }

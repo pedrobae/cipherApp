@@ -126,8 +126,13 @@ class _RolesAndUsersFormState extends State<RolesAndUsersForm> {
                 TextField(
                   controller: roleNameController,
                   decoration: InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: colorScheme.surfaceContainerLowest,
+                        width: 1.2,
+                      ),
+                    ),
                     labelText: AppLocalizations.of(context)!.roleNameHint,
-                    border: OutlineInputBorder(),
                   ),
                 ),
                 SizedBox(height: 16),

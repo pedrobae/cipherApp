@@ -75,7 +75,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get schedule => 'Schedule';
 
   @override
-  String get settings => 'Settings';
+  String get settings => 'Configuration';
 
   @override
   String get about => 'About';

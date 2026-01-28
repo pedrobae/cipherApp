@@ -53,7 +53,7 @@
   "@playlists": {"description": "Playlists navigation tab"},
   "schedule": "Schedule",
   "@schedule": {"description": "Schedule navigation tab"},
-  "settings": "Settings",
+  "settings": "Configuration",
   "@settings": {"description": "Settings navigation tab"},
   "about": "About",
   "@about": {"description": "About navigation tab"},

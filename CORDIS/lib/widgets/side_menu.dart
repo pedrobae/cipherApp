@@ -64,37 +64,41 @@ class SideMenu extends StatelessWidget {
                     UserCard(),
                     ...navigationProvider
                         .getNavigationItems(context, iconSize: 24)
-                        .map(
-                          (navItem) => Container(
-                            decoration: BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: colorScheme.surfaceContainerHighest,
-                                  width: 1.2,
+                        .map((navItem) {
+                          if (navItem.route == NavigationRoute.home) {
+                            return SizedBox.shrink();
+                          } else {
+                            return Container(
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: colorScheme.surfaceContainerHighest,
+                                    width: 1.2,
+                                  ),
                                 ),
                               ),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 4.0,
-                            ),
-                            child: ListTile(
-                              title: Text(navItem.title),
-                              selected:
-                                  navigationProvider.currentRoute ==
-                                  navItem.route,
-                              onTap: () {
-                                navigationProvider.navigateToRoute(
-                                  navItem.route,
-                                );
-                                Navigator.of(context).pop();
-                              },
-                              trailing: Icon(
-                                Icons.arrow_forward_ios_rounded,
-                                size: 16,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4.0,
                               ),
-                            ),
-                          ),
-                        ),
+                              child: ListTile(
+                                title: Text(navItem.title),
+                                selected:
+                                    navigationProvider.currentRoute ==
+                                    navItem.route,
+                                onTap: () {
+                                  navigationProvider.navigateToRoute(
+                                    navItem.route,
+                                  );
+                                  Navigator.of(context).pop();
+                                },
+                                trailing: Icon(
+                                  Icons.arrow_forward_ios_rounded,
+                                  size: 16,
+                                ),
+                              ),
+                            );
+                          }
+                        }),
                     Container(
                       decoration: BoxDecoration(
                         border: Border(
@@ -152,7 +156,7 @@ class SideMenu extends StatelessWidget {
               ),
               // LOGOUT BUTTON
               Padding(
-                padding: const EdgeInsets.only(left: 20.0, bottom: 32.0),
+                padding: const EdgeInsets.only(left: 20.0, bottom: 20.0),
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onTap: () {

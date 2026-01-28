@@ -7,32 +7,58 @@ class FilledTextButton extends StatelessWidget {
   final bool isDark;
   final bool isDisabled;
   final bool isDense;
+  final bool isDiscrete;
+  final IconData? trailingIcon;
 
   const FilledTextButton({
     super.key,
     required this.text,
-    this.icon,
     required this.onPressed,
     this.isDark = false,
     this.isDisabled = false,
     this.isDense = false,
+    this.isDiscrete = false,
+    this.icon,
+    this.trailingIcon,
   });
+
+  factory FilledTextButton.trailingIcon({
+    required String text,
+    required VoidCallback onPressed,
+    required IconData trailingIcon,
+    bool isDark = false,
+    bool isDisabled = false,
+    bool isDense = false,
+    bool isDiscrete = false,
+  }) {
+    return FilledTextButton(
+      text: text,
+      onPressed: onPressed,
+      isDark: isDark,
+      isDisabled: isDisabled,
+      isDense: isDense,
+      trailingIcon: trailingIcon,
+      isDiscrete: isDiscrete,
+    );
+  }
 
   factory FilledTextButton.icon({
     required String text,
     required VoidCallback onPressed,
     required IconData icon,
-    bool isDarkButton = false,
+    bool isDark = false,
     bool isDisabled = false,
     bool isDense = false,
+    bool isDiscrete = false,
   }) {
     return FilledTextButton(
       text: text,
       onPressed: onPressed,
-      isDark: isDarkButton,
+      isDark: isDark,
       isDisabled: isDisabled,
       isDense: isDense,
       icon: icon,
+      isDiscrete: isDiscrete,
     );
   }
 
@@ -48,16 +74,26 @@ class FilledTextButton extends StatelessWidget {
             : (isDisabled
                   ? colorScheme.surface.withValues(alpha: 0.68)
                   : colorScheme.surface),
-        side: BorderSide(color: colorScheme.onSurface, width: 1.2),
+        side: BorderSide(
+          color: isDiscrete
+              ? colorScheme.surfaceContainerHigh
+              : colorScheme.onSurface,
+          width: 1.2,
+        ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
         padding: isDense ? const EdgeInsets.all(0) : const EdgeInsets.all(12),
         visualDensity: isDense ? VisualDensity.compact : VisualDensity.standard,
       ),
       onPressed: isDisabled ? null : onPressed,
       child: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: trailingIcon != null
+            ? MainAxisSize.max
+            : MainAxisSize.min,
+        mainAxisAlignment: trailingIcon != null
+            ? MainAxisAlignment.spaceBetween
+            : MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
+        spacing: 8,
         children: [
           if (icon != null) ...[
             Icon(
@@ -66,18 +102,28 @@ class FilledTextButton extends StatelessWidget {
               color: isDark ? colorScheme.surface : colorScheme.onSurface,
               fontWeight: FontWeight.w500,
             ),
-            const SizedBox(width: 8),
           ],
           Text(
             text,
             style: TextStyle(
               fontSize: isDense ? 14 : 18,
-              fontWeight: FontWeight.w500,
+              fontWeight: isDiscrete ? FontWeight.w400 : FontWeight.w500,
               color: isDisabled
                   ? Colors.black
                   : (isDark ? colorScheme.surface : colorScheme.onSurface),
             ),
           ),
+          if (trailingIcon != null)
+            Icon(
+              trailingIcon,
+              size: isDense ? 24 : 32,
+              color: isDark
+                  ? (isDiscrete
+                        ? colorScheme.surfaceContainerHighest
+                        : colorScheme.surface)
+                  : (isDiscrete ? colorScheme.shadow : colorScheme.onSurface),
+              fontWeight: FontWeight.w500,
+            ),
         ],
       ),
     );

@@ -86,6 +86,7 @@ class ScheduleProvider extends ChangeNotifier {
     required String date,
     required String startTime,
     required String location,
+    String? roomVenue,
     String? annotations,
   }) {
     _schedules[-1] = (_schedules[-1] as Schedule).copyWith(
@@ -100,6 +101,7 @@ class ScheduleProvider extends ChangeNotifier {
         minute: int.parse(startTime.split(':')[1]),
       ),
       location: location,
+      roomVenue: roomVenue,
       annotations: annotations,
     );
   }
@@ -263,6 +265,7 @@ class ScheduleProvider extends ChangeNotifier {
     required String date,
     required String startTime,
     required String location,
+    String? roomVenue,
     String? annotations,
   }) {
     final schedule = _schedules[scheduleId];
@@ -281,6 +284,7 @@ class ScheduleProvider extends ChangeNotifier {
           minute: int.parse(startTime.split(':')[1]),
         ),
         location: location,
+        roomVenue: roomVenue,
         annotations: annotations,
       );
     } else if (scheduleId is String) {
@@ -296,6 +300,7 @@ class ScheduleProvider extends ChangeNotifier {
           ),
         ),
         location: location,
+        roomVenue: roomVenue,
         annotations: annotations,
       );
     }

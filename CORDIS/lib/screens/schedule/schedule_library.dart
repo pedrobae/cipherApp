@@ -21,14 +21,9 @@ class _ScheduleLibraryScreenState extends State<ScheduleLibraryScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final scheduleProvider = Provider.of<ScheduleProvider>(
-        context,
-        listen: false,
-      );
-      if (mounted) {
-        scheduleProvider.loadLocalSchedules();
-        scheduleProvider.loadCloudSchedules();
-      }
+      final scheduleProvider = context.read<ScheduleProvider>();
+      scheduleProvider.loadLocalSchedules();
+      scheduleProvider.loadCloudSchedules();
     });
   }
 

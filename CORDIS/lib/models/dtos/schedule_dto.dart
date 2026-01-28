@@ -9,6 +9,7 @@ class ScheduleDto {
   final String name;
   final Timestamp datetime;
   final String location;
+  final String? roomVenue;
   final String? annotations;
   final PlaylistDto? playlist;
   final List<RoleDto> roles;
@@ -19,6 +20,7 @@ class ScheduleDto {
     required this.name,
     required this.datetime,
     required this.location,
+    this.roomVenue,
     this.annotations,
     this.playlist,
     required this.roles,
@@ -31,6 +33,7 @@ class ScheduleDto {
       name: json['name'] as String,
       datetime: json['datetime'] as Timestamp,
       location: json['location'] as String,
+      roomVenue: json['roomVenue'] as String?,
       annotations: json['annotations'] as String?,
       playlist: json['playlist'] != null
           ? PlaylistDto.fromFirestore(json['playlist'] as Map<String, dynamic>)
@@ -47,9 +50,11 @@ class ScheduleDto {
       'name': name,
       'datetime': datetime,
       'location': location,
+      'roomVenue': roomVenue,
       'annotations': annotations,
       'playlist': playlist?.toFirestore(),
       'roles': roles.map((role) => role.toFirestore()).toList(),
+      // TODO: ADD VERSIONS AND FLOW ITEMS
     };
   }
 
@@ -66,7 +71,7 @@ class ScheduleDto {
       date: DateTime(dateTime.year, dateTime.month, dateTime.day),
       time: TimeOfDay(hour: dateTime.hour, minute: dateTime.minute),
       location: location,
-      annotations: annotations,
+      roomVenue: roomVenue,
       playlistId: playlistLocalId,
       roles: roles
           .asMap()
@@ -91,6 +96,7 @@ class ScheduleDto {
     String? name,
     Timestamp? datetime,
     String? location,
+    String? roomVenue,
     String? annotations,
     PlaylistDto? playlist,
     List<RoleDto>? roles,
@@ -101,6 +107,7 @@ class ScheduleDto {
       name: name ?? this.name,
       datetime: datetime ?? this.datetime,
       location: location ?? this.location,
+      roomVenue: roomVenue ?? this.roomVenue,
       annotations: annotations ?? this.annotations,
       playlist: playlist ?? this.playlist,
       roles: roles ?? this.roles,

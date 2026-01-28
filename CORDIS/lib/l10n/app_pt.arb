@@ -7,6 +7,9 @@
   "newHeart" : "New Heart Music Ministries",
   "@newHeart" : {"description": "Company name"},
 
+  "setup": "Configuração",
+  "@setup": {"description": "Setup related messages"},
+
   "authentication": "Autenticação",
   "@authentication": {"description": "Authentication related messages"},
   "email": "E-mail",
@@ -84,8 +87,8 @@
   "@versions": {"description": "Label for number of versions of a cipher (lowercase 'v')"},
   "estimatedTime": "Tempo Estimado",
   "@estimatedTime": {"description": "Estimated time field label"},
-  "notesOptional": "Anotações (Opcional)",
-  "@notesOptional": {"description": "Notes field label with optional indication"},
+  "notes": "Anotações",
+  "@notes": {"description": "Notes field label"},
 
 
   "sections": "Seções",
@@ -193,6 +196,8 @@
   "duplicatePlaceholder": "Duplicar {object}",
   "@duplicatePlaceholder": {"description": "Duplicate object button label", "placeholders": {"object": {}}},
 
+  "duplicateTooltip": "Criar uma cópia desta {object}",
+  "@duplicateTooltip": {"description": "Tooltip for duplicate action", "placeholders": {"object": {}}},
 
   "scheduleName": "Nome da Agenda",
   "@scheduleName": {"description": "Label for schedule name input field"},
@@ -202,8 +207,10 @@
   "@startTime": {"description": "Start time field label"},
   "location": "Localização",
   "@location": {"description": "Location field label"},
-  "annotationsOptional": "Anotações (Opcional)",
-  "@annotationsOptional": {"description": "Annotations field label with optional indication"},
+  "roomVenue": "Sala/Local",
+  "@roomVenue": {"description": "Room/Venue field label"},
+  "annotations": "Anotações",
+  "@annotations": {"description": "Annotations field label"},
 
   "schedulePlaylist": "Agendar Playlist",
   "@schedulePlaylist": {"description": "Create schedule screen title"},
@@ -250,6 +257,8 @@
   "assignSchedule": "Agendar",
   "@assignSchedule": {"description": "Assign schedule button label"},
 
+  "scheduleActions": "Ações da Agenda",
+  "@scheduleActions": {"description": "Schedule actions section title"},
   "noPlaylistAssigned": "Nenhuma playlist atribuída.",
   "@noPlaylistAssigned": {"description": "Message displayed when no playlist is assigned to the schedule"},
 
@@ -257,6 +266,8 @@
   "@scheduleNotFound": {"description": "Title for schedule not found screen"},
   "scheduleNotFoundMessage": "A agenda solicitada não pôde ser encontrada.",
   "@scheduleNotFoundMessage": {"description": "Message displayed when the requested schedule does not exist"},
+  "deleteScheduleTooltip": "Excluir permanentemente esta agenda",
+  "@deleteScheduleTooltip": {"description": "Tooltip for delete schedule action"},
 
   "play": "Tocar",
   "@play": {"description": "Play button label"},
@@ -395,6 +406,8 @@
   "fieldRequired": "Este campo é obrigatório.",
   "@fieldRequired": {"description": "Validation message indicating a required field"},
 
+  "optionalPlaceholder": "{field} (Opcional)",
+  "@optionalPlaceholder": {"description": "Generic optional field placeholder", "placeholders": {"field": {}}},
   "pluralPlaceholder": "{label}s",
   "@pluralPlaceholder": {"description": "Generic plural placeholder for labels", "placeholders": {"label": {}}}
 }

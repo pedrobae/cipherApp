@@ -110,6 +110,12 @@ abstract class AppLocalizations {
   /// **'New Heart Music Ministries'**
   String get newHeart;
 
+  /// Setup related messages
+  ///
+  /// In pt, this message translates to:
+  /// **'Configuração'**
+  String get setup;
+
   /// Authentication related messages
   ///
   /// In pt, this message translates to:
@@ -314,11 +320,11 @@ abstract class AppLocalizations {
   /// **'Tempo Estimado'**
   String get estimatedTime;
 
-  /// Notes field label with optional indication
+  /// Notes field label
   ///
   /// In pt, this message translates to:
-  /// **'Anotações (Opcional)'**
-  String get notesOptional;
+  /// **'Anotações'**
+  String get notes;
 
   /// Sections field label
   ///
@@ -602,6 +608,12 @@ abstract class AppLocalizations {
   /// **'Duplicar {object}'**
   String duplicatePlaceholder(Object object);
 
+  /// Tooltip for duplicate action
+  ///
+  /// In pt, this message translates to:
+  /// **'Criar uma cópia desta {object}'**
+  String duplicateTooltip(Object object);
+
   /// Label for schedule name input field
   ///
   /// In pt, this message translates to:
@@ -626,11 +638,17 @@ abstract class AppLocalizations {
   /// **'Localização'**
   String get location;
 
-  /// Annotations field label with optional indication
+  /// Room/Venue field label
   ///
   /// In pt, this message translates to:
-  /// **'Anotações (Opcional)'**
-  String get annotationsOptional;
+  /// **'Sala/Local'**
+  String get roomVenue;
+
+  /// Annotations field label
+  ///
+  /// In pt, this message translates to:
+  /// **'Anotações'**
+  String get annotations;
 
   /// Create schedule screen title
   ///
@@ -758,6 +776,12 @@ abstract class AppLocalizations {
   /// **'Agendar'**
   String get assignSchedule;
 
+  /// Schedule actions section title
+  ///
+  /// In pt, this message translates to:
+  /// **'Ações da Agenda'**
+  String get scheduleActions;
+
   /// Message displayed when no playlist is assigned to the schedule
   ///
   /// In pt, this message translates to:
@@ -775,6 +799,12 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'A agenda solicitada não pôde ser encontrada.'**
   String get scheduleNotFoundMessage;
+
+  /// Tooltip for delete schedule action
+  ///
+  /// In pt, this message translates to:
+  /// **'Excluir permanentemente esta agenda'**
+  String get deleteScheduleTooltip;
 
   /// Play button label
   ///
@@ -1135,6 +1165,12 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Este campo é obrigatório.'**
   String get fieldRequired;
+
+  /// Generic optional field placeholder
+  ///
+  /// In pt, this message translates to:
+  /// **'{field} (Opcional)'**
+  String optionalPlaceholder(Object field);
 
   /// Generic plural placeholder for labels
   ///

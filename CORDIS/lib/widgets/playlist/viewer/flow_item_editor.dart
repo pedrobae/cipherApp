@@ -161,7 +161,10 @@ class _FlowItemEditorState extends State<FlowItemEditor> {
                       _buildFormFieldLabel(
                         context,
                         controller: contentController,
-                        label: AppLocalizations.of(context)!.notesOptional,
+                        label: AppLocalizations.of(context)!
+                            .optionalPlaceholder(
+                              AppLocalizations.of(context)!.annotations,
+                            ),
                         isMultiline: true,
                       ),
                     ],

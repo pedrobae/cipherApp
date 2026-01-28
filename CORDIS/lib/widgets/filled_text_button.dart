@@ -2,41 +2,49 @@ import 'package:flutter/material.dart';
 
 class FilledTextButton extends StatelessWidget {
   final String text;
+  final String? tooltip;
   final IconData? icon;
   final VoidCallback onPressed;
   final bool isDark;
-  final bool isDisabled;
+  final bool isDangerous;
   final bool isDense;
   final bool isDiscrete;
+  final bool isDisabled;
   final IconData? trailingIcon;
 
   const FilledTextButton({
     super.key,
     required this.text,
+    this.tooltip,
     required this.onPressed,
     this.isDark = false,
     this.isDisabled = false,
     this.isDense = false,
     this.isDiscrete = false,
+    this.isDangerous = false,
     this.icon,
     this.trailingIcon,
   });
 
   factory FilledTextButton.trailingIcon({
     required String text,
+    String? tooltip,
     required VoidCallback onPressed,
     required IconData trailingIcon,
     bool isDark = false,
     bool isDisabled = false,
     bool isDense = false,
     bool isDiscrete = false,
+    bool isDangerous = false,
   }) {
     return FilledTextButton(
       text: text,
+      tooltip: tooltip,
       onPressed: onPressed,
       isDark: isDark,
       isDisabled: isDisabled,
       isDense: isDense,
+      isDangerous: isDangerous,
       trailingIcon: trailingIcon,
       isDiscrete: isDiscrete,
     );
@@ -44,17 +52,21 @@ class FilledTextButton extends StatelessWidget {
 
   factory FilledTextButton.icon({
     required String text,
+    String? tooltip,
     required VoidCallback onPressed,
     required IconData icon,
     bool isDark = false,
     bool isDisabled = false,
+    bool isDangerous = false,
     bool isDense = false,
     bool isDiscrete = false,
   }) {
     return FilledTextButton(
       text: text,
+      tooltip: tooltip,
       onPressed: onPressed,
       isDark: isDark,
+      isDangerous: isDangerous,
       isDisabled: isDisabled,
       isDense: isDense,
       icon: icon,
@@ -75,9 +87,11 @@ class FilledTextButton extends StatelessWidget {
                   ? colorScheme.surface.withValues(alpha: 0.68)
                   : colorScheme.surface),
         side: BorderSide(
-          color: isDiscrete
-              ? colorScheme.surfaceContainerHigh
-              : colorScheme.onSurface,
+          color: isDangerous
+              ? colorScheme.error
+              : (isDiscrete
+                    ? colorScheme.surfaceContainerHigh
+                    : colorScheme.onSurface),
           width: 1.2,
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
@@ -99,29 +113,57 @@ class FilledTextButton extends StatelessWidget {
             Icon(
               icon,
               size: isDense ? 18 : 20,
-              color: isDark ? colorScheme.surface : colorScheme.onSurface,
+              color: isDangerous
+                  ? colorScheme.error
+                  : (isDark ? colorScheme.surface : colorScheme.onSurface),
               fontWeight: FontWeight.w500,
             ),
           ],
-          Text(
-            text,
-            style: TextStyle(
-              fontSize: isDense ? 14 : 18,
-              fontWeight: isDiscrete ? FontWeight.w400 : FontWeight.w500,
-              color: isDisabled
-                  ? Colors.black
-                  : (isDark ? colorScheme.surface : colorScheme.onSurface),
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                text,
+                style: TextStyle(
+                  fontSize: isDense ? 14 : 18,
+                  fontWeight: isDiscrete ? FontWeight.w400 : FontWeight.w500,
+                  color: isDisabled
+                      ? Colors.black
+                      : (isDangerous
+                            ? colorScheme.error
+                            : (isDark
+                                  ? colorScheme.surface
+                                  : colorScheme.onSurface)),
+                ),
+              ),
+              if (tooltip != null)
+                Text(
+                  tooltip!,
+                  style: TextStyle(
+                    fontSize: isDense ? 10 : 12,
+                    fontWeight: FontWeight.w400,
+                    color: isDisabled
+                        ? Colors.black54
+                        : (isDark
+                              ? colorScheme.surfaceContainerHighest
+                              : colorScheme.shadow),
+                  ),
+                ),
+            ],
           ),
           if (trailingIcon != null)
             Icon(
               trailingIcon,
               size: isDense ? 24 : 32,
-              color: isDark
-                  ? (isDiscrete
-                        ? colorScheme.surfaceContainerHighest
-                        : colorScheme.surface)
-                  : (isDiscrete ? colorScheme.shadow : colorScheme.onSurface),
+              color: isDangerous
+                  ? colorScheme.error
+                  : (isDark
+                        ? (isDiscrete
+                              ? colorScheme.surfaceContainerHighest
+                              : colorScheme.surface)
+                        : (isDiscrete
+                              ? colorScheme.shadow
+                              : colorScheme.onSurface)),
               fontWeight: FontWeight.w500,
             ),
         ],

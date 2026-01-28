@@ -21,7 +21,7 @@ class DatabaseHelper {
 
       final db = await openDatabase(
         path,
-        version: 11,
+        version: 12,
         onCreate: _onCreate,
         onUpgrade: _onUpgrade, // Handle migrations
       );
@@ -184,6 +184,7 @@ class DatabaseHelper {
         date TEXT NOT NULL,
         time TEXT NOT NULL,
         location TEXT,
+        room_venue TEXT,
         annotations TEXT,
         firebase_id TEXT UNIQUE,
         owner_firebase_id TEXT NOT NULL,
@@ -306,7 +307,7 @@ class DatabaseHelper {
           FOREIGN KEY (role_id) REFERENCES role (id) ON DELETE CASCADE) 
           FOREIGN KEY (member_id) REFERENCES user (id) ON DELETE CASCADE) ''');
     }
-    if (oldVersion < 8) {
+    if (oldVersion < 7) {
       // CHANGE BPM TYPE FROM TEXT TO INTEGER IN CIPHER TABLE
       await db.execute(
         'ALTER TABLE cipher ADD COLUMN bpm_temp INTEGER DEFAULT 0',
@@ -333,23 +334,23 @@ class DatabaseHelper {
       // Rename temp column to bpm
       await db.execute('ALTER TABLE cipher RENAME COLUMN bpm_temp TO bpm');
     }
-    if (oldVersion < 9) {
+    if (oldVersion < 8) {
       // REMOVE DESCRIPTION COLUMN FROM PLAYLIST TABLE
       await db.execute("ALTER TABLE playlist DROP COLUMN description");
     }
-    if (oldVersion < 10) {
+    if (oldVersion < 9) {
       // CHANGE BPM FROM CIPHER TABLE TO VERSION TABLE
       await db.execute('ALTER TABLE version ADD COLUMN bpm INTEGER DEFAULT 0');
       // DROP EXISTING DATA IN CIPHER TABLE AND DROP COLUMN
       await db.execute('ALTER TABLE cipher DROP COLUMN bpm');
     }
-    if (oldVersion < 11) {
+    if (oldVersion < 10) {
       // ADD DURATION COLUMN TO PLAYLIST_TEXT TABLE
       await db.execute(
         'ALTER TABLE playlist_text ADD COLUMN duration INTEGER DEFAULT 0',
       );
     }
-    if (oldVersion < 12) {
+    if (oldVersion < 11) {
       // ADD NAME COLUMN TO SCHEDULE TABLE
       await db.execute(
         'ALTER TABLE schedule ADD COLUMN name TEXT NOT NULL DEFAULT ""',
@@ -362,6 +363,10 @@ class DatabaseHelper {
       await db.execute(
         'ALTER TABLE schedule ADD COLUMN owner_firebase_id TEXT NOT NULL DEFAULT ""',
       );
+    }
+    if (oldVersion < 12) {
+      // ADD ROOM_VENUE COLUMN TO SCHEDULE TABLE
+      await db.execute('ALTER TABLE schedule ADD COLUMN room_venue TEXT');
     }
   }
 

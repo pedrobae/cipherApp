@@ -25,6 +25,7 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _startTimeController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
+  final TextEditingController _roomVenueController = TextEditingController();
   final TextEditingController _annotationsController = TextEditingController();
 
   @override
@@ -60,6 +61,7 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
     _dateController.dispose();
     _startTimeController.dispose();
     _locationController.dispose();
+    _roomVenueController.dispose();
     _annotationsController.dispose();
 
     super.dispose();
@@ -150,6 +152,7 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
                                   dateController: _dateController,
                                   startTimeController: _startTimeController,
                                   locationController: _locationController,
+                                  roomVenueController: _roomVenueController,
                                   annotationsController: _annotationsController,
                                 ),
                               )
@@ -190,6 +193,7 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
                               date: _dateController.text,
                               startTime: _startTimeController.text,
                               location: _locationController.text,
+                              roomVenue: _roomVenueController.text,
                               annotations: _annotationsController.text,
                             );
 

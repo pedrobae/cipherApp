@@ -15,6 +15,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newHeart => 'New Heart Music Ministries';
 
   @override
+  String get setup => 'Setup';
+
+  @override
   String get authentication => 'Authentication';
 
   @override
@@ -117,7 +120,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get estimatedTime => 'Estimated Time';
 
   @override
-  String get notesOptional => 'Notes (Optional)';
+  String get notes => 'Notes';
 
   @override
   String get sections => 'Sections';
@@ -277,6 +280,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String duplicateTooltip(Object object) {
+    return 'Create a copy of this $object';
+  }
+
+  @override
   String get scheduleName => 'Schedule Name';
 
   @override
@@ -289,7 +297,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get location => 'Location';
 
   @override
-  String get annotationsOptional => 'Annotations (Optional)';
+  String get roomVenue => 'Room/Venue';
+
+  @override
+  String get annotations => 'Annotations';
 
   @override
   String get schedulePlaylist => 'Schedule Playlist';
@@ -363,6 +374,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get assignSchedule => 'Assign Schedule';
 
   @override
+  String get scheduleActions => 'Service Actions';
+
+  @override
   String get noPlaylistAssigned => 'No playlist assigned.';
 
   @override
@@ -371,6 +385,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get scheduleNotFoundMessage =>
       'The requested schedule could not be found.';
+
+  @override
+  String get deleteScheduleTooltip => 'Permanently delete this service';
 
   @override
   String get play => 'Play';
@@ -576,6 +593,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fieldRequired => 'This field is required.';
+
+  @override
+  String optionalPlaceholder(Object field) {
+    return '$field (Optional)';
+  }
 
   @override
   String pluralPlaceholder(Object label) {

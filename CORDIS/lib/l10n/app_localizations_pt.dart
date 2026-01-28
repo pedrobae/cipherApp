@@ -15,6 +15,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get newHeart => 'New Heart Music Ministries';
 
   @override
+  String get setup => 'Configuração';
+
+  @override
   String get authentication => 'Autenticação';
 
   @override
@@ -118,7 +121,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get estimatedTime => 'Tempo Estimado';
 
   @override
-  String get notesOptional => 'Anotações (Opcional)';
+  String get notes => 'Anotações';
 
   @override
   String get sections => 'Seções';
@@ -278,6 +281,11 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String duplicateTooltip(Object object) {
+    return 'Criar uma cópia desta $object';
+  }
+
+  @override
   String get scheduleName => 'Nome da Agenda';
 
   @override
@@ -290,7 +298,10 @@ class AppLocalizationsPt extends AppLocalizations {
   String get location => 'Localização';
 
   @override
-  String get annotationsOptional => 'Anotações (Opcional)';
+  String get roomVenue => 'Sala/Local';
+
+  @override
+  String get annotations => 'Anotações';
 
   @override
   String get schedulePlaylist => 'Agendar Playlist';
@@ -367,6 +378,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get assignSchedule => 'Agendar';
 
   @override
+  String get scheduleActions => 'Ações da Agenda';
+
+  @override
   String get noPlaylistAssigned => 'Nenhuma playlist atribuída.';
 
   @override
@@ -375,6 +389,9 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get scheduleNotFoundMessage =>
       'A agenda solicitada não pôde ser encontrada.';
+
+  @override
+  String get deleteScheduleTooltip => 'Excluir permanentemente esta agenda';
 
   @override
   String get play => 'Tocar';
@@ -582,6 +599,11 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get fieldRequired => 'Este campo é obrigatório.';
+
+  @override
+  String optionalPlaceholder(Object field) {
+    return '$field (Opcional)';
+  }
 
   @override
   String pluralPlaceholder(Object label) {

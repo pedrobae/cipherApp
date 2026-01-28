@@ -30,7 +30,7 @@ class PlayScheduleScreenState extends State<PlayScheduleScreen>
   bool isPlaying = false;
 
   int currentTabIndex = 0;
-  List<PlaylistItem> playlistItems = [];
+  List<PlaylistItem> items = [];
 
   @override
   void initState() {
@@ -43,6 +43,7 @@ class PlayScheduleScreenState extends State<PlayScheduleScreen>
   Future<void> _ensureDataLoaded() async {
     final scheduleProvider = context.read<ScheduleProvider>();
     final playlistProvider = context.read<PlaylistProvider>();
+    final cipherProvider = context.read<CipherProvider>();
     final versionProvider = context.read<VersionProvider>();
     final flowItemProvider = context.read<FlowItemProvider>();
 
@@ -55,10 +56,14 @@ class PlayScheduleScreenState extends State<PlayScheduleScreen>
       await versionProvider.loadVersionsForPlaylist(
         playlistProvider.getPlaylistById(schedule.playlistId)!.items,
       );
+      for (final item
+          in playlistProvider.getPlaylistById(schedule.playlistId)!.items) {
+        if (item.type == PlaylistItemType.version) {
+          await cipherProvider.loadCipherOfVersion(item.contentId!);
+        }
+      }
       await flowItemProvider.loadFlowItemByPlaylistId(schedule.playlistId);
-      playlistItems = playlistProvider
-          .getPlaylistById(schedule.playlistId)!
-          .items;
+      items = playlistProvider.getPlaylistById(schedule.playlistId)!.items;
     } else {
       if (!scheduleProvider.schedules.containsKey(widget.scheduleId)) {
         await scheduleProvider.fetchSchedule(widget.scheduleId);
@@ -69,7 +74,7 @@ class PlayScheduleScreenState extends State<PlayScheduleScreen>
         throw Exception("Schedule not found");
       }
 
-      playlistItems = (schedule as ScheduleDto).playlist!.getPlaylistItems();
+      items = (schedule as ScheduleDto).playlist!.getPlaylistItems();
     }
   }
 
@@ -100,7 +105,7 @@ class PlayScheduleScreenState extends State<PlayScheduleScreen>
             return Stack(
               children: [
                 // TAB VIEWER
-                playlistItems.isEmpty
+                items.isEmpty
                     ? (versionProvider.isLoading ||
                               scheduleProvider.isLoading ||
                               flowItemProvider.isLoading ||
@@ -119,7 +124,7 @@ class PlayScheduleScreenState extends State<PlayScheduleScreen>
                             )
                     : Builder(
                         builder: (context) {
-                          final item = playlistItems[currentTabIndex];
+                          final item = items[currentTabIndex];
                           switch (item.type) {
                             case PlaylistItemType.version:
                               if (isCloud) {
@@ -208,7 +213,11 @@ class PlayScheduleScreenState extends State<PlayScheduleScreen>
                             // PREVIOUS ITEM BUTTON
                             GestureDetector(
                               onTap: () {
-                                // TODO: Go to previous item
+                                if (currentTabIndex > 0) {
+                                  setState(() {
+                                    currentTabIndex--;
+                                  });
+                                }
                               },
                               child: SizedBox(
                                 width: MediaQuery.of(context).size.width / 3,
@@ -242,7 +251,11 @@ class PlayScheduleScreenState extends State<PlayScheduleScreen>
                             // NEXT ITEM BUTTON
                             GestureDetector(
                               onTap: () {
-                                // TODO: Go to next item
+                                if (currentTabIndex < items.length - 1) {
+                                  setState(() {
+                                    currentTabIndex++;
+                                  });
+                                }
                               },
                               child: SizedBox(
                                 width: MediaQuery.of(context).size.width / 3,
@@ -259,9 +272,8 @@ class PlayScheduleScreenState extends State<PlayScheduleScreen>
                         Builder(
                           builder: (context) {
                             String nextTitle = '';
-                            if (currentTabIndex + 1 < playlistItems.length) {
-                              final nextItem =
-                                  playlistItems[currentTabIndex + 1];
+                            if (currentTabIndex + 1 < items.length) {
+                              final nextItem = items[currentTabIndex + 1];
                               if (nextItem.type == PlaylistItemType.version) {
                                 if (isCloud) {
                                   nextTitle =

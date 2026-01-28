@@ -7,7 +7,9 @@
   "newHeart" : "New Heart Music Ministries",
   "@newHeart" : {"description": "Company name"},
 
-  
+  "setup": "Setup",
+  "@setup": {"description": "Setup related messages"},
+
   "authentication": "Authentication",
   "@authentication": {"description": "Authentication related messages"},
   "email": "Email",
@@ -86,8 +88,8 @@
   "@versions": {"description": "Label for number of versions of a cipher (lowercase 'v')"},
   "estimatedTime": "Estimated Time",
   "@estimatedTime": {"description": "Estimated time field label"},
-  "notesOptional": "Notes (Optional)",
-  "@notesOptional": {"description": "Notes field label with optional indication"},
+  "notes": "Notes",
+  "@notes": {"description": "Notes field label"},
 
 
   "sections": "Sections",
@@ -197,6 +199,9 @@
   "duplicatePlaceholder": "Duplicate {object}",
   "@duplicatePlaceholder": {"description": "Duplicate object button label", "placeholders": {"object": {}}},
 
+  "duplicateTooltip": "Create a copy of this {object}",
+  "@duplicateTooltip": {"description": "Tooltip for duplicate action", "placeholders": {"object": {}}},
+
 
   "scheduleName": "Schedule Name",
   "@scheduleName": {"description": "Label for schedule name input field"},
@@ -206,8 +211,10 @@
   "@startTime": {"description": "Start time field label"},
   "location": "Location",
   "@location": {"description": "Location field label"},
-  "annotationsOptional": "Annotations (Optional)",
-  "@annotationsOptional": {"description": "Annotations field label with optional indication"},
+  "roomVenue": "Room/Venue",
+  "@roomVenue": {"description": "Room/Venue field label"},
+  "annotations": "Annotations",
+  "@annotations": {"description": "Annotations field label"},
 
   "changePlaylist": "Change Playlist",
   "@changePlaylist": {"description": "Change playlist button label"},
@@ -252,6 +259,8 @@
   "assignSchedule": "Assign Schedule",
   "@assignSchedule": {"description": "Assign schedule button label"},
 
+  "scheduleActions": "Service Actions",
+  "@scheduleActions": {"description": "Schedule actions section title"},
   "schedulePlaylist": "Schedule Playlist",
   "@schedulePlaylist": {"description": "Create schedule screen title"},
   "noPlaylistAssigned": "No playlist assigned.",
@@ -261,6 +270,8 @@
   "@scheduleNotFound": {"description": "Title for schedule not found screen"},
   "scheduleNotFoundMessage": "The requested schedule could not be found.",
   "@scheduleNotFoundMessage": {"description": "Message displayed when the requested schedule does not exist"},
+  "deleteScheduleTooltip": "Permanently delete this service",
+  "@deleteScheduleTooltip": {"description": "Tooltip for delete schedule action"},
 
   "play": "Play",
   "@play": {"description": "Play button label"},
@@ -403,6 +414,8 @@
   "fieldRequired": "This field is required.",
   "@fieldRequired": {"description": "Validation message indicating a required field"},
 
+  "optionalPlaceholder": "{field} (Optional)",
+  "@optionalPlaceholder": {"description": "Generic optional field placeholder", "placeholders": {"field": {}}},
   "pluralPlaceholder": "{label}s",
   "@pluralPlaceholder": {"description": "Generic plural placeholder for labels", "placeholders": {"label": {}}}
 }

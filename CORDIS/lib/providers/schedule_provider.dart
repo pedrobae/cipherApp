@@ -195,7 +195,7 @@ class ScheduleProvider extends ChangeNotifier {
         //   roomVenue: roomVenue,
         // );
 
-        // TODO: Handle cloud duplication
+        // TODO - CLOUD - Handle cloud duplication
         // Insert into cloud repository (not implemented here)
         // await _cloudScheduleRepository.insertSchedule(newScheduleDto);
       }
@@ -466,7 +466,7 @@ class ScheduleProvider extends ChangeNotifier {
       if (scheduleId is int && schedule is Schedule) {
         await _localScheduleRepository.deleteSchedule(scheduleId);
       }
-      // TODO handle cloud deletion
+      // TODO - CLOUD - handle deletion
       // else if (scheduleId is String && schedule is ScheduleDto) {
       //   await _cloudScheduleRepository.deleteSchedule(scheduleId);
       // }

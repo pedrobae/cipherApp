@@ -27,11 +27,9 @@ class _ScheduleScrollViewState extends State<ScheduleScrollView> {
 
   void _listenForEndOfFutureSchedules() {
     // CHECK IF WE SCROLLED THE PAST SCHEDULES HEADER
-    if (_pastHeaderKey.currentContext == null) return;
-
     final box = _pastHeaderKey.currentContext!.findRenderObject() as RenderBox;
     final position = box.localToGlobal(Offset.zero);
-    if (_scrollController.offset >= position.dy) {
+    if (_scrollController.offset >= position.dy + kToolbarHeight) {
       setState(() {
         passedFutureSchedules = true;
       });
@@ -44,7 +42,6 @@ class _ScheduleScrollViewState extends State<ScheduleScrollView> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
     return Consumer<ScheduleProvider>(
@@ -63,17 +60,17 @@ class _ScheduleScrollViewState extends State<ScheduleScrollView> {
           children: [
             // SCHEDULES HEADER
             passedFutureSchedules
-                ? (futureScheduleIds.isNotEmpty
+                ? (pastScheduleIds.isNotEmpty
                       ? Text(
-                          AppLocalizations.of(context)!.futureSchedules,
+                          AppLocalizations.of(context)!.pastSchedules,
                           style: textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
                         )
                       : SizedBox.shrink())
-                : (pastScheduleIds.isNotEmpty
+                : (futureScheduleIds.isNotEmpty
                       ? Text(
-                          AppLocalizations.of(context)!.pastSchedules,
+                          AppLocalizations.of(context)!.futureSchedules,
                           style: textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
@@ -82,21 +79,35 @@ class _ScheduleScrollViewState extends State<ScheduleScrollView> {
 
             // SCHEDULES LIST
             Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ...futureScheduleIds.map((scheduleId) {
-                      return ScheduleCard(scheduleId: scheduleId);
-                    }),
-                    Divider(
-                      key: _pastHeaderKey,
-                      color: colorScheme.surfaceContainerHigh,
-                    ),
-                    ...pastScheduleIds.map((scheduleId) {
-                      return ScheduleCard(scheduleId: scheduleId);
-                    }),
-                  ],
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  await scheduleProvider.loadLocalSchedules();
+                  await scheduleProvider.loadCloudSchedules();
+                },
+                child: SingleChildScrollView(
+                  controller: _scrollController,
+                  physics: AlwaysScrollableScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 8.0),
+                      ...futureScheduleIds.map((scheduleId) {
+                        return ScheduleCard(scheduleId: scheduleId);
+                      }),
+                      SizedBox(height: 16.0),
+                      Text(
+                        key: _pastHeaderKey,
+                        AppLocalizations.of(context)!.pastSchedules,
+                        style: textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(height: 8.0),
+                      ...pastScheduleIds.map((scheduleId) {
+                        return ScheduleCard(scheduleId: scheduleId);
+                      }),
+                    ],
+                  ),
                 ),
               ),
             ),

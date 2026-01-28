@@ -29,7 +29,10 @@ class ScheduleProvider extends ChangeNotifier {
   // Getters
   Map<dynamic, dynamic> get schedules => _schedules;
 
-  Map<dynamic, dynamic> get filteredSchedules => _filteredSchedules;
+  Map<dynamic, dynamic> get filteredSchedules {
+    _filterSchedules();
+    return _filteredSchedules;
+  }
 
   /// Returns a schedule by its ID, whether local (int) or cloud (String)
   /// Returns null if not found.

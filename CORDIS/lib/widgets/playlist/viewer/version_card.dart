@@ -356,7 +356,9 @@ class _PlaylistVersionCardState extends State<PlaylistVersionCard> {
                             ],
                           ),
                           FilledTextButton(
-                            text: AppLocalizations.of(context)!.view,
+                            text: AppLocalizations.of(context)!.viewPlaceholder(
+                              AppLocalizations.of(context)!.cipher,
+                            ),
                             isDense: true,
                             onPressed: () {
                               navigationProvider.push(

@@ -102,6 +102,37 @@ class PlayScheduleScreenState extends State<PlayScheduleScreen>
             navigationProvider,
             child,
           ) {
+            String nextTitle = '';
+            if (currentTabIndex + 1 < items.length) {
+              final nextItem = items[currentTabIndex + 1];
+              if (nextItem.type == PlaylistItemType.version) {
+                if (isCloud) {
+                  nextTitle =
+                      ((scheduleProvider.schedules[widget.scheduleId]
+                              as ScheduleDto)
+                          .playlist
+                          ?.versions[nextItem.firebaseContentId]
+                          ?.title) ??
+                      '';
+                } else {
+                  nextTitle =
+                      cipherProvider.getCipherById(nextItem.id!)?.title ?? '';
+                }
+              } else if (nextItem.type == PlaylistItemType.flowItem) {
+                if (isCloud) {
+                  nextTitle =
+                      ((scheduleProvider.schedules[widget.scheduleId]
+                                  as ScheduleDto)
+                              .playlist
+                              ?.flowItems[nextItem.firebaseContentId]?['title']
+                          as String?) ??
+                      '';
+                } else {
+                  nextTitle =
+                      flowItemProvider.getFlowItem(nextItem.id!)?.title ?? '';
+                }
+              }
+            }
             return Stack(
               children: [
                 // TAB VIEWER
@@ -205,124 +236,61 @@ class PlayScheduleScreenState extends State<PlayScheduleScreen>
                         ),
                       ),
                     ),
-                    child: Column(
+                    width: MediaQuery.of(context).size.width,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            // PREVIOUS ITEM BUTTON
-                            GestureDetector(
-                              onTap: () {
-                                if (currentTabIndex > 0) {
-                                  setState(() {
-                                    currentTabIndex--;
-                                  });
-                                }
-                              },
-                              child: SizedBox(
-                                width: MediaQuery.of(context).size.width / 3,
-                                height: 48,
-                                child: Icon(
-                                  Icons.chevron_left,
-                                  color: colorScheme.shadow,
-                                  size: 48,
-                                ),
-                              ),
-                            ),
-
-                            // PAUSE/PLAY BUTTON
-                            GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  isPlaying = !isPlaying;
-                                });
-                              },
-                              child: SizedBox(
-                                width: MediaQuery.of(context).size.width / 3,
-                                height: 48,
-                                child: Icon(
-                                  isPlaying ? Icons.pause : Icons.play_arrow,
-                                  color: colorScheme.shadow,
-                                  size: 48,
-                                ),
-                              ),
-                            ),
-
-                            // NEXT ITEM BUTTON
-                            GestureDetector(
-                              onTap: () {
-                                if (currentTabIndex < items.length - 1) {
-                                  setState(() {
-                                    currentTabIndex++;
-                                  });
-                                }
-                              },
-                              child: SizedBox(
-                                width: MediaQuery.of(context).size.width / 3,
-                                height: 48,
-                                child: Icon(
-                                  Icons.chevron_right,
-                                  color: colorScheme.shadow,
-                                  size: 48,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Builder(
-                          builder: (context) {
-                            String nextTitle = '';
-                            if (currentTabIndex + 1 < items.length) {
-                              final nextItem = items[currentTabIndex + 1];
-                              if (nextItem.type == PlaylistItemType.version) {
-                                if (isCloud) {
-                                  nextTitle =
-                                      ((scheduleProvider.schedules[widget
-                                                  .scheduleId]
-                                              as ScheduleDto)
-                                          .playlist
-                                          ?.versions[nextItem.firebaseContentId]
-                                          ?.title) ??
-                                      '';
-                                } else {
-                                  nextTitle =
-                                      cipherProvider
-                                          .getCipherById(nextItem.id!)
-                                          ?.title ??
-                                      '';
-                                }
-                              } else if (nextItem.type ==
-                                  PlaylistItemType.flowItem) {
-                                if (isCloud) {
-                                  nextTitle =
-                                      ((scheduleProvider.schedules[widget
-                                                      .scheduleId]
-                                                  as ScheduleDto)
-                                              .playlist
-                                              ?.flowItems[nextItem
-                                              .firebaseContentId]?['title']
-                                          as String?) ??
-                                      '';
-                                } else {
-                                  nextTitle =
-                                      flowItemProvider
-                                          .getFlowItem(nextItem.id!)
-                                          ?.title ??
-                                      '';
-                                }
-                              }
+                        // PREVIOUS ITEM BUTTON
+                        GestureDetector(
+                          onTap: () {
+                            if (currentTabIndex > 0) {
+                              setState(() {
+                                currentTabIndex--;
+                              });
                             }
-                            return Text(
-                              nextTitle.isEmpty
-                                  ? '-'
-                                  : AppLocalizations.of(
-                                      context,
-                                    )!.nextPlaceholder(nextTitle),
-                              style: textTheme.bodyMedium?.copyWith(
-                                color: colorScheme.shadow,
-                              ),
-                            );
                           },
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width / 4,
+                            height: 48,
+                            child: Icon(
+                              Icons.chevron_left,
+                              color: colorScheme.shadow,
+                              size: 48,
+                            ),
+                          ),
+                        ),
+
+                        // NEXT ITEM TITLE
+                        Text(
+                          nextTitle.isEmpty
+                              ? '-'
+                              : AppLocalizations.of(
+                                  context,
+                                )!.nextPlaceholder(nextTitle),
+                          style: textTheme.titleLarge?.copyWith(
+                            color: colorScheme.shadow,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+
+                        // NEXT ITEM BUTTON
+                        GestureDetector(
+                          onTap: () {
+                            if (currentTabIndex < items.length - 1) {
+                              setState(() {
+                                currentTabIndex++;
+                              });
+                            }
+                          },
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width / 4,
+                            height: 48,
+                            child: Icon(
+                              Icons.chevron_right,
+                              color: colorScheme.shadow,
+                              size: 48,
+                            ),
+                          ),
                         ),
                       ],
                     ),

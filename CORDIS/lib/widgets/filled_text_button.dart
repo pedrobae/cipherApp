@@ -92,7 +92,7 @@ class FilledTextButton extends StatelessWidget {
               : (isDiscrete
                     ? colorScheme.surfaceContainerHigh
                     : colorScheme.onSurface),
-          width: 1.2,
+          width: 1.3,
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
         padding: isDense ? const EdgeInsets.all(0) : const EdgeInsets.all(12),
@@ -107,7 +107,7 @@ class FilledTextButton extends StatelessWidget {
             ? MainAxisAlignment.spaceBetween
             : MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
-        spacing: 8,
+        spacing: 12,
         children: [
           if (icon != null) ...[
             Icon(
@@ -119,37 +119,44 @@ class FilledTextButton extends StatelessWidget {
               fontWeight: FontWeight.w500,
             ),
           ],
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                text,
-                style: TextStyle(
-                  fontSize: isDense ? 14 : 18,
-                  fontWeight: isDiscrete ? FontWeight.w400 : FontWeight.w500,
-                  color: isDisabled
-                      ? Colors.black
-                      : (isDangerous
-                            ? colorScheme.error
-                            : (isDark
-                                  ? colorScheme.surface
-                                  : colorScheme.onSurface)),
-                ),
-              ),
-              if (tooltip != null)
+          Expanded(
+            child: Column(
+              crossAxisAlignment: trailingIcon == null
+                  ? CrossAxisAlignment.center
+                  : CrossAxisAlignment.start,
+              children: [
                 Text(
-                  tooltip!,
+                  text,
                   style: TextStyle(
-                    fontSize: isDense ? 10 : 12,
-                    fontWeight: FontWeight.w400,
+                    fontSize: isDense ? 14 : 18,
+                    fontWeight: isDiscrete ? FontWeight.w400 : FontWeight.w500,
                     color: isDisabled
-                        ? Colors.black54
-                        : (isDark
-                              ? colorScheme.surfaceContainerHighest
-                              : colorScheme.shadow),
+                        ? Colors.black
+                        : (isDangerous
+                              ? colorScheme.error
+                              : (isDark
+                                    ? colorScheme.surface
+                                    : colorScheme.onSurface)),
                   ),
                 ),
-            ],
+                if (tooltip != null)
+                  RichText(
+                    softWrap: true,
+                    text: TextSpan(
+                      text: tooltip!,
+                      style: TextStyle(
+                        fontSize: isDense ? 10 : 12,
+                        fontWeight: FontWeight.w400,
+                        color: isDisabled
+                            ? Colors.black54
+                            : (isDark
+                                  ? colorScheme.surfaceContainerHighest
+                                  : colorScheme.shadow),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
           if (trailingIcon != null)
             Icon(

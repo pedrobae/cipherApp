@@ -116,6 +116,12 @@ abstract class AppLocalizations {
   /// **'Configuração'**
   String get setup;
 
+  /// Coming soon message
+  ///
+  /// In pt, this message translates to:
+  /// **'Funcionalidade em desenvolvimento'**
+  String get comingSoon;
+
   /// Authentication related messages
   ///
   /// In pt, this message translates to:
@@ -554,6 +560,90 @@ abstract class AppLocalizations {
   /// **'item'**
   String get item;
 
+  /// Theme field label
+  ///
+  /// In pt, this message translates to:
+  /// **'Tema'**
+  String get theme;
+
+  /// Subtitle for theme settings
+  ///
+  /// In pt, this message translates to:
+  /// **'Customize a aparência do aplicativo'**
+  String get themeSubtitle;
+
+  /// Change language field label
+  ///
+  /// In pt, this message translates to:
+  /// **'Mudar Idioma'**
+  String get changeLanguage;
+
+  /// Subtitle for change language settings
+  ///
+  /// In pt, this message translates to:
+  /// **'Alterar o idioma do aplicativo'**
+  String get changeLanguageSubtitle;
+
+  /// Development tools section title
+  ///
+  /// In pt, this message translates to:
+  /// **'Ferramentas de Desenvolvimento'**
+  String get developmentTools;
+
+  /// Database section title
+  ///
+  /// In pt, this message translates to:
+  /// **'Banco de Dados'**
+  String get database;
+
+  /// Reset database dangerous action title
+  ///
+  /// In pt, this message translates to:
+  /// **'Redefinir Banco de Dados'**
+  String get resetDatabase;
+
+  /// Subtitle for reset database dangerous action
+  ///
+  /// In pt, this message translates to:
+  /// **'Apaga todo o banco de dados'**
+  String get resetDatabaseSubtitle;
+
+  /// Database information title
+  ///
+  /// In pt, this message translates to:
+  /// **'Informações do Banco de Dados'**
+  String get databaseInformation;
+
+  /// Label for records per table in database information
+  ///
+  /// In pt, this message translates to:
+  /// **'Registros por tabela:'**
+  String get recordsPerTable;
+
+  /// Title for table data screen
+  ///
+  /// In pt, this message translates to:
+  /// **'Dados da tabela: {tableName}'**
+  String tableData(Object tableName);
+
+  /// Subtitle for database information section
+  ///
+  /// In pt, this message translates to:
+  /// **'Visualizar tabelas e entradas no banco de dados'**
+  String get databaseInfoSubtitle;
+
+  /// Reload interface dangerous action title
+  ///
+  /// In pt, this message translates to:
+  /// **'Recarregar Interface'**
+  String get reloadInterface;
+
+  /// Subtitle for reload interface dangerous action
+  ///
+  /// In pt, this message translates to:
+  /// **'Limpa os dados em cache e recarrega todos os provedores'**
+  String get reloadInterfaceSubtitle;
+
   /// User role label
   ///
   /// In pt, this message translates to:
@@ -575,8 +665,8 @@ abstract class AppLocalizations {
   /// View button label
   ///
   /// In pt, this message translates to:
-  /// **'Visualizar'**
-  String get view;
+  /// **'Visualizar {object}'**
+  String viewPlaceholder(Object object);
 
   /// Create object button label
   ///

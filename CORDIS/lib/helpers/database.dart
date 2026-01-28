@@ -21,7 +21,7 @@ class DatabaseHelper {
 
       final db = await openDatabase(
         path,
-        version: 12,
+        version: 13,
         onCreate: _onCreate,
         onUpgrade: _onUpgrade, // Handle migrations
       );
@@ -162,7 +162,7 @@ class DatabaseHelper {
 
     // Create playlist_text table, for written sections
     await db.execute('''
-      CREATE TABLE playlist_text (
+      CREATE TABLE flow_item (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         playlist_id INTEGER NOT NULL,
         title TEXT NOT NULL,
@@ -367,6 +367,10 @@ class DatabaseHelper {
     if (oldVersion < 12) {
       // ADD ROOM_VENUE COLUMN TO SCHEDULE TABLE
       await db.execute('ALTER TABLE schedule ADD COLUMN room_venue TEXT');
+    }
+    if (oldVersion < 13) {
+      // RENAME PLAYLIST_TEXT TABLE TO FLOW_ITEM
+      await db.execute('ALTER TABLE playlist_text RENAME TO flow_item');
     }
   }
 

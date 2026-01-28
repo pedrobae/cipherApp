@@ -23,6 +23,7 @@ class PlayLocalVersion extends StatefulWidget {
 class _PlayLocalVersionState extends State<PlayLocalVersion> {
   late final ScrollController _scrollController;
   final List<GlobalKey> sectionKeys = [];
+  final _structureListKey = GlobalKey();
   bool showTopBar = false;
 
   @override
@@ -48,14 +49,21 @@ class _PlayLocalVersionState extends State<PlayLocalVersion> {
   }
 
   void _scrollListener() {
-    if (_scrollController.offset > 105 && !showTopBar) {
-      setState(() {
-        showTopBar = true;
-      });
-    } else if (_scrollController.offset <= 105 && showTopBar) {
-      setState(() {
-        showTopBar = false;
-      });
+    // Update showTopBar based on scroll position
+    final structureListContext = _structureListKey.currentContext;
+    if (structureListContext != null) {
+      final box = structureListContext.findRenderObject() as RenderBox;
+      final position = box.localToGlobal(Offset.zero).dy;
+
+      if (position < 24) {
+        setState(() {
+          showTopBar = true;
+        });
+      } else if (position >= 24) {
+        setState(() {
+          showTopBar = false;
+        });
+      }
     }
   }
 
@@ -133,84 +141,99 @@ class _PlayLocalVersionState extends State<PlayLocalVersion> {
               children: [
                 // CONTENT
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: SingleChildScrollView(
                     controller: _scrollController,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 8,
+                      spacing: 16,
                       children: [
+                        SizedBox(height: 8),
                         // HEADER
-                        Text(
-                          cipher.title,
-                          style: textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-
-                        Row(
-                          spacing: 16.0,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          spacing: 4,
                           children: [
                             Text(
-                              AppLocalizations.of(context)!.keyWithPlaceholder(
-                                version.transposedKey ?? cipher.musicKey,
+                              cipher.title,
+                              style: textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.w700,
                               ),
-                              style: textTheme.bodyMedium,
                             ),
-                            Text(
-                              AppLocalizations.of(
-                                context,
-                              )!.bpmWithPlaceholder(version.bpm),
-                              style: textTheme.bodyMedium,
-                            ),
-                            Text(
-                              '${AppLocalizations.of(context)!.duration}: ${DateTimeUtils.formatDuration(version.duration)}',
-                              style: textTheme.bodyMedium,
+
+                            Row(
+                              spacing: 16.0,
+                              children: [
+                                Text(
+                                  AppLocalizations.of(
+                                    context,
+                                  )!.keyWithPlaceholder(
+                                    version.transposedKey ?? cipher.musicKey,
+                                  ),
+                                  style: textTheme.bodyLarge?.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                Text(
+                                  AppLocalizations.of(
+                                    context,
+                                  )!.bpmWithPlaceholder(version.bpm),
+                                  style: textTheme.bodyLarge?.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                Text(
+                                  '${AppLocalizations.of(context)!.duration}: ${DateTimeUtils.formatDuration(version.duration)}',
+                                  style: textTheme.bodyLarge?.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
 
-                        Container(
-                          decoration: BoxDecoration(
-                            color: colorScheme.surface,
-                            border: Border.fromBorderSide(
-                              BorderSide(
-                                color: colorScheme.surfaceContainerLowest,
-                                width: 1,
+                        // SONG STRUCTURE
+                        Column(
+                          spacing: 4,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Text(
+                                AppLocalizations.of(context)!.songStructure,
+                                style: textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                  left: 8.0,
-                                  top: 8.0,
-                                ),
-                                child: Text(
-                                  AppLocalizations.of(context)!.songStructure,
-                                  style: textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.w600,
+                            Container(
+                              key: _structureListKey,
+                              decoration: BoxDecoration(
+                                color: colorScheme.surface,
+                                border: Border.fromBorderSide(
+                                  BorderSide(
+                                    color: colorScheme.surfaceContainerLowest,
+                                    width: 1,
                                   ),
                                 ),
                               ),
-                              StructureList(
+                              child: StructureList(
                                 versionId: widget.versionId,
                                 filteredStructure: filteredStructure.values
                                     .toList(),
                                 scrollController: _scrollController,
                                 sectionKeys: sectionKeys,
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
 
                         // SECTION CARDS GRID
                         MasonryGridView.count(
                           crossAxisCount: layoutSettings.columnCount,
-                          mainAxisSpacing: 8,
-                          crossAxisSpacing: 8,
+                          mainAxisSpacing: 16,
+                          crossAxisSpacing: 16,
                           itemCount: sectionCardList.length,
                           physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
@@ -233,6 +256,10 @@ class _PlayLocalVersionState extends State<PlayLocalVersion> {
                           decoration: BoxDecoration(
                             color: colorScheme.surface,
                             border: Border(
+                              top: BorderSide(
+                                color: colorScheme.surfaceContainerHigh,
+                                width: 1,
+                              ),
                               bottom: BorderSide(
                                 color: colorScheme.surfaceContainerHigh,
                                 width: 1,
@@ -241,7 +268,7 @@ class _PlayLocalVersionState extends State<PlayLocalVersion> {
                           ),
                           child: ConstrainedBox(
                             constraints: BoxConstraints(
-                              maxWidth: MediaQuery.of(context).size.width - 64,
+                              maxWidth: MediaQuery.of(context).size.width - 66,
                             ),
                             child: StructureList(
                               versionId: widget.versionId,
@@ -264,10 +291,14 @@ class _PlayLocalVersionState extends State<PlayLocalVersion> {
                                 color: colorScheme.surfaceContainerHigh,
                                 width: 1,
                               ),
+                              top: BorderSide(
+                                color: colorScheme.surfaceContainerHigh,
+                                width: 1,
+                              ),
                             ),
                           ),
-                          height: 64,
-                          width: 64,
+                          height: 66,
+                          width: 66,
                         ),
                       ],
                     ),

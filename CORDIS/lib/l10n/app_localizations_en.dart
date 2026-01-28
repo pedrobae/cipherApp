@@ -18,6 +18,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get setup => 'Setup';
 
   @override
+  String get comingSoon => 'Feature under development';
+
+  @override
   String get authentication => 'Authentication';
 
   @override
@@ -243,6 +246,51 @@ class AppLocalizationsEn extends AppLocalizations {
   String get item => 'item';
 
   @override
+  String get theme => 'Theme';
+
+  @override
+  String get themeSubtitle => 'Customize the appearance of the app';
+
+  @override
+  String get changeLanguage => 'Change Language';
+
+  @override
+  String get changeLanguageSubtitle => 'Change the application language';
+
+  @override
+  String get developmentTools => 'Development Tools';
+
+  @override
+  String get database => 'Database';
+
+  @override
+  String get resetDatabase => 'Reset Database';
+
+  @override
+  String get resetDatabaseSubtitle => 'Wipes the entire database';
+
+  @override
+  String get databaseInformation => 'Database Information';
+
+  @override
+  String get recordsPerTable => 'Records per Table';
+
+  @override
+  String tableData(Object tableName) {
+    return 'Table: $tableName';
+  }
+
+  @override
+  String get databaseInfoSubtitle => 'View tables and entries in the database';
+
+  @override
+  String get reloadInterface => 'Reload Interface';
+
+  @override
+  String get reloadInterfaceSubtitle =>
+      'Clears cached data and reloads all providers';
+
+  @override
   String get role => 'Role';
 
   @override
@@ -252,7 +300,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get share => 'Share';
 
   @override
-  String get view => 'View';
+  String viewPlaceholder(Object object) {
+    return 'View $object';
+  }
 
   @override
   String createPlaceholder(Object object) {

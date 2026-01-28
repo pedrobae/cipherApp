@@ -63,7 +63,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen> {
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(0),
                             borderSide: BorderSide(
-                              color: colorScheme.surfaceContainerLowest,
+                              color: colorScheme.surfaceContainer,
                             ),
                           ),
                           focusedBorder: OutlineInputBorder(

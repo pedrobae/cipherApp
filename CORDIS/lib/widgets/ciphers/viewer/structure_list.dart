@@ -51,7 +51,7 @@ class _StructureListState extends State<StructureList> {
       builder: (context, versionProvider, sectionProvider, child) {
         return Container(
           padding: EdgeInsets.all(8),
-          height: 63,
+          height: 64,
           child: widget.filteredStructure.isEmpty
               ? Center(
                   child: Text(

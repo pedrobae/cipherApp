@@ -145,7 +145,9 @@ class ScheduleCard extends StatelessWidget {
                         showDrawerIcon: false,
                       );
                     },
-                    text: AppLocalizations.of(context)!.view,
+                    text: AppLocalizations.of(
+                      context,
+                    )!.viewPlaceholder(AppLocalizations.of(context)!.schedule),
                   ),
                   FilledTextButton(
                     onPressed: () {

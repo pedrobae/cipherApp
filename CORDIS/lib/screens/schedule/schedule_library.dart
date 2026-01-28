@@ -60,7 +60,7 @@ class _ScheduleLibraryScreenState extends State<ScheduleLibraryScreen> {
                           hintText: AppLocalizations.of(
                             context,
                           )!.searchSchedule,
-                          border: OutlineInputBorder(
+                          enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(0),
                             borderSide: BorderSide(
                               color: colorScheme.surfaceContainer,

@@ -51,11 +51,7 @@ class _StructureListState extends State<StructureList> {
       builder: (context, versionProvider, sectionProvider, child) {
         return Container(
           padding: EdgeInsets.all(8),
-          height: 64,
-          decoration: BoxDecoration(
-            border: Border.all(color: colorScheme.surfaceContainerLowest),
-            borderRadius: BorderRadius.circular(0),
-          ),
+          height: 63,
           child: widget.filteredStructure.isEmpty
               ? Center(
                   child: Text(

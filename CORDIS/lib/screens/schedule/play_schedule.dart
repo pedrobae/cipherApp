@@ -29,7 +29,6 @@ class PlayScheduleScreenState extends State<PlayScheduleScreen>
 
   bool isPlaying = false;
 
-  late final TabController _tabController;
   int currentTabIndex = 0;
   List<PlaylistItem> playlistItems = [];
 
@@ -37,8 +36,6 @@ class PlayScheduleScreenState extends State<PlayScheduleScreen>
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _ensureDataLoaded();
-
-      _tabController = TabController(length: playlistItems.length, vsync: this);
     });
     super.initState();
   }
@@ -120,9 +117,9 @@ class PlayScheduleScreenState extends State<PlayScheduleScreen>
                                 style: textTheme.bodyMedium,
                               ),
                             )
-                    : TabBarView(
-                        controller: _tabController,
-                        children: playlistItems.map((item) {
+                    : Builder(
+                        builder: (context) {
+                          final item = playlistItems[currentTabIndex];
                           switch (item.type) {
                             case PlaylistItemType.version:
                               if (isCloud) {
@@ -168,7 +165,7 @@ class PlayScheduleScreenState extends State<PlayScheduleScreen>
                                 );
                               }
                           }
-                        }).toList(),
+                        },
                       ),
 
                 // TOP RIGHT CLOSE BUTTON
@@ -194,6 +191,7 @@ class PlayScheduleScreenState extends State<PlayScheduleScreen>
                   bottom: 0,
                   child: Container(
                     decoration: BoxDecoration(
+                      color: colorScheme.surface,
                       borderRadius: BorderRadius.circular(0),
                       border: Border(
                         top: BorderSide(

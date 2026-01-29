@@ -18,6 +18,15 @@ class AppLocalizationsPt extends AppLocalizations {
   String get setup => 'Configuração';
 
   @override
+  String get hour => 'Hora';
+
+  @override
+  String get minute => 'Minuto';
+
+  @override
+  String get second => 'Segundo';
+
+  @override
   String get comingSoon => 'Funcionalidade em desenvolvimento';
 
   @override
@@ -337,6 +346,11 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String selectPlaceholder(Object object) {
+    return 'Selecionar $object';
+  }
+
+  @override
   String duplicateTooltip(Object object) {
     return 'Criar uma cópia desta $object';
   }
@@ -652,6 +666,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get bpmHint => 'Insira o tempo em BPM';
+
+  @override
+  String get durationHint => 'Tempo Estimado em MM:SS';
 
   @override
   String get languageHint => 'Insira o idioma da música';

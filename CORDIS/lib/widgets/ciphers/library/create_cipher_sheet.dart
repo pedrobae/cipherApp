@@ -57,13 +57,13 @@ class CreateCipherSheet extends StatelessWidget {
                 isDark: true,
                 onPressed: () {
                   Navigator.of(context).pop();
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const EditCipherScreen(
-                        versionID: -1,
-                        versionType: VersionType.brandNew,
-                      ),
+                  context.read<NavigationProvider>().push(
+                    EditCipherScreen(
+                      versionID: -1,
+                      versionType: VersionType.brandNew,
                     ),
+                    showAppBar: false,
+                    showDrawerIcon: false,
                   );
                 },
               ),

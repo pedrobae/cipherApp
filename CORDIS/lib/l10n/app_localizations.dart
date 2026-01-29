@@ -116,6 +116,24 @@ abstract class AppLocalizations {
   /// **'Configuração'**
   String get setup;
 
+  /// Hour field label
+  ///
+  /// In pt, this message translates to:
+  /// **'Hora'**
+  String get hour;
+
+  /// Minute field label
+  ///
+  /// In pt, this message translates to:
+  /// **'Minuto'**
+  String get minute;
+
+  /// Second field label
+  ///
+  /// In pt, this message translates to:
+  /// **'Segundo'**
+  String get second;
+
   /// Coming soon message
   ///
   /// In pt, this message translates to:
@@ -704,6 +722,12 @@ abstract class AppLocalizations {
   /// **'Duplicar {object}'**
   String duplicatePlaceholder(Object object);
 
+  /// Select object button label
+  ///
+  /// In pt, this message translates to:
+  /// **'Selecionar {object}'**
+  String selectPlaceholder(Object object);
+
   /// Tooltip for duplicate action
   ///
   /// In pt, this message translates to:
@@ -1261,6 +1285,12 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Insira o tempo em BPM'**
   String get bpmHint;
+
+  /// Hint text for duration input
+  ///
+  /// In pt, this message translates to:
+  /// **'Tempo Estimado em MM:SS'**
+  String get durationHint;
 
   /// Hint text for song language input
   ///

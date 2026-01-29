@@ -607,6 +607,17 @@ class VersionProvider extends ChangeNotifier {
         _cloudVersions[versionFirebaseId] = _cloudVersions[versionFirebaseId]!
             .copyWith(bpm: int.tryParse(newValue) ?? 0);
         break;
+      case InfoField.duration:
+        final minuteSecond = newValue.split(':');
+        final duration = Duration(
+          minutes: int.tryParse(minuteSecond[0]) ?? 0,
+          seconds: minuteSecond.length > 1
+              ? int.tryParse(minuteSecond[1]) ?? 0
+              : 0,
+        );
+        _cloudVersions[versionFirebaseId] = _cloudVersions[versionFirebaseId]!
+            .copyWith(duration: duration.inSeconds);
+        break;
       case InfoField.versionName:
         _cloudVersions[versionFirebaseId] = _cloudVersions[versionFirebaseId]!
             .copyWith(versionName: newValue);
@@ -630,6 +641,19 @@ class VersionProvider extends ChangeNotifier {
     final currentTags = _cloudVersions[versionFirebaseId]!.tags;
     if (!currentTags.contains(newTag)) {
       currentTags.add(newTag);
+    }
+    notifyListeners();
+  }
+
+  void cacheDuration(dynamic versionId, Duration newDuration) {
+    if (versionId is int) {
+      _localVersions[versionId] = _localVersions[versionId]!.copyWith(
+        duration: newDuration,
+      );
+    } else {
+      _cloudVersions[versionId] = _cloudVersions[versionId]!.copyWith(
+        duration: newDuration.inSeconds,
+      );
     }
     notifyListeners();
   }

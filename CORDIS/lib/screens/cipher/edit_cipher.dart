@@ -101,6 +101,7 @@ class _EditCipherScreenState extends State<EditCipherScreen>
         break;
       case VersionType.brandNew:
         cipherProvider.setNewCipherInCache(Cipher.empty());
+        versionProvider.setNewVersionInCache(Version.empty());
         break;
       case VersionType.playlist:
         final playlistProvider = context.read<PlaylistProvider>();
@@ -183,11 +184,7 @@ class _EditCipherScreenState extends State<EditCipherScreen>
           ) {
             return Scaffold(
               appBar: AppBar(
-                leading: BackButton(
-                  onPressed: () {
-                    navigationProvider.pop();
-                  },
-                ),
+                leading: BackButton(onPressed: () => navigationProvider.pop()),
                 title: Text(
                   selectionProvider.isSelectionMode
                       ? AppLocalizations.of(

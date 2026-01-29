@@ -3,13 +3,24 @@ import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/providers/version_provider.dart';
+import 'package:cordis/utils/date_utils.dart';
 import 'package:cordis/widgets/ciphers/editor/add_tag_sheet.dart';
 import 'package:cordis/widgets/ciphers/editor/select_key_sheet.dart';
+import 'package:cordis/widgets/duration_picker.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-enum InfoField { title, author, versionName, key, bpm, language, tags }
+enum InfoField {
+  title,
+  author,
+  versionName,
+  key,
+  bpm,
+  language,
+  tags,
+  duration,
+}
 
 class MetadataTab extends StatefulWidget {
   final int? cipherID;
@@ -78,10 +89,16 @@ class _MetadataTabState extends State<MetadataTab> {
               case InfoField.tags:
                 // THIS CONTROLLER IS NOT USED, ADDING TAGS IS HANDLED BY A BOTTOM SHEET
                 break;
+              case InfoField.duration:
+                controllers[field]!.text = DateTimeUtils.formatDuration(
+                  Duration(seconds: version.duration),
+                );
+                break;
             }
           }
         case VersionType.local:
         case VersionType.import:
+        case VersionType.playlist:
           final cipher = cipherProvider.getCipherById(widget.cipherID ?? -1)!;
           final version = versionProvider.getLocalVersionById(
             (widget.versionID as int?) ?? -1,
@@ -108,37 +125,10 @@ class _MetadataTabState extends State<MetadataTab> {
               case InfoField.language:
                 controllers[field]!.text = cipher.language;
                 break;
-              case InfoField.tags:
-                // THIS CONTROLLER IS NOT USED, ADDING TAGS IS HANDLED BY A BOTTOM SHEET
-                break;
-            }
-          }
-        case VersionType.playlist:
-          final cipher = cipherProvider.getCipherById(widget.cipherID ?? -1)!;
-
-          final version = versionProvider.getLocalVersionById(-1)!;
-
-          for (var field in InfoField.values) {
-            switch (field) {
-              case InfoField.title:
-                controllers[field]!.text = cipher.title;
-                break;
-              case InfoField.author:
-                controllers[field]!.text = cipher.author;
-                break;
-              case InfoField.versionName:
-                controllers[field]!.text = version.versionName;
-                break;
-              case InfoField.bpm:
-                controllers[field]!.text = version.bpm.toString();
-                break;
-              case InfoField.key:
-                controllers[field]!.text =
-                    version.transposedKey ?? cipher.musicKey;
-                break;
-              case InfoField.language:
-                controllers[field]!.text = cipher.language;
-                break;
+              case InfoField.duration:
+                controllers[field]!.text = DateTimeUtils.formatDuration(
+                  version.duration,
+                );
               case InfoField.tags:
                 // THIS CONTROLLER IS NOT USED, ADDING TAGS IS HANDLED BY A BOTTOM SHEET
                 break;
@@ -162,6 +152,7 @@ class _MetadataTabState extends State<MetadataTab> {
         InfoField.author => AppLocalizations.of(context)!.author,
         InfoField.versionName => AppLocalizations.of(context)!.versionName,
         InfoField.bpm => AppLocalizations.of(context)!.bpm,
+        InfoField.duration => AppLocalizations.of(context)!.duration,
         InfoField.key => AppLocalizations.of(context)!.musicKey,
         InfoField.language => AppLocalizations.of(context)!.language,
         InfoField.tags => AppLocalizations.of(
@@ -182,6 +173,7 @@ class _MetadataTabState extends State<MetadataTab> {
       InfoField.author => AppLocalizations.of(context)!.authorHint,
       InfoField.versionName => AppLocalizations.of(context)!.versionNameHint,
       InfoField.bpm => AppLocalizations.of(context)!.bpmHint,
+      InfoField.duration => AppLocalizations.of(context)!.durationHint,
       InfoField.key => AppLocalizations.of(context)!.keyHint,
       InfoField.language => AppLocalizations.of(context)!.languageHint,
       InfoField.tags => AppLocalizations.of(context)!.tagHint,
@@ -197,6 +189,7 @@ class _MetadataTabState extends State<MetadataTab> {
         if (!widget.isEnabled) return false;
         return !selectionProvider.isSelectionMode;
       case InfoField.bpm:
+      case InfoField.duration:
       case InfoField.key:
       case InfoField.language:
         return true;
@@ -221,6 +214,12 @@ class _MetadataTabState extends State<MetadataTab> {
           children: [
             for (var field in InfoField.values)
               switch (field) {
+                InfoField.duration => _buildDurationPicker(
+                  context: context,
+                  cipherProvider: cipherProvider,
+                  versionProvider: versionProvider,
+                  field: field,
+                ),
                 InfoField.tags => _buildTags(
                   context: context,
                   cipherProvider: cipherProvider,
@@ -413,16 +412,17 @@ class _MetadataTabState extends State<MetadataTab> {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: 8,
       children: [
         _getLabel(field),
+        SizedBox(height: 8),
         Wrap(
           spacing: 8,
-          runSpacing: 8,
+          runSpacing: 0,
           children: [
             for (var tag in tags)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                margin: const EdgeInsets.only(bottom: 4),
                 decoration: BoxDecoration(
                   color: colorScheme.surfaceContainerHigh,
                   borderRadius: BorderRadius.circular(4),
@@ -452,6 +452,92 @@ class _MetadataTabState extends State<MetadataTab> {
                 versionType: widget.versionType,
               );
             },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDurationPicker({
+    required BuildContext context,
+    required CipherProvider cipherProvider,
+    required VersionProvider versionProvider,
+    required InfoField field,
+  }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 8,
+      children: [
+        _getLabel(field),
+        GestureDetector(
+          onTap: () async {
+            final initialDuration = _getController(field).text.isNotEmpty
+                ? DateTimeUtils.parseDuration(_getController(field).text)
+                : Duration.zero;
+
+            final duration = await showModalBottomSheet<Duration>(
+              context: context,
+              builder: (context) =>
+                  DurationPicker(initialDuration: initialDuration),
+            );
+
+            if (duration != null) {
+              _getController(field).text = DateTimeUtils.formatDuration(
+                duration,
+              );
+
+              switch (widget.versionType) {
+                case VersionType.cloud:
+                  versionProvider.cacheDuration(widget.versionID!, duration);
+                  break;
+                case VersionType.local:
+                case VersionType.import:
+                case VersionType.playlist:
+                  versionProvider.cacheDuration(
+                    (widget.versionID as int?) ?? -1,
+                    duration,
+                  );
+                  break;
+                case VersionType.brandNew:
+                  versionProvider.cacheDuration(-1, duration);
+                  break;
+              }
+            }
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: colorScheme.surfaceContainerLowest,
+                width: 1.2,
+              ),
+              borderRadius: BorderRadius.circular(0),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ListenableBuilder(
+                  listenable: _getController(field),
+                  builder: (context, child) {
+                    return Text(
+                      _getController(field).text.isEmpty
+                          ? AppLocalizations.of(context)!.durationHint
+                          : _getController(field).text,
+                      style: TextStyle(
+                        color: _getController(field).text.isEmpty
+                            ? colorScheme.shadow
+                            : colorScheme.onSurface,
+                        fontSize: 16,
+                      ),
+                    );
+                  },
+                ),
+                Icon(Icons.access_time, color: colorScheme.onSurface),
+              ],
+            ),
           ),
         ),
       ],

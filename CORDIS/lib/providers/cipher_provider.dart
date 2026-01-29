@@ -293,14 +293,16 @@ class CipherProvider extends ChangeNotifier {
         );
         break;
       case InfoField.bpm:
-      // BPM is not stored in Cipher, so no action here
+      case InfoField.duration:
+      case InfoField.versionName:
+        // BPM is not stored in Cipher, so no action here
+        // Duration is not stored in Cipher, so no action here
+        // Version name is not stored in Cipher, so no action here
+        break;
       case InfoField.key:
         _localCiphers[cipherId] = _localCiphers[cipherId]!.copyWith(
           musicKey: change,
         );
-        break;
-      case InfoField.versionName:
-        // Version name is not stored in Cipher, so no action here
         break;
       case InfoField.language:
         _localCiphers[cipherId] = _localCiphers[cipherId]!.copyWith(

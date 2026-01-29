@@ -730,6 +730,10 @@ class VersionProvider extends ChangeNotifier {
     return null;
   }
 
+  int getCipherIdOfLocalVersion(int versionId) {
+    return _localVersions[versionId]?.cipherId ?? -1;
+  }
+
   // Get cached version by ID (returns null if not in cache)
   Version? getLocalVersionById(int versionId) {
     return _localVersions[versionId];

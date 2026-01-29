@@ -15,6 +15,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get newHeart => 'New Heart Music Ministries';
 
   @override
+  String get setup => 'Configuração';
+
+  @override
+  String get comingSoon => 'Funcionalidade em desenvolvimento';
+
+  @override
   String get authentication => 'Autenticação';
 
   @override
@@ -118,7 +124,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get estimatedTime => 'Tempo Estimado';
 
   @override
-  String get notesOptional => 'Anotações (Opcional)';
+  String get notes => 'Anotações';
 
   @override
   String get sections => 'Seções';
@@ -241,6 +247,52 @@ class AppLocalizationsPt extends AppLocalizations {
   String get item => 'item';
 
   @override
+  String get theme => 'Tema';
+
+  @override
+  String get themeSubtitle => 'Customize a aparência do aplicativo';
+
+  @override
+  String get changeLanguage => 'Mudar Idioma';
+
+  @override
+  String get changeLanguageSubtitle => 'Alterar o idioma do aplicativo';
+
+  @override
+  String get developmentTools => 'Ferramentas de Desenvolvimento';
+
+  @override
+  String get database => 'Banco de Dados';
+
+  @override
+  String get resetDatabase => 'Redefinir Banco de Dados';
+
+  @override
+  String get resetDatabaseSubtitle => 'Apaga todo o banco de dados';
+
+  @override
+  String get databaseInformation => 'Informações do Banco de Dados';
+
+  @override
+  String get recordsPerTable => 'Registros por tabela:';
+
+  @override
+  String tableData(Object tableName) {
+    return 'Dados da tabela: $tableName';
+  }
+
+  @override
+  String get databaseInfoSubtitle =>
+      'Visualizar tabelas e entradas no banco de dados';
+
+  @override
+  String get reloadInterface => 'Recarregar Interface';
+
+  @override
+  String get reloadInterfaceSubtitle =>
+      'Limpa os dados em cache e recarrega todos os provedores';
+
+  @override
   String get role => 'Função';
 
   @override
@@ -250,7 +302,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get share => 'Compartilhar';
 
   @override
-  String get view => 'Visualizar';
+  String viewPlaceholder(Object object) {
+    return 'Visualizar $object';
+  }
 
   @override
   String createPlaceholder(Object object) {
@@ -278,6 +332,11 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String duplicateTooltip(Object object) {
+    return 'Criar uma cópia desta $object';
+  }
+
+  @override
   String get scheduleName => 'Nome da Agenda';
 
   @override
@@ -290,7 +349,10 @@ class AppLocalizationsPt extends AppLocalizations {
   String get location => 'Localização';
 
   @override
-  String get annotationsOptional => 'Anotações (Opcional)';
+  String get roomVenue => 'Sala/Local';
+
+  @override
+  String get annotations => 'Anotações';
 
   @override
   String get schedulePlaylist => 'Agendar Playlist';
@@ -358,13 +420,19 @@ class AppLocalizationsPt extends AppLocalizations {
   String get nextUp => 'Próxima Agenda';
 
   @override
-  String get nextSchedules => 'Próximos Eventos';
+  String get futureSchedules => 'Próximos Eventos';
+
+  @override
+  String get pastSchedules => 'Eventos Passados';
 
   @override
   String get searchSchedule => 'Pesquisar nome, local...';
 
   @override
   String get assignSchedule => 'Agendar';
+
+  @override
+  String get scheduleActions => 'Ações da Agenda';
 
   @override
   String get noPlaylistAssigned => 'Nenhuma playlist atribuída.';
@@ -375,6 +443,9 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get scheduleNotFoundMessage =>
       'A agenda solicitada não pôde ser encontrada.';
+
+  @override
+  String get deleteScheduleTooltip => 'Excluir permanentemente esta agenda';
 
   @override
   String get play => 'Tocar';
@@ -582,6 +653,11 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get fieldRequired => 'Este campo é obrigatório.';
+
+  @override
+  String optionalPlaceholder(Object field) {
+    return '$field (Opcional)';
+  }
 
   @override
   String pluralPlaceholder(Object label) {

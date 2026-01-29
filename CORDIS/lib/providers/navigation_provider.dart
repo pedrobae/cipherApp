@@ -161,9 +161,17 @@ class NavigationProvider extends ChangeNotifier {
       case NavigationRoute.library:
         return Icon(Icons.library_music, color: iconColor, size: iconSize);
       case NavigationRoute.playlists:
-        return Icon(Icons.playlist_play, color: iconColor, size: iconSize);
+        return Icon(
+          Icons.playlist_play_rounded,
+          color: iconColor,
+          size: iconSize,
+        );
       case NavigationRoute.schedule:
-        return Icon(Icons.calendar_today, color: iconColor, size: iconSize);
+        return Icon(
+          Icons.calendar_month_sharp,
+          color: iconColor,
+          size: iconSize,
+        );
     }
   }
 

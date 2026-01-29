@@ -7,6 +7,12 @@
   "newHeart" : "New Heart Music Ministries",
   "@newHeart" : {"description": "Company name"},
 
+  "setup": "Configuração",
+  "@setup": {"description": "Setup related messages"},
+
+  "comingSoon": "Funcionalidade em desenvolvimento",
+  "@comingSoon": {"description": "Coming soon message"},
+
   "authentication": "Autenticação",
   "@authentication": {"description": "Authentication related messages"},
   "email": "E-mail",
@@ -84,8 +90,8 @@
   "@versions": {"description": "Label for number of versions of a cipher (lowercase 'v')"},
   "estimatedTime": "Tempo Estimado",
   "@estimatedTime": {"description": "Estimated time field label"},
-  "notesOptional": "Anotações (Opcional)",
-  "@notesOptional": {"description": "Notes field label with optional indication"},
+  "notes": "Anotações",
+  "@notes": {"description": "Notes field label"},
 
 
   "sections": "Seções",
@@ -173,6 +179,34 @@
 
   "item": "item",
   "@item": {"description": "Singular item label"},
+  "theme": "Tema",
+  "@theme": {"description": "Theme field label"},
+  "themeSubtitle": "Customize a aparência do aplicativo",
+  "@themeSubtitle": {"description": "Subtitle for theme settings"},
+  "changeLanguage": "Mudar Idioma",
+  "@changeLanguage": {"description": "Change language field label"},
+  "changeLanguageSubtitle": "Alterar o idioma do aplicativo",
+  "@changeLanguageSubtitle": {"description": "Subtitle for change language settings"},
+  "developmentTools": "Ferramentas de Desenvolvimento",
+  "@developmentTools": {"description": "Development tools section title"},
+  "database": "Banco de Dados",
+  "@database": {"description": "Database section title"},
+  "resetDatabase": "Redefinir Banco de Dados",
+  "@resetDatabase": {"description": "Reset database dangerous action title"},
+  "resetDatabaseSubtitle": "Apaga todo o banco de dados",
+  "@resetDatabaseSubtitle": {"description": "Subtitle for reset database dangerous action"},
+  "databaseInformation": "Informações do Banco de Dados",
+  "@databaseInformation": {"description": "Database information title"},
+  "recordsPerTable": "Registros por tabela:",
+  "@recordsPerTable": {"description": "Label for records per table in database information"},
+  "tableData": "Dados da tabela: {tableName}",
+  "@tableData": {"description": "Title for table data screen", "placeholders": {"tableName": {}}},
+  "databaseInfoSubtitle": "Visualizar tabelas e entradas no banco de dados",
+  "@databaseInfoSubtitle": {"description": "Subtitle for database information section"},
+  "reloadInterface": "Recarregar Interface",
+  "@reloadInterface": {"description": "Reload interface dangerous action title"},
+  "reloadInterfaceSubtitle": "Limpa os dados em cache e recarrega todos os provedores",
+  "@reloadInterfaceSubtitle": {"description": "Subtitle for reload interface dangerous action"},
 
   "role": "Função",
   "@role": {"description": "User role label"},
@@ -180,8 +214,8 @@
   "@generalMember": {"description": "Default user role"},
   "share": "Compartilhar",
   "@share": {"description": "Share button label"},
-  "view": "Visualizar",
-  "@view": {"description": "View button label"},
+  "viewPlaceholder": "Visualizar {object}",
+  "@viewPlaceholder": {"description": "View button label", "placeholders": {"object": {}}},
   "createPlaceholder": "Criar {object}",
   "@createPlaceholder": {"description": "Create object button label", "placeholders": {"object": {}}},
   "editPlaceholder": "Editar {object}",
@@ -193,6 +227,8 @@
   "duplicatePlaceholder": "Duplicar {object}",
   "@duplicatePlaceholder": {"description": "Duplicate object button label", "placeholders": {"object": {}}},
 
+  "duplicateTooltip": "Criar uma cópia desta {object}",
+  "@duplicateTooltip": {"description": "Tooltip for duplicate action", "placeholders": {"object": {}}},
 
   "scheduleName": "Nome da Agenda",
   "@scheduleName": {"description": "Label for schedule name input field"},
@@ -202,8 +238,10 @@
   "@startTime": {"description": "Start time field label"},
   "location": "Localização",
   "@location": {"description": "Location field label"},
-  "annotationsOptional": "Anotações (Opcional)",
-  "@annotationsOptional": {"description": "Annotations field label with optional indication"},
+  "roomVenue": "Sala/Local",
+  "@roomVenue": {"description": "Room/Venue field label"},
+  "annotations": "Anotações",
+  "@annotations": {"description": "Annotations field label"},
 
   "schedulePlaylist": "Agendar Playlist",
   "@schedulePlaylist": {"description": "Create schedule screen title"},
@@ -243,13 +281,17 @@
 
   "nextUp": "Próxima Agenda",
   "@nextUp": {"description": "Next scheduled item label"},
-  "nextSchedules": "Próximos Eventos",
-  "@nextSchedules": {"description": "Next schedules header"},
+  "futureSchedules": "Próximos Eventos",
+  "@futureSchedules": {"description": "Next schedules header"},
+  "pastSchedules": "Eventos Passados",
+  "@pastSchedules": {"description": "Past schedules header"},
   "searchSchedule": "Pesquisar nome, local...",
   "@searchSchedule": {"description": "Hint text for searching schedule"},
   "assignSchedule": "Agendar",
   "@assignSchedule": {"description": "Assign schedule button label"},
 
+  "scheduleActions": "Ações da Agenda",
+  "@scheduleActions": {"description": "Schedule actions section title"},
   "noPlaylistAssigned": "Nenhuma playlist atribuída.",
   "@noPlaylistAssigned": {"description": "Message displayed when no playlist is assigned to the schedule"},
 
@@ -257,6 +299,8 @@
   "@scheduleNotFound": {"description": "Title for schedule not found screen"},
   "scheduleNotFoundMessage": "A agenda solicitada não pôde ser encontrada.",
   "@scheduleNotFoundMessage": {"description": "Message displayed when the requested schedule does not exist"},
+  "deleteScheduleTooltip": "Excluir permanentemente esta agenda",
+  "@deleteScheduleTooltip": {"description": "Tooltip for delete schedule action"},
 
   "play": "Tocar",
   "@play": {"description": "Play button label"},
@@ -395,6 +439,8 @@
   "fieldRequired": "Este campo é obrigatório.",
   "@fieldRequired": {"description": "Validation message indicating a required field"},
 
+  "optionalPlaceholder": "{field} (Opcional)",
+  "@optionalPlaceholder": {"description": "Generic optional field placeholder", "placeholders": {"field": {}}},
   "pluralPlaceholder": "{label}s",
   "@pluralPlaceholder": {"description": "Generic plural placeholder for labels", "placeholders": {"label": {}}}
 }

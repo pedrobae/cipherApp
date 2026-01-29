@@ -12,7 +12,8 @@ class ScheduleForm extends StatefulWidget {
   final TextEditingController dateController;
   final TextEditingController startTimeController;
   final TextEditingController locationController;
-  final TextEditingController annotationsController;
+  final TextEditingController roomVenueController;
+  final TextEditingController? annotationsController;
 
   const ScheduleForm({
     super.key,
@@ -21,7 +22,8 @@ class ScheduleForm extends StatefulWidget {
     required this.dateController,
     required this.startTimeController,
     required this.locationController,
-    required this.annotationsController,
+    required this.roomVenueController,
+    this.annotationsController,
   });
 
   @override
@@ -29,12 +31,6 @@ class ScheduleForm extends StatefulWidget {
 }
 
 class _ScheduleFormState extends State<ScheduleForm> {
-  @override
-  void initState() {
-    super.initState();
-    // Controllers will be populated in didChangeDependencies
-  }
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -49,18 +45,19 @@ class _ScheduleFormState extends State<ScheduleForm> {
         widget.nameController.text = schedule.name;
         widget.dateController.text =
             '${schedule.date.day}/${schedule.date.month}/${schedule.date.year}';
-        widget.startTimeController.text = schedule.time.format(context);
+        widget.startTimeController.text =
+            '${schedule.time.hour}:${schedule.time.minute.toString().padLeft(2, '0')}';
         widget.locationController.text = schedule.location;
-        widget.annotationsController.text = schedule.annotations ?? '';
+        widget.annotationsController?.text = schedule.annotations ?? '';
       } else {
         schedule as ScheduleDto;
         widget.nameController.text = schedule.name;
         widget.dateController.text =
             '${schedule.datetime.toDate().day}/${schedule.datetime.toDate().month}/${schedule.datetime.toDate().year}';
         widget.startTimeController.text =
-            '${schedule.datetime.toDate().hour}:${schedule.datetime.toDate().minute}';
+            '${schedule.datetime.toDate().hour}:${schedule.datetime.toDate().minute.toString().padLeft(2, '0')}';
         widget.locationController.text = schedule.location;
-        widget.annotationsController.text = schedule.annotations ?? '';
+        widget.annotationsController?.text = schedule.annotations ?? '';
       }
     }
   }
@@ -118,9 +115,18 @@ class _ScheduleFormState extends State<ScheduleForm> {
                 },
               ),
               _buildFormField(
-                AppLocalizations.of(context)!.annotationsOptional,
-                widget.annotationsController,
+                AppLocalizations.of(
+                  context,
+                )!.optionalPlaceholder(AppLocalizations.of(context)!.roomVenue),
+                widget.roomVenueController,
               ),
+              if (widget.annotationsController != null)
+                _buildFormField(
+                  AppLocalizations.of(context)!.optionalPlaceholder(
+                    AppLocalizations.of(context)!.annotations,
+                  ),
+                  widget.annotationsController!,
+                ),
             ],
           ),
         ),

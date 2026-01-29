@@ -110,6 +110,18 @@ abstract class AppLocalizations {
   /// **'New Heart Music Ministries'**
   String get newHeart;
 
+  /// Setup related messages
+  ///
+  /// In pt, this message translates to:
+  /// **'Configuração'**
+  String get setup;
+
+  /// Coming soon message
+  ///
+  /// In pt, this message translates to:
+  /// **'Funcionalidade em desenvolvimento'**
+  String get comingSoon;
+
   /// Authentication related messages
   ///
   /// In pt, this message translates to:
@@ -314,11 +326,11 @@ abstract class AppLocalizations {
   /// **'Tempo Estimado'**
   String get estimatedTime;
 
-  /// Notes field label with optional indication
+  /// Notes field label
   ///
   /// In pt, this message translates to:
-  /// **'Anotações (Opcional)'**
-  String get notesOptional;
+  /// **'Anotações'**
+  String get notes;
 
   /// Sections field label
   ///
@@ -548,6 +560,90 @@ abstract class AppLocalizations {
   /// **'item'**
   String get item;
 
+  /// Theme field label
+  ///
+  /// In pt, this message translates to:
+  /// **'Tema'**
+  String get theme;
+
+  /// Subtitle for theme settings
+  ///
+  /// In pt, this message translates to:
+  /// **'Customize a aparência do aplicativo'**
+  String get themeSubtitle;
+
+  /// Change language field label
+  ///
+  /// In pt, this message translates to:
+  /// **'Mudar Idioma'**
+  String get changeLanguage;
+
+  /// Subtitle for change language settings
+  ///
+  /// In pt, this message translates to:
+  /// **'Alterar o idioma do aplicativo'**
+  String get changeLanguageSubtitle;
+
+  /// Development tools section title
+  ///
+  /// In pt, this message translates to:
+  /// **'Ferramentas de Desenvolvimento'**
+  String get developmentTools;
+
+  /// Database section title
+  ///
+  /// In pt, this message translates to:
+  /// **'Banco de Dados'**
+  String get database;
+
+  /// Reset database dangerous action title
+  ///
+  /// In pt, this message translates to:
+  /// **'Redefinir Banco de Dados'**
+  String get resetDatabase;
+
+  /// Subtitle for reset database dangerous action
+  ///
+  /// In pt, this message translates to:
+  /// **'Apaga todo o banco de dados'**
+  String get resetDatabaseSubtitle;
+
+  /// Database information title
+  ///
+  /// In pt, this message translates to:
+  /// **'Informações do Banco de Dados'**
+  String get databaseInformation;
+
+  /// Label for records per table in database information
+  ///
+  /// In pt, this message translates to:
+  /// **'Registros por tabela:'**
+  String get recordsPerTable;
+
+  /// Title for table data screen
+  ///
+  /// In pt, this message translates to:
+  /// **'Dados da tabela: {tableName}'**
+  String tableData(Object tableName);
+
+  /// Subtitle for database information section
+  ///
+  /// In pt, this message translates to:
+  /// **'Visualizar tabelas e entradas no banco de dados'**
+  String get databaseInfoSubtitle;
+
+  /// Reload interface dangerous action title
+  ///
+  /// In pt, this message translates to:
+  /// **'Recarregar Interface'**
+  String get reloadInterface;
+
+  /// Subtitle for reload interface dangerous action
+  ///
+  /// In pt, this message translates to:
+  /// **'Limpa os dados em cache e recarrega todos os provedores'**
+  String get reloadInterfaceSubtitle;
+
   /// User role label
   ///
   /// In pt, this message translates to:
@@ -569,8 +665,8 @@ abstract class AppLocalizations {
   /// View button label
   ///
   /// In pt, this message translates to:
-  /// **'Visualizar'**
-  String get view;
+  /// **'Visualizar {object}'**
+  String viewPlaceholder(Object object);
 
   /// Create object button label
   ///
@@ -602,6 +698,12 @@ abstract class AppLocalizations {
   /// **'Duplicar {object}'**
   String duplicatePlaceholder(Object object);
 
+  /// Tooltip for duplicate action
+  ///
+  /// In pt, this message translates to:
+  /// **'Criar uma cópia desta {object}'**
+  String duplicateTooltip(Object object);
+
   /// Label for schedule name input field
   ///
   /// In pt, this message translates to:
@@ -626,11 +728,17 @@ abstract class AppLocalizations {
   /// **'Localização'**
   String get location;
 
-  /// Annotations field label with optional indication
+  /// Room/Venue field label
   ///
   /// In pt, this message translates to:
-  /// **'Anotações (Opcional)'**
-  String get annotationsOptional;
+  /// **'Sala/Local'**
+  String get roomVenue;
+
+  /// Annotations field label
+  ///
+  /// In pt, this message translates to:
+  /// **'Anotações'**
+  String get annotations;
 
   /// Create schedule screen title
   ///
@@ -744,7 +852,13 @@ abstract class AppLocalizations {
   ///
   /// In pt, this message translates to:
   /// **'Próximos Eventos'**
-  String get nextSchedules;
+  String get futureSchedules;
+
+  /// Past schedules header
+  ///
+  /// In pt, this message translates to:
+  /// **'Eventos Passados'**
+  String get pastSchedules;
 
   /// Hint text for searching schedule
   ///
@@ -757,6 +871,12 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Agendar'**
   String get assignSchedule;
+
+  /// Schedule actions section title
+  ///
+  /// In pt, this message translates to:
+  /// **'Ações da Agenda'**
+  String get scheduleActions;
 
   /// Message displayed when no playlist is assigned to the schedule
   ///
@@ -775,6 +895,12 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'A agenda solicitada não pôde ser encontrada.'**
   String get scheduleNotFoundMessage;
+
+  /// Tooltip for delete schedule action
+  ///
+  /// In pt, this message translates to:
+  /// **'Excluir permanentemente esta agenda'**
+  String get deleteScheduleTooltip;
 
   /// Play button label
   ///
@@ -1135,6 +1261,12 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Este campo é obrigatório.'**
   String get fieldRequired;
+
+  /// Generic optional field placeholder
+  ///
+  /// In pt, this message translates to:
+  /// **'{field} (Opcional)'**
+  String optionalPlaceholder(Object field);
 
   /// Generic plural placeholder for labels
   ///

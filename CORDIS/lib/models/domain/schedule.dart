@@ -8,6 +8,7 @@ class Schedule {
   final DateTime date;
   final TimeOfDay time;
   final String location;
+  final String? roomVenue;
   final String? annotations;
   final int? playlistId;
   final List<Role> roles;
@@ -20,6 +21,7 @@ class Schedule {
     required this.date,
     required this.time,
     required this.location,
+    this.roomVenue,
     required this.playlistId,
     required this.roles,
     this.annotations,
@@ -37,6 +39,7 @@ class Schedule {
         minute: int.parse((map['time'] as String).split(':')[1]),
       ),
       location: map['location'] as String,
+      roomVenue: map['room_venue'] as String?,
       playlistId: map['playlist_id'] as int?,
       roles: roles,
       annotations: map['annotations'] as String?,
@@ -52,6 +55,7 @@ class Schedule {
       'time':
           '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}',
       'location': location,
+      'room_venue': roomVenue,
       'playlist_id': playlistId,
       'annotations': annotations,
     };
@@ -65,6 +69,7 @@ class Schedule {
     DateTime? date,
     TimeOfDay? time,
     String? location,
+    String? roomVenue,
     int? playlistId,
     List<Role>? roles,
     String? annotations,
@@ -77,6 +82,7 @@ class Schedule {
       date: date ?? this.date,
       time: time ?? this.time,
       location: location ?? this.location,
+      roomVenue: roomVenue ?? this.roomVenue,
       playlistId: playlistId ?? this.playlistId,
       roles: roles ?? this.roles,
       annotations: annotations ?? this.annotations,
@@ -86,7 +92,7 @@ class Schedule {
 
 class Role {
   final int id;
-  final String name;
+  String name;
   final List<int> memberIds;
 
   Role({required this.id, required this.name, required this.memberIds});

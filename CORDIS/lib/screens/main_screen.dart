@@ -55,7 +55,7 @@ class MainScreenState extends State<MainScreen> {
           child: Scaffold(
             appBar: navigationProvider.showAppBar
                 ? AppBar(
-                    backgroundColor: colorScheme.surfaceContainer,
+                    backgroundColor: colorScheme.surface,
                     centerTitle: true,
                     title: Image.asset(
                       'assets/logos/app_icon_transparent.png',
@@ -78,11 +78,12 @@ class MainScreenState extends State<MainScreen> {
                       currentIndex: navigationProvider.currentRoute.index,
                       selectedLabelStyle: TextStyle(
                         color: colorScheme.primary,
-                        fontSize: 12,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
                       ),
                       unselectedLabelStyle: TextStyle(
                         color: colorScheme.onSurface,
-                        fontSize: 12,
+                        fontSize: 13,
                         fontWeight: FontWeight.w500,
                       ),
                       showUnselectedLabels: true,
@@ -98,7 +99,7 @@ class MainScreenState extends State<MainScreen> {
                       items: navigationProvider
                           .getNavigationItems(
                             context,
-                            iconSize: 24,
+                            iconSize: 28,
                             color: colorScheme.onSurface,
                             activeColor: theme.colorScheme.primary,
                           )

@@ -49,7 +49,7 @@ class DeleteConfirmationSheet extends StatelessWidget {
           ),
           // MESSAGE
           Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
                 AppLocalizations.of(

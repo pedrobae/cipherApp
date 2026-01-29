@@ -97,7 +97,9 @@ class FlowItemCard extends StatelessWidget {
                         ],
                       ),
                       FilledTextButton(
-                        text: AppLocalizations.of(context)!.view,
+                        text: AppLocalizations.of(context)!.viewPlaceholder(
+                          AppLocalizations.of(context)!.flowItem,
+                        ),
                         isDense: true,
                         onPressed: () {
                           navigationProvider.push(

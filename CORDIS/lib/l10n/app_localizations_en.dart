@@ -15,6 +15,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newHeart => 'New Heart Music Ministries';
 
   @override
+  String get setup => 'Setup';
+
+  @override
+  String get comingSoon => 'Feature under development';
+
+  @override
   String get authentication => 'Authentication';
 
   @override
@@ -75,7 +81,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get schedule => 'Schedule';
 
   @override
-  String get settings => 'Settings';
+  String get settings => 'Configuration';
 
   @override
   String get about => 'About';
@@ -117,7 +123,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get estimatedTime => 'Estimated Time';
 
   @override
-  String get notesOptional => 'Notes (Optional)';
+  String get notes => 'Notes';
 
   @override
   String get sections => 'Sections';
@@ -240,6 +246,51 @@ class AppLocalizationsEn extends AppLocalizations {
   String get item => 'item';
 
   @override
+  String get theme => 'Theme';
+
+  @override
+  String get themeSubtitle => 'Customize the appearance of the app';
+
+  @override
+  String get changeLanguage => 'Change Language';
+
+  @override
+  String get changeLanguageSubtitle => 'Change the application language';
+
+  @override
+  String get developmentTools => 'Development Tools';
+
+  @override
+  String get database => 'Database';
+
+  @override
+  String get resetDatabase => 'Reset Database';
+
+  @override
+  String get resetDatabaseSubtitle => 'Wipes the entire database';
+
+  @override
+  String get databaseInformation => 'Database Information';
+
+  @override
+  String get recordsPerTable => 'Records per Table';
+
+  @override
+  String tableData(Object tableName) {
+    return 'Table: $tableName';
+  }
+
+  @override
+  String get databaseInfoSubtitle => 'View tables and entries in the database';
+
+  @override
+  String get reloadInterface => 'Reload Interface';
+
+  @override
+  String get reloadInterfaceSubtitle =>
+      'Clears cached data and reloads all providers';
+
+  @override
   String get role => 'Role';
 
   @override
@@ -249,7 +300,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get share => 'Share';
 
   @override
-  String get view => 'View';
+  String viewPlaceholder(Object object) {
+    return 'View $object';
+  }
 
   @override
   String createPlaceholder(Object object) {
@@ -277,6 +330,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String duplicateTooltip(Object object) {
+    return 'Create a copy of this $object';
+  }
+
+  @override
   String get scheduleName => 'Schedule Name';
 
   @override
@@ -289,7 +347,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get location => 'Location';
 
   @override
-  String get annotationsOptional => 'Annotations (Optional)';
+  String get roomVenue => 'Room/Venue';
+
+  @override
+  String get annotations => 'Annotations';
 
   @override
   String get schedulePlaylist => 'Schedule Playlist';
@@ -354,13 +415,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nextUp => 'Next Up';
 
   @override
-  String get nextSchedules => 'Next Schedules';
+  String get futureSchedules => 'Next Schedules';
+
+  @override
+  String get pastSchedules => 'Past Schedules';
 
   @override
   String get searchSchedule => 'Search schedule...';
 
   @override
   String get assignSchedule => 'Assign Schedule';
+
+  @override
+  String get scheduleActions => 'Service Actions';
 
   @override
   String get noPlaylistAssigned => 'No playlist assigned.';
@@ -371,6 +438,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get scheduleNotFoundMessage =>
       'The requested schedule could not be found.';
+
+  @override
+  String get deleteScheduleTooltip => 'Permanently delete this service';
 
   @override
   String get play => 'Play';
@@ -576,6 +646,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fieldRequired => 'This field is required.';
+
+  @override
+  String optionalPlaceholder(Object field) {
+    return '$field (Optional)';
+  }
 
   @override
   String pluralPlaceholder(Object label) {

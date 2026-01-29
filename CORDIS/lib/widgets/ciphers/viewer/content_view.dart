@@ -12,15 +12,13 @@ import 'section_card.dart';
 class ContentView extends StatefulWidget {
   final dynamic versionId;
 
-  ContentView({super.key, required this.versionId});
-
-  final List<GlobalKey> sectionKeys = [];
-
+  const ContentView({super.key, required this.versionId});
   @override
   State<ContentView> createState() => _ContentViewState();
 }
 
 class _ContentViewState extends State<ContentView> {
+  final List<GlobalKey> sectionKeys = [];
   late ScrollController scrollController;
 
   @override
@@ -54,12 +52,12 @@ class _ContentViewState extends State<ContentView> {
                 widget.versionId,
                 trimmedCode,
               );
-              widget.sectionKeys.add(GlobalKey());
+              sectionKeys.add(GlobalKey());
               if (section == null) {
                 return const SizedBox.shrink();
               }
               return SectionCard(
-                key: widget.sectionKeys[entry.key],
+                key: sectionKeys[entry.key],
                 sectionType: section.contentType,
                 sectionCode: trimmedCode,
                 sectionText: sectionProvider
@@ -94,7 +92,7 @@ class _ContentViewState extends State<ContentView> {
                         versionId: widget.versionId,
                         filteredStructure: filteredStructure.values.toList(),
                         scrollController: scrollController,
-                        sectionKeys: widget.sectionKeys,
+                        sectionKeys: sectionKeys,
                       ),
                     ],
                   ),

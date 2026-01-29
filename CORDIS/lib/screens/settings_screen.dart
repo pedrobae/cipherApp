@@ -7,6 +7,8 @@ import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/providers/version_provider.dart';
 import 'package:cordis/utils/app_theme.dart';
+import 'package:cordis/widgets/delete_confirmation.dart';
+import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
@@ -24,206 +26,112 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  bool _isResettingDb = false;
-  bool _isReloading = false;
-
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
       child: Column(
+        spacing: 8,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // App Settings Section
-          _buildSectionHeader('Configurações do App', Icons.settings),
-          _buildSettingsTile(
+          _buildSectionHeader(
+            AppLocalizations.of(context)!.settings,
+            Icons.settings,
+          ),
+          FilledTextButton(
             icon: Icons.palette,
-            title: 'Tema',
-            subtitle: 'Personalizar aparência do app',
-            onTap: () {
+            text: AppLocalizations.of(context)!.theme,
+            tooltip: AppLocalizations.of(context)!.themeSubtitle,
+            trailingIcon: Icons.chevron_right,
+            onPressed: () {
               _showThemeDialog(context);
             },
+            isDiscrete: true,
           ),
-          _buildSettingsTile(
+          FilledTextButton(
             icon: Icons.language,
-            title: 'Mudar Idioma',
-            subtitle: 'Alterar idioma do aplicativo',
-            onTap: () {
+            text: AppLocalizations.of(context)!.changeLanguage,
+            tooltip: AppLocalizations.of(context)!.changeLanguageSubtitle,
+            trailingIcon: Icons.chevron_right,
+            onPressed: () {
               _showLanguageDialog(context);
             },
+            isDiscrete: true,
           ),
 
           const SizedBox(height: 32),
 
           // Development Tools Section (only in debug mode)
           if (kDebugMode) ...[
-            _buildSectionHeader('Ferramentas de Desenvolvimento', Icons.build),
+            _buildSectionHeader(
+              AppLocalizations.of(context)!.developmentTools,
+              Icons.build,
+            ),
 
-            _buildDangerousTile(
+            FilledTextButton(
               icon: Icons.refresh,
-              title: 'Resetar Banco de Dados',
-              subtitle: 'Apaga todos os dados e recria com dados iniciais',
-              isLoading: _isResettingDb,
-              onTap: _isResettingDb
-                  ? null
-                  : () => _showResetDatabaseDialog(context),
-            ),
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.cached),
-                title: const Text('Recarregar Interface'),
-                subtitle: const Text(
-                  'Debug: Força recarga completa de dados e telas',
-                ),
-                trailing: _isReloading
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.refresh),
-                onTap: _isReloading ? null : _reloadAllData,
+              text: AppLocalizations.of(context)!.resetDatabase,
+              tooltip: AppLocalizations.of(context)!.resetDatabaseSubtitle,
+              trailingIcon: Icons.chevron_right,
+              onPressed: () => showModalBottomSheet(
+                context: context,
+                builder: (context) {
+                  return DeleteConfirmationSheet(
+                    itemType: AppLocalizations.of(context)!.database,
+                    onConfirm: () {
+                      _resetDatabase();
+                    },
+                  );
+                },
               ),
+              isDangerous: true,
+              isDiscrete: true,
+            ),
+            FilledTextButton(
+              icon: Icons.cached,
+              text: AppLocalizations.of(context)!.reloadInterface,
+              tooltip: AppLocalizations.of(context)!.reloadInterfaceSubtitle,
+              trailingIcon: Icons.chevron_right,
+              onPressed: _reloadAllData,
+              isDiscrete: true,
             ),
 
-            _buildSettingsTile(
+            FilledTextButton(
               icon: Icons.storage,
-              title: 'Informações do Banco',
-              subtitle: 'Ver estatísticas e tabelas',
-              onTap: () => _showDatabaseInfo(),
+              text: AppLocalizations.of(context)!.databaseInformation,
+              tooltip: AppLocalizations.of(context)!.databaseInfoSubtitle,
+              onPressed: () => _showDatabaseInfo(),
+              trailingIcon: Icons.chevron_right,
+              isDiscrete: true,
             ),
 
             const SizedBox(height: 32),
           ],
-
-          // About Section
-          _buildSectionHeader('Sobre', Icons.info),
-
-          _buildSettingsTile(
-            icon: Icons.info_outline,
-            title: 'Versão do App',
-            subtitle: 'v1.0.0+1',
-            onTap: () {
-              _showAboutDialog(context);
-            },
-          ),
-
-          _buildSettingsTile(
-            icon: Icons.help_outline,
-            title: 'Ajuda e Suporte',
-            subtitle: 'FAQ e contato',
-            onTap: () {
-              showComingSoon(context);
-            },
-          ),
         ],
       ),
     );
   }
 
   Widget _buildSectionHeader(String title, IconData icon) {
-    return Wrap(
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      spacing: 16,
       children: [
-        Icon(icon, color: Theme.of(context).colorScheme.primary),
-        const SizedBox(width: 8),
+        Icon(icon, color: Theme.of(context).colorScheme.primary, size: 20),
         Text(
           title,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
             color: Theme.of(context).colorScheme.primary,
+            fontSize: 20,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildSettingsTile({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-  }) {
-    return Card(
-      child: ListTile(
-        leading: Icon(icon),
-        title: Text(title),
-        subtitle: Text(subtitle),
-        trailing: const Icon(Icons.chevron_right),
-        onTap: onTap,
-      ),
-    );
-  }
-
-  Widget _buildDangerousTile({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required bool isLoading,
-    required VoidCallback? onTap,
-  }) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Card(
-      color: colorScheme.error,
-      child: ListTile(
-        leading: isLoading
-            ? SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              )
-            : Icon(icon, color: colorScheme.onError),
-        title: Text(title, style: TextStyle(color: colorScheme.onError)),
-        subtitle: Text(subtitle, style: TextStyle(color: colorScheme.onError)),
-        trailing: isLoading
-            ? null
-            : Icon(Icons.chevron_right, color: colorScheme.onError),
-        onTap: onTap,
-      ),
-    );
-  }
-
-  void _showResetDatabaseDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        icon: Icon(
-          Icons.warning,
-          color: Theme.of(context).colorScheme.error,
-          size: 48,
-        ),
-        title: const Text('Resetar Banco de Dados'),
-        content: const Text(
-          'Esta ação irá:\n\n'
-          '• Apagar TODOS os dados do banco\n'
-          '• Recriar as tabelas\n'
-          '• Inserir dados iniciais (Amazing Grace, How Great Thou Art)\n\n'
-          'Esta ação NÃO pode ser desfeita.\n\n'
-          'Tem certeza que deseja continuar?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
-          ),
-          FilledButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _resetDatabase();
-            },
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-            child: const Text('Resetar Banco'),
-          ),
-        ],
-      ),
-    );
-  }
-
   Future<void> _resetDatabase() async {
-    setState(() => _isResettingDb = true);
-
     try {
       final dbHelper = DatabaseHelper();
       await dbHelper.resetDatabase();
@@ -265,16 +173,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
-    } finally {
-      if (mounted) {
-        setState(() => _isResettingDb = false);
-      }
     }
   }
 
   Future<void> _reloadAllData() async {
-    setState(() => _isReloading = true);
-
     try {
       // Clear all provider caches first
       context.read<CipherProvider>().clearCache();
@@ -319,10 +221,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         );
       }
-    } finally {
-      if (mounted) {
-        setState(() => _isReloading = false);
-      }
     }
   }
 
@@ -333,16 +231,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       // Get table counts
       final tables = [
-        'cipher',
         'tag',
-        'cipher_tags',
+        'cipher',
         'version',
         'section',
         'user',
         'playlist',
-        'playlist_text',
-        'role',
+        'flow_item',
         'schedule',
+        'role',
       ];
       final Map<String, int> tableCounts = {};
 
@@ -362,18 +259,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
       // Check mounted after async operations
       if (!mounted) return;
 
+      final colorScheme = Theme.of(context).colorScheme;
+
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text('Informações do Banco de Dados v$dbVersion'),
+          backgroundColor: colorScheme.surface,
+          shape: ContinuousRectangleBorder(
+            borderRadius: BorderRadius.circular(0),
+          ),
+          title: Text('${AppLocalizations.of(context)!.database}_v.$dbVersion'),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Registros por tabela:',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                Text(
+                  AppLocalizations.of(context)!.recordsPerTable,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 ...tableCounts.entries.map((entry) {
@@ -381,53 +284,55 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   return GestureDetector(
                     onTap: count > 0
                         ? () {
-                            Navigator.pop(context);
                             _showTableData(entry.key);
                           }
                         : null,
-                    child: Card(
-                      color: count > 0
-                          ? Theme.of(context).colorScheme.surfaceTint
-                          : null,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
+                    child: Container(
+                      margin: EdgeInsets.only(bottom: 8),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surface,
+                        border: Border.all(
+                          color: colorScheme.surfaceContainerHigh,
+                          width: 1,
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                entry.key,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: count > 0
-                                      ? null
-                                      : Theme.of(context).colorScheme.onSurface
-                                            .withValues(alpha: 0.5),
-                                ),
-                              ),
-                            ),
-                            Text(
-                              count == -1 ? 'Erro' : count.toString(),
+                        borderRadius: BorderRadius.circular(0),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              entry.key,
                               style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: count == -1
-                                    ? Theme.of(context).colorScheme.error
-                                    : Theme.of(context).colorScheme.primary,
+                                fontWeight: FontWeight.w500,
+                                color: colorScheme.onSurface,
                               ),
                             ),
-                            if (count > 0) ...[
-                              const SizedBox(width: 8),
-                              Icon(
-                                Icons.arrow_forward_ios,
-                                size: 16,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                            ],
-                          ],
-                        ),
+                          ),
+                          Text(
+                            count == -1 ? 'Erro' : count.toString(),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: count == -1
+                                  ? colorScheme.error
+                                  : (count > 0
+                                        ? colorScheme.primary
+                                        : colorScheme.surfaceContainerLow),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Icon(
+                            Icons.arrow_forward_ios,
+                            size: 16,
+                            color: count > 0
+                                ? colorScheme.primary
+                                : colorScheme.surfaceContainerLow,
+                          ),
+                        ],
                       ),
                     ),
                   );
@@ -435,12 +340,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ],
             ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Fechar'),
-            ),
-          ],
         ),
       );
     } catch (e) {
@@ -448,7 +347,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Erro ao acessar banco: $e'),
+          content: Text(
+            AppLocalizations.of(context)!.errorMessage(
+              AppLocalizations.of(context)!.databaseInformation,
+              e.toString(),
+            ),
+          ),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
@@ -464,57 +368,70 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       if (!mounted) return;
 
+      final colorScheme = Theme.of(context).colorScheme;
+
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text('Dados da tabela: $tableName'),
-          content: SingleChildScrollView(
-            child: rows.isEmpty
-                ? const Text('Nenhum dado encontrado')
-                : SizedBox(
-                    width: double.maxFinite,
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: DataTable(
-                        columns: rows.first.keys
-                            .map((column) => DataColumn(label: Text(column)))
-                            .toList(),
-                        rows: rows
-                            .map(
-                              (row) => DataRow(
-                                cells: row.values
-                                    .map(
-                                      (value) => DataCell(
-                                        Text(
-                                          value?.toString() ?? 'null',
-                                          maxLines: 3,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(fontSize: 12),
-                                        ),
-                                      ),
-                                    )
-                                    .toList(),
-                              ),
-                            )
-                            .toList(),
-                      ),
-                    ),
-                  ),
+          shape: ContinuousRectangleBorder(
+            borderRadius: BorderRadius.circular(0),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Voltar'),
+          backgroundColor: colorScheme.surface,
+          title: Text(AppLocalizations.of(context)!.tableData(tableName)),
+          content: SingleChildScrollView(
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: colorScheme.surfaceContainer,
+                  width: 1,
+                ),
+                borderRadius: BorderRadius.circular(0),
+              ),
+              width: double.maxFinite,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
+                  columnSpacing: 8,
+                  columns: rows.first.keys
+                      .map(
+                        (column) =>
+                            DataColumn(label: Text(column.toUpperCase())),
+                      )
+                      .toList(),
+                  rows: rows
+                      .map(
+                        (row) => DataRow(
+                          cells: row.values
+                              .map(
+                                (value) => DataCell(
+                                  Text(
+                                    value?.toString() ?? 'null',
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
             ),
-          ],
+          ),
         ),
       );
     } catch (e) {
       if (!mounted) return;
-
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Erro ao carregar dados: $e'),
+          content: Text(
+            AppLocalizations.of(context)!.errorMessage(
+              AppLocalizations.of(context)!.tableData(tableName),
+              e.toString(),
+            ),
+          ),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
@@ -523,7 +440,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   void showComingSoon(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Funcionalidade em desenvolvimento 🚧')),
+      SnackBar(
+        backgroundColor: Colors.amberAccent,
+        content: Text(
+          AppLocalizations.of(context)!.comingSoon,
+          style: TextStyle(color: Colors.black),
+        ),
+      ),
     );
   }
 
@@ -748,20 +671,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           );
         }).toList(),
       ),
-    );
-  }
-
-  void _showAboutDialog(BuildContext context) {
-    showAboutDialog(
-      context: context,
-      applicationName: 'App de Cifras',
-      applicationVersion: '1.0.0+1',
-      applicationIcon: const Icon(Icons.music_note, size: 48),
-      children: [
-        const Text('App para gerenciamento de cifras musicais.'),
-        const SizedBox(height: 16),
-        const Text('Desenvolvido com Flutter 💙'),
-      ],
     );
   }
 }

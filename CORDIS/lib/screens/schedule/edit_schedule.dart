@@ -33,6 +33,7 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
   final TextEditingController dateController = TextEditingController();
   final TextEditingController startTimeController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
+  final TextEditingController roomVenueController = TextEditingController();
   final TextEditingController annotationsController = TextEditingController();
 
   late ScheduleProvider _scheduleProvider;
@@ -88,6 +89,7 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
         : '${schedule.datetime.toDate().hour.toString().padLeft(2, '0')}:${ //
           schedule.datetime.toDate().minute.toString().padLeft(2, '0')}';
     locationController.text = schedule?.location ?? '';
+    roomVenueController.text = schedule?.roomVenue ?? '';
     annotationsController.text = schedule?.annotations ?? '';
   }
 
@@ -136,6 +138,7 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
                           dateController: dateController,
                           startTimeController: startTimeController,
                           locationController: locationController,
+                          roomVenueController: roomVenueController,
                           annotationsController: annotationsController,
                         ),
                         EditScheduleMode.playlist => PlaylistLibraryScreen(),
@@ -198,6 +201,7 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
       date: dateController.text,
       startTime: startTimeController.text,
       location: locationController.text,
+      roomVenue: roomVenueController.text,
       annotations: annotationsController.text,
     );
     scheduleProvider.saveLocalSchedule(scheduleId);

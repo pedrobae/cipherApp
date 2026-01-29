@@ -84,7 +84,7 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
                       controller: _searchController,
                       decoration: InputDecoration(
                         hintText: AppLocalizations.of(context)!.searchCiphers,
-                        border: OutlineInputBorder(
+                        enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(0),
                           borderSide: BorderSide(
                             color: colorScheme.surfaceContainer,

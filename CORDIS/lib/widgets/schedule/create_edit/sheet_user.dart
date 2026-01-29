@@ -3,7 +3,7 @@ import 'package:cordis/models/domain/schedule.dart';
 import 'package:cordis/providers/schedule_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
-import 'package:cordis/widgets/schedule/create_edit/add_user_sheet.dart';
+import 'package:cordis/widgets/schedule/create_edit/sheet_add_user.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

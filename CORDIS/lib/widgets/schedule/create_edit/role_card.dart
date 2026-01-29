@@ -2,7 +2,8 @@ import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/schedule_provider.dart';
 import 'package:cordis/widgets/delete_confirmation.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
-import 'package:cordis/widgets/schedule/create_edit/users_bottom_sheet.dart';
+import 'package:cordis/widgets/schedule/create_edit/sheet_edit_role.dart';
+import 'package:cordis/widgets/schedule/create_edit/sheet_user.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -64,14 +65,16 @@ class RoleCard extends StatelessWidget {
             FilledTextButton(
               text: AppLocalizations.of(context)!.editPlaceholder(''),
               isDense: true,
-              onPressed: () => _openAssignMemberSheet(context, role),
+              onPressed: () => _openEditRoleSheet(context, role),
             ),
 
             FilledTextButton(
               text: AppLocalizations.of(context)!.delete,
               isDense: true,
               onPressed: () {
-                if (scheduleId is String) return; // TODO handle cloud roles
+                if (scheduleId is String) {
+                  return;
+                } // TODO - CLOUD - handle roleDTOs
                 showModalBottomSheet(
                   context: context,
                   isScrollControlled: true,
@@ -107,6 +110,21 @@ class RoleCard extends StatelessWidget {
             bottom: MediaQuery.of(context).viewInsets.bottom,
           ),
           child: UsersBottomSheet(scheduleId: scheduleId, role: role),
+        );
+      },
+    );
+  }
+
+  void _openEditRoleSheet(BuildContext context, dynamic role) {
+    showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: EditRoleSheet(scheduleId: scheduleId, role: role),
         );
       },
     );

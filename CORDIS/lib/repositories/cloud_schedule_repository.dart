@@ -1,21 +1,9 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:cordis/helpers/guard.dart';
 import 'package:cordis/models/dtos/schedule_dto.dart';
-import 'package:cordis/models/dtos/version_dto.dart';
 import 'package:cordis/services/firestore_service.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
-
-// class PlaylistDto {
-//   final String? firebaseId; // Cloud ID (Firebase)
-//   final String name;
-//   final String description;
-//   final String ownerId; // User that created the playlist
-//   final bool isPublic;
-//   final DateTime updatedAt;
-//   final DateTime createdAt;
-//   final List<String> collaborators; // userIds
-//   final List<PlaylistItemDto> items; // Array whose order matters
 
 class CloudScheduleRepository {
   final FirestoreService _firestoreService = FirestoreService();
@@ -38,7 +26,7 @@ class CloudScheduleRepository {
 
       await FirebaseAnalytics.instance.logEvent(
         name: 'created_schedule',
-        parameters: {'playlistId': docId},
+        parameters: {'scheduleId': docId},
       );
 
       return docId;
@@ -65,26 +53,6 @@ class CloudScheduleRepository {
           .map(
             (doc) => ScheduleDto.fromFirestore(
               (doc.data() as Map<String, dynamic>)..['firebaseId'] = doc.id,
-            ),
-          )
-          .toList();
-    });
-  }
-
-  /// Fetch a schedule's playlist's versions by its ID
-  Future<List<VersionDto>> fetchScheduleVersions(String scheduleId) async {
-    return await _withErrorHandling('fetch schedule by ID', () async {
-      final docSnapshot = await _firestoreService.fetchSubCollectionDocuments(
-        parentCollectionPath: 'schedules',
-        parentDocumentId: scheduleId,
-        subCollectionPath: 'versions',
-      );
-
-      return docSnapshot
-          .map(
-            (doc) => VersionDto.fromFirestore(
-              doc.data() as Map<String, dynamic>,
-              doc.id,
             ),
           )
           .toList();
@@ -131,8 +99,8 @@ class CloudScheduleRepository {
       );
 
       await FirebaseAnalytics.instance.logEvent(
-        name: 'updated_playlist',
-        parameters: {'playlistId': firebaseId},
+        name: 'updated_schedule',
+        parameters: {'scheduleId': firebaseId},
       );
     });
   }
@@ -160,29 +128,6 @@ class CloudScheduleRepository {
     });
   }
 
-  Future<void> updatePlaylistVersion(
-    String scheduleId,
-    String versionId,
-    Map<String, dynamic> changes,
-  ) async {
-    return await _withErrorHandling('update_schedule_version', () async {
-      await _guardHelper.requireAuth();
-
-      await _firestoreService.updateSubCollectionDocument(
-        parentCollectionPath: 'schedules',
-        parentDocumentId: scheduleId,
-        subCollectionPath: 'versions',
-        documentId: versionId,
-        data: changes,
-      );
-
-      await FirebaseAnalytics.instance.logEvent(
-        name: 'updated_schedule_version',
-        parameters: {'scheduleId': scheduleId, 'versionId': versionId},
-      );
-    });
-  }
-
   // ===== DELETE =====
   /// Delete a schedule from Firestore
   Future<void> deleteSchedule(String firebaseId, String ownerId) async {
@@ -198,28 +143,6 @@ class CloudScheduleRepository {
       await FirebaseAnalytics.instance.logEvent(
         name: 'deleted_schedule',
         parameters: {'scheduleId': firebaseId},
-      );
-    });
-  }
-
-  /// Delete a specific version of a playlist
-  Future<void> deletePlaylistVersion(
-    String scheduleId,
-    String versionId,
-  ) async {
-    return await _withErrorHandling('delete_schedule_version', () async {
-      await _guardHelper.requireAuth();
-
-      await _firestoreService.deleteSubCollectionDocument(
-        parentCollectionPath: 'schedules',
-        parentDocumentId: scheduleId,
-        subCollectionPath: 'versions',
-        documentId: versionId,
-      );
-
-      await FirebaseAnalytics.instance.logEvent(
-        name: 'deleted_schedule_version',
-        parameters: {'scheduleId': scheduleId, 'versionId': versionId},
       );
     });
   }

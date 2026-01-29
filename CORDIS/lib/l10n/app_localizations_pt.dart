@@ -698,7 +698,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get customChordInstruction =>
-      'Digite para criar um acorde personalizado:';
+      'Digite para criar um acorde personalizado.';
 
   @override
   String get draggableChordInstruction =>

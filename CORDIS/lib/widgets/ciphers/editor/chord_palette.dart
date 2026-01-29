@@ -62,8 +62,8 @@ class _ChordPaletteState extends State<ChordPalette> {
   Widget build(BuildContext context) {
     return Consumer2<VersionProvider, CipherProvider>(
       builder: (context, versionProvider, cipherProvider, child) {
-        final theme = Theme.of(context);
-        final colorScheme = theme.colorScheme;
+        final textTheme = Theme.of(context).textTheme;
+        final colorScheme = Theme.of(context).colorScheme;
 
         final key =
             versionProvider.getMusicKeyOfVersion(widget.versionId) ??
@@ -77,7 +77,7 @@ class _ChordPaletteState extends State<ChordPalette> {
 
         return Container(
           width: MediaQuery.of(context).size.width,
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(vertical: 8),
           decoration: BoxDecoration(
             color: colorScheme.surface,
             borderRadius: const BorderRadius.vertical(),
@@ -92,127 +92,126 @@ class _ChordPaletteState extends State<ChordPalette> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
+            spacing: 16,
             children: [
               // HEADER
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      AppLocalizations.of(
-                        context,
-                      )!.commonChordsOfKey(chords[0]),
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme.onSurface,
-                      ),
-                    ),
-                  ),
-                ],
+              Text(
+                AppLocalizations.of(context)!.commonChordsOfKey(chords[0]),
+                style: textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onSurface,
+                ),
               ),
               // CUSTOM CHORD INPUT
-              Row(
+              Column(
+                spacing: 4,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(
-                    width: 80,
+                  // CUSTOM CHORD
+                  if (customChord.isNotEmpty)
+                    _buildDraggableChordToken(customChord),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: TextField(
                       decoration: InputDecoration(
-                        labelText: AppLocalizations.of(context)!.customChord,
-
+                        label: Text(AppLocalizations.of(context)!.customChord),
+                        labelStyle: textTheme.labelMedium?.copyWith(
+                          color: colorScheme.onSurface,
+                        ),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        hintText: AppLocalizations.of(
+                          context,
+                        )!.customChordInstruction,
                         contentPadding: const EdgeInsets.symmetric(
                           vertical: 4,
                           horizontal: 4,
                         ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(4),
+                        border: OutlineInputBorder(),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            width: 2,
+                            color: colorScheme.onSurface,
+                          ),
                         ),
-                        isDense: true,
                       ),
-                      cursorHeight: 20,
                       textAlign: TextAlign.center,
                       controller: _customChordController,
                       expands: false,
                     ),
                   ),
-                  // CUSTOM CHORD
-                  if (customChord.isNotEmpty)
-                    _buildDraggableChordToken(
-                      customChord,
-                      colorScheme.primaryContainer,
-                      colorScheme.onPrimaryContainer,
-                    ),
                 ],
               ),
-              ValueListenableBuilder<List<String>>(
-                valueListenable: _chordVariationsNotifier,
-                builder: (context, chordVariations, child) {
-                  if (chordVariations.isEmpty) {
-                    return const SizedBox.shrink();
-                  }
-                  return Container(
-                    padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        top: BorderSide(
-                          color: colorScheme.surfaceContainerLowest,
-                        ),
-                        bottom: BorderSide(
-                          color: colorScheme.surfaceContainerLowest,
-                        ),
-                      ),
-                    ),
-                    child: Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        for (final variation in chordVariations)
-                          _buildDraggableChordToken(
-                            variation,
-                            colorScheme.primaryContainer,
-                            colorScheme.onPrimaryContainer,
-                          ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-              // Draggable chords
-              Wrap(
-                alignment: WrapAlignment.center,
-                spacing: 8,
-                runSpacing: 8,
+              Column(
                 children: [
-                  for (int i = 0; i < chords.length; i++)
-                    Builder(
-                      builder: (builder) {
-                        final chord = chords[i];
-                        return GestureDetector(
-                          onLongPress: () => {_showChordVariations(chord, i)},
-                          child: _buildDraggableChordToken(
-                            chord,
-                            colorScheme.primaryContainer,
-                            colorScheme.onPrimaryContainer,
+                  ValueListenableBuilder<List<String>>(
+                    valueListenable: _chordVariationsNotifier,
+                    builder: (context, chordVariations, child) {
+                      if (chordVariations.isEmpty) {
+                        return const SizedBox.shrink();
+                      }
+                      return Container(
+                        padding: const EdgeInsets.symmetric(vertical: 4.0),
+                        margin: const EdgeInsets.only(bottom: 8.0),
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: colorScheme.surfaceContainerHighest,
+                          border: Border(
+                            top: BorderSide(
+                              color: colorScheme.surfaceContainerLowest,
+                            ),
+                            bottom: BorderSide(
+                              color: colorScheme.surfaceContainerLowest,
+                            ),
                           ),
-                        );
-                      },
+                        ),
+                        child: Wrap(
+                          alignment: WrapAlignment.center,
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            for (final variation in chordVariations)
+                              _buildDraggableChordToken(variation),
+                          ],
+                        ),
+                      );
+                    },
+                  ), // Draggable chords
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      for (int i = 0; i < chords.length; i++)
+                        Builder(
+                          builder: (builder) {
+                            final chord = chords[i];
+                            return GestureDetector(
+                              onLongPress: () => {
+                                _showChordVariations(chord, i),
+                              },
+                              child: _buildDraggableChordToken(chord),
+                            );
+                          },
+                        ),
+                    ],
+                  ),
+                  SizedBox(height: 8),
+                  // Instruction text
+                  Text(
+                    AppLocalizations.of(context)!.draggableChordInstruction,
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                      fontStyle: FontStyle.italic,
                     ),
+                  ),
+                  Text(
+                    AppLocalizations.of(context)!.chordExpansionInstruction,
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
                 ],
-              ),
-              // Instruction text
-              Text(
-                AppLocalizations.of(context)!.draggableChordInstruction,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-              Text(
-                AppLocalizations.of(context)!.chordExpansionInstruction,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                  fontStyle: FontStyle.italic,
-                ),
               ),
             ],
           ),
@@ -221,37 +220,35 @@ class _ChordPaletteState extends State<ChordPalette> {
     );
   }
 
-  Draggable<ContentToken> _buildDraggableChordToken(
-    String chord,
-    Color sectionColor,
-    Color textColor,
-  ) {
+  Draggable<ContentToken> _buildDraggableChordToken(String chord) {
     final token = ContentToken(text: chord, type: TokenType.chord);
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Draggable<ContentToken>(
       data: token,
       feedback: Material(
         color: Colors.transparent,
         child: ChordToken(
           token: token,
-          sectionColor: sectionColor.withValues(alpha: .7),
-          textStyle: TextStyle(fontSize: _fontSize, color: textColor),
+          sectionColor: colorScheme.onSurface.withValues(alpha: .7),
+          textStyle: TextStyle(fontSize: _fontSize, color: colorScheme.surface),
         ),
       ),
       childWhenDragging: Opacity(
         opacity: 0.3,
         child: ChordToken(
           token: token,
-          sectionColor: sectionColor.withValues(alpha: .4),
+          sectionColor: colorScheme.onSurface.withValues(alpha: .4),
           textStyle: TextStyle(
             fontSize: _fontSize,
-            color: textColor.withValues(alpha: .4),
+            color: colorScheme.surface.withValues(alpha: .4),
           ),
         ),
       ),
       child: ChordToken(
         token: token,
-        sectionColor: sectionColor,
-        textStyle: TextStyle(fontSize: _fontSize, color: textColor),
+        sectionColor: colorScheme.onSurface,
+        textStyle: TextStyle(fontSize: _fontSize, color: colorScheme.surface),
       ),
     );
   }

@@ -462,7 +462,7 @@
   "@chordExpansionInstruction": {"description": "Instruction to hold a chord to see variations"},
   "customChord": "Acorde Personalizado",
   "@customChord": {"description": "Custom chord label"},
-  "customChordInstruction": "Digite para criar um acorde personalizado:",
+  "customChordInstruction": "Digite para criar um acorde personalizado.",
   "@customChordInstruction": {"description": "Instruction to enter custom chord name"},
   "draggableChordInstruction": "Arraste os acordes para as letras para adicioná-los à música.",
   "@draggableChordInstruction": {"description": "Instruction to drag chords to letters"},

@@ -1337,7 +1337,7 @@ abstract class AppLocalizations {
   /// Instruction to enter custom chord name
   ///
   /// In pt, this message translates to:
-  /// **'Digite para criar um acorde personalizado:'**
+  /// **'Digite para criar um acorde personalizado.'**
   String get customChordInstruction;
 
   /// Instruction to drag chords to letters

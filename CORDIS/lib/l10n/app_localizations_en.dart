@@ -690,7 +690,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customChord => 'Custom Chord';
 
   @override
-  String get customChordInstruction => 'Type to create a custom chord:';
+  String get customChordInstruction => 'Type to create a custom chord.';
 
   @override
   String get draggableChordInstruction =>

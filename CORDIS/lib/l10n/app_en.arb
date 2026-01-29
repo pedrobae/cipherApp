@@ -471,7 +471,7 @@
   "@chordExpansionInstruction": {"description": "Instruction to hold a chord to see variations"},
   "customChord": "Custom Chord",
   "@customChord": {"description": "Custom chord label"},
-  "customChordInstruction": "Type to create a custom chord:",
+  "customChordInstruction": "Type to create a custom chord.",
   "@customChordInstruction": {"description": "Instruction to enter custom chord name"},
   "draggableChordInstruction": "Drag chords to the letters to add them to the song.",
   "@draggableChordInstruction": {"description": "Instruction to drag chords to letters"},

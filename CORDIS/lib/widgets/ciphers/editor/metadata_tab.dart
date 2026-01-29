@@ -168,8 +168,10 @@ class _MetadataTabState extends State<MetadataTab> {
           context,
         )!.pluralPlaceholder(AppLocalizations.of(context)!.tag),
       },
-      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+      style: Theme.of(context).textTheme.titleMedium?.copyWith(
         color: Theme.of(context).colorScheme.onSurface,
+        fontSize: 16,
+        fontWeight: FontWeight.w400,
       ),
     );
   }
@@ -306,13 +308,15 @@ class _MetadataTabState extends State<MetadataTab> {
                           ? AppLocalizations.of(context)!.keyHint
                           : _getController(field).text,
                       style: TextStyle(
-                        color: colorScheme.onSurface,
+                        color: _getController(field).text.isEmpty
+                            ? colorScheme.shadow
+                            : colorScheme.onSurface,
                         fontSize: 16,
                       ),
                     );
                   },
                 ),
-                Icon(Icons.arrow_drop_down, color: colorScheme.onSurface),
+                Icon(Icons.arrow_drop_down, color: colorScheme.shadow),
               ],
             ),
           ),
@@ -373,7 +377,7 @@ class _MetadataTabState extends State<MetadataTab> {
           decoration: InputDecoration(
             visualDensity: VisualDensity.compact,
             hintText: _getHintText(field),
-            hintStyle: TextStyle(color: colorScheme.onSurface, fontSize: 16),
+            hintStyle: TextStyle(color: colorScheme.shadow, fontSize: 16),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(0),
               borderSide: BorderSide(
@@ -413,20 +417,20 @@ class _MetadataTabState extends State<MetadataTab> {
       children: [
         _getLabel(field),
         Wrap(
-          spacing: 4,
-          runSpacing: 4,
+          spacing: 8,
+          runSpacing: 8,
           children: [
             for (var tag in tags)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(16),
+                  color: colorScheme.surfaceContainerHigh,
+                  borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
                   tag,
                   style: textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onPrimaryContainer,
+                    color: colorScheme.onSurface,
                   ),
                 ),
               ),

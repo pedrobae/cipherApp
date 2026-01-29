@@ -124,6 +124,7 @@ class _AddTagSheetState extends State<AddTagSheet> {
                             tagController.text.trim(),
                           );
                       }
+                      Navigator.of(context).pop();
                     },
                   ),
             ),

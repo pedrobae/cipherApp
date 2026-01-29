@@ -100,7 +100,7 @@ class _EditCipherScreenState extends State<EditCipherScreen>
         await sectionProvider.loadLocalSections(widget.versionID!);
         break;
       case VersionType.brandNew:
-        // Nothing to load for brand new cipher/version
+        cipherProvider.setNewCipherInCache(Cipher.empty());
         break;
       case VersionType.playlist:
         final playlistProvider = context.read<PlaylistProvider>();

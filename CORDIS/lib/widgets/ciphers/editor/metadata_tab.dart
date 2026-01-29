@@ -7,7 +7,7 @@ import 'package:cordis/widgets/ciphers/editor/select_key_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-enum InfoField { title, author, versionName, bpm, musicKey, language, tags }
+enum InfoField { title, author, versionName, key, bpm, language, tags }
 
 class MetadataTab extends StatefulWidget {
   final int? cipherId;
@@ -66,7 +66,7 @@ class _MetadataTabState extends State<MetadataTab> {
               case InfoField.bpm:
                 controllers[field]!.text = version.bpm.toString();
                 break;
-              case InfoField.musicKey:
+              case InfoField.key:
                 controllers[field]!.text =
                     version.transposedKey ?? version.originalKey;
                 break;
@@ -99,7 +99,7 @@ class _MetadataTabState extends State<MetadataTab> {
               case InfoField.bpm:
                 controllers[field]!.text = version.bpm.toString();
                 break;
-              case InfoField.musicKey:
+              case InfoField.key:
                 controllers[field]!.text =
                     version.transposedKey ?? cipher.musicKey;
                 break;
@@ -130,7 +130,7 @@ class _MetadataTabState extends State<MetadataTab> {
               case InfoField.bpm:
                 controllers[field]!.text = version.bpm.toString();
                 break;
-              case InfoField.musicKey:
+              case InfoField.key:
                 controllers[field]!.text =
                     version.transposedKey ?? cipher.musicKey;
                 break;
@@ -163,7 +163,7 @@ class _MetadataTabState extends State<MetadataTab> {
         return AppLocalizations.of(context)!.versionName;
       case InfoField.bpm:
         return AppLocalizations.of(context)!.bpm;
-      case InfoField.musicKey:
+      case InfoField.key:
         return AppLocalizations.of(context)!.musicKey;
       case InfoField.language:
         return AppLocalizations.of(context)!.language;
@@ -181,7 +181,7 @@ class _MetadataTabState extends State<MetadataTab> {
         if (!widget.isEnabled) return false;
         return !selectionProvider.isSelectionMode;
       case InfoField.bpm:
-      case InfoField.musicKey:
+      case InfoField.key:
       case InfoField.language:
         return true;
     }
@@ -205,8 +205,7 @@ class _MetadataTabState extends State<MetadataTab> {
           children: [
             for (var field in InfoField.values)
               switch (field) {
-                InfoField.tags =>
-                  SizedBox.shrink(), // TODO - implement tags field
+                InfoField.tags => SizedBox.shrink(), // TODO: Tags Field
                 InfoField.bpm => _buildIntPicker(
                   context: context,
                   cipherProvider: cipherProvider,
@@ -215,7 +214,7 @@ class _MetadataTabState extends State<MetadataTab> {
                   min: 20,
                   max: 300,
                 ),
-                InfoField.musicKey => _buildKeySelector(
+                InfoField.key => _buildKeySelector(
                   context: context,
                   cipherProvider: cipherProvider,
                   versionProvider: versionProvider,
@@ -307,7 +306,9 @@ class _MetadataTabState extends State<MetadataTab> {
                   listenable: _getController(field),
                   builder: (context, child) {
                     return Text(
-                      _getController(field).text,
+                      _getController(field).text.isEmpty
+                          ? AppLocalizations.of(context)!.keyHint
+                          : _getController(field).text,
                       style: TextStyle(
                         color: colorScheme.onSurface,
                         fontSize: 16,

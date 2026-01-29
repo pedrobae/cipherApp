@@ -162,7 +162,8 @@ class CipherProvider extends ChangeNotifier {
     _filteredLocalCiphers = _localCiphers;
   }
 
-  /// ===== CREATE =====
+  // ===== CREATE =====
+  /// Creates a new cipher in the database from the cached new cipher (-1)
   Future<int?> createCipher() async {
     if (_isSaving) return null;
     if (_localCiphers[-1] == null) {
@@ -293,7 +294,7 @@ class CipherProvider extends ChangeNotifier {
         break;
       case InfoField.bpm:
       // BPM is not stored in Cipher, so no action here
-      case InfoField.musicKey:
+      case InfoField.key:
         _localCiphers[cipherId] = _localCiphers[cipherId]!.copyWith(
           musicKey: change,
         );

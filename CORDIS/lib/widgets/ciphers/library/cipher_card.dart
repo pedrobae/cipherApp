@@ -100,10 +100,10 @@ class _CipherCardState extends State<CipherCard> {
                     selectionProvider.select(versionId);
                     navigationProvider.push(
                       EditCipherScreen(
-                        cipherId: widget.cipherId,
-                        versionId: versionId,
+                        cipherID: widget.cipherId,
+                        versionID: versionId,
                         versionType: VersionType.playlist,
-                        playlistId: widget.playlistId,
+                        playlistID: widget.playlistId,
                       ),
                       showAppBar: false,
                       showDrawerIcon: false,
@@ -143,8 +143,8 @@ class _CipherCardState extends State<CipherCard> {
                 if (!selectionProvider.isSelectionMode) {
                   navigationProvider.push(
                     EditCipherScreen(
-                      cipherId: widget.cipherId,
-                      versionId: versionProvider.getIdOfOldestVersionOfCipher(
+                      cipherID: widget.cipherId,
+                      versionID: versionProvider.getIdOfOldestVersionOfCipher(
                         widget.cipherId,
                       ),
                       versionType: VersionType.local,

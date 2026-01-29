@@ -112,7 +112,7 @@ class SideMenu extends StatelessWidget {
                       child: ListTile(
                         title: Text(AppLocalizations.of(context)!.about),
                         onTap: () {
-                          // TODO: Show about
+                          // TODO: About screen
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               backgroundColor: Colors.amberAccent,

@@ -74,8 +74,8 @@ class _ViewCipherScreenState extends State<ViewCipherScreen>
   void _editCurrentVersion(NavigationProvider navigationProvider) {
     navigationProvider.push(
       EditCipherScreen(
-        cipherId: widget.cipherId,
-        versionId: widget.versionId,
+        cipherID: widget.cipherId,
+        versionID: widget.versionId,
         versionType: widget.versionType,
       ),
       showAppBar: false,

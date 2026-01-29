@@ -107,7 +107,7 @@ class VersionProvider extends ChangeNotifier {
   }
 
   // ===== CREATE =====
-  /// Creates a new version from the local cache to an existing cipher =====
+  /// Creates a new version from the local cache to an existing cipher
   /// If no cipherId is provided, the version will use the cached cipherID or throw an error
   Future<int?> createVersion(int? cipherId) async {
     if (_isSaving) return null;
@@ -611,7 +611,7 @@ class VersionProvider extends ChangeNotifier {
         _cloudVersions[versionFirebaseId] = _cloudVersions[versionFirebaseId]!
             .copyWith(versionName: newValue);
         break;
-      case InfoField.musicKey:
+      case InfoField.key:
         _cloudVersions[versionFirebaseId] = _cloudVersions[versionFirebaseId]!
             .copyWith(transposedKey: newValue);
         break;
@@ -653,9 +653,9 @@ class VersionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// ===== SAVE =====
-  // Persist the cache to the database
-  Future<void> saveVersion({dynamic versionId}) async {
+  // ===== SAVE =====
+  /// Persist the cache of an ID to the database
+  Future<void> saveVersion({dynamic versionID}) async {
     if (_isSaving) return;
 
     _isSaving = true;
@@ -663,14 +663,14 @@ class VersionProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      if (versionId == null) {
+      if (versionID == null) {
         throw Exception(
           'No versionId provided to save the version, create the version first.',
         );
       }
 
-      if (versionId is int) {
-        await _cipherRepository.updateVersion(_localVersions[versionId]!);
+      if (versionID is int) {
+        await _cipherRepository.updateVersion(_localVersions[versionID]!);
       } else {
         // Cloud version saving not implemented
         throw Exception('Saving cloud versions is not supported yet.');

@@ -193,7 +193,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           GestureDetector(
                             onTap: () {
-                              // TODO - implement password reset
+                              // TODO: ResetPassword
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   backgroundColor: Colors.amberAccent,

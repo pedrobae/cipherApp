@@ -144,35 +144,35 @@ class SectionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// ===== SAVE =====
-  // Persist the data to the database
-  Future<void> saveSections(dynamic versionKey) async {
+  // ===== SAVE =====
+  /// Persist the data of the given version key to the database
+  Future<void> saveSections({dynamic versionID}) async {
     if (_isSaving) return;
 
     _isSaving = true;
     notifyListeners();
 
     try {
-      if (versionKey == null) {
+      if (versionID == null) {
         throw Exception('No version key provided.');
       }
 
-      if (versionKey is String) {
+      if (versionID is String) {
         throw Exception('Cannot save sections for non-local version.');
       }
       // For simplicity, delete all existing content and recreate
       // This could be optimized later to only update changed content
-      await _cipherRepository.deleteAllVersionSections(versionKey);
+      await _cipherRepository.deleteAllVersionSections(versionID);
 
       // Insert new content
       if (kDebugMode) {
         print(
-          'Saving ${_sections[versionKey]!.length} sections for version $versionKey',
+          'Saving ${_sections[versionID]!.length} sections for version $versionID',
         );
       }
-      for (final entry in _sections[versionKey]!.entries) {
+      for (final entry in _sections[versionID]!.entries) {
         final sectionId = await _cipherRepository.insertSection(
-          entry.value.copyWith(versionId: versionKey),
+          entry.value.copyWith(versionId: versionID),
         );
 
         if (kDebugMode) {

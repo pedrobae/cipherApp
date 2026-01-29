@@ -71,9 +71,9 @@ class CipherCardActionsSheet extends StatelessWidget {
                       navigationProvider.push(
                         EditCipherScreen(
                           versionType: versionType,
-                          cipherId: cipherId,
+                          cipherID: cipherId,
                           isEnabled: versionType == VersionType.local,
-                          versionId: versionProvider
+                          versionID: versionProvider
                               .getIdOfOldestVersionOfCipher(cipherId),
                         ),
                         showAppBar: false,

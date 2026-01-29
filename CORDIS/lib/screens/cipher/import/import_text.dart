@@ -166,7 +166,7 @@ class _ImportTextScreenState extends State<ImportTextScreen> {
                                   navigationProvider.push(
                                     EditCipherScreen(
                                       versionType: VersionType.import,
-                                      versionId: -1,
+                                      versionID: -1,
                                     ),
                                   );
                                 }

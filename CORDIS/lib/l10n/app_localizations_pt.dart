@@ -97,9 +97,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get title => 'Título';
 
   @override
-  String get titleHint => 'Insira o título...';
-
-  @override
   String get author => 'Autor';
 
   @override
@@ -115,7 +112,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get language => 'Idioma';
 
   @override
-  String get tags => 'Tags';
+  String get tag => 'Tag';
 
   @override
   String get version => 'Versão';
@@ -645,13 +642,22 @@ class AppLocalizationsPt extends AppLocalizations {
   String get keyHint => 'Selecione o Tom...';
 
   @override
-  String get hintPrefixO => 'Insira seu ';
+  String get titleHint => 'Insira um título';
 
   @override
-  String get hintPrefixA => 'Insira sua ';
+  String get authorHint => 'Insira o nome do autor';
 
   @override
-  String get hintSuffix => ' aqui...';
+  String get versionNameHint => 'Insira um nome para a versão';
+
+  @override
+  String get bpmHint => 'Insira o tempo em BPM';
+
+  @override
+  String get languageHint => 'Insira o idioma da música';
+
+  @override
+  String get tagHint => 'Digite uma tag';
 
   @override
   String stepXofY(Object current, Object total) {
@@ -672,6 +678,10 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get fieldRequired => 'Este campo é obrigatório.';
+
+  @override
+  String get intValidationError =>
+      'Por favor, insira um número inteiro positivo.';
 
   @override
   String optionalPlaceholder(Object field) {

@@ -620,9 +620,16 @@ class VersionProvider extends ChangeNotifier {
             .copyWith(language: newValue);
         break;
       case InfoField.tags:
-        _cloudVersions[versionFirebaseId] = _cloudVersions[versionFirebaseId]!
-            .copyWith(tags: newValue.split(',').map((e) => e.trim()).toList());
+        // Tags are handled separately
         break;
+    }
+    notifyListeners();
+  }
+
+  void addTagToCloudCache(String versionFirebaseId, String newTag) {
+    final currentTags = _cloudVersions[versionFirebaseId]!.tags;
+    if (!currentTags.contains(newTag)) {
+      currentTags.add(newTag);
     }
     notifyListeners();
   }

@@ -284,8 +284,8 @@ class _EditCipherScreenState extends State<EditCipherScreen>
                             children: [
                               // Basic cipher info
                               MetadataTab(
-                                cipherId: widget.cipherID,
-                                versionId: widget.versionID,
+                                cipherID: widget.cipherID,
+                                versionID: widget.versionID,
                                 versionType: widget.versionType,
                                 isEnabled: widget.isEnabled,
                               ),

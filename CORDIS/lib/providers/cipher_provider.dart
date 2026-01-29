@@ -314,14 +314,11 @@ class CipherProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Update cache with tag changes
-  void cacheCipherTagUpdates(int cipherId, String tags) {
-    List<String> tagList = tags
-        .split(',')
-        .map((tag) => tag.trim())
-        .where((tag) => tag.isNotEmpty)
-        .toList();
-    _localCiphers[cipherId] = _localCiphers[cipherId]!.copyWith(tags: tagList);
+  void addTagToLocalCache(int cipherId, String tag) {
+    final currentTags = _localCiphers[cipherId]!.tags;
+    if (!currentTags.contains(tag)) {
+      currentTags.add(tag);
+    }
     notifyListeners();
   }
 

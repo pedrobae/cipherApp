@@ -272,12 +272,6 @@ abstract class AppLocalizations {
   /// **'Título'**
   String get title;
 
-  /// Hint text for song title input
-  ///
-  /// In pt, this message translates to:
-  /// **'Insira o título...'**
-  String get titleHint;
-
   /// Song author field label
   ///
   /// In pt, this message translates to:
@@ -308,11 +302,11 @@ abstract class AppLocalizations {
   /// **'Idioma'**
   String get language;
 
-  /// Tags field label
+  /// Single tag label
   ///
   /// In pt, this message translates to:
-  /// **'Tags'**
-  String get tags;
+  /// **'Tag'**
+  String get tag;
 
   /// Version label
   ///
@@ -1244,23 +1238,41 @@ abstract class AppLocalizations {
   /// **'Selecione o Tom...'**
   String get keyHint;
 
-  /// Prefix to be used on text fields with masculine nouns
+  /// Hint text for song title input
   ///
   /// In pt, this message translates to:
-  /// **'Insira seu '**
-  String get hintPrefixO;
+  /// **'Insira um título'**
+  String get titleHint;
 
-  /// Prefix to be used on text fields with feminine nouns
+  /// Hint text for author name input
   ///
   /// In pt, this message translates to:
-  /// **'Insira sua '**
-  String get hintPrefixA;
+  /// **'Insira o nome do autor'**
+  String get authorHint;
 
-  /// Suffix to be used on text fields
+  /// Hint text for version name input
   ///
   /// In pt, this message translates to:
-  /// **' aqui...'**
-  String get hintSuffix;
+  /// **'Insira um nome para a versão'**
+  String get versionNameHint;
+
+  /// Hint text for BPM input
+  ///
+  /// In pt, this message translates to:
+  /// **'Insira o tempo em BPM'**
+  String get bpmHint;
+
+  /// Hint text for song language input
+  ///
+  /// In pt, this message translates to:
+  /// **'Insira o idioma da música'**
+  String get languageHint;
+
+  /// Hint text for tag input
+  ///
+  /// In pt, this message translates to:
+  /// **'Digite uma tag'**
+  String get tagHint;
 
   /// Indicates the current step out of total steps
   ///
@@ -1291,6 +1303,12 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Este campo é obrigatório.'**
   String get fieldRequired;
+
+  /// Validation message for integer input
+  ///
+  /// In pt, this message translates to:
+  /// **'Por favor, insira um número inteiro positivo.'**
+  String get intValidationError;
 
   /// Generic optional field placeholder
   ///

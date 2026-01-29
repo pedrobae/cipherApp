@@ -139,7 +139,7 @@ class _ScheduleLibraryScreenState extends State<ScheduleLibraryScreen> {
                           ),
                         ],
                       ),
-                      child: Icon(Icons.add, color: colorScheme.onPrimary),
+                      child: Icon(Icons.add, color: colorScheme.surface),
                     ),
                   ),
                 ),

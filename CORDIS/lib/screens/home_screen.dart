@@ -177,10 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ],
                             ),
-                            child: Icon(
-                              Icons.add,
-                              color: colorScheme.onPrimary,
-                            ),
+                            child: Icon(Icons.add, color: colorScheme.surface),
                           ),
                         ),
                       ),

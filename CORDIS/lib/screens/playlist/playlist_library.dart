@@ -109,7 +109,7 @@ class _PlaylistLibraryScreenState extends State<PlaylistLibraryScreen> {
                             ),
                           ],
                         ),
-                        child: Icon(Icons.add, color: colorScheme.onPrimary),
+                        child: Icon(Icons.add, color: colorScheme.surface),
                       ),
                     ),
                   ),

@@ -1,10 +1,10 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:cordis/providers/selection_provider.dart';
+import 'package:cordis/widgets/ciphers/editor/chord_palette.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/section_provider.dart';
 import 'package:cordis/providers/version_provider.dart';
 import 'package:cordis/widgets/ciphers/editor/reorderable_structure_chips.dart';
@@ -12,13 +12,13 @@ import 'package:cordis/widgets/ciphers/editor/sections/token_content_editor.dart
 import 'package:cordis/utils/section_constants.dart';
 
 class SectionsTab extends StatefulWidget {
-  final dynamic versionId;
+  final dynamic versionID;
   final VersionType versionType;
   final bool isEnabled;
 
   const SectionsTab({
     super.key,
-    this.versionId,
+    this.versionID,
     required this.versionType,
     this.isEnabled = true,
   });
@@ -28,21 +28,17 @@ class SectionsTab extends StatefulWidget {
 }
 
 class _SectionsTabState extends State<SectionsTab> {
+  bool paletteIsOpen = false;
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    return Consumer4<
-      SectionProvider,
-      VersionProvider,
-      CipherProvider,
-      SelectionProvider
-    >(
+    return Consumer3<SectionProvider, VersionProvider, SelectionProvider>(
       builder:
           (
             context,
             sectionProvider,
             versionProvider,
-            cipherProvider,
             selectionProvider,
             child,
           ) {
@@ -51,13 +47,13 @@ class _SectionsTabState extends State<SectionsTab> {
               case VersionType.local:
               case VersionType.brandNew:
                 uniqueSections = versionProvider
-                    .getSongStructure(widget.versionId)
+                    .getSongStructure(widget.versionID)
                     .toSet()
                     .toList();
                 break;
               case VersionType.cloud:
                 uniqueSections = versionProvider
-                    .getSongStructure(widget.versionId)
+                    .getSongStructure(widget.versionID)
                     .toSet()
                     .toList();
                 break;
@@ -76,83 +72,138 @@ class _SectionsTabState extends State<SectionsTab> {
               );
             }
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              spacing: 32,
+            return Stack(
               children: [
-                // STRUCTURE SECTION
-                Column(
-                  spacing: 4,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      spacing: 32,
                       children: [
-                        // LABEL
-                        Text(
-                          AppLocalizations.of(context)!.songStructure,
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                              ),
-                        ),
+                        // STRUCTURE SECTION
+                        Column(
+                          spacing: 4,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                // LABEL
+                                Text(
+                                  AppLocalizations.of(context)!.songStructure,
+                                  style: Theme.of(context).textTheme.titleMedium
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                      ),
+                                ),
 
-                        // ADD SECTION BUTTON
-                        IconButton(
-                          tooltip: AppLocalizations.of(context)!.addPlaceholder(
-                            AppLocalizations.of(context)!.section,
-                          ),
-                          icon: const Icon(Icons.add),
-                          color: colorScheme.onSurface.withValues(alpha: 0.7),
-                          onPressed: () {
-                            _showNewSectionSheet(
-                              context,
-                              sectionProvider,
-                              versionProvider,
-                            );
-                          },
+                                // ADD SECTION BUTTON
+                                IconButton(
+                                  tooltip: AppLocalizations.of(context)!
+                                      .addPlaceholder(
+                                        AppLocalizations.of(context)!.section,
+                                      ),
+                                  icon: const Icon(Icons.add),
+                                  color: colorScheme.onSurface.withValues(
+                                    alpha: 0.7,
+                                  ),
+                                  onPressed: () {
+                                    _showNewSectionSheet(
+                                      context,
+                                      sectionProvider,
+                                      versionProvider,
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+
+                            // DRAGGABLE CHIPS
+                            ReorderableStructureChips(
+                              versionId: widget.versionID,
+                            ),
+                          ],
+                        ),
+                        // CONTENT SECTION
+                        Column(
+                          spacing: 8,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // LABEL
+                            Text(
+                              AppLocalizations.of(context)!.lyrics,
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
+                            ),
+
+                            // SECTIONS
+                            if (uniqueSections.isEmpty)
+                              Text(
+                                AppLocalizations.of(context)!.noLyrics,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: colorScheme.onSurface),
+                              )
+                            else
+                              ...uniqueSections.map((sectionCode) {
+                                return TokenContentEditor(
+                                  versionId: widget.versionID,
+                                  sectionCode: sectionCode,
+                                  isEnabled: widget.isEnabled,
+                                );
+                              }),
+                          ],
                         ),
                       ],
                     ),
-
-                    // DRAGGABLE CHIPS
-                    ReorderableStructureChips(versionId: widget.versionId),
-                  ],
+                  ),
                 ),
-                // CONTENT SECTION
-                Column(
-                  spacing: 8,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // LABEL
-                    Text(
-                      AppLocalizations.of(context)!.lyrics,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
+                if (!selectionProvider.isSelectionMode)
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      verticalDirection: VerticalDirection.up,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (paletteIsOpen) ...[
+                          ChordPalette(
+                            versionId: widget.versionID ?? -1,
+                            onClose: _togglePalette,
+                          ),
+                        ],
+                        // Palette FAB
+                        GestureDetector(
+                          onTap: _togglePalette,
+                          child: Container(
+                            margin: const EdgeInsets.all(8),
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: colorScheme.onSurface,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: colorScheme.surfaceContainerLowest,
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Icon(
+                              paletteIsOpen ? Icons.close : Icons.palette,
+                              size: 28,
+                              color: colorScheme.surface,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-
-                    // SECTIONS
-                    if (uniqueSections.isEmpty)
-                      Text(
-                        AppLocalizations.of(
-                          context,
-                        )!.noSectionsInStructurePrompt,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: colorScheme.onSurface),
-                      )
-                    else
-                      ...uniqueSections.map((sectionCode) {
-                        return TokenContentEditor(
-                          versionId: widget.versionId,
-                          sectionCode: sectionCode,
-                          isEnabled: widget.isEnabled,
-                        );
-                      }),
-                  ],
-                ),
+                  ),
               ],
             );
           },
@@ -165,15 +216,15 @@ class _SectionsTabState extends State<SectionsTab> {
     VersionProvider versionProvider,
   ) {
     final isNewSection = !sectionProvider
-        .getSections(widget.versionId)
+        .getSections(widget.versionID)
         .containsKey(sectionLabel.code);
 
     // Add section to song structure
-    versionProvider.addSectionToStruct(widget.versionId, sectionLabel.code);
+    versionProvider.addSectionToStruct(widget.versionID, sectionLabel.code);
     // Add section to sections map if it's new
     if (isNewSection) {
       sectionProvider.cacheAddSection(
-        widget.versionId,
+        widget.versionID,
         sectionLabel.code,
         sectionLabel.color,
         sectionLabel.officialLabel,
@@ -277,5 +328,11 @@ class _SectionsTabState extends State<SectionsTab> {
         );
       },
     );
+  }
+
+  void _togglePalette() {
+    setState(() {
+      paletteIsOpen = !paletteIsOpen;
+    });
   }
 }

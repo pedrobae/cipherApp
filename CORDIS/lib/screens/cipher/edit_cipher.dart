@@ -5,7 +5,6 @@ import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/providers/parser_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
-import 'package:cordis/widgets/ciphers/editor/chord_palette.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cordis/providers/cipher_provider.dart';
@@ -37,7 +36,6 @@ class EditCipherScreen extends StatefulWidget {
 class _EditCipherScreenState extends State<EditCipherScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  bool paletteIsOpen = false;
 
   @override
   void initState() {
@@ -47,13 +45,6 @@ class _EditCipherScreenState extends State<EditCipherScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadData();
       _navigateStartTab();
-    });
-
-    _tabController.addListener(() {
-      // Setting state to trigger rebuild
-      setState(() {
-        paletteIsOpen = false;
-      });
     });
   }
 
@@ -290,46 +281,18 @@ class _EditCipherScreenState extends State<EditCipherScreen>
                           ),
                         ),
                         // Content Tab
-                        SingleChildScrollView(
-                          padding: const EdgeInsets.all(16.0),
-                          child: SectionsTab(
-                            versionId:
-                                widget.versionType == VersionType.playlist
-                                ? -1
-                                : widget.versionID,
-                            versionType: widget.versionType,
-                            isEnabled: widget.isEnabled,
-                          ),
+                        SectionsTab(
+                          versionID: widget.versionType == VersionType.playlist
+                              ? -1
+                              : widget.versionID,
+                          versionType: widget.versionType,
+                          isEnabled: widget.isEnabled,
                         ),
                       ],
                     ),
                   ),
                 ],
               ),
-              floatingActionButton: selectionProvider.isSelectionMode
-                  ? null
-                  : Column(
-                      spacing: 8,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      verticalDirection: VerticalDirection.up,
-                      children: [
-                        if (paletteIsOpen) ...[
-                          ChordPalette(
-                            cipherId: widget.cipherID ?? -1,
-                            versionId: widget.versionID ?? -1,
-                            onClose: _togglePalette,
-                          ),
-                        ],
-                        // Palette FAB
-                        if (_tabController.index == 1 &&
-                            !_tabController.indexIsChanging) ...[
-                          FloatingActionButton(
-                            onPressed: _togglePalette,
-                            child: Icon(Icons.palette),
-                          ),
-                        ],
-                      ],
-                    ),
             );
           },
     );
@@ -399,11 +362,5 @@ class _EditCipherScreenState extends State<EditCipherScreen>
           break;
       }
     }
-  }
-
-  void _togglePalette() {
-    setState(() {
-      paletteIsOpen = !paletteIsOpen;
-    });
   }
 }

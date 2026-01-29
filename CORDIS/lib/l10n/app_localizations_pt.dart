@@ -151,11 +151,14 @@ class AppLocalizationsPt extends AppLocalizations {
   String get selectSectionType => 'Selecione sua Seção';
 
   @override
-  String get noSectionsInStructurePrompt =>
-      'Nenhuma seção na estrutura. Use o botão acima para adicionar seções.';
+  String get emptyStructure =>
+      'Nenhuma seção na estrutura.\nUse o botão acima para adicionar seções.';
 
   @override
-  String get lyrics => 'Letras';
+  String get noLyrics => 'Por favor, adicione Letra e acordes para começar.';
+
+  @override
+  String get lyrics => 'Letra';
 
   @override
   String get sectionCode => 'Código da Seção';
@@ -346,8 +349,8 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String selectPlaceholder(Object object) {
-    return 'Selecionar $object';
+  String setPlaceholder(Object object) {
+    return 'Definir $object';
   }
 
   @override
@@ -680,6 +683,26 @@ class AppLocalizationsPt extends AppLocalizations {
   String stepXofY(Object current, Object total) {
     return 'Passo $current de $total';
   }
+
+  @override
+  String commonChordsOfKey(Object key) {
+    return 'Acordes Comuns em - $key';
+  }
+
+  @override
+  String get chordExpansionInstruction =>
+      'Toque e segure um acorde para mostrar variações.';
+
+  @override
+  String get customChord => 'Acorde Personalizado';
+
+  @override
+  String get customChordInstruction =>
+      'Digite para criar um acorde personalizado:';
+
+  @override
+  String get draggableChordInstruction =>
+      'Arraste os acordes para as letras para adicioná-los à música.';
 
   @override
   String get error => 'Erro';

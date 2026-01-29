@@ -1,3 +1,4 @@
+import 'package:cordis/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cordis/helpers/chords/chords.dart';
@@ -9,13 +10,11 @@ import 'package:cordis/widgets/ciphers/editor/sections/chord_token.dart';
 double _fontSize = 20;
 
 class ChordPalette extends StatefulWidget {
-  final int cipherId;
-  final int versionId;
+  final dynamic versionId;
   final VoidCallback onClose;
 
   const ChordPalette({
     super.key,
-    required this.cipherId,
     required this.versionId,
     required this.onClose,
   });
@@ -24,30 +23,39 @@ class ChordPalette extends StatefulWidget {
 }
 
 class _ChordPaletteState extends State<ChordPalette> {
-  OverlayEntry? _overlayEntry;
   final TextEditingController _customChordController = TextEditingController();
-  String _customChord = '';
+  String customChord = '';
+  final _chordVariationsNotifier = ValueNotifier<List<String>>([]);
+
+  void _showChordVariations(String baseChord, int chordIndex) {
+    final chordVariations = ChordHelper().getVariationsForChord(
+      baseChord,
+      chordIndex,
+    );
+
+    if (chordVariations.every(
+      (variation) => _chordVariationsNotifier.value.contains(variation),
+    )) {
+      _chordVariationsNotifier.value = [];
+    } else {
+      _chordVariationsNotifier.value = chordVariations;
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     _customChordController.addListener(() {
       setState(() {
-        _customChord = _customChordController.text;
+        customChord = _customChordController.text;
       });
     });
   }
 
   @override
   void dispose() {
-    _removeOverlay();
     _customChordController.dispose();
     super.dispose();
-  }
-
-  void _removeOverlay() {
-    _overlayEntry?.remove();
-    _overlayEntry = null;
   }
 
   @override
@@ -56,23 +64,27 @@ class _ChordPaletteState extends State<ChordPalette> {
       builder: (context, versionProvider, cipherProvider, child) {
         final theme = Theme.of(context);
         final colorScheme = theme.colorScheme;
-        final musicKey =
-            versionProvider
-                .getLocalVersionById(widget.versionId)!
-                .transposedKey ??
-            cipherProvider.getCipherById(widget.cipherId)!.musicKey;
-        final chords = ChordHelper().getChordsForKey(musicKey);
+
+        final key =
+            versionProvider.getMusicKeyOfVersion(widget.versionId) ??
+            cipherProvider
+                .getCipherById(
+                  versionProvider.getCipherIdOfLocalVersion(widget.versionId),
+                )!
+                .musicKey;
+
+        final chords = ChordHelper().getChordsForKey(key);
 
         return Container(
-          constraints: const BoxConstraints(maxWidth: 350, maxHeight: 220),
-          padding: const EdgeInsets.all(8),
+          width: MediaQuery.of(context).size.width,
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: colorScheme.surfaceContainerHighest,
-            borderRadius: const BorderRadius.all(Radius.circular(16)),
+            color: colorScheme.surface,
+            borderRadius: const BorderRadius.vertical(),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: .2),
-                blurRadius: 8,
+                color: colorScheme.surfaceContainerLow,
+                blurRadius: 10,
                 offset: const Offset(0, -2),
               ),
             ],
@@ -81,26 +93,31 @@ class _ChordPaletteState extends State<ChordPalette> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Header
+              // HEADER
               Row(
-                spacing: 4,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
                     child: Text(
-                      textAlign: TextAlign.center,
-                      'Acordes - Tom: ${chords[0]}',
+                      AppLocalizations.of(
+                        context,
+                      )!.commonChordsOfKey(chords[0]),
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: colorScheme.onSurface,
                       ),
                     ),
                   ),
-                  // CUSTOM CHORD INPUT
+                ],
+              ),
+              // CUSTOM CHORD INPUT
+              Row(
+                children: [
                   SizedBox(
                     width: 80,
                     child: TextField(
                       decoration: InputDecoration(
-                        labelText: 'Personalizado',
+                        labelText: AppLocalizations.of(context)!.customChord,
 
                         contentPadding: const EdgeInsets.symmetric(
                           vertical: 4,
@@ -118,22 +135,48 @@ class _ChordPaletteState extends State<ChordPalette> {
                     ),
                   ),
                   // CUSTOM CHORD
-                  if (_customChord.isNotEmpty)
+                  if (customChord.isNotEmpty)
                     _buildDraggableChordToken(
-                      _customChord,
+                      customChord,
                       colorScheme.primaryContainer,
                       colorScheme.onPrimaryContainer,
                     ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: widget.onClose,
-                    color: colorScheme.onSurface,
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                  ),
                 ],
               ),
-              Divider(),
+              ValueListenableBuilder<List<String>>(
+                valueListenable: _chordVariationsNotifier,
+                builder: (context, chordVariations, child) {
+                  if (chordVariations.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
+                  return Container(
+                    padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(
+                          color: colorScheme.surfaceContainerLowest,
+                        ),
+                        bottom: BorderSide(
+                          color: colorScheme.surfaceContainerLowest,
+                        ),
+                      ),
+                    ),
+                    child: Wrap(
+                      alignment: WrapAlignment.center,
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        for (final variation in chordVariations)
+                          _buildDraggableChordToken(
+                            variation,
+                            colorScheme.primaryContainer,
+                            colorScheme.onPrimaryContainer,
+                          ),
+                      ],
+                    ),
+                  );
+                },
+              ),
               // Draggable chords
               Wrap(
                 alignment: WrapAlignment.center,
@@ -145,8 +188,7 @@ class _ChordPaletteState extends State<ChordPalette> {
                       builder: (builder) {
                         final chord = chords[i];
                         return GestureDetector(
-                          onLongPressStart: (details) =>
-                              _showChordVariations(context, chord, i, details),
+                          onLongPress: () => {_showChordVariations(chord, i)},
                           child: _buildDraggableChordToken(
                             chord,
                             colorScheme.primaryContainer,
@@ -159,14 +201,14 @@ class _ChordPaletteState extends State<ChordPalette> {
               ),
               // Instruction text
               Text(
-                'Arraste os acordes para as letras',
+                AppLocalizations.of(context)!.draggableChordInstruction,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                   fontStyle: FontStyle.italic,
                 ),
               ),
               Text(
-                'Toque e segure um acorde para ver variações',
+                AppLocalizations.of(context)!.chordExpansionInstruction,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                   fontStyle: FontStyle.italic,
@@ -177,83 +219,6 @@ class _ChordPaletteState extends State<ChordPalette> {
         );
       },
     );
-  }
-
-  void _showChordVariations(
-    BuildContext context,
-    String baseChord,
-    int chordIndex,
-    LongPressStartDetails details,
-  ) {
-    _removeOverlay(); // Remove any existing overlay
-
-    final chordVariations = ChordHelper().getVariationsForChord(
-      baseChord,
-      chordIndex,
-    );
-
-    if (chordVariations.isEmpty) return;
-
-    final colorScheme = Theme.of(context).colorScheme;
-    final screenSize = MediaQuery.of(context).size;
-
-    final estimatedPopupWidth = (chordVariations.length * 60.0) + 16.0;
-    // Calculate horizontal position (center popup above the chord button)
-    double leftPosition = details.globalPosition.dx - (estimatedPopupWidth / 2);
-
-    // Prevent overflow on left edge
-    if (leftPosition < 8) {
-      leftPosition = 8;
-    }
-
-    // Prevent overflow on right edge
-    if (leftPosition + estimatedPopupWidth > screenSize.width - 8) {
-      leftPosition = screenSize.width - estimatedPopupWidth - 8;
-    }
-
-    _overlayEntry = OverlayEntry(
-      builder: (context) => Stack(
-        children: [
-          Positioned(
-            left: leftPosition,
-            top: details.globalPosition.dy - details.localPosition.dy - 40,
-            child: Material(
-              color: Colors.transparent,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                decoration: BoxDecoration(
-                  color: colorScheme.surface,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    for (final variation in chordVariations)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: _buildDraggableChordToken(
-                          variation,
-                          colorScheme.primaryContainer,
-                          colorScheme.onPrimaryContainer,
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-
-    Overlay.of(context).insert(_overlayEntry!);
   }
 
   Draggable<ContentToken> _buildDraggableChordToken(

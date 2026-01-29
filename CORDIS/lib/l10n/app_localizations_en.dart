@@ -150,8 +150,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectSectionType => 'Select your Section';
 
   @override
-  String get noSectionsInStructurePrompt =>
-      'No sections in structure. Use the button above to add sections.';
+  String get emptyStructure =>
+      'No sections in structure.\nUse the button above to add sections.';
+
+  @override
+  String get noLyrics => 'Please add lyrics & chords to get started.';
 
   @override
   String get lyrics => 'Lyrics';
@@ -344,8 +347,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String selectPlaceholder(Object object) {
-    return 'Select $object';
+  String setPlaceholder(Object object) {
+    return 'Set $object';
   }
 
   @override
@@ -674,6 +677,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String stepXofY(Object current, Object total) {
     return 'Step $current of $total';
   }
+
+  @override
+  String commonChordsOfKey(Object key) {
+    return 'Common Chords in - $key';
+  }
+
+  @override
+  String get chordExpansionInstruction => 'Hold a chord to show variations.';
+
+  @override
+  String get customChord => 'Custom Chord';
+
+  @override
+  String get customChordInstruction => 'Type to create a custom chord:';
+
+  @override
+  String get draggableChordInstruction =>
+      'Drag chords to the letters to add them to the song.';
 
   @override
   String get error => 'Error';

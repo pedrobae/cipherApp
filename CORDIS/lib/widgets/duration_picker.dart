@@ -42,7 +42,7 @@ class _DurationPickerState extends State<DurationPicker> {
               Text(
                 AppLocalizations.of(
                   context,
-                )!.selectPlaceholder(AppLocalizations.of(context)!.duration),
+                )!.setPlaceholder(AppLocalizations.of(context)!.duration),
                 style: textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),

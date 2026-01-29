@@ -55,8 +55,9 @@ class _StructureListState extends State<StructureList> {
           child: widget.filteredStructure.isEmpty
               ? Center(
                   child: Text(
-                    AppLocalizations.of(context)!.noSectionsInStructurePrompt,
+                    AppLocalizations.of(context)!.emptyStructure,
                     style: TextStyle(color: Colors.grey.shade600),
+                    textAlign: TextAlign.center,
                   ),
                 )
               : SingleChildScrollView(

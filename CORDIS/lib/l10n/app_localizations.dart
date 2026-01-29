@@ -383,13 +383,19 @@ abstract class AppLocalizations {
   /// Prompt displayed when there are no sections in the song structure
   ///
   /// In pt, this message translates to:
-  /// **'Nenhuma seção na estrutura. Use o botão acima para adicionar seções.'**
-  String get noSectionsInStructurePrompt;
+  /// **'Nenhuma seção na estrutura.\nUse o botão acima para adicionar seções.'**
+  String get emptyStructure;
+
+  /// Prompt displayed when there are no lyrics in the section
+  ///
+  /// In pt, this message translates to:
+  /// **'Por favor, adicione Letra e acordes para começar.'**
+  String get noLyrics;
 
   /// Lyrics field label
   ///
   /// In pt, this message translates to:
-  /// **'Letras'**
+  /// **'Letra'**
   String get lyrics;
 
   /// Section code field label
@@ -722,11 +728,11 @@ abstract class AppLocalizations {
   /// **'Duplicar {object}'**
   String duplicatePlaceholder(Object object);
 
-  /// Select object button label
+  /// Set object button label
   ///
   /// In pt, this message translates to:
-  /// **'Selecionar {object}'**
-  String selectPlaceholder(Object object);
+  /// **'Definir {object}'**
+  String setPlaceholder(Object object);
 
   /// Tooltip for duplicate action
   ///
@@ -1309,6 +1315,36 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Passo {current} de {total}'**
   String stepXofY(Object current, Object total);
+
+  /// Title for common chords of a given key
+  ///
+  /// In pt, this message translates to:
+  /// **'Acordes Comuns em - {key}'**
+  String commonChordsOfKey(Object key);
+
+  /// Instruction to hold a chord to see variations
+  ///
+  /// In pt, this message translates to:
+  /// **'Toque e segure um acorde para mostrar variações.'**
+  String get chordExpansionInstruction;
+
+  /// Custom chord label
+  ///
+  /// In pt, this message translates to:
+  /// **'Acorde Personalizado'**
+  String get customChord;
+
+  /// Instruction to enter custom chord name
+  ///
+  /// In pt, this message translates to:
+  /// **'Digite para criar um acorde personalizado:'**
+  String get customChordInstruction;
+
+  /// Instruction to drag chords to letters
+  ///
+  /// In pt, this message translates to:
+  /// **'Arraste os acordes para as letras para adicioná-los à música.'**
+  String get draggableChordInstruction;
 
   /// Generic error label
   ///

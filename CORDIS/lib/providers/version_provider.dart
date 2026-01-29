@@ -774,6 +774,16 @@ class VersionProvider extends ChangeNotifier {
     return _localVersions[versionId];
   }
 
+  String? getMusicKeyOfVersion(dynamic versionId) {
+    if (versionId is int) {
+      return _localVersions[versionId]!.transposedKey;
+    } else if (versionId is String) {
+      return _cloudVersions[versionId]!.transposedKey ??
+          _cloudVersions[versionId]!.originalKey;
+    }
+    return null;
+  }
+
   VersionDto? getCloudVersionByFirebaseId(String firebaseId) {
     return _cloudVersions[firebaseId];
   }

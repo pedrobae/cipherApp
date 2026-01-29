@@ -17,9 +17,9 @@ enum InfoField {
   versionName,
   key,
   bpm,
+  duration,
   language,
   tags,
-  duration,
 }
 
 class MetadataTab extends StatefulWidget {
@@ -535,7 +535,7 @@ class _MetadataTabState extends State<MetadataTab> {
                     );
                   },
                 ),
-                Icon(Icons.access_time, color: colorScheme.onSurface),
+                Icon(Icons.access_time, color: colorScheme.shadow),
               ],
             ),
           ),

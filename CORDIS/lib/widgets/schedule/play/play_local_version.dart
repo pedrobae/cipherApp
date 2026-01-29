@@ -41,7 +41,7 @@ class _PlayLocalVersionState extends State<PlayLocalVersion> {
     final versionProvider = context.read<VersionProvider>();
     final sectionProvider = context.read<SectionProvider>();
 
-    await versionProvider.loadLocalVersionById(widget.versionId);
+    await versionProvider.loadLocalVersion(widget.versionId);
     await sectionProvider.loadLocalSections(widget.versionId);
 
     // SET UP SCROLL LISTENER

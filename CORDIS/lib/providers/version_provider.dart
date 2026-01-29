@@ -181,34 +181,6 @@ class VersionProvider extends ChangeNotifier {
     return versionId;
   }
 
-  /// ===== READ - Load version from versionId =====
-  Future<void> loadVersion(int versionId) async {
-    if (_isLoading) return;
-
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      _localVersions[versionId] = (await _cipherRepository.getVersionWithId(
-        versionId,
-      ))!;
-      if (kDebugMode) {
-        print(
-          '===== Loaded the version: ${_localVersions[versionId]?.versionName} into cache =====',
-        );
-      }
-    } catch (e) {
-      _error = e.toString();
-      if (kDebugMode) {
-        print('Error adding cipher version: $e');
-      }
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
   /// Load public versions from Firestore
   Future<void> loadCloudVersions({bool forceReload = false}) async {
     final now = DateTime.now();
@@ -293,9 +265,6 @@ class VersionProvider extends ChangeNotifier {
       if (kDebugMode) {
         print('Loaded ${_localVersions.length} versions of cipher $cipherId');
       }
-      for (var version in versionList) {
-        _localVersions[version.id!] = version;
-      }
     } catch (e) {
       _error = e.toString();
       if (kDebugMode) {
@@ -342,7 +311,7 @@ class VersionProvider extends ChangeNotifier {
   }
 
   /// Load a version into cache by its local ID
-  Future<void> loadLocalVersionById(int versionId) async {
+  Future<void> loadLocalVersion(int versionId) async {
     if (_isLoading) return;
 
     _isLoading = true;
@@ -459,7 +428,7 @@ class VersionProvider extends ChangeNotifier {
 
     try {
       await _cipherRepository.updateVersion(version);
-      loadLocalVersionById(version.id!);
+      loadLocalVersion(version.id!);
 
       if (kDebugMode) {
         print('Updated version with id: ${version.id}');

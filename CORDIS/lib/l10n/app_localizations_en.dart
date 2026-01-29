@@ -114,7 +114,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bpm => 'Tempo (BPM)';
 
   @override
-  String get duration => 'Duration';
+  String get duration => 'Estimated Time (MM:SS)';
 
   @override
   String get language => 'Language';
@@ -665,7 +665,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bpmHint => 'Enter tempo in BPM';
 
   @override
-  String get durationHint => 'Estimated Time in MM:SS';
+  String get durationHint => 'Enter the duration';
 
   @override
   String get languageHint => 'Enter song language';

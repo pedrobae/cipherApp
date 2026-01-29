@@ -66,7 +66,7 @@ class _PlaylistVersionCardState extends State<PlaylistVersionCard> {
                 ),
           );
         } else {
-          await versionProvider.loadLocalVersionById(widget.versionId);
+          await versionProvider.loadLocalVersion(widget.versionId);
           await sectionProvider.loadLocalSections(widget.versionId);
         }
       }

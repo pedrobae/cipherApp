@@ -86,7 +86,7 @@ class _EditCipherScreenState extends State<EditCipherScreen>
         // Load the cipher
         await cipherProvider.loadCipher(widget.cipherID!);
         // Load the version
-        await versionProvider.loadVersion(widget.versionID!);
+        await versionProvider.loadLocalVersion(widget.versionID!);
         // Load sections
         await sectionProvider.loadLocalSections(widget.versionID!);
         break;

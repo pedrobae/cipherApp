@@ -311,7 +311,7 @@ abstract class AppLocalizations {
   /// Song duration field label
   ///
   /// In pt, this message translates to:
-  /// **'Duração'**
+  /// **'Duração Estimada (MM:SS)'**
   String get duration;
 
   /// Song language field label
@@ -1295,7 +1295,7 @@ abstract class AppLocalizations {
   /// Hint text for duration input
   ///
   /// In pt, this message translates to:
-  /// **'Tempo Estimado em MM:SS'**
+  /// **'Insira a duração em MM:SS'**
   String get durationHint;
 
   /// Hint text for song language input

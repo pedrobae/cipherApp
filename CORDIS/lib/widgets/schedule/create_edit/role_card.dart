@@ -18,83 +18,98 @@ class RoleCard extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Consumer<ScheduleProvider>(
-      builder: (context, scheduleProvider, child) => Container(
-        padding: const EdgeInsets.all(8.0),
-        decoration: BoxDecoration(
-          border: Border.all(color: colorScheme.surfaceContainerLowest),
-          borderRadius: BorderRadius.circular(0),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          spacing: 8.0,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    role.name,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                      color: colorScheme.onSurface,
+      builder: (context, scheduleProvider, child) => SizedBox(
+        width: double.infinity,
+        child: Container(
+          padding: const EdgeInsets.all(8.0),
+          decoration: BoxDecoration(
+            border: Border.all(color: colorScheme.surfaceContainerLowest),
+            borderRadius: BorderRadius.circular(0),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.max,
+            spacing: 8.0,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      role.name,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: colorScheme.onSurface,
+                      ),
                     ),
-                  ),
-                  Text(
-                    role.memberIds.isEmpty
-                        ? AppLocalizations.of(context)!.noMembers
-                        : AppLocalizations.of(
-                            context,
-                          )!.xMembers(role.memberIds.length),
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: colorScheme.onSurfaceVariant,
+                    Text(
+                      role.memberIds.isEmpty
+                          ? AppLocalizations.of(context)!.noMembers
+                          : AppLocalizations.of(
+                              context,
+                            )!.xMembers(role.memberIds.length),
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                      softWrap: false,
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            // ACTIONS
-            FilledTextButton(
-              text: AppLocalizations.of(context)!.assign,
-              isDense: true,
-              isDark: true,
-              onPressed: () => _openAssignMemberSheet(context, role),
-            ),
-
-            FilledTextButton(
-              text: AppLocalizations.of(context)!.editPlaceholder(''),
-              isDense: true,
-              onPressed: () => _openEditRoleSheet(context, role),
-            ),
-
-            FilledTextButton(
-              text: AppLocalizations.of(context)!.delete,
-              isDense: true,
-              onPressed: () {
-                if (scheduleId is String) {
-                  return;
-                } // TODO - CLOUD - handle roleDTOs
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  builder: (context) {
-                    return BottomSheet(
-                      onClosing: () {},
+              // ACTIONS
+              SizedBox(
+                width: 60,
+                child: FilledTextButton(
+                  text: AppLocalizations.of(context)!.assign,
+                  isDense: true,
+                  isDark: true,
+                  onPressed: () => _openAssignMemberSheet(context, role),
+                ),
+              ),
+              SizedBox(
+                width: 60,
+                child: FilledTextButton(
+                  text: AppLocalizations.of(context)!.editPlaceholder(''),
+                  isDense: true,
+                  onPressed: () => _openEditRoleSheet(context, role),
+                ),
+              ),
+              SizedBox(
+                width: 60,
+                child: FilledTextButton(
+                  text: AppLocalizations.of(context)!.delete,
+                  isDense: true,
+                  onPressed: () {
+                    if (scheduleId is String) {
+                      return;
+                    } // TODO - CLOUD - handle roleDTOs
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
                       builder: (context) {
-                        return DeleteConfirmationSheet(
-                          itemType: AppLocalizations.of(context)!.role,
-                          onConfirm: () {
-                            scheduleProvider.deleteRole(scheduleId, role.id);
+                        return BottomSheet(
+                          onClosing: () {},
+                          builder: (context) {
+                            return DeleteConfirmationSheet(
+                              itemType: AppLocalizations.of(context)!.role,
+                              onConfirm: () {
+                                scheduleProvider.deleteRole(
+                                  scheduleId,
+                                  role.id,
+                                );
+                              },
+                            );
                           },
                         );
                       },
                     );
                   },
-                );
-              },
-            ),
-          ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

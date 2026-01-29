@@ -143,20 +143,17 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
                     // STEP CONTENT
                     switch (widget.creationStep) {
                       1 => Expanded(child: PlaylistLibraryScreen()),
-                      2 =>
-                        widget.creationStep == 2
-                            ? Expanded(
-                                child: ScheduleForm(
-                                  scheduleId: -1,
-                                  nameController: _nameController,
-                                  dateController: _dateController,
-                                  startTimeController: _startTimeController,
-                                  locationController: _locationController,
-                                  roomVenueController: _roomVenueController,
-                                  annotationsController: _annotationsController,
-                                ),
-                              )
-                            : SizedBox.shrink(),
+                      2 => Expanded(
+                        child: ScheduleForm(
+                          scheduleId: -1,
+                          nameController: _nameController,
+                          dateController: _dateController,
+                          startTimeController: _startTimeController,
+                          locationController: _locationController,
+                          roomVenueController: _roomVenueController,
+                          annotationsController: _annotationsController,
+                        ),
+                      ),
                       3 => Expanded(child: RolesAndUsersForm(scheduleId: -1)),
                       _ => SizedBox.shrink(),
                     },

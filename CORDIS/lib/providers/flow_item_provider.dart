@@ -81,6 +81,7 @@ class FlowItemProvider extends ChangeNotifier {
   }
 
   Future<int?> getLocalIdByFirebaseId(String firebaseId) async {
+    if (firebaseId.isEmpty) return null;
     // Check cache first
     for (final entry in _flowItems.entries) {
       if (entry.value.firebaseId == firebaseId) {
@@ -151,7 +152,7 @@ class FlowItemProvider extends ChangeNotifier {
 
       if (!exists) {
         // Create new
-        await _flowItemRepo.createFlowItem(flowItem);
+        localId = await _flowItemRepo.createFlowItem(flowItem);
       } else {
         // Update existing
         await _flowItemRepo.updateFlowItem(
@@ -163,7 +164,7 @@ class FlowItemProvider extends ChangeNotifier {
         );
       }
 
-      await _loadFlowItem(flowItem.id!, forceReload: true);
+      await _loadFlowItem(localId, forceReload: true);
     } catch (e) {
       _error = e.toString();
       rethrow;

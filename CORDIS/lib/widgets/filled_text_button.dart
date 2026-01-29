@@ -119,44 +119,16 @@ class FilledTextButton extends StatelessWidget {
               fontWeight: FontWeight.w500,
             ),
           ],
-          Expanded(
-            child: Column(
-              crossAxisAlignment: trailingIcon == null
-                  ? CrossAxisAlignment.center
-                  : CrossAxisAlignment.start,
-              children: [
-                Text(
-                  text,
-                  style: TextStyle(
-                    fontSize: isDense ? 14 : 18,
-                    fontWeight: isDiscrete ? FontWeight.w400 : FontWeight.w500,
-                    color: isDisabled
-                        ? Colors.black
-                        : (isDangerous
-                              ? colorScheme.error
-                              : (isDark
-                                    ? colorScheme.surface
-                                    : colorScheme.onSurface)),
-                  ),
-                ),
-                if (tooltip != null)
-                  RichText(
-                    softWrap: true,
-                    text: TextSpan(
-                      text: tooltip!,
-                      style: TextStyle(
-                        fontSize: isDense ? 10 : 12,
-                        fontWeight: FontWeight.w400,
-                        color: isDisabled
-                            ? Colors.black54
-                            : (isDark
-                                  ? colorScheme.surfaceContainerHighest
-                                  : colorScheme.shadow),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
+          _buildTextContent(
+            colorScheme: colorScheme,
+            isDense: isDense,
+            isDangerous: isDangerous,
+            isDark: isDark,
+            isDisabled: isDisabled,
+            isDiscrete: isDiscrete,
+            tooltip: tooltip,
+            text: text,
+            trailingIcon: trailingIcon,
           ),
           if (trailingIcon != null)
             Icon(
@@ -176,5 +148,55 @@ class FilledTextButton extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildTextContent({
+    required ColorScheme colorScheme,
+    required bool isDense,
+    required bool isDangerous,
+    required bool isDark,
+    required bool isDisabled,
+    required bool isDiscrete,
+    required String? tooltip,
+    required String text,
+    required IconData? trailingIcon,
+  }) {
+    final textWidget = Column(
+      crossAxisAlignment: trailingIcon == null
+          ? CrossAxisAlignment.center
+          : CrossAxisAlignment.start,
+      children: [
+        Text(
+          text,
+          style: TextStyle(
+            fontSize: isDense ? 14 : 18,
+            fontWeight: isDiscrete ? FontWeight.w400 : FontWeight.w500,
+            color: isDisabled
+                ? Colors.black
+                : (isDangerous
+                      ? colorScheme.error
+                      : (isDark ? colorScheme.surface : colorScheme.onSurface)),
+          ),
+        ),
+        if (tooltip != null)
+          RichText(
+            softWrap: true,
+            text: TextSpan(
+              text: tooltip,
+              style: TextStyle(
+                fontSize: isDense ? 10 : 12,
+                fontWeight: FontWeight.w400,
+                color: isDisabled
+                    ? Colors.black54
+                    : (isDark
+                          ? colorScheme.surfaceContainerHighest
+                          : colorScheme.shadow),
+              ),
+            ),
+          ),
+      ],
+    );
+
+    return trailingIcon != null ? Expanded(child: textWidget) : textWidget;
   }
 }

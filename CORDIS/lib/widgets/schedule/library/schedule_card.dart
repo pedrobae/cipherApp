@@ -44,7 +44,9 @@ class ScheduleCard extends StatelessWidget {
             child,
           ) {
             // LOADING STATE
-            if (scheduleProvider.isLoading || userProvider.isLoading) {
+            if (scheduleProvider.isLoading ||
+                userProvider.isLoading ||
+                scheduleId == -1) {
               return Center(
                 child: CircularProgressIndicator(color: colorScheme.primary),
               );

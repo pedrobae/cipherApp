@@ -185,6 +185,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context.read<SectionProvider>().clearCache();
       context.read<UserProvider>().clearCache();
       context.read<FlowItemProvider>().clearCache();
+      context.read<ScheduleProvider>().clearCache();
       context.read<SelectionProvider>().disableSelectionMode();
 
       // Force reload all providers from database

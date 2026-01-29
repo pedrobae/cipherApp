@@ -506,6 +506,14 @@ class ScheduleProvider extends ChangeNotifier {
   }
 
   // ===== HELPER METHODS =====
+  void clearCache() {
+    _schedules = {};
+    _filteredSchedules = {};
+    _searchTerm = null;
+    _error = null;
+    notifyListeners();
+  }
+
   Map<dynamic, dynamic> get futureSchedules {
     final futureSchedules = {};
 

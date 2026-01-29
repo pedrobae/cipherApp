@@ -122,7 +122,12 @@ class FlowItemCardActionsSheet extends StatelessWidget {
                                   await flowItemProvider.deleteFlowItem(
                                     flowItemId,
                                   );
-                                  navigationProvider.pop();
+                                  await playlistProvider.loadPlaylist(
+                                    playlistId,
+                                  );
+                                  if (context.mounted) {
+                                    Navigator.of(context).pop();
+                                  }
                                 },
                               );
                             },

@@ -91,25 +91,19 @@ class _CipherScrollViewState extends State<CipherScrollView> {
       child:
           (cipherProvider.filteredLocalCipherCount == 0 &&
               versionProvider.filteredCloudVersionCount == 0)
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.music_note_outlined,
-                    size: 64,
-                    color: colorScheme.primary,
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(height: 64),
+                Text(
+                  AppLocalizations.of(context)!.emptyCipherLibrary,
+                  style: theme.textTheme.bodyLarge!.copyWith(
+                    color: colorScheme.onSurface,
+                    fontWeight: FontWeight.w500,
                   ),
-                  const SizedBox(height: 16),
-                  Text(
-                    AppLocalizations.of(context)!.noCiphersFound,
-                    style: theme.textTheme.bodyLarge!.copyWith(
-                      color: colorScheme.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             )
           : ListView.builder(
               cacheExtent: 500,

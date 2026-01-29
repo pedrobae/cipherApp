@@ -188,6 +188,12 @@ abstract class AppLocalizations {
   /// **'Usuário'**
   String get user;
 
+  /// Guest user label
+  ///
+  /// In pt, this message translates to:
+  /// **'Convidado'**
+  String get guest;
+
   /// Name field label
   ///
   /// In pt, this message translates to:
@@ -287,7 +293,7 @@ abstract class AppLocalizations {
   /// Beats per minute field label
   ///
   /// In pt, this message translates to:
-  /// **'BPM'**
+  /// **'Tempo (BPM)'**
   String get bpm;
 
   /// Song duration field label
@@ -301,6 +307,12 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Idioma'**
   String get language;
+
+  /// Tags field label
+  ///
+  /// In pt, this message translates to:
+  /// **'Tags'**
+  String get tags;
 
   /// Version label
   ///
@@ -473,8 +485,8 @@ abstract class AppLocalizations {
   /// Message displayed when no ciphers are found
   ///
   /// In pt, this message translates to:
-  /// **'Nenhuma cifra encontrada'**
-  String get noCiphersFound;
+  /// **'Nenhuma Música na Biblioteca.\nPor favor, adicione músicas para começar.'**
+  String get emptyCipherLibrary;
 
   /// Playlist label
   ///
@@ -521,8 +533,8 @@ abstract class AppLocalizations {
   /// Message displayed when no playlists are found
   ///
   /// In pt, this message translates to:
-  /// **'Nenhuma playlist encontrada'**
-  String get noPlaylistsFound;
+  /// **'Nenhuma Playlist criada.\nPor favor, crie uma playlist para começar.'**
+  String get emptyPlaylistLibrary;
 
   /// Add song to playlist button label
   ///
@@ -884,6 +896,12 @@ abstract class AppLocalizations {
   /// **'Nenhuma playlist atribuída.'**
   String get noPlaylistAssigned;
 
+  /// Message displayed when no schedules are found
+  ///
+  /// In pt, this message translates to:
+  /// **'Agenda vazia.\nPor favor, crie um evento para começar.'**
+  String get emptyScheduleLibrary;
+
   /// Title for schedule not found screen
   ///
   /// In pt, this message translates to:
@@ -1170,13 +1188,19 @@ abstract class AppLocalizations {
   ///
   /// In pt, this message translates to:
   /// **'Olá {userName}'**
-  String welcome(Object userName);
+  String helloUser(Object userName);
 
   /// Generic welcome message
   ///
   /// In pt, this message translates to:
   /// **'Bem-vindo'**
-  String get anonymousWelcome;
+  String get welcome;
+
+  /// Instructional message to get started with the app
+  ///
+  /// In pt, this message translates to:
+  /// **'Comece criando ou importando sua primeira cifra.'**
+  String get getStartedMessage;
 
   /// By/author preposition
   ///
@@ -1213,6 +1237,12 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'{count} seções'**
   String nSections(Object count);
+
+  /// Hint text for selecting musical key
+  ///
+  /// In pt, this message translates to:
+  /// **'Selecione o Tom...'**
+  String get keyHint;
 
   /// Prefix to be used on text fields with masculine nouns
   ///

@@ -3,17 +3,11 @@ import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/providers/version_provider.dart';
+import 'package:cordis/widgets/ciphers/editor/select_key_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-enum InfoField {
-  title,
-  author,
-  versionName,
-  bpm,
-  musicKey,
-  language,
-} // TODO - duration / tags
+enum InfoField { title, author, versionName, bpm, musicKey, language, tags }
 
 class MetadataTab extends StatefulWidget {
   final int? cipherId;
@@ -79,6 +73,9 @@ class _MetadataTabState extends State<MetadataTab> {
               case InfoField.language:
                 controllers[field]!.text = version.language;
                 break;
+              case InfoField.tags:
+                // THIS CONTROLLER IS NOT USED, ADDING TAGS IS HANDLED BY A BOTTOM SHEET
+                break;
             }
           }
         case VersionType.local:
@@ -109,6 +106,9 @@ class _MetadataTabState extends State<MetadataTab> {
               case InfoField.language:
                 controllers[field]!.text = cipher.language;
                 break;
+              case InfoField.tags:
+                // THIS CONTROLLER IS NOT USED, ADDING TAGS IS HANDLED BY A BOTTOM SHEET
+                break;
             }
           }
         case VersionType.playlist:
@@ -137,6 +137,9 @@ class _MetadataTabState extends State<MetadataTab> {
               case InfoField.language:
                 controllers[field]!.text = cipher.language;
                 break;
+              case InfoField.tags:
+                // THIS CONTROLLER IS NOT USED, ADDING TAGS IS HANDLED BY A BOTTOM SHEET
+                break;
             }
           }
         case VersionType.brandNew:
@@ -164,6 +167,8 @@ class _MetadataTabState extends State<MetadataTab> {
         return AppLocalizations.of(context)!.musicKey;
       case InfoField.language:
         return AppLocalizations.of(context)!.language;
+      case InfoField.tags:
+        return AppLocalizations.of(context)!.tags;
     }
   }
 
@@ -172,6 +177,7 @@ class _MetadataTabState extends State<MetadataTab> {
       case InfoField.title:
       case InfoField.versionName:
       case InfoField.author:
+      case InfoField.tags:
         if (!widget.isEnabled) return false;
         return !selectionProvider.isSelectionMode;
       case InfoField.bpm:
@@ -198,16 +204,123 @@ class _MetadataTabState extends State<MetadataTab> {
           spacing: 16.0,
           children: [
             for (var field in InfoField.values)
-              _buildTextField(
-                context: context,
-                cipherProvider: cipherProvider,
-                versionProvider: versionProvider,
-                field: field,
-                maxLines: 1,
-              ),
+              switch (field) {
+                InfoField.tags =>
+                  SizedBox.shrink(), // TODO - implement tags field
+                InfoField.bpm => _buildIntPicker(
+                  context: context,
+                  cipherProvider: cipherProvider,
+                  versionProvider: versionProvider,
+                  field: field,
+                  min: 20,
+                  max: 300,
+                ),
+                InfoField.musicKey => _buildKeySelector(
+                  context: context,
+                  cipherProvider: cipherProvider,
+                  versionProvider: versionProvider,
+                  field: field,
+                ),
+                _ => _buildTextField(
+                  context: context,
+                  cipherProvider: cipherProvider,
+                  versionProvider: versionProvider,
+                  field: field,
+                  maxLines: 1,
+                ),
+              },
           ],
         );
       },
+    );
+  }
+
+  Widget _buildIntPicker({
+    required BuildContext context,
+    required CipherProvider cipherProvider,
+    required VersionProvider versionProvider,
+    required InfoField field,
+    required int min,
+    required int max,
+  }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 8,
+      children: [
+        Text(
+          _getLabel(field),
+          style: theme.textTheme.bodyLarge?.copyWith(
+            color: colorScheme.onSurface,
+          ),
+        ),
+        // TODO - implement integer picker
+        SizedBox.shrink(),
+      ],
+    );
+  }
+
+  Widget _buildKeySelector({
+    required BuildContext context,
+    required CipherProvider cipherProvider,
+    required VersionProvider versionProvider,
+    required InfoField field,
+  }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 8,
+      children: [
+        Text(
+          _getLabel(field),
+          style: theme.textTheme.bodyLarge?.copyWith(
+            color: colorScheme.onSurface,
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              builder: (context) {
+                return SelectKeySheet(controller: _getController(field));
+              },
+            );
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: colorScheme.surfaceContainerLowest,
+                width: 1.2,
+              ),
+              borderRadius: BorderRadius.circular(0),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ListenableBuilder(
+                  listenable: _getController(field),
+                  builder: (context, child) {
+                    return Text(
+                      _getController(field).text,
+                      style: TextStyle(
+                        color: colorScheme.onSurface,
+                        fontSize: 16,
+                      ),
+                    );
+                  },
+                ),
+                Icon(Icons.arrow_drop_down, color: colorScheme.onSurface),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -266,12 +379,12 @@ class _MetadataTabState extends State<MetadataTab> {
             visualDensity: VisualDensity.compact,
             hintText:
                 '${AppLocalizations.of(context)!.hintPrefixO}${_getLabel(field)}${AppLocalizations.of(context)!.hintSuffix}',
-            hintStyle: TextStyle(color: colorScheme.onSurface),
+            hintStyle: TextStyle(color: colorScheme.onSurface, fontSize: 16),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(0),
               borderSide: BorderSide(
                 color: colorScheme.surfaceContainerLowest,
-                width: 1,
+                width: 1.2,
               ),
             ),
             focusedBorder: OutlineInputBorder(

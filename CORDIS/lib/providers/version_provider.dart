@@ -619,6 +619,10 @@ class VersionProvider extends ChangeNotifier {
         _cloudVersions[versionFirebaseId] = _cloudVersions[versionFirebaseId]!
             .copyWith(language: newValue);
         break;
+      case InfoField.tags:
+        _cloudVersions[versionFirebaseId] = _cloudVersions[versionFirebaseId]!
+            .copyWith(tags: newValue.split(',').map((e) => e.trim()).toList());
+        break;
     }
     notifyListeners();
   }

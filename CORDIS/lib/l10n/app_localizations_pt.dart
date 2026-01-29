@@ -55,6 +55,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get user => 'Usuário';
 
   @override
+  String get guest => 'Convidado';
+
+  @override
   String get name => 'Nome';
 
   @override
@@ -103,13 +106,16 @@ class AppLocalizationsPt extends AppLocalizations {
   String get musicKey => 'Tom';
 
   @override
-  String get bpm => 'BPM';
+  String get bpm => 'Tempo (BPM)';
 
   @override
   String get duration => 'Duração';
 
   @override
   String get language => 'Idioma';
+
+  @override
+  String get tags => 'Tags';
 
   @override
   String get version => 'Versão';
@@ -199,7 +205,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get sort => 'Ordenar';
 
   @override
-  String get noCiphersFound => 'Nenhuma cifra encontrada';
+  String get emptyCipherLibrary =>
+      'Nenhuma Música na Biblioteca.\nPor favor, adicione músicas para começar.';
 
   @override
   String get playlist => 'Playlist';
@@ -224,7 +231,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get searchPlaylist => 'Pesquisar por nome da playlist...';
 
   @override
-  String get noPlaylistsFound => 'Nenhuma playlist encontrada';
+  String get emptyPlaylistLibrary =>
+      'Nenhuma Playlist criada.\nPor favor, crie uma playlist para começar.';
 
   @override
   String get addToPlaylist => 'Adicionar à Playlist';
@@ -438,6 +446,10 @@ class AppLocalizationsPt extends AppLocalizations {
   String get noPlaylistAssigned => 'Nenhuma playlist atribuída.';
 
   @override
+  String get emptyScheduleLibrary =>
+      'Agenda vazia.\nPor favor, crie um evento para começar.';
+
+  @override
   String get scheduleNotFound => 'Agenda Não Encontrada';
 
   @override
@@ -590,12 +602,16 @@ class AppLocalizationsPt extends AppLocalizations {
       'ATENÇÃO: Esta ação não pode ser desfeita.';
 
   @override
-  String welcome(Object userName) {
+  String helloUser(Object userName) {
     return 'Olá $userName';
   }
 
   @override
-  String get anonymousWelcome => 'Bem-vindo';
+  String get welcome => 'Bem-vindo';
+
+  @override
+  String get getStartedMessage =>
+      'Comece criando ou importando sua primeira cifra.';
 
   @override
   String get by => 'por';
@@ -624,6 +640,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String nSections(Object count) {
     return '$count seções';
   }
+
+  @override
+  String get keyHint => 'Selecione o Tom...';
 
   @override
   String get hintPrefixO => 'Insira seu ';

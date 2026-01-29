@@ -37,6 +37,8 @@
 
   "user": "Usuário",
   "@user": {"description": "User related messages"},
+  "guest": "Convidado",
+  "@guest" : {"description": "Guest user label"},
   "name": "Nome",
   "@name": {"description": "Name field label"},
   "enterNameHint": "Insira o nome...",
@@ -74,12 +76,14 @@
   "@author": {"description": "Song author field label"},
   "musicKey": "Tom",
   "@musicKey": {"description": "Musical key field label"},
-  "bpm": "BPM",
+  "bpm": "Tempo (BPM)",
   "@bpm": {"description": "Beats per minute field label"},
   "duration": "Duração",
   "@duration": {"description": "Song duration field label"},
   "language": "Idioma",
   "@language": {"description": "Song language field label"},
+  "tags": "Tags",
+  "@tags": {"description": "Tags field label"},
 
 
   "version": "Versão",
@@ -146,8 +150,8 @@
   "@filter": {"description": "Filter button label"},
   "sort": "Ordenar",
   "@sort": {"description": "Sort button label"},
-  "noCiphersFound": "Nenhuma cifra encontrada",
-  "@noCiphersFound": {"description": "Message displayed when no ciphers are found"},
+  "emptyCipherLibrary": "Nenhuma Música na Biblioteca.\nPor favor, adicione músicas para começar.",
+  "@emptyCipherLibrary": {"description": "Message displayed when no ciphers are found"},
 
 
   "playlist": "Playlist",
@@ -164,8 +168,8 @@
   "@playlistNameHint": {"description": "Hint text for playlist name input field"},
   "searchPlaylist": "Pesquisar por nome da playlist...",
   "@searchPlaylist": {"description": "Hint text for searching playlists"},
-  "noPlaylistsFound": "Nenhuma playlist encontrada",
-  "@noPlaylistsFound": {"description": "Message displayed when no playlists are found"},
+  "emptyPlaylistLibrary": "Nenhuma Playlist criada.\nPor favor, crie uma playlist para começar.",
+  "@emptyPlaylistLibrary": {"description": "Message displayed when no playlists are found"},
   "addToPlaylist": "Adicionar à Playlist",
   "@addToPlaylist": {"description": "Add song to playlist button label"},
   "emptyPlaylist": "Esta Playlist está vazia.",
@@ -295,6 +299,8 @@
   "noPlaylistAssigned": "Nenhuma playlist atribuída.",
   "@noPlaylistAssigned": {"description": "Message displayed when no playlist is assigned to the schedule"},
 
+  "emptyScheduleLibrary": "Agenda vazia.\nPor favor, crie um evento para começar.",
+  "@emptyScheduleLibrary": {"description": "Message displayed when no schedules are found"},
   "scheduleNotFound": "Agenda Não Encontrada",
   "@scheduleNotFound": {"description": "Title for schedule not found screen"},
   "scheduleNotFoundMessage": "A agenda solicitada não pôde ser encontrada.",
@@ -400,10 +406,13 @@
   "@deleteWarningMessage": {"description": "Warning message when deleting"},
 
 
-  "welcome": "Olá {userName}",
-  "@welcome": {"description": "Welcome message with the user's name", "placeholders": {"userName": {}}},
-  "anonymousWelcome": "Bem-vindo",
-  "@anonymousWelcome": {"description": "Generic welcome message"},
+  "helloUser": "Olá {userName}",
+  "@helloUser": {"description": "Welcome message with the user's name", "placeholders": {"userName": {}}},
+  "welcome": "Bem-vindo",
+  "@welcome": {"description": "Generic welcome message"},
+  "getStartedMessage": "Comece criando ou importando sua primeira cifra.",
+  "@getStartedMessage": {"description": "Instructional message to get started with the app"},
+
   "by": "por",
   "@by": {"description": "By/author preposition"},
 
@@ -419,7 +428,8 @@
   "nSections": "{count} seções",
   "@nSections": {"description": "Label for number of sections with placeholder", "placeholders": {"count": {}}},
 
-
+  "keyHint": "Selecione o Tom...",
+  "@keyHint": {"description": "Hint text for selecting musical key"},
   "hintPrefixO": "Insira seu ",
   "@hintPrefixO": {"description": "Prefix to be used on text fields with masculine nouns"},
   "hintPrefixA": "Insira sua ",

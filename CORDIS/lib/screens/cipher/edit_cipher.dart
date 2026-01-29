@@ -79,6 +79,7 @@ class _EditCipherScreenState extends State<EditCipherScreen>
           -1,
           version.sections!,
         ); // -1 for new/imported versions
+        break;
       case VersionType.cloud:
         // Load cloud version
         await versionProvider.ensureCloudVersionIsLoaded(widget.versionId!);
@@ -100,7 +101,8 @@ class _EditCipherScreenState extends State<EditCipherScreen>
         await sectionProvider.loadLocalSections(widget.versionId!);
         break;
       case VersionType.brandNew:
-      // Nothing to load for brand new cipher/version
+        // Nothing to load for brand new cipher/version
+        break;
       case VersionType.playlist:
         final playlistProvider = context.read<PlaylistProvider>();
 

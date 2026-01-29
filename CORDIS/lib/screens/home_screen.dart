@@ -52,8 +52,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   selectionProvider,
                   child,
                 ) {
-                  final theme = Theme.of(context);
-                  final colorScheme = theme.colorScheme;
+                  final textTheme = Theme.of(context).textTheme;
+                  final colorScheme = Theme.of(context).colorScheme;
                   final locale = Localizations.localeOf(context);
 
                   if (authProvider.isLoading) {
@@ -106,51 +106,25 @@ class _HomeScreenState extends State<HomeScreen> {
                               'EEEE, MMM d',
                               locale.languageCode,
                             ).format(DateTime.now()),
-                            style: theme.textTheme.bodyMedium!.copyWith(
+                            style: textTheme.bodyMedium!.copyWith(
                               color: colorScheme.onSurface,
                               fontSize: 14,
                             ),
                           ),
 
-                          // Welcome message
-                          Text(
-                            authProvider.userName != null
-                                ? AppLocalizations.of(
-                                    context,
-                                  )!.welcome(authProvider.userName as Object)
-                                : AppLocalizations.of(
-                                    context,
-                                  )!.anonymousWelcome,
-                            style: Theme.of(context).textTheme.headlineLarge!
-                                .copyWith(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 24,
-                                ),
+                          _buildWelcomeMessage(
+                            context,
+                            authProvider,
+                            textTheme,
                           ),
 
-                          // NEXT SCHEDULE
-                          scheduleProvider.isLoading
-                              ? Center(child: CircularProgressIndicator())
-                              : nextSchedule != null
-                              ? Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  spacing: 16,
-                                  children: [
-                                    // SCHEDULE LABEL
-                                    Text(
-                                      AppLocalizations.of(context)!.nextUp,
-                                      style: theme.textTheme.titleMedium!
-                                          .copyWith(
-                                            color: colorScheme.onSurface,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                    ),
-                                    // SCHEDULE CARD
-                                    ScheduleCard(scheduleId: nextSchedule.id),
-                                  ],
-                                )
-                              : SizedBox.shrink(),
+                          _buildNextSchedule(
+                            context,
+                            scheduleProvider,
+                            nextSchedule,
+                            textTheme,
+                            colorScheme,
+                          ),
                         ],
                       ),
                       Positioned(
@@ -185,6 +159,78 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 },
           ),
+    );
+  }
+
+  Widget _buildWelcomeMessage(
+    BuildContext context,
+    MyAuthProvider authProvider,
+    TextTheme textTheme,
+  ) {
+    return Text(
+      AppLocalizations.of(context)!.helloUser(
+        authProvider.userName ?? AppLocalizations.of(context)!.guest,
+      ),
+      style: textTheme.headlineLarge!.copyWith(
+        fontWeight: FontWeight.w700,
+        fontSize: 24,
+      ),
+    );
+  }
+
+  Widget _buildNextSchedule(
+    BuildContext context,
+    ScheduleProvider scheduleProvider,
+    dynamic nextSchedule,
+    TextTheme textTheme,
+    ColorScheme colorScheme,
+  ) {
+    if (scheduleProvider.isLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
+
+    if (nextSchedule == null) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        spacing: 16,
+        children: [
+          SizedBox(height: 32),
+          Text(
+            AppLocalizations.of(context)!.welcome,
+            style: textTheme.titleMedium!.copyWith(
+              color: colorScheme.onSurface,
+              fontSize: 24,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          Text(
+            AppLocalizations.of(context)!.getStartedMessage,
+            style: textTheme.bodyMedium!.copyWith(
+              color: colorScheme.onSurface,
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ],
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 16,
+      children: [
+        // SCHEDULE LABEL
+        Text(
+          AppLocalizations.of(context)!.nextUp,
+          style: textTheme.titleMedium!.copyWith(
+            color: colorScheme.onSurface,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        // SCHEDULE CARD
+        ScheduleCard(scheduleId: nextSchedule.id),
+      ],
     );
   }
 

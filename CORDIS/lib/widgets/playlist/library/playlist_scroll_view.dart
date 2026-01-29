@@ -50,25 +50,19 @@ class _PlaylistScrollViewState extends State<PlaylistScrollView> {
                 playlistProvider.loadPlaylists();
               },
               child: playlistProvider.filteredPlaylists.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.music_note_outlined,
-                            size: 64,
-                            color: colorScheme.primary,
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        SizedBox(height: 64),
+                        Text(
+                          AppLocalizations.of(context)!.emptyPlaylistLibrary,
+                          style: theme.textTheme.bodyLarge!.copyWith(
+                            color: colorScheme.onSurface,
+                            fontWeight: FontWeight.w500,
                           ),
-                          const SizedBox(height: 16),
-                          Text(
-                            AppLocalizations.of(context)!.noPlaylistsFound,
-                            style: theme.textTheme.bodyLarge!.copyWith(
-                              color: colorScheme.primary,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
                     )
                   : ListView.builder(
                       physics: const AlwaysScrollableScrollPhysics(),

@@ -54,6 +54,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get user => 'User';
 
   @override
+  String get guest => 'Guest';
+
+  @override
   String get name => 'Name';
 
   @override
@@ -102,13 +105,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get musicKey => 'Key';
 
   @override
-  String get bpm => 'BPM';
+  String get bpm => 'Tempo (BPM)';
 
   @override
   String get duration => 'Duration';
 
   @override
   String get language => 'Language';
+
+  @override
+  String get tags => 'Tags';
 
   @override
   String get version => 'Version';
@@ -198,7 +204,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sort => 'Sort';
 
   @override
-  String get noCiphersFound => 'No Song Map found';
+  String get emptyCipherLibrary =>
+      'No Songs in the Library.\nPlease add songs to get started.';
 
   @override
   String get playlist => 'Playlist';
@@ -223,7 +230,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchPlaylist => 'Search playlists...';
 
   @override
-  String get noPlaylistsFound => 'No playlists found';
+  String get emptyPlaylistLibrary =>
+      'No Playlists found.\nPlease create a playlist to get started.';
 
   @override
   String get addToPlaylist => 'Add to Playlist';
@@ -433,6 +441,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noPlaylistAssigned => 'No playlist assigned.';
 
   @override
+  String get emptyScheduleLibrary =>
+      'Schedule is empty.\nPlease create a service to get started.';
+
+  @override
   String get scheduleNotFound => 'Schedule Not Found';
 
   @override
@@ -584,12 +596,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteWarningMessage => 'This action cannot be undone.';
 
   @override
-  String welcome(Object userName) {
+  String helloUser(Object userName) {
     return 'Hello $userName';
   }
 
   @override
-  String get anonymousWelcome => 'Welcome';
+  String get welcome => 'Welcome';
+
+  @override
+  String get getStartedMessage =>
+      'Get started by creating or importing your first song map.';
 
   @override
   String get by => 'by';
@@ -618,6 +634,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String nSections(Object count) {
     return '$count sections';
   }
+
+  @override
+  String get keyHint => 'Select key...';
 
   @override
   String get hintPrefixO => 'Enter your ';

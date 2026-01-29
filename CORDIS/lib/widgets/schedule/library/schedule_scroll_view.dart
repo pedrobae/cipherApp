@@ -43,6 +43,7 @@ class _ScheduleScrollViewState extends State<ScheduleScrollView> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Consumer<ScheduleProvider>(
       builder: (context, scheduleProvider, child) {
@@ -55,65 +56,97 @@ class _ScheduleScrollViewState extends State<ScheduleScrollView> {
             .toList();
         final pastScheduleIds = scheduleProvider.pastSchedules.keys.toList();
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // SCHEDULES HEADER
-            passedFutureSchedules
-                ? (pastScheduleIds.isNotEmpty
-                      ? Text(
-                          AppLocalizations.of(context)!.pastSchedules,
-                          style: textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        )
-                      : SizedBox.shrink())
-                : (futureScheduleIds.isNotEmpty
-                      ? Text(
-                          AppLocalizations.of(context)!.futureSchedules,
-                          style: textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        )
-                      : SizedBox.shrink()),
-
-            // SCHEDULES LIST
-            Expanded(
-              child: RefreshIndicator(
-                onRefresh: () async {
-                  await scheduleProvider.loadLocalSchedules();
-                  await scheduleProvider.loadCloudSchedules();
-                },
-                child: SingleChildScrollView(
-                  controller: _scrollController,
-                  physics: AlwaysScrollableScrollPhysics(),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 8.0),
-                      ...futureScheduleIds.map((scheduleId) {
-                        return ScheduleCard(scheduleId: scheduleId);
-                      }),
-                      SizedBox(height: 16.0),
-                      Text(
-                        key: _pastHeaderKey,
-                        AppLocalizations.of(context)!.pastSchedules,
-                        style: textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      SizedBox(height: 8.0),
-                      ...pastScheduleIds.map((scheduleId) {
-                        return ScheduleCard(scheduleId: scheduleId);
-                      }),
-                    ],
-                  ),
+        // Handle empty state
+        if (futureScheduleIds.isEmpty && pastScheduleIds.isEmpty) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(height: 64),
+              Text(
+                AppLocalizations.of(context)!.emptyScheduleLibrary,
+                style: textTheme.bodyLarge!.copyWith(
+                  color: colorScheme.onSurface,
+                  fontWeight: FontWeight.w500,
                 ),
+                textAlign: TextAlign.center,
               ),
-            ),
-          ],
+            ],
+          );
+        }
+
+        return _buildScheduleList(
+          pastScheduleIds,
+          futureScheduleIds,
+          scheduleProvider,
+          textTheme,
         );
       },
+    );
+  }
+
+  Widget _buildScheduleList(
+    List<dynamic> pastScheduleIds,
+    List<dynamic> futureScheduleIds,
+    ScheduleProvider scheduleProvider,
+    TextTheme textTheme,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // SCHEDULES HEADER
+        passedFutureSchedules
+            ? (pastScheduleIds.isNotEmpty
+                  ? Text(
+                      AppLocalizations.of(context)!.pastSchedules,
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    )
+                  : SizedBox.shrink())
+            : (futureScheduleIds.isNotEmpty
+                  ? Text(
+                      AppLocalizations.of(context)!.futureSchedules,
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    )
+                  : SizedBox.shrink()),
+
+        // SCHEDULES LIST
+        Expanded(
+          child: RefreshIndicator(
+            onRefresh: () async {
+              await scheduleProvider.loadLocalSchedules();
+              await scheduleProvider.loadCloudSchedules();
+            },
+            child: SingleChildScrollView(
+              controller: _scrollController,
+              physics: AlwaysScrollableScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 8.0),
+                  ...futureScheduleIds.map((scheduleId) {
+                    return ScheduleCard(scheduleId: scheduleId);
+                  }),
+                  SizedBox(height: 16.0),
+                  Text(
+                    key: _pastHeaderKey,
+                    AppLocalizations.of(context)!.pastSchedules,
+                    style: textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SizedBox(height: 8.0),
+                  ...pastScheduleIds.map((scheduleId) {
+                    return ScheduleCard(scheduleId: scheduleId);
+                  }),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -306,6 +306,9 @@ class CipherProvider extends ChangeNotifier {
           language: change,
         );
         break;
+      case InfoField.tags:
+        // Tags are handled separately
+        break;
     }
     notifyListeners();
   }
@@ -318,6 +321,7 @@ class CipherProvider extends ChangeNotifier {
         .where((tag) => tag.isNotEmpty)
         .toList();
     _localCiphers[cipherId] = _localCiphers[cipherId]!.copyWith(tags: tagList);
+    notifyListeners();
   }
 
   // ===== DELETE =====

@@ -64,6 +64,8 @@
 
   "user": "User",
   "@user": {"description": "User related messages"},
+  "guest": "Guest",
+  "@guest" : {"description": "Guest user label"},
   "name": "Name",
   "@name": {"description": "Name field label"},
   "enterNameHint": "Enter name...",
@@ -102,12 +104,14 @@
   "@author": {"description": "Song author field label"},
   "musicKey": "Key",
   "@musicKey": {"description": "Musical key field label"},
-  "bpm": "BPM",
+  "bpm": "Tempo (BPM)",
   "@bpm": {"description": "Beats per minute field label"},
   "duration": "Duration",
   "@duration": {"description": "Song duration field label"},
   "language": "Language",
   "@language": {"description": "Song language field label"},
+  "tags": "Tags",
+  "@tags": {"description": "Song tags field label"},
   
 
 
@@ -178,8 +182,8 @@
   "@filter": {"description": "Filter button label"},
   "sort": "Sort",
   "@sort": {"description": "Sort button label"},
-  "noCiphersFound": "No Song Map found",
-  "@noCiphersFound": {"description": "Message displayed when no ciphers are found"},
+  "emptyCipherLibrary": "No Songs in the Library.\nPlease add songs to get started.",
+  "@emptyCipherLibrary": {"description": "Message displayed when no ciphers are found"},
 
 
   "playlist": "Playlist",
@@ -196,8 +200,8 @@
   "@playlistNameHint": {"description": "Hint text for playlist name input field"},
   "searchPlaylist": "Search playlists...",
   "@searchPlaylist": {"description": "Hint text for searching playlists"},
-  "noPlaylistsFound": "No playlists found",
-  "@noPlaylistsFound": {"description": "Message displayed when no playlists are found"},
+  "emptyPlaylistLibrary": "No Playlists found.\nPlease create a playlist to get started.",
+  "@emptyPlaylistLibrary": {"description": "Message displayed when no playlists are found"},
   "addToPlaylist": "Add to Playlist",
   "@addToPlaylist": {"description": "Add song to playlist button label"},
   "emptyPlaylist": "This Playlist is empty.",
@@ -299,6 +303,8 @@
   "noPlaylistAssigned": "No playlist assigned.",
   "@noPlaylistAssigned": {"description": "Message displayed when no playlist is assigned to a schedule"},
 
+  "emptyScheduleLibrary": "Schedule is empty.\nPlease create a service to get started.",
+  "@emptyScheduleLibrary": {"description": "Message displayed when no schedules are found"},
   "scheduleNotFound": "Schedule Not Found",
   "@scheduleNotFound": {"description": "Title for schedule not found screen"},
   "scheduleNotFoundMessage": "The requested schedule could not be found.",
@@ -408,10 +414,13 @@
   "@deleteWarningMessage": {"description": "Warning message when deleting"},
 
 
-  "welcome": "Hello {userName}",
-  "@welcome": {"description": "Welcome message with the user's name", "placeholders": {"userName": {}}},
-  "anonymousWelcome": "Welcome",
-  "@anonymousWelcome": {"description": "Generic welcome message"},
+  "helloUser": "Hello {userName}",
+  "@helloUser": {"description": "Welcome message with the user's name", "placeholders": {"userName": {}}},
+  "welcome": "Welcome",
+  "@welcome": {"description": "Generic welcome message"},
+  "getStartedMessage": "Get started by creating or importing your first song map.",
+  "@getStartedMessage": {"description": "Instructional message to get started with the app"},
+
   "by": "by",
   "@by": {"description": "By/author preposition"},
 
@@ -427,7 +436,8 @@
   "nSections": "{count} sections",
   "@nSections": {"description": "Label for number of sections with placeholder", "placeholders": {"count": {}}},
 
-
+  "keyHint": "Select key...",
+  "@keyHint": {"description": "Hint text for selecting musical key"},
   "hintPrefixO": "Enter your ",
   "@hintPrefixO": {"description": "Prefix to be used on text fields with masculine nouns"},
   "hintPrefixA": "Enter your ",

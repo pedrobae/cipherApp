@@ -254,6 +254,7 @@ class _ImportPdfScreenState extends State<ImportPdfScreen> {
                         // Navigate to parsing screen
                         navigationProvider.push(
                           EditCipherScreen(
+                            cipherID: -1,
                             versionType: VersionType.import,
                             versionID: -1,
                           ),

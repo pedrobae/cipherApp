@@ -60,6 +60,7 @@ class CreateCipherSheet extends StatelessWidget {
                   context.read<NavigationProvider>().push(
                     EditCipherScreen(
                       versionID: -1,
+                      cipherID: -1,
                       versionType: VersionType.brandNew,
                     ),
                     showAppBar: false,

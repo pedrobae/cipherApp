@@ -503,8 +503,8 @@ class ScheduleProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<dynamic> get futureSchedules {
-    final futureSchedules = <List>[];
+  List<dynamic> get futureScheduleIDs {
+    final futureSchedules = <dynamic>[];
 
     for (var scheduleID in filteredSchedules) {
       final schedule = _schedules[scheduleID];
@@ -513,15 +513,14 @@ class ScheduleProvider extends ChangeNotifier {
               (schedule.time.hour > TimeOfDay.now().hour ||
                   (schedule.time.hour == TimeOfDay.now().hour &&
                       schedule.time.minute > TimeOfDay.now().minute)))) {
-        futureSchedules.add(schedule);
+        futureSchedules.add(scheduleID);
       }
     }
     return futureSchedules;
   }
 
-  List<dynamic> get pastSchedules {
-    final pastSchedules = <List>[];
-
+  List<dynamic> get pastScheduleIDs {
+    final pastSchedules = <dynamic>[];
     for (var scheduleID in filteredSchedules) {
       final schedule = _schedules[scheduleID];
 
@@ -530,7 +529,7 @@ class ScheduleProvider extends ChangeNotifier {
               (schedule.time.hour < TimeOfDay.now().hour ||
                   (schedule.time.hour == TimeOfDay.now().hour &&
                       schedule.time.minute < TimeOfDay.now().minute)))) {
-        pastSchedules.add(schedule);
+        pastSchedules.add(scheduleID);
       }
     }
     return pastSchedules;

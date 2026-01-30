@@ -1,6 +1,7 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:cordis/providers/selection_provider.dart';
+import 'package:cordis/providers/version/cloud_version_provider.dart';
 import 'package:cordis/widgets/ciphers/editor/chord_palette.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:flutter/material.dart';
@@ -33,40 +34,46 @@ class _SectionsTabState extends State<SectionsTab> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    return Consumer3<SectionProvider, LocalVersionProvider, SelectionProvider>(
+    return Consumer4<
+      SectionProvider,
+      LocalVersionProvider,
+      CloudVersionProvider,
+      SelectionProvider
+    >(
       builder:
           (
             context,
             sectionProvider,
-            versionProvider,
+            localVersionProvider,
+            cloudVersionProvider,
             selectionProvider,
             child,
           ) {
             List<String> uniqueSections;
+
             switch (widget.versionType) {
               case VersionType.local:
+              case VersionType.import:
+              case VersionType.playlist:
               case VersionType.brandNew:
-                uniqueSections = versionProvider
-                    .getSongStructure(widget.versionID)
+                uniqueSections = localVersionProvider
+                    .getVersion(widget.versionID ?? -1)!
+                    .songStructure
                     .toSet()
                     .toList();
                 break;
               case VersionType.cloud:
-                uniqueSections = versionProvider
-                    .getSongStructure(widget.versionID)
-                    .toSet()
-                    .toList();
-                break;
-              case VersionType.import:
-              case VersionType.playlist:
-                uniqueSections = versionProvider
-                    .getSongStructure(-1)
+                uniqueSections = cloudVersionProvider
+                    .getVersion(widget.versionID ?? -1)!
+                    .songStructure
                     .toSet()
                     .toList();
                 break;
             }
 
-            if (sectionProvider.isLoading || versionProvider.isLoading) {
+            if (sectionProvider.isLoading ||
+                localVersionProvider.isLoading ||
+                cloudVersionProvider.isLoading) {
               return Center(
                 child: CircularProgressIndicator(color: colorScheme.primary),
               );
@@ -113,7 +120,7 @@ class _SectionsTabState extends State<SectionsTab> {
                                     _showNewSectionSheet(
                                       context,
                                       sectionProvider,
-                                      versionProvider,
+                                      localVersionProvider,
                                     );
                                   },
                                 ),

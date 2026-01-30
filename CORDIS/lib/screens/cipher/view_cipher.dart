@@ -174,13 +174,15 @@ class _ViewCipherScreenState extends State<ViewCipherScreen>
             dynamic version;
 
             // Set original key for transposer
-            if (!_hasSetOriginalKey) {
-              if (widget.versionType == VersionType.cloud) {
-                version = cloudVersionProvider.getVersion(widget.versionId);
+            if (widget.versionType == VersionType.cloud) {
+              version = cloudVersionProvider.getVersion(widget.versionId);
+              if (!_hasSetOriginalKey) {
                 settings.setOriginalKey(version.originalKey ?? '');
                 _hasSetOriginalKey = true;
-              } else {
-                version = versionProvider.getVersion(widget.versionId);
+              }
+            } else {
+              version = versionProvider.getVersion(widget.versionId);
+              if (!_hasSetOriginalKey) {
                 settings.setOriginalKey(cipher!.musicKey);
                 _hasSetOriginalKey = true;
               }

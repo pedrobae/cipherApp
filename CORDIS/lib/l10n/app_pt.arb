@@ -82,7 +82,7 @@
   "@musicKey": {"description": "Musical key field label"},
   "bpm": "Tempo (BPM)",
   "@bpm": {"description": "Beats per minute field label"},
-  "duration": "Duração Estimada (MM:SS)",
+  "duration": "Duração",
   "@duration": {"description": "Song duration field label"},
   "language": "Idioma",
   "@language": {"description": "Song language field label"},

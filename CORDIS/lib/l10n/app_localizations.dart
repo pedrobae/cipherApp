@@ -311,7 +311,7 @@ abstract class AppLocalizations {
   /// Song duration field label
   ///
   /// In pt, this message translates to:
-  /// **'Duração Estimada (MM:SS)'**
+  /// **'Duração'**
   String get duration;
 
   /// Song language field label

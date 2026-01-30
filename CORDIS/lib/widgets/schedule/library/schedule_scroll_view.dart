@@ -52,8 +52,8 @@ class _ScheduleScrollViewState extends State<ScheduleScrollView> {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final futureScheduleIds = scheduleProvider.futureSchedules;
-        final pastScheduleIds = scheduleProvider.pastSchedules;
+        final futureScheduleIds = scheduleProvider.futureScheduleIDs;
+        final pastScheduleIds = scheduleProvider.pastScheduleIDs;
 
         // Handle empty state
         if (futureScheduleIds.isEmpty && pastScheduleIds.isEmpty) {

@@ -252,7 +252,13 @@ class _ViewScheduleScreenState extends State<ViewScheduleScreen> {
                               isDark: true,
                             ),
                           ] else ...[
-                            Text(playlist.name, style: textTheme.titleMedium),
+                            Text(
+                              playlist.name,
+                              style: textTheme.titleMedium?.copyWith(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                             Row(
                               spacing: 16,
                               children: [
@@ -309,7 +315,9 @@ class _ViewScheduleScreenState extends State<ViewScheduleScreen> {
                         )}',
                         [
                           Text(
-                            schedule.name,
+                            AppLocalizations.of(context)!.pluralPlaceholder(
+                              AppLocalizations.of(context)!.role,
+                            ),
                             style: textTheme.titleMedium?.copyWith(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,

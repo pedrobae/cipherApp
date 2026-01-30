@@ -344,7 +344,6 @@ class _EditCipherScreenState extends State<EditCipherScreen>
           sectionProvider.saveSections(versionID: widget.versionID);
           break;
 
-        case VersionType.import:
         case VersionType.brandNew:
           final cipherID = await cipherProvider.createCipher();
           final versionID = await versionProvider.createVersion(cipherID);
@@ -352,8 +351,15 @@ class _EditCipherScreenState extends State<EditCipherScreen>
             throw Exception('Failed to create version for imported cipher');
           }
           await sectionProvider.createSections(versionID);
+        case VersionType.import:
+          final cipherID = await cipherProvider.createCipher();
+          final versionID = await versionProvider.createVersion(cipherID);
+          if (versionID == null) {
+            throw Exception('Failed to create version for imported cipher');
+          }
+          await sectionProvider.createSections(versionID);
+          navigationProvider.pop();
           break;
-
         case VersionType.cloud:
           // TODO_CLOUD - Save cloud version edits/upload, decide
           break;
@@ -364,6 +370,7 @@ class _EditCipherScreenState extends State<EditCipherScreen>
           await sectionProvider.saveSections(versionID: widget.versionID);
           break;
       }
+      navigationProvider.pop();
     }
   }
 }

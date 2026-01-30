@@ -10,8 +10,8 @@ class DateTimeUtils {
         date.day == now.day;
   }
 
-  static DateTime? parseDateTime(String value) {
-    if (value.isNotEmpty) {
+  static DateTime? parseDateTime(String? value) {
+    if (value != null && value.isNotEmpty) {
       try {
         return DateTime.parse(value);
       } catch (e) {

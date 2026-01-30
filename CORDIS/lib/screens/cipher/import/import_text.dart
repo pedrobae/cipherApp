@@ -167,6 +167,7 @@ class _ImportTextScreenState extends State<ImportTextScreen> {
                                     EditCipherScreen(
                                       versionType: VersionType.import,
                                       versionID: -1,
+                                      cipherID: -1,
                                     ),
                                   );
                                 }

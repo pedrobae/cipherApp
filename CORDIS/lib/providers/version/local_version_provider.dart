@@ -29,9 +29,6 @@ class LocalVersionProvider extends ChangeNotifier {
 
   Version? getVersion(int versionID) => _versions[versionID];
 
-  List<String> getSongStructure(int versionID) =>
-      _versions[versionID]?.songStructure ?? [];
-
   /// Checks if a version exists locally by its Firebase ID
   /// Returns the local id if found, otherwise null
   Future<int?> getLocalIdByFirebaseId(String firebaseId) async {
@@ -417,7 +414,7 @@ class LocalVersionProvider extends ChangeNotifier {
     required String oldCode,
     required String newCode,
   }) {
-    final songStructure = getSongStructure(versionId);
+    final songStructure = _versions[versionId]!.songStructure;
 
     // Iterate through the song structure and update the section code
     for (int i = 0; i < _versions[versionId]!.songStructure.length; i++) {
@@ -430,12 +427,6 @@ class LocalVersionProvider extends ChangeNotifier {
   }
 
   /// ===== DELETE =====
-  // Remove a section from cache
-  void removeSectionFromStruct(int versionId, int index) {
-    _versions[versionId]!.songStructure.removeAt(index);
-    notifyListeners();
-  }
-
   void removeSectionFromStructByCode(int versionId, String contentCode) {
     _versions[versionId]!.songStructure.removeWhere(
       (code) => code == contentCode,

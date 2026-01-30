@@ -13,11 +13,9 @@ class ScheduleProvider extends ChangeNotifier {
 
   ScheduleProvider();
 
-  Map<dynamic, dynamic> _schedules =
-      {}; // Map<int/String, Schedule/ScheduleDTO>
-  Map<dynamic, dynamic> _filteredSchedules = {};
+  Map<dynamic, dynamic> _schedules = {};
 
-  String? _searchTerm;
+  String _searchTerm = '';
 
   String? _error;
 
@@ -29,9 +27,21 @@ class ScheduleProvider extends ChangeNotifier {
   // Getters
   Map<dynamic, dynamic> get schedules => _schedules;
 
-  Map<dynamic, dynamic> get filteredSchedules {
-    _filterSchedules();
-    return _filteredSchedules;
+  List<dynamic> get filteredSchedules {
+    if (_searchTerm.isEmpty) {
+      return _schedules.keys.toList();
+    } else {
+      final tempFiltered = <dynamic>[];
+      for (var entry in _schedules.entries) {
+        final schedule = entry.value;
+
+        if (schedule.name.toLowerCase().contains(_searchTerm) ||
+            schedule.location.toLowerCase().contains(_searchTerm)) {
+          tempFiltered.add(entry.key);
+        }
+      }
+      return tempFiltered;
+    }
   }
 
   /// Returns a schedule by its ID, whether local (int) or cloud (String)
@@ -472,7 +482,6 @@ class ScheduleProvider extends ChangeNotifier {
       // }
 
       _schedules.remove(scheduleId);
-      _filterSchedules();
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -482,63 +491,46 @@ class ScheduleProvider extends ChangeNotifier {
   }
 
   // ===== SEARCH & FILTER =====
-  void setSearchTerm(String? term) {
-    _searchTerm = term?.toLowerCase();
-    _filterSchedules();
-  }
-
-  void _filterSchedules() {
-    if (_searchTerm == null || _searchTerm!.isEmpty) {
-      _filteredSchedules = _schedules;
-    } else {
-      Map<dynamic, dynamic> tempFiltered = {};
-      for (var entry in _schedules.entries) {
-        final schedule = entry.value;
-
-        if (schedule.name.toLowerCase().contains(_searchTerm!) ||
-            schedule.location.toLowerCase().contains(_searchTerm!)) {
-          tempFiltered[entry.key] = schedule;
-        }
-      }
-      _filteredSchedules = tempFiltered;
-    }
-    notifyListeners();
+  void setSearchTerm(String term) {
+    _searchTerm = term.toLowerCase();
   }
 
   // ===== HELPER METHODS =====
   void clearCache() {
     _schedules = {};
-    _filteredSchedules = {};
-    _searchTerm = null;
+    _searchTerm = '';
     _error = null;
     notifyListeners();
   }
 
-  Map<dynamic, dynamic> get futureSchedules {
-    final futureSchedules = {};
+  List<dynamic> get futureSchedules {
+    final futureSchedules = <List>[];
 
-    for (var schedule in _filteredSchedules.values) {
+    for (var scheduleID in filteredSchedules) {
+      final schedule = _schedules[scheduleID];
       if (schedule.date.isAfter(DateTime.now()) ||
           (schedule.date.isAtSameMomentAs(DateTime.now()) &&
               (schedule.time.hour > TimeOfDay.now().hour ||
                   (schedule.time.hour == TimeOfDay.now().hour &&
                       schedule.time.minute > TimeOfDay.now().minute)))) {
-        futureSchedules[schedule.id] = schedule;
+        futureSchedules.add(schedule);
       }
     }
     return futureSchedules;
   }
 
-  Map<dynamic, dynamic> get pastSchedules {
-    final pastSchedules = {};
+  List<dynamic> get pastSchedules {
+    final pastSchedules = <List>[];
 
-    for (var schedule in _filteredSchedules.values) {
+    for (var scheduleID in filteredSchedules) {
+      final schedule = _schedules[scheduleID];
+
       if (schedule.date.isBefore(DateTime.now()) ||
           (schedule.date.isAtSameMomentAs(DateTime.now()) &&
               (schedule.time.hour < TimeOfDay.now().hour ||
                   (schedule.time.hour == TimeOfDay.now().hour &&
                       schedule.time.minute < TimeOfDay.now().minute)))) {
-        pastSchedules[schedule.id] = schedule;
+        pastSchedules.add(schedule);
       }
     }
     return pastSchedules;

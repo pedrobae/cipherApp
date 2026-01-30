@@ -52,9 +52,8 @@ class _ScheduleScrollViewState extends State<ScheduleScrollView> {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final futureScheduleIds = scheduleProvider.futureSchedules.keys
-            .toList();
-        final pastScheduleIds = scheduleProvider.pastSchedules.keys.toList();
+        final futureScheduleIds = scheduleProvider.futureSchedules;
+        final pastScheduleIds = scheduleProvider.pastSchedules;
 
         // Handle empty state
         if (futureScheduleIds.isEmpty && pastScheduleIds.isEmpty) {
@@ -85,8 +84,8 @@ class _ScheduleScrollViewState extends State<ScheduleScrollView> {
   }
 
   Widget _buildScheduleList(
-    List<dynamic> pastScheduleIds,
-    List<dynamic> futureScheduleIds,
+    List<dynamic> pastScheduleIDs,
+    List<dynamic> futureScheduleIDs,
     ScheduleProvider scheduleProvider,
     TextTheme textTheme,
   ) {
@@ -95,7 +94,7 @@ class _ScheduleScrollViewState extends State<ScheduleScrollView> {
       children: [
         // SCHEDULES HEADER
         passedFutureSchedules
-            ? (pastScheduleIds.isNotEmpty
+            ? (pastScheduleIDs.isNotEmpty
                   ? Text(
                       AppLocalizations.of(context)!.pastSchedules,
                       style: textTheme.titleMedium?.copyWith(
@@ -103,7 +102,7 @@ class _ScheduleScrollViewState extends State<ScheduleScrollView> {
                       ),
                     )
                   : SizedBox.shrink())
-            : (futureScheduleIds.isNotEmpty
+            : (futureScheduleIDs.isNotEmpty
                   ? Text(
                       AppLocalizations.of(context)!.futureSchedules,
                       style: textTheme.titleMedium?.copyWith(
@@ -126,7 +125,7 @@ class _ScheduleScrollViewState extends State<ScheduleScrollView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: 8.0),
-                  ...futureScheduleIds.map((scheduleId) {
+                  ...futureScheduleIDs.map((scheduleId) {
                     return ScheduleCard(scheduleId: scheduleId);
                   }),
                   SizedBox(height: 16.0),
@@ -138,7 +137,7 @@ class _ScheduleScrollViewState extends State<ScheduleScrollView> {
                     ),
                   ),
                   SizedBox(height: 8.0),
-                  ...pastScheduleIds.map((scheduleId) {
+                  ...pastScheduleIDs.map((scheduleId) {
                     return ScheduleCard(scheduleId: scheduleId);
                   }),
                 ],

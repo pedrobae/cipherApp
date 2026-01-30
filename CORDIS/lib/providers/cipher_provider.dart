@@ -50,10 +50,10 @@ class CipherProvider extends ChangeNotifier {
   }
 
   /// USED WHEN UPSERTING VERSIONS FROM CLOUD (as ciphers are not stored in cloud)
-  int? getCipherIdByTitle(String title) {
+  int? getCipherIdByTitleOrAuthor(String title, String author) {
     return _ciphers.values
         .firstWhere(
-          (cipher) => cipher.title == title,
+          (cipher) => cipher.title == title && cipher.author == author,
           orElse: () => Cipher.empty(),
         )
         .id;

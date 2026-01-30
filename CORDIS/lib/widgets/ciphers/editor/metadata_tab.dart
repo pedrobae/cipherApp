@@ -100,7 +100,9 @@ class _MetadataTabState extends State<MetadataTab> {
         case VersionType.import:
         case VersionType.playlist:
           final cipher = cipherProvider.getCipherById(widget.cipherID ?? -1)!;
-          final version = versionProvider.getVersion((widget.versionID) ?? -1)!;
+          final version = versionProvider.getVersion(
+            (widget.versionID is int) ? widget.versionID : -1,
+          )!;
 
           for (var field in InfoField.values) {
             switch (field) {

@@ -2,6 +2,7 @@ import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/providers/version/cloud_version_provider.dart';
+import 'package:cordis/screens/cipher/edit_cipher.dart';
 import 'package:cordis/screens/cipher/view_cipher.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -35,15 +36,27 @@ class CloudCipherCard extends StatelessWidget {
 
             return GestureDetector(
               onTap: () {
-                navigationProvider.push(
-                  ViewCipherScreen(
-                    cipherId: null,
-                    versionId: versionId,
-                    versionType: VersionType.cloud,
-                  ),
-                  showAppBar: false,
-                  showDrawerIcon: false,
-                );
+                if (selectionProvider.isSelectionMode) {
+                  selectionProvider.select(versionId);
+                  navigationProvider.push(
+                    EditCipherScreen(
+                      versionType: VersionType.playlist,
+                      playlistID: selectionProvider.targetId!,
+                      isEnabled: false,
+                      versionID: versionId,
+                    ),
+                  );
+                } else {
+                  navigationProvider.push(
+                    ViewCipherScreen(
+                      cipherId: null,
+                      versionId: versionId,
+                      versionType: VersionType.cloud,
+                    ),
+                    showAppBar: false,
+                    showDrawerIcon: false,
+                  );
+                }
               },
               child: Container(
                 decoration: BoxDecoration(

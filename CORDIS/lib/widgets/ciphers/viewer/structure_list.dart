@@ -26,9 +26,13 @@ class _StructureListState extends State<StructureList> {
   final listScrollController = ScrollController();
 
   void _scrollToSection(BuildContext context, int index) {
+    if (index >= widget.sectionKeys.length) return;
+    
     final sectionKey = widget.sectionKeys[index];
     final renderBox =
-        sectionKey.currentContext?.findRenderObject() as RenderBox;
+        sectionKey.currentContext?.findRenderObject() as RenderBox?;
+
+    if (renderBox == null) return;
 
     final offset = renderBox.localToGlobal(Offset.zero).dy;
 
@@ -42,6 +46,12 @@ class _StructureListState extends State<StructureList> {
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
+  }
+
+  @override
+  void dispose() {
+    listScrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -80,28 +90,30 @@ class _StructureListState extends State<StructureList> {
                           );
                         }
                         final color = section.contentColor;
-                        return GestureDetector(
-                          onTap: () => _scrollToSection(context, index),
-                          child: Container(
-                            height: 44,
-                            width: 44,
-                            decoration: BoxDecoration(
-                              color: color.withValues(alpha: .8),
-                              borderRadius: BorderRadius.circular(0),
-                              border: Border.all(
-                                color: colorScheme.shadow,
-                                width: 1,
-                              ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                sectionCode,
-                                style: TextStyle(
-                                  color: colorScheme.onSurface,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 14,
+                        return RepaintBoundary(
+                          child: GestureDetector(
+                            onTap: () => _scrollToSection(context, index),
+                            child: Container(
+                              height: 44,
+                              width: 44,
+                              decoration: BoxDecoration(
+                                color: color.withValues(alpha: .8),
+                                borderRadius: BorderRadius.circular(0),
+                                border: Border.all(
+                                  color: colorScheme.shadow,
+                                  width: 1,
                                 ),
-                                textAlign: TextAlign.center,
+                              ),
+                              child: Center(
+                                child: Text(
+                                  sectionCode,
+                                  style: TextStyle(
+                                    color: colorScheme.onSurface,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 14,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
                               ),
                             ),
                           ),

@@ -172,7 +172,9 @@ class PlayScheduleScreenState extends State<PlayScheduleScreen>
                                 );
                               } else {
                                 // Local version play
-                                return PlayLocalVersion(versionId: item.id!);
+                                return PlayLocalVersion(
+                                  versionId: item.contentId!,
+                                );
                               }
                             case PlaylistItemType.flowItem:
                               if (isCloud) {

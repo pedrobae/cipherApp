@@ -99,7 +99,7 @@ class CloudScheduleProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // TODO - CLOUD - Fetch schedules from cloud repository
+      // TODO: CLOUD - Fetch schedules from cloud repository
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -186,7 +186,7 @@ class CloudScheduleProvider extends ChangeNotifier {
 
     try {
       // final schedule = _schedules[scheduleId]!;
-      // TODO - CLOUD - track changes
+      // TODO: CLOUD - track changes
       // await _repo.updateSchedule(schedule);
     } catch (e) {
       _error = e.toString();

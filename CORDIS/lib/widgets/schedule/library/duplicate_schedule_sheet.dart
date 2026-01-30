@@ -130,7 +130,7 @@ class _DuplicateScheduleSheetState extends State<DuplicateScheduleSheet> {
                       //       roomVenueController.text,
                       //     );
 
-                      // TODO - CLOUD - implement duplication in cloud schedules
+                      // TODO: CLOUD - implement duplication in cloud schedules
                       // localScheduleProvider.createNewSchedule(
                       //   scheduleDto.toDomain(
                       //     ownerLocalId,

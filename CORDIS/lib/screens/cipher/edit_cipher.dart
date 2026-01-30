@@ -8,7 +8,8 @@ import 'package:cordis/providers/selection_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cordis/providers/cipher_provider.dart';
-import 'package:cordis/providers/version_provider.dart';
+import 'package:cordis/providers/version/version_provider.dart';
+import 'package:cordis/providers/version/cloud_version_provider.dart';
 import 'package:cordis/providers/section_provider.dart';
 import 'package:cordis/widgets/ciphers/editor/metadata_tab.dart';
 import 'package:cordis/widgets/ciphers/editor/sections_tab.dart';
@@ -51,6 +52,7 @@ class _EditCipherScreenState extends State<EditCipherScreen>
   Future<void> _loadData() async {
     final cipherProvider = context.read<CipherProvider>();
     final versionProvider = context.read<VersionProvider>();
+    final cloudVersionProvider = context.read<CloudVersionProvider>();
     final sectionProvider = context.read<SectionProvider>();
 
     switch (widget.versionType) {
@@ -71,11 +73,11 @@ class _EditCipherScreenState extends State<EditCipherScreen>
         ); // -1 for new/imported versions
         break;
       case VersionType.cloud:
-        // Load cloud version
-        await versionProvider.ensureCloudVersionIsLoaded(widget.versionID!);
+        // Ensure cloud version
+        await cloudVersionProvider.ensureVersionIsLoaded(widget.versionID!);
         // Load sections
-        final version = versionProvider
-            .getCloudVersionByFirebaseId(widget.versionID!)!
+        final version = cloudVersionProvider
+            .getVersion(widget.versionID!)!
             .toDomain();
         sectionProvider.setNewSectionsInCache(
           widget.versionID!,
@@ -86,7 +88,7 @@ class _EditCipherScreenState extends State<EditCipherScreen>
         // Load the cipher
         await cipherProvider.loadCipher(widget.cipherID!);
         // Load the version
-        await versionProvider.loadLocalVersion(widget.versionID!);
+        await versionProvider.loadVersion(widget.versionID!);
         // Load sections
         await sectionProvider.loadLocalSections(widget.versionID!);
         break;
@@ -103,7 +105,7 @@ class _EditCipherScreenState extends State<EditCipherScreen>
 
         // Create a new copy of the version for editing
         // Load the version
-        final Version originalVersion = versionProvider.getVersionById(
+        final Version originalVersion = versionProvider.getVersion(
           widget.versionID!,
         )!;
         // Create a copy of the version in cache
@@ -306,6 +308,7 @@ class _EditCipherScreenState extends State<EditCipherScreen>
     PlaylistProvider playlistProvider,
     NavigationProvider navigationProvider,
   ) async {
+    final cloudVersionProvider = context.read<CloudVersionProvider>();
     if (selectionProvider.isSelectionMode) {
       for (dynamic versionId in selectionProvider.selectedItemIds) {
         if (versionId.runtimeType == int) {
@@ -313,14 +316,14 @@ class _EditCipherScreenState extends State<EditCipherScreen>
           versionId = await versionProvider.createVersion(null);
         } else {
           // CLOUD VERSION: Upsert the version locally and add to playlist
+          final cloudVersion = cloudVersionProvider.getVersion(versionId)!;
+
           final cipherId = await cipherProvider.upsertCipher(
-            Cipher.fromVersionDto(versionProvider.cloudVersions[versionId]!),
+            Cipher.fromVersionDto(cloudVersion),
           );
 
           versionId = await versionProvider.upsertVersion(
-            versionProvider.cloudVersions[versionId]!.toDomain(
-              cipherId: cipherId,
-            ),
+            cloudVersion.toDomain(cipherId: cipherId),
           );
         }
         // Create Section entries for the new version
@@ -337,7 +340,7 @@ class _EditCipherScreenState extends State<EditCipherScreen>
     } else {
       switch (widget.versionType) {
         case VersionType.playlist:
-          versionProvider.saveVersion(versionID: widget.versionID);
+          versionProvider.saveVersion(widget.versionID);
           sectionProvider.saveSections(versionID: widget.versionID);
           break;
 
@@ -357,7 +360,7 @@ class _EditCipherScreenState extends State<EditCipherScreen>
 
         case VersionType.local:
           await cipherProvider.saveCipher(widget.cipherID!);
-          await versionProvider.saveVersion(versionID: widget.versionID);
+          await versionProvider.saveVersion(widget.versionID);
           await sectionProvider.saveSections(versionID: widget.versionID);
           break;
       }

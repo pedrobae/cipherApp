@@ -1,6 +1,6 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/section_provider.dart';
-import 'package:cordis/providers/version_provider.dart';
+import 'package:cordis/providers/version/version_provider.dart';
 import 'package:cordis/widgets/ciphers/viewer/structure_list.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

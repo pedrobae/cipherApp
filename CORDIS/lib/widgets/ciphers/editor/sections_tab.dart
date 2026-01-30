@@ -6,7 +6,7 @@ import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cordis/providers/section_provider.dart';
-import 'package:cordis/providers/version_provider.dart';
+import 'package:cordis/providers/version/version_provider.dart';
 import 'package:cordis/widgets/ciphers/editor/reorderable_structure_chips.dart';
 import 'package:cordis/widgets/ciphers/editor/sections/token_content_editor.dart';
 import 'package:cordis/utils/section_constants.dart';

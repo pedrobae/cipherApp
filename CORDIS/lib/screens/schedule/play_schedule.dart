@@ -7,7 +7,7 @@ import 'package:cordis/providers/flow_item_provider.dart';
 import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/schedule_provider.dart';
-import 'package:cordis/providers/version_provider.dart';
+import 'package:cordis/providers/version/version_provider.dart';
 import 'package:cordis/widgets/schedule/play/play_cloud_version.dart';
 import 'package:cordis/widgets/schedule/play/play_flow_item.dart';
 import 'package:cordis/widgets/schedule/play/play_local_version.dart';
@@ -53,17 +53,17 @@ class PlayScheduleScreenState extends State<PlayScheduleScreen>
       await scheduleProvider.loadLocalSchedule(widget.scheduleId);
       final schedule = scheduleProvider.schedules[widget.scheduleId];
       await playlistProvider.loadPlaylist(schedule.playlistId);
-      await versionProvider.loadVersionsForPlaylist(
-        playlistProvider.getPlaylistById(schedule.playlistId)!.items,
-      );
-      for (final item
-          in playlistProvider.getPlaylistById(schedule.playlistId)!.items) {
+
+      items = playlistProvider.getPlaylistById(schedule.playlistId)!.items;
+
+      for (final item in items) {
         if (item.type == PlaylistItemType.version) {
+          await versionProvider.loadVersion(item.contentId!);
           await cipherProvider.loadCipherOfVersion(item.contentId!);
+        } else if (item.type == PlaylistItemType.flowItem) {
+          await flowItemProvider.loadFlowItem(item.contentId!);
         }
       }
-      await flowItemProvider.loadFlowItemByPlaylistId(schedule.playlistId);
-      items = playlistProvider.getPlaylistById(schedule.playlistId)!.items;
     } else {
       if (!scheduleProvider.schedules.containsKey(widget.scheduleId)) {
         await scheduleProvider.fetchSchedule(widget.scheduleId);

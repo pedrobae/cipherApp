@@ -9,7 +9,7 @@ import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
-import 'package:cordis/providers/version_provider.dart';
+import 'package:cordis/providers/version/version_provider.dart';
 
 import 'package:cordis/widgets/playlist/viewer/add_to_playlist_sheet.dart';
 
@@ -39,11 +39,17 @@ class _ViewPlaylistScreenState extends State<ViewPlaylistScreen> {
 
       await playlistProvider.loadPlaylist(widget.playlistId);
 
-      await versionProvider.loadVersionsForPlaylist(
-        playlistProvider.getPlaylistById(widget.playlistId)!.items,
-      );
+      // Load versions for the playlist items
+      final items =
+          playlistProvider.getPlaylistById(widget.playlistId)?.items ?? [];
 
-      await flowItemProvider.loadFlowItemByPlaylistId(widget.playlistId);
+      for (var item in items) {
+        if (item.type == PlaylistItemType.version) {
+          await versionProvider.loadVersion(item.contentId!);
+        } else if (item.type == PlaylistItemType.flowItem) {
+          await flowItemProvider.loadFlowItem(item.contentId!);
+        }
+      }
     });
   }
 

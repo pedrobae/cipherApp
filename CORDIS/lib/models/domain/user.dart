@@ -1,6 +1,5 @@
 import 'package:cordis/models/dtos/user_dto.dart';
-
-import '../../helpers/datetime.dart';
+import 'package:cordis/utils/date_utils.dart';
 
 class User {
   final int? id;
@@ -33,8 +32,8 @@ class User {
       mail: json['mail'] as String,
       profilePhoto: json['profile_photo'] as String?,
       googleId: json['google_id'] as String?,
-      createdAt: DatetimeHelper.parseDateTime(json['created_at']),
-      updatedAt: DatetimeHelper.parseDateTime(json['updated_at']),
+      createdAt: DateTimeUtils.parseDateTime(json['created_at']),
+      updatedAt: DateTimeUtils.parseDateTime(json['updated_at']),
       isActive: (json['is_active'] as int? ?? 1) == 1,
     );
   }

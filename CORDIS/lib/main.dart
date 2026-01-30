@@ -19,7 +19,8 @@ import 'package:cordis/providers/settings_provider.dart';
 import 'package:cordis/providers/schedule_provider.dart';
 import 'package:cordis/providers/flow_item_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
-import 'package:cordis/providers/version_provider.dart';
+import 'package:cordis/providers/version/version_provider.dart';
+import 'package:cordis/providers/version/cloud_version_provider.dart';
 
 import 'package:cordis/routes/app_routes.dart';
 
@@ -65,6 +66,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ScheduleProvider()),
         ChangeNotifierProvider(create: (_) => FlowItemProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()..loadUsers()),
+        ChangeNotifierProvider(create: (_) => CloudVersionProvider()),
         ChangeNotifierProvider(create: (_) => VersionProvider()),
       ],
       child: Consumer<SettingsProvider>(

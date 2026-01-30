@@ -33,7 +33,7 @@ class _FlowItemEditorState extends State<FlowItemEditor> {
     if (widget.flowItemId != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _syncFlowItem();
-        flowItemProvider.loadFlowItemById(widget.flowItemId!);
+        flowItemProvider.loadFlowItem(widget.flowItemId!);
       });
     }
   }

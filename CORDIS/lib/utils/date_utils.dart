@@ -10,6 +10,17 @@ class DateTimeUtils {
         date.day == now.day;
   }
 
+  static DateTime? parseDateTime(String value) {
+    if (value.isNotEmpty) {
+      try {
+        return DateTime.parse(value);
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
+  }
+
   /// Formats a Duration into a human-readable string like "HH:MM:SS"
   static String formatDuration(Duration duration) {
     final hours = duration.inHours;

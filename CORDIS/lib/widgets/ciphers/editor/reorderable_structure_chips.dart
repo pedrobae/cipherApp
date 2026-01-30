@@ -1,6 +1,6 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/section_provider.dart';
-import 'package:cordis/providers/version_provider.dart';
+import 'package:cordis/providers/version/version_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:cordis/widgets/ciphers/editor/custom_reorderable_delayed.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +17,7 @@ class ReorderableStructureChips extends StatefulWidget {
 
 class _ReorderableStructureChipsState extends State<ReorderableStructureChips> {
   void _reorder(int oldIndex, int newIndex, VersionProvider versionProvider) {
-    versionProvider.cacheReorderedStructure(
+    versionProvider.reorderSongStructure(
       widget.versionId ?? -1,
       oldIndex,
       newIndex,

@@ -1,7 +1,7 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:cordis/providers/cipher_provider.dart';
-import 'package:cordis/providers/version_provider.dart';
+import 'package:cordis/providers/version/cloud_version_provider.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -96,8 +96,8 @@ class _AddTagSheetState extends State<AddTagSheet> {
                 ),
               ),
             ),
-            Consumer2<CipherProvider, VersionProvider>(
-              builder: (context, cipherProvider, versionProvider, child) =>
+            Consumer2<CipherProvider, CloudVersionProvider>(
+              builder: (context, cipherProvider, cloudVersionProvider, child) =>
                   FilledTextButton(
                     text: AppLocalizations.of(context)!.addPlaceholder(''),
                     isDark: true,
@@ -109,17 +109,13 @@ class _AddTagSheetState extends State<AddTagSheet> {
                           );
                         case VersionType.brandNew:
                         case VersionType.import:
-                          cipherProvider.addTagToLocalCache(
-                            -1,
-                            tagController.text.trim(),
-                          );
                         case VersionType.local:
-                          cipherProvider.addTagToLocalCache(
-                            widget.cipherID!,
+                          cipherProvider.addTagtoCache(
+                            widget.cipherID ?? -1,
                             tagController.text.trim(),
                           );
                         case VersionType.cloud:
-                          versionProvider.addTagToCloudCache(
+                          cloudVersionProvider.addTagToCloudCache(
                             widget.versionID!,
                             tagController.text.trim(),
                           );

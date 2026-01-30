@@ -1,22 +1,28 @@
+import 'package:cordis/helpers/database.dart';
+import 'package:cordis/providers/version/cloud_version_provider.dart';
+
+import 'package:cordis/utils/app_theme.dart';
+
 import 'package:cordis/l10n/app_localizations.dart';
+
+import 'package:cordis/providers/cipher_provider.dart';
+import 'package:cordis/providers/playlist_provider.dart';
+import 'package:cordis/providers/settings_provider.dart';
 import 'package:cordis/providers/my_auth_provider.dart';
 import 'package:cordis/providers/schedule_provider.dart';
 import 'package:cordis/providers/section_provider.dart';
 import 'package:cordis/providers/flow_item_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
-import 'package:cordis/providers/version_provider.dart';
-import 'package:cordis/utils/app_theme.dart';
+import 'package:cordis/providers/version/version_provider.dart';
+
 import 'package:cordis/widgets/delete_confirmation.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite/sqlite_api.dart';
-import '../helpers/database.dart';
-import '../providers/cipher_provider.dart';
-import '../providers/playlist_provider.dart';
-import '../providers/settings_provider.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -138,7 +144,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       // Check if widget is still mounted before using context
       if (mounted) {
-        await context.read<VersionProvider>().loadCloudVersions(
+        await context.read<CloudVersionProvider>().loadVersions(
           forceReload: true,
         );
       }
@@ -190,8 +196,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       // Force reload all providers from database
       await Future.wait([
-        context.read<CipherProvider>().loadLocalCiphers(forceReload: true),
-        context.read<VersionProvider>().loadCloudVersions(),
+        context.read<CipherProvider>().loadCiphers(forceReload: true),
+        context.read<CloudVersionProvider>().loadVersions(),
         context.read<PlaylistProvider>().loadPlaylists(),
         context.read<UserProvider>().loadUsers(),
         context.read<ScheduleProvider>().loadLocalSchedules(),

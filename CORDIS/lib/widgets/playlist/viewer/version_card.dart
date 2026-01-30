@@ -3,11 +3,9 @@ import 'dart:math';
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/models/domain/cipher/section.dart';
 import 'package:cordis/models/domain/cipher/version.dart';
-import 'package:cordis/providers/my_auth_provider.dart';
 import 'package:cordis/providers/navigation_provider.dart';
-import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/section_provider.dart';
-import 'package:cordis/providers/user_provider.dart';
+import 'package:cordis/providers/version/cloud_version_provider.dart';
 import 'package:cordis/screens/cipher/edit_cipher.dart';
 import 'package:cordis/utils/date_utils.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
@@ -15,7 +13,7 @@ import 'package:cordis/widgets/playlist/viewer/version_card_actions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cordis/providers/cipher_provider.dart';
-import 'package:cordis/providers/version_provider.dart';
+import 'package:cordis/providers/version/version_provider.dart';
 import 'package:cordis/widgets/ciphers/editor/custom_reorderable_delayed.dart';
 
 class PlaylistVersionCard extends StatefulWidget {
@@ -41,6 +39,7 @@ class _PlaylistVersionCardState extends State<PlaylistVersionCard> {
     // Pre-load cipher data if not already loaded
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final versionProvider = context.read<VersionProvider>();
+      final cloudVersionProvider = context.read<CloudVersionProvider>();
       final sectionProvider = context.read<SectionProvider>();
       final cipherProvider = context.read<CipherProvider>();
 
@@ -50,25 +49,23 @@ class _PlaylistVersionCardState extends State<PlaylistVersionCard> {
       }
 
       // Ensure the specific version is loaded
-      if (!versionProvider.isVersionCached(widget.versionId)) {
-        if (widget.versionId is String) {
-          await versionProvider.loadCloudUserVersionByFirebaseId(
-            widget.versionId,
-          );
-          sectionProvider.setNewSectionsInCache(
-            widget.versionId,
-            versionProvider
-                .getCloudVersionByFirebaseId(widget.versionId)!
-                .sections
-                .map(
-                  (key, section) =>
-                      MapEntry(key, Section.fromFirestore(section)),
-                ),
-          );
-        } else {
-          await versionProvider.loadLocalVersion(widget.versionId);
-          await sectionProvider.loadLocalSections(widget.versionId);
-        }
+      if (widget.versionId is String &&
+          !cloudVersionProvider.versions.containsKey(widget.versionId)) {
+        await cloudVersionProvider.loadUserVersionsByFirebaseId(
+          widget.versionId,
+        );
+        sectionProvider.setNewSectionsInCache(
+          widget.versionId,
+          cloudVersionProvider
+              .getVersion(widget.versionId)!
+              .sections
+              .map(
+                (key, section) => MapEntry(key, Section.fromFirestore(section)),
+              ),
+        );
+      } else {
+        await versionProvider.loadVersion(widget.versionId);
+        await sectionProvider.loadLocalSections(widget.versionId);
       }
     });
   }
@@ -97,35 +94,29 @@ class _PlaylistVersionCardState extends State<PlaylistVersionCard> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Consumer6<
+    return Consumer4<
       VersionProvider,
       CipherProvider,
-      PlaylistProvider,
-      NavigationProvider,
-      UserProvider,
-      MyAuthProvider
+      CloudVersionProvider,
+      NavigationProvider
     >(
       builder:
           (
             context,
             versionProvider,
             cipherProvider,
-            playlistProvider,
+            cloudVersionProvider,
             navigationProvider,
-            userProvider,
-            authProvider,
             child,
           ) {
             dynamic version;
             bool isCloud;
 
             if (widget.versionId is String) {
-              version = versionProvider.getCloudVersionByFirebaseId(
-                widget.versionId,
-              );
+              version = cloudVersionProvider.getVersion(widget.versionId);
               isCloud = true;
             } else {
-              version = versionProvider.getLocalVersionById(widget.versionId);
+              version = versionProvider.getVersion(widget.versionId);
               isCloud = false;
             }
 

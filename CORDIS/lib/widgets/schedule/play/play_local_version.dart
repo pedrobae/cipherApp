@@ -2,7 +2,7 @@ import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/layout_settings_provider.dart';
 import 'package:cordis/providers/section_provider.dart';
-import 'package:cordis/providers/version_provider.dart';
+import 'package:cordis/providers/version/version_provider.dart';
 import 'package:cordis/utils/date_utils.dart';
 import 'package:cordis/utils/section_helper.dart';
 import 'package:cordis/widgets/ciphers/viewer/section_card.dart';
@@ -41,7 +41,7 @@ class _PlayLocalVersionState extends State<PlayLocalVersion> {
     final versionProvider = context.read<VersionProvider>();
     final sectionProvider = context.read<SectionProvider>();
 
-    await versionProvider.loadLocalVersion(widget.versionId);
+    await versionProvider.loadVersion(widget.versionId);
     await sectionProvider.loadLocalSections(widget.versionId);
 
     // SET UP SCROLL LISTENER
@@ -87,9 +87,7 @@ class _PlayLocalVersionState extends State<PlayLocalVersion> {
             layoutSettings,
             child,
           ) {
-            final version = versionProvider.getLocalVersionById(
-              widget.versionId,
-            );
+            final version = versionProvider.getVersion(widget.versionId);
 
             // LOADING STATE
             if (versionProvider.isLoading ||

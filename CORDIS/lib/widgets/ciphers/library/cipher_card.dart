@@ -1,13 +1,13 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/models/domain/cipher/version.dart';
-import 'package:cordis/models/dtos/version_dto.dart';
 import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
-import 'package:cordis/providers/version_provider.dart';
+import 'package:cordis/providers/version/version_provider.dart';
 import 'package:cordis/screens/cipher/edit_cipher.dart';
 import 'package:cordis/screens/cipher/view_cipher.dart';
+import 'package:cordis/utils/date_utils.dart';
 import 'package:cordis/widgets/ciphers/library/cipher_card_actions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -84,13 +84,7 @@ class _CipherCardState extends State<CipherCard> {
               );
             }
 
-            final version = versionProvider.getVersionById(versionId)!;
-            Duration duration;
-            if (version.runtimeType != Version) {
-              duration = Duration(seconds: (version as VersionDto).duration);
-            } else {
-              duration = (version as Version).duration;
-            }
+            final version = versionProvider.getVersion(versionId)!;
 
             // Card content
             return GestureDetector(
@@ -185,9 +179,11 @@ class _CipherCardState extends State<CipherCard> {
                                       style: textTheme.bodyMedium,
                                     )
                                   : Text('-'),
-                              duration != Duration.zero
+                              version.duration != Duration.zero
                                   ? Text(
-                                      version.duration,
+                                      DateTimeUtils.formatDuration(
+                                        version.duration,
+                                      ),
                                       style: textTheme.bodyMedium,
                                     )
                                   : Text('-'),

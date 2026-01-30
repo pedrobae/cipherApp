@@ -25,6 +25,7 @@ class SelectionProvider extends ChangeNotifier {
     _isSelectionMode = false;
     _selectedItemIds.clear();
     _targetId = null;
+    notifyListeners();
   }
 
   void select(dynamic item) {

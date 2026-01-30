@@ -1,6 +1,6 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/playlist_provider.dart';
-import 'package:cordis/providers/version_provider.dart';
+import 'package:cordis/providers/version/cloud_version_provider.dart';
 import 'package:cordis/widgets/ciphers/library/create_cipher_sheet.dart';
 
 import 'package:flutter/material.dart';
@@ -29,7 +29,7 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
     // Pre-load data with post-frame callback to avoid setState during build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final cipherProvider = context.read<CipherProvider>();
-      cipherProvider.loadLocalCiphers();
+      cipherProvider.loadCiphers();
     });
   }
 
@@ -43,7 +43,7 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
       UserProvider,
       MyAuthProvider,
       SelectionProvider,
-      VersionProvider,
+      CloudVersionProvider,
       PlaylistProvider
     >(
       builder:
@@ -53,7 +53,7 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
             userProvider,
             authProvider,
             selectionProvider,
-            versionProvider,
+            cloudVersionProvider,
             playlistProvider,
             child,
           ) {
@@ -100,7 +100,7 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
                       ),
                       onChanged: (value) {
                         cipherProvider.setSearchTerm(value);
-                        versionProvider.setSearchTerm(value);
+                        cloudVersionProvider.setSearchTerm(value);
                       },
                     ),
                     Expanded(

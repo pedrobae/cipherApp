@@ -1,7 +1,7 @@
 import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/navigation_provider.dart';
-import 'package:cordis/providers/version_provider.dart';
+import 'package:cordis/providers/version/cloud_version_provider.dart';
 import 'package:cordis/screens/cipher/view_cipher.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -18,16 +18,20 @@ class CloudCipherCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Consumer3<SelectionProvider, NavigationProvider, VersionProvider>(
+    return Consumer3<
+      SelectionProvider,
+      NavigationProvider,
+      CloudVersionProvider
+    >(
       builder:
           (
             context,
             selectionProvider,
             navigationProvider,
-            versionProvider,
+            cloudVersionProvider,
             child,
           ) {
-            final version = versionProvider.getVersionById(versionId);
+            final version = cloudVersionProvider.getVersion(versionId)!;
 
             return GestureDetector(
               onTap: () {

@@ -49,27 +49,6 @@ class FlowItemProvider extends ChangeNotifier {
     }
   }
 
-  /// Load all Flow Items for a given Playlist
-  Future<void> loadFlowItemByPlaylistId(int playlistId) async {
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      final flowItems = await _flowItemRepo.getFlowItemsByPlaylistId(
-        playlistId,
-      );
-      for (final item in flowItems) {
-        _flowItems[item.id!] = item;
-      }
-    } catch (e) {
-      _error = e.toString();
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
   Future<String?> getFirebaseIdByLocalId(int localId) async {
     // Check cache first
     if (_flowItems.containsKey(localId)) {
@@ -101,7 +80,7 @@ class FlowItemProvider extends ChangeNotifier {
     return null;
   }
 
-  Future<void> loadFlowItemById(int id) async {
+  Future<void> loadFlowItem(int id) async {
     // Not in cache, query repository
     final flowItem = await _flowItemRepo.getFlowItem(id);
     if (flowItem != null) {
@@ -123,7 +102,6 @@ class FlowItemProvider extends ChangeNotifier {
       await _loadFlowItem(id, forceReload: true);
     } catch (e) {
       _error = e.toString();
-      rethrow;
     } finally {
       _isSaving = false;
       notifyListeners();
@@ -167,7 +145,6 @@ class FlowItemProvider extends ChangeNotifier {
       await _loadFlowItem(localId, forceReload: true);
     } catch (e) {
       _error = e.toString();
-      rethrow;
     } finally {
       _isSaving = false;
       notifyListeners();
@@ -205,7 +182,6 @@ class FlowItemProvider extends ChangeNotifier {
       await _loadFlowItem(newId, forceReload: true);
     } catch (e) {
       _error = e.toString();
-      rethrow;
     } finally {
       _isSaving = false;
       notifyListeners();
@@ -238,7 +214,6 @@ class FlowItemProvider extends ChangeNotifier {
       await _loadFlowItem(id, forceReload: true);
     } catch (e) {
       _error = e.toString();
-      rethrow;
     } finally {
       _isSaving = false;
       notifyListeners();
@@ -259,7 +234,6 @@ class FlowItemProvider extends ChangeNotifier {
       _flowItems.remove(id); // Remove from local cache
     } catch (e) {
       _error = e.toString();
-      rethrow;
     } finally {
       _isDeleting = false;
       notifyListeners();

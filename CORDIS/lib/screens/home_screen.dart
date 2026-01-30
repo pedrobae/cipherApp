@@ -3,7 +3,7 @@ import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/providers/schedule/local_schedule_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/screens/playlist/edit_playlist.dart';
-import 'package:cordis/screens/schedule/create_schedule.dart';
+import 'package:cordis/screens/schedule/create_new_schedule.dart';
 import 'package:cordis/widgets/ciphers/library/create_cipher_sheet.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:cordis/widgets/schedule/library/schedule_card.dart';

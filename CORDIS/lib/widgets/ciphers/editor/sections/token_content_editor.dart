@@ -2,7 +2,7 @@ import 'package:cordis/providers/layout_settings_provider.dart';
 import 'package:cordis/providers/section_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/widgets/ciphers/editor/sections/chord_token.dart';
-import 'package:cordis/widgets/ciphers/editor/sections/edit_section_dialog.dart';
+import 'package:cordis/widgets/ciphers/editor/sections/edit_section_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:cordis/models/ui/content_token.dart';
 import 'package:cordis/services/tokenization_service.dart';
@@ -775,9 +775,10 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
   }
 
   void _openEditSectionDialog() {
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (context) => EditSectionDialog(
+      isScrollControlled: true,
+      builder: (context) => EditSectionSheet(
         versionId: widget.versionId,
         sectionCode: widget.sectionCode,
       ),

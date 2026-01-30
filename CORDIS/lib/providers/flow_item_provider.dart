@@ -22,32 +22,6 @@ class FlowItemProvider extends ChangeNotifier {
   String? get error => _error;
 
   // ===== READ =====
-  // Load single flowItem
-  Future<void> _loadFlowItem(int flowItemId, {bool forceReload = false}) async {
-    if (kDebugMode) {
-      print(
-        '===== Loading Flow Item - $flowItemId - Forced Reload - $forceReload =====',
-      );
-    }
-    // Check if already loaded (unless forcing reload)
-    if (!forceReload && _flowItems.containsKey(flowItemId)) {
-      return;
-    }
-
-    _error = null;
-    notifyListeners();
-
-    try {
-      final flowItem = await _flowItemRepo.getFlowItem(flowItemId);
-      if (flowItem != null) {
-        _flowItems[flowItem.id!] = flowItem;
-      }
-    } catch (e) {
-      _error = e.toString();
-    } finally {
-      notifyListeners();
-    }
-  }
 
   Future<String?> getFirebaseIdByLocalId(int localId) async {
     // Check cache first
@@ -86,6 +60,7 @@ class FlowItemProvider extends ChangeNotifier {
     if (flowItem != null) {
       _flowItems[id] = flowItem;
     }
+    notifyListeners();
   }
 
   // ===== CREATE =====
@@ -99,7 +74,7 @@ class FlowItemProvider extends ChangeNotifier {
 
     try {
       int id = await _flowItemRepo.createFlowItem(flowItem);
-      await _loadFlowItem(id, forceReload: true);
+      await loadFlowItem(id);
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -142,7 +117,7 @@ class FlowItemProvider extends ChangeNotifier {
         );
       }
 
-      await _loadFlowItem(localId, forceReload: true);
+      await loadFlowItem(localId);
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -179,7 +154,7 @@ class FlowItemProvider extends ChangeNotifier {
       );
 
       int newId = await _flowItemRepo.createFlowItem(duplicate);
-      await _loadFlowItem(newId, forceReload: true);
+      await loadFlowItem(newId);
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -211,7 +186,7 @@ class FlowItemProvider extends ChangeNotifier {
       );
 
       // Force reload the updated text section to get fresh data
-      await _loadFlowItem(id, forceReload: true);
+      await loadFlowItem(id);
     } catch (e) {
       _error = e.toString();
     } finally {

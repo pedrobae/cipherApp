@@ -139,13 +139,15 @@ class _ScheduleScrollViewState extends State<ScheduleScrollView> {
                     return ScheduleCard(scheduleId: scheduleId);
                   }),
                   SizedBox(height: 16.0),
-                  Text(
-                    key: _pastHeaderKey,
-                    AppLocalizations.of(context)!.pastSchedules,
-                    style: textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                  pastScheduleIDs.isEmpty
+                      ? SizedBox.shrink()
+                      : Text(
+                          key: _pastHeaderKey,
+                          AppLocalizations.of(context)!.pastSchedules,
+                          style: textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                   SizedBox(height: 8.0),
                   ...pastScheduleIDs.map((scheduleId) {
                     return ScheduleCard(scheduleId: scheduleId);

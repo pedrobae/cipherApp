@@ -1,6 +1,6 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/navigation_provider.dart';
-import 'package:cordis/providers/schedule_provider.dart';
+import 'package:cordis/providers/schedule/schedule_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/screens/playlist/edit_playlist.dart';
 import 'package:cordis/screens/schedule/create_Schedule.dart';

@@ -2,7 +2,7 @@ import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/my_auth_provider.dart';
 import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
-import 'package:cordis/providers/schedule_provider.dart';
+import 'package:cordis/providers/schedule/schedule_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/screens/schedule/view_schedule.dart';
 import 'package:cordis/widgets/delete_confirmation.dart';

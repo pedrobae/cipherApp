@@ -16,7 +16,7 @@ import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/section_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/providers/settings_provider.dart';
-import 'package:cordis/providers/schedule_provider.dart';
+import 'package:cordis/providers/schedule/schedule_provider.dart';
 import 'package:cordis/providers/flow_item_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/providers/version/local_version_provider.dart';

@@ -5,7 +5,7 @@ import 'package:cordis/screens/schedule/create_schedule.dart';
 import 'package:cordis/widgets/schedule/library/schedule_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cordis/providers/schedule_provider.dart';
+import 'package:cordis/providers/schedule/schedule_provider.dart';
 
 class ScheduleLibraryScreen extends StatefulWidget {
   const ScheduleLibraryScreen({super.key});

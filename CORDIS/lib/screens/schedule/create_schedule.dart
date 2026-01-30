@@ -1,7 +1,7 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/my_auth_provider.dart';
 import 'package:cordis/providers/navigation_provider.dart';
-import 'package:cordis/providers/schedule_provider.dart';
+import 'package:cordis/providers/schedule/schedule_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/screens/playlist/playlist_library.dart';
 import 'package:cordis/widgets/filled_text_button.dart';

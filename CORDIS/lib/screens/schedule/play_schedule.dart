@@ -6,7 +6,7 @@ import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/flow_item_provider.dart';
 import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
-import 'package:cordis/providers/schedule_provider.dart';
+import 'package:cordis/providers/schedule/schedule_provider.dart';
 import 'package:cordis/providers/version/local_version_provider.dart';
 import 'package:cordis/widgets/schedule/play/play_cloud_version.dart';
 import 'package:cordis/widgets/schedule/play/play_flow_item.dart';

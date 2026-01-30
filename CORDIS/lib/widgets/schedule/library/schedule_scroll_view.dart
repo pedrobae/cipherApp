@@ -1,5 +1,5 @@
 import 'package:cordis/l10n/app_localizations.dart';
-import 'package:cordis/providers/schedule_provider.dart';
+import 'package:cordis/providers/schedule/schedule_provider.dart';
 import 'package:cordis/widgets/schedule/library/schedule_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

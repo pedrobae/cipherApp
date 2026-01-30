@@ -34,12 +34,10 @@ class _PlayLocalVersionState extends State<PlayLocalVersion> {
     super.initState();
     _scrollController = ScrollController();
 
-    // Instead of nested callbacks, do this once:
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _ensureDataLoaded();
       _initializeSectionKeys();
 
-      // Give the tree one full frame cycle to rebuild and layout
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           _calculateHeaderHeight();

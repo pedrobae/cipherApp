@@ -77,10 +77,12 @@ class _CipherCardState extends State<CipherCard> {
               widget.cipherId,
             );
 
+            if (versionId == null) {
+              return Container();
+            }
+
             // Loading state
-            if (cipherProvider.isLoading ||
-                versionProvider.isLoading ||
-                versionId == null) {
+            if (cipherProvider.isLoading || versionProvider.isLoading) {
               return Center(
                 child: CircularProgressIndicator(color: colorScheme.primary),
               );

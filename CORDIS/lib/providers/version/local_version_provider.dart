@@ -154,12 +154,6 @@ class LocalVersionProvider extends ChangeNotifier {
 
   // Load all versions of a cipher into cache, used for version selector and cipher expansion
   Future<void> loadVersionsOfCipher(int cipherId) async {
-    if (_isLoading) return;
-
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
     try {
       final versionList = await _cipherRepository.getVersions(cipherId);
       for (final version in versionList) {

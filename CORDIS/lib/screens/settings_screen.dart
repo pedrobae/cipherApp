@@ -448,18 +448,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  void showComingSoon(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: Colors.amberAccent,
-        content: Text(
-          AppLocalizations.of(context)!.comingSoon,
-          style: TextStyle(color: Colors.black),
-        ),
-      ),
-    );
-  }
-
   void _showThemeDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -680,6 +668,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
             visualDensity: VisualDensity.compact,
           );
         }).toList(),
+      ),
+    );
+  }
+
+  void showComingSoon(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Colors.amberAccent,
+        content: Text(
+          AppLocalizations.of(context)!.comingSoon,
+          style: TextStyle(color: Colors.black),
+        ),
       ),
     );
   }

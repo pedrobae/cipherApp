@@ -114,7 +114,17 @@ class CloudCipherCard extends StatelessWidget {
                     ),
                     // ACTIONS
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: Colors.amberAccent,
+                            content: Text(
+                              AppLocalizations.of(context)!.comingSoon,
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ),
+                        );
+                      },
                       icon: Icon(Icons.cloud_download),
                     ),
                   ],

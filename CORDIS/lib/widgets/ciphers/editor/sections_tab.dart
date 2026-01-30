@@ -3,6 +3,7 @@ import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/providers/version/cloud_version_provider.dart';
 import 'package:cordis/widgets/ciphers/editor/chord_palette.dart';
+import 'package:cordis/widgets/ciphers/editor/create_cipher_sheet.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -208,6 +209,31 @@ class _SectionsTabState extends State<SectionsTab> {
                             ),
                           ),
                         ),
+
+                        // Open add sheet
+                        GestureDetector(
+                          onTap: _openAddSheet(),
+                          child: Container(
+                            margin: const EdgeInsets.all(8),
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: colorScheme.onSurface,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: colorScheme.surfaceContainerLowest,
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Icon(
+                              Icons.add,
+                              size: 28,
+                              color: colorScheme.surface,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -215,6 +241,17 @@ class _SectionsTabState extends State<SectionsTab> {
             );
           },
     );
+  }
+
+  VoidCallback _openAddSheet() {
+    return () {
+      showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return CreateCipherSheet();
+        },
+      );
+    };
   }
 
   void _addSection(

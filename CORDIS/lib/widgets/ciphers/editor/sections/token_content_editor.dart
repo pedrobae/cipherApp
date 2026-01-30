@@ -778,7 +778,7 @@ class _TokenContentEditorState extends State<TokenContentEditor> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) => EditSectionSheet(
+      builder: (context) => EditSectionScreen(
         versionId: widget.versionId,
         sectionCode: widget.sectionCode,
       ),

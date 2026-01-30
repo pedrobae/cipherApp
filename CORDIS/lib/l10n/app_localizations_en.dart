@@ -163,13 +163,29 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sectionCode => 'Section Code';
 
   @override
+  String get sectionCodeHint => 'e.g. V1, C, I, ...';
+
+  @override
+  String get sectionCodeInstruction => 'Max 2 characters allowed';
+
+  @override
   String get sectionType => 'Section Type';
+
+  @override
+  String get sectionTypeHint => 'e.g. Verse, Chorus, Bridge...';
 
   @override
   String get sectionColor => 'Section Color';
 
   @override
+  String get sectionColorHint => 'Select the section color...';
+
+  @override
   String get sectionText => 'Section Text...';
+
+  @override
+  String get sectionTextHint =>
+      'Enter the section text in chordPro format, (lyrics[chord])';
 
   @override
   String get cipherEditorTitle => 'Song Editor';

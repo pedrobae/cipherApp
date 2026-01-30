@@ -26,54 +26,6 @@ class FilledTextButton extends StatelessWidget {
     this.trailingIcon,
   });
 
-  factory FilledTextButton.trailingIcon({
-    required String text,
-    String? tooltip,
-    required VoidCallback onPressed,
-    required IconData trailingIcon,
-    bool isDark = false,
-    bool isDisabled = false,
-    bool isDense = false,
-    bool isDiscrete = false,
-    bool isDangerous = false,
-  }) {
-    return FilledTextButton(
-      text: text,
-      tooltip: tooltip,
-      onPressed: onPressed,
-      isDark: isDark,
-      isDisabled: isDisabled,
-      isDense: isDense,
-      isDangerous: isDangerous,
-      trailingIcon: trailingIcon,
-      isDiscrete: isDiscrete,
-    );
-  }
-
-  factory FilledTextButton.icon({
-    required String text,
-    String? tooltip,
-    required VoidCallback onPressed,
-    required IconData icon,
-    bool isDark = false,
-    bool isDisabled = false,
-    bool isDangerous = false,
-    bool isDense = false,
-    bool isDiscrete = false,
-  }) {
-    return FilledTextButton(
-      text: text,
-      tooltip: tooltip,
-      onPressed: onPressed,
-      isDark: isDark,
-      isDangerous: isDangerous,
-      isDisabled: isDisabled,
-      isDense: isDense,
-      icon: icon,
-      isDiscrete: isDiscrete,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -112,7 +64,7 @@ class FilledTextButton extends StatelessWidget {
           if (icon != null) ...[
             Icon(
               icon,
-              size: isDense ? 18 : 20,
+              size: isDense ? 18 : 24,
               color: isDangerous
                   ? colorScheme.error
                   : (isDark ? colorScheme.surface : colorScheme.onSurface),
@@ -133,7 +85,7 @@ class FilledTextButton extends StatelessWidget {
           if (trailingIcon != null)
             Icon(
               trailingIcon,
-              size: isDense ? 24 : 32,
+              size: isDense ? 18 : 24,
               color: isDangerous
                   ? colorScheme.error
                   : (isDark

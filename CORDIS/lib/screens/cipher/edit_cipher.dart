@@ -46,7 +46,6 @@ class _EditCipherScreenState extends State<EditCipherScreen>
     // Load data and navigate to start tab after build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadData();
-      _navigateStartTab();
     });
   }
 
@@ -163,20 +162,6 @@ class _EditCipherScreenState extends State<EditCipherScreen>
 
           sectionProvider.setNewSectionsInCache(-1, newVersion.sections!);
         }
-        break;
-    }
-  }
-
-  void _navigateStartTab() {
-    switch (widget.versionType) {
-      case VersionType.import:
-      case VersionType.brandNew:
-        _tabController.index = 1; // Sections tab
-        break;
-      case VersionType.playlist:
-      case VersionType.cloud:
-      case VersionType.local:
-        _tabController.index = 0; // Info tab
         break;
     }
   }

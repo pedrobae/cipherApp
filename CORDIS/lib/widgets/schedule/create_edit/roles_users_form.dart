@@ -75,7 +75,7 @@ class _RolesAndUsersFormState extends State<RolesAndUsersForm> {
                     ),
             ),
             // ADD ROLE BUTTON
-            FilledTextButton.icon(
+            FilledTextButton(
               text: AppLocalizations.of(context)!.role,
               icon: Icons.add,
               onPressed: () =>

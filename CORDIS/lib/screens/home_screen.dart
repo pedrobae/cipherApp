@@ -1,10 +1,11 @@
 import 'package:cordis/l10n/app_localizations.dart';
+import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/providers/schedule/local_schedule_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
+import 'package:cordis/screens/cipher/edit_cipher.dart';
 import 'package:cordis/screens/playlist/edit_playlist.dart';
 import 'package:cordis/screens/schedule/create_new_schedule.dart';
-import 'package:cordis/widgets/ciphers/library/create_cipher_sheet.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:cordis/widgets/schedule/library/schedule_card.dart';
 import 'package:flutter/material.dart';
@@ -276,7 +277,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
               // ACTIONS
               // DIRECT CREATION BUTTONS
-              FilledTextButton.trailingIcon(
+              FilledTextButton(
                 trailingIcon: Icons.chevron_right,
                 isDiscrete: true,
                 text: AppLocalizations.of(
@@ -288,7 +289,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   navigationProvider.push(EditPlaylistScreen());
                 },
               ),
-              FilledTextButton.trailingIcon(
+              FilledTextButton(
                 trailingIcon: Icons.chevron_right,
                 isDiscrete: true,
                 text: AppLocalizations.of(
@@ -297,16 +298,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () {
                   Navigator.of(context).pop(); // Close the bottom sheet
                   navigationProvider.navigateToRoute(NavigationRoute.library);
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    builder: (context) {
-                      return CreateCipherSheet();
-                    },
+                  navigationProvider.push(
+                    EditCipherScreen(
+                      cipherID: -1,
+                      versionID: -1,
+                      versionType: VersionType.brandNew,
+                    ),
+                    showAppBar: false,
+                    showDrawerIcon: false,
                   );
                 },
               ),
-              FilledTextButton.trailingIcon(
+              FilledTextButton(
                 trailingIcon: Icons.chevron_right,
                 isDiscrete: true,
                 text: AppLocalizations.of(context)!.assignSchedule,

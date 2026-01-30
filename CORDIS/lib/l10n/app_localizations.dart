@@ -404,11 +404,29 @@ abstract class AppLocalizations {
   /// **'Código da Seção'**
   String get sectionCode;
 
+  /// Hint text for section code input
+  ///
+  /// In pt, this message translates to:
+  /// **'ex.: V1, C, I, ...'**
+  String get sectionCodeHint;
+
+  /// Instruction for section code character limit
+  ///
+  /// In pt, this message translates to:
+  /// **'Máximo de 2 caracteres'**
+  String get sectionCodeInstruction;
+
   /// Section type field label
   ///
   /// In pt, this message translates to:
   /// **'Tipo da Seção'**
   String get sectionType;
+
+  /// Hint text for section type input
+  ///
+  /// In pt, this message translates to:
+  /// **'ex.: Verso, Refrão, Ponte...'**
+  String get sectionTypeHint;
 
   /// Section color field label
   ///
@@ -416,11 +434,23 @@ abstract class AppLocalizations {
   /// **'Cor da Seção'**
   String get sectionColor;
 
+  /// Hint text for section color input
+  ///
+  /// In pt, this message translates to:
+  /// **'Selecione a cor da seção...'**
+  String get sectionColorHint;
+
   /// Hint text for section text input
   ///
   /// In pt, this message translates to:
   /// **'Texto da Seção...'**
   String get sectionText;
+
+  /// Hint text for section text input, in chordPro format
+  ///
+  /// In pt, this message translates to:
+  /// **'Insira o texto da seção, em formato chordPro. (letra[acorde])'**
+  String get sectionTextHint;
 
   /// Title for the cipher/song editor screen
   ///

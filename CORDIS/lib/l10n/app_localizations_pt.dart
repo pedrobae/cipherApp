@@ -164,13 +164,29 @@ class AppLocalizationsPt extends AppLocalizations {
   String get sectionCode => 'Código da Seção';
 
   @override
+  String get sectionCodeHint => 'ex.: V1, C, I, ...';
+
+  @override
+  String get sectionCodeInstruction => 'Máximo de 2 caracteres';
+
+  @override
   String get sectionType => 'Tipo da Seção';
+
+  @override
+  String get sectionTypeHint => 'ex.: Verso, Refrão, Ponte...';
 
   @override
   String get sectionColor => 'Cor da Seção';
 
   @override
+  String get sectionColorHint => 'Selecione a cor da seção...';
+
+  @override
   String get sectionText => 'Texto da Seção...';
+
+  @override
+  String get sectionTextHint =>
+      'Insira o texto da seção, em formato chordPro. (letra[acorde])';
 
   @override
   String get cipherEditorTitle => 'Editor de Cifras';

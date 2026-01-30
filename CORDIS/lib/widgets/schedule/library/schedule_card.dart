@@ -241,7 +241,7 @@ class ScheduleCard extends StatelessWidget {
 
               // ACTIONS
               // duplicate
-              FilledTextButton.trailingIcon(
+              FilledTextButton(
                 text: AppLocalizations.of(context)!.duplicatePlaceholder(''),
                 tooltip: AppLocalizations.of(
                   context,
@@ -252,7 +252,7 @@ class ScheduleCard extends StatelessWidget {
                 isDiscrete: true,
               ),
               // delete
-              FilledTextButton.trailingIcon(
+              FilledTextButton(
                 text: AppLocalizations.of(context)!.delete,
                 tooltip: AppLocalizations.of(context)!.deleteScheduleTooltip,
                 onPressed: () {

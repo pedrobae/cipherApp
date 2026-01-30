@@ -1,5 +1,6 @@
 import 'package:cordis/l10n/app_localizations.dart';
-import 'package:cordis/providers/schedule/schedule_provider.dart';
+import 'package:cordis/providers/schedule/cloud_schedule_provider.dart';
+import 'package:cordis/providers/schedule/local_schedule_provider.dart';
 import 'package:cordis/widgets/schedule/library/schedule_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -45,15 +46,22 @@ class _ScheduleScrollViewState extends State<ScheduleScrollView> {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Consumer<ScheduleProvider>(
-      builder: (context, scheduleProvider, child) {
+    return Consumer2<LocalScheduleProvider, CloudScheduleProvider>(
+      builder: (context, localScheduleProvider, cloudScheduleProvider, child) {
         // Handle loading state
-        if (scheduleProvider.isLoading || scheduleProvider.isLoadingCloud) {
+        if (localScheduleProvider.isLoading ||
+            cloudScheduleProvider.isLoading) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final futureScheduleIds = scheduleProvider.futureScheduleIDs;
-        final pastScheduleIds = scheduleProvider.pastScheduleIDs;
+        final localfuture = localScheduleProvider.futureScheduleIDs;
+        final localPast = localScheduleProvider.pastScheduleIDs;
+        final cloudFuture = cloudScheduleProvider.futureScheduleIDs;
+        final cloudPast = cloudScheduleProvider.pastScheduleIDs;
+
+        final futureScheduleIds = [...localfuture, ...cloudFuture];
+
+        final pastScheduleIds = [...localPast, ...cloudPast];
 
         // Handle empty state
         if (futureScheduleIds.isEmpty && pastScheduleIds.isEmpty) {
@@ -76,7 +84,8 @@ class _ScheduleScrollViewState extends State<ScheduleScrollView> {
         return _buildScheduleList(
           pastScheduleIds,
           futureScheduleIds,
-          scheduleProvider,
+          localScheduleProvider,
+          cloudScheduleProvider,
           textTheme,
         );
       },
@@ -86,7 +95,8 @@ class _ScheduleScrollViewState extends State<ScheduleScrollView> {
   Widget _buildScheduleList(
     List<dynamic> pastScheduleIDs,
     List<dynamic> futureScheduleIDs,
-    ScheduleProvider scheduleProvider,
+    LocalScheduleProvider localScheduleProvider,
+    CloudScheduleProvider cloudScheduleProvider,
     TextTheme textTheme,
   ) {
     return Column(
@@ -115,8 +125,8 @@ class _ScheduleScrollViewState extends State<ScheduleScrollView> {
         Expanded(
           child: RefreshIndicator(
             onRefresh: () async {
-              await scheduleProvider.loadLocalSchedules();
-              await scheduleProvider.loadCloudSchedules();
+              await localScheduleProvider.loadSchedules();
+              await cloudScheduleProvider.loadSchedules();
             },
             child: SingleChildScrollView(
               controller: _scrollController,

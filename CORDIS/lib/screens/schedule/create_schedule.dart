@@ -1,7 +1,7 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/my_auth_provider.dart';
 import 'package:cordis/providers/navigation_provider.dart';
-import 'package:cordis/providers/schedule/schedule_provider.dart';
+import 'package:cordis/providers/schedule/local_schedule_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/screens/playlist/playlist_library.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
@@ -20,7 +20,7 @@ class CreateScheduleScreen extends StatefulWidget {
 }
 
 class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
-  late ScheduleProvider _scheduleProvider;
+  late LocalScheduleProvider _scheduleProvider;
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _startTimeController = TextEditingController();
@@ -31,7 +31,7 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
   @override
   void initState() {
     super.initState();
-    _scheduleProvider = context.read<ScheduleProvider>();
+    _scheduleProvider = context.read<LocalScheduleProvider>();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
@@ -70,7 +70,7 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
   @override
   Widget build(BuildContext context) {
     return Consumer4<
-      ScheduleProvider,
+      LocalScheduleProvider,
       MyAuthProvider,
       SelectionProvider,
       NavigationProvider
@@ -185,7 +185,8 @@ class _CreateScheduleScreenState extends State<CreateScheduleScreen> {
                             );
                           case 2:
                             // Cache Schedule Details
-                            scheduleProvider.cacheNewScheduleDetails(
+                            scheduleProvider.cacheScheduleDetails(
+                              -1,
                               name: _nameController.text,
                               date: _dateController.text,
                               startTime: _startTimeController.text,

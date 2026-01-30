@@ -1,8 +1,10 @@
 import 'package:cordis/l10n/app_localizations.dart';
+import 'package:cordis/models/dtos/schedule_dto.dart';
 import 'package:cordis/providers/my_auth_provider.dart';
 import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
-import 'package:cordis/providers/schedule/schedule_provider.dart';
+import 'package:cordis/providers/schedule/cloud_schedule_provider.dart';
+import 'package:cordis/providers/schedule/local_schedule_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/screens/schedule/view_schedule.dart';
 import 'package:cordis/widgets/delete_confirmation.dart';
@@ -26,8 +28,9 @@ class ScheduleCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Consumer5<
-      ScheduleProvider,
+    return Consumer6<
+      LocalScheduleProvider,
+      CloudScheduleProvider,
       PlaylistProvider,
       MyAuthProvider,
       UserProvider,
@@ -36,7 +39,8 @@ class ScheduleCard extends StatelessWidget {
       builder:
           (
             context,
-            scheduleProvider,
+            localScheduleProvider,
+            cloudScheduleProvider,
             playlistProvider,
             authProvider,
             userProvider,
@@ -44,7 +48,8 @@ class ScheduleCard extends StatelessWidget {
             child,
           ) {
             // LOADING STATE
-            if (scheduleProvider.isLoading ||
+            if (localScheduleProvider.isLoading ||
+                cloudScheduleProvider.isLoading ||
                 userProvider.isLoading ||
                 scheduleId == -1) {
               return Center(
@@ -52,10 +57,32 @@ class ScheduleCard extends StatelessWidget {
               );
             }
 
-            final schedule = scheduleProvider.getScheduleById(scheduleId)!;
-            final playlist = playlistProvider.getPlaylistById(
-              schedule.playlistId,
-            );
+            final dynamic schedule = scheduleId is int
+                ? localScheduleProvider.getSchedule(scheduleId)!
+                : cloudScheduleProvider.getSchedule(scheduleId);
+
+            final dynamic playlist = scheduleId is int
+                ? playlistProvider.getPlaylistById(schedule.playlistId)
+                : schedule.playlist;
+
+            String userRole = AppLocalizations.of(context)!.generalMember;
+            if (scheduleId is int) {
+              final roleFound = localScheduleProvider.getUserRoleInSchedule(
+                scheduleId,
+                userProvider.getLocalIdByFirebaseId(authProvider.id!),
+              );
+              if (roleFound != null) {
+                userRole = roleFound;
+              }
+            } else {
+              for (var role in (schedule as ScheduleDto).roles) {
+                if (role.memberIds.contains(authProvider.id)) {
+                  userRole = role.name;
+                  break;
+                }
+              }
+            }
+
             return Container(
               padding: const EdgeInsets.all(8.0),
               decoration: BoxDecoration(
@@ -118,7 +145,7 @@ class ScheduleCard extends StatelessWidget {
 
                             // YOUR ROLE INFO
                             Text(
-                              '${AppLocalizations.of(context)!.role}: ${scheduleProvider.getUserRoleInSchedule(scheduleId, userProvider.getLocalIdByFirebaseId(authProvider.id!)) ?? AppLocalizations.of(context)!.generalMember}',
+                              '${AppLocalizations.of(context)!.role}: $userRole',
                               style: theme.textTheme.bodyMedium,
                             ),
                           ],
@@ -129,7 +156,8 @@ class ScheduleCard extends StatelessWidget {
                           onPressed: () => _openScheduleActionsSheet(
                             context,
                             scheduleId,
-                            scheduleProvider,
+                            localScheduleProvider,
+                            cloudScheduleProvider,
                           ),
                           icon: Icon(Icons.more_vert),
                         ),
@@ -177,7 +205,8 @@ class ScheduleCard extends StatelessWidget {
   void _openScheduleActionsSheet(
     BuildContext context,
     dynamic scheduleId,
-    ScheduleProvider scheduleProvider,
+    LocalScheduleProvider localScheduleProvider,
+    CloudScheduleProvider cloudScheduleProvider,
   ) {
     showModalBottomSheet(
       context: context,
@@ -234,7 +263,11 @@ class ScheduleCard extends StatelessWidget {
                         itemType: AppLocalizations.of(context)!.schedule,
                         onConfirm: () {
                           Navigator.of(context).pop();
-                          scheduleProvider.deleteSchedule(scheduleId);
+                          scheduleId is int
+                              ? localScheduleProvider.deleteSchedule(scheduleId)
+                              : localScheduleProvider.deleteSchedule(
+                                  scheduleId,
+                                );
                         },
                       );
                     },

@@ -1,4 +1,6 @@
 import 'package:cordis/helpers/database.dart';
+import 'package:cordis/providers/schedule/cloud_schedule_provider.dart';
+import 'package:cordis/providers/schedule/local_schedule_provider.dart';
 import 'package:cordis/providers/version/cloud_version_provider.dart';
 
 import 'package:cordis/utils/app_theme.dart';
@@ -9,7 +11,6 @@ import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/settings_provider.dart';
 import 'package:cordis/providers/my_auth_provider.dart';
-import 'package:cordis/providers/schedule/schedule_provider.dart';
 import 'package:cordis/providers/section_provider.dart';
 import 'package:cordis/providers/flow_item_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
@@ -191,8 +192,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context.read<SectionProvider>().clearCache();
       context.read<UserProvider>().clearCache();
       context.read<FlowItemProvider>().clearCache();
-      context.read<ScheduleProvider>().clearCache();
+      context.read<LocalScheduleProvider>().clearCache();
       context.read<SelectionProvider>().disableSelectionMode();
+      context.read<CloudScheduleProvider>().clearCache();
 
       // Force reload all providers from database
       await Future.wait([
@@ -200,7 +202,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         context.read<CloudVersionProvider>().loadVersions(),
         context.read<PlaylistProvider>().loadPlaylists(),
         context.read<UserProvider>().loadUsers(),
-        context.read<ScheduleProvider>().loadLocalSchedules(),
+        context.read<LocalScheduleProvider>().loadSchedules(),
+        context.read<CloudScheduleProvider>().loadSchedules(),
       ]);
 
       if (mounted) {

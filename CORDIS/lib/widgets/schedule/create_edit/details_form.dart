@@ -1,7 +1,6 @@
 import 'package:cordis/l10n/app_localizations.dart';
-import 'package:cordis/models/domain/schedule.dart';
-import 'package:cordis/models/dtos/schedule_dto.dart';
-import 'package:cordis/providers/schedule/schedule_provider.dart';
+import 'package:cordis/providers/schedule/cloud_schedule_provider.dart';
+import 'package:cordis/providers/schedule/local_schedule_provider.dart';
 import 'package:cordis/utils/date_time_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -36,12 +35,11 @@ class _ScheduleFormState extends State<ScheduleForm> {
     super.didChangeDependencies();
     // If editing an existing schedule, load its details
     if (widget.scheduleId != null) {
-      final scheduleProvider = context.read<ScheduleProvider>();
-
-      final schedule = scheduleProvider.getScheduleById(widget.scheduleId);
+      final localScheduleProvider = context.read<LocalScheduleProvider>();
+      final cloudScheduleProvider = context.read<CloudScheduleProvider>();
 
       if (widget.scheduleId is int) {
-        schedule as Schedule;
+        final schedule = localScheduleProvider.getSchedule(widget.scheduleId)!;
         widget.nameController.text = schedule.name;
         widget.dateController.text =
             '${schedule.date.day}/${schedule.date.month}/${schedule.date.year}';
@@ -50,7 +48,7 @@ class _ScheduleFormState extends State<ScheduleForm> {
         widget.locationController.text = schedule.location;
         widget.annotationsController?.text = schedule.annotations ?? '';
       } else {
-        schedule as ScheduleDto;
+        final schedule = cloudScheduleProvider.getSchedule(widget.scheduleId)!;
         widget.nameController.text = schedule.name;
         widget.dateController.text =
             '${schedule.datetime.toDate().day}/${schedule.datetime.toDate().month}/${schedule.datetime.toDate().year}';
@@ -64,7 +62,7 @@ class _ScheduleFormState extends State<ScheduleForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ScheduleProvider>(
+    return Consumer<LocalScheduleProvider>(
       builder: (context, value, child) => Form(
         autovalidateMode: AutovalidateMode.onUnfocus,
         child: SingleChildScrollView(

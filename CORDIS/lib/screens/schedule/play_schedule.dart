@@ -6,7 +6,8 @@ import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/flow_item_provider.dart';
 import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
-import 'package:cordis/providers/schedule/schedule_provider.dart';
+import 'package:cordis/providers/schedule/local_schedule_provider.dart';
+import 'package:cordis/providers/schedule/cloud_schedule_provider.dart';
 import 'package:cordis/providers/version/local_version_provider.dart';
 import 'package:cordis/widgets/schedule/play/play_cloud_version.dart';
 import 'package:cordis/widgets/schedule/play/play_flow_item.dart';
@@ -41,7 +42,8 @@ class PlayScheduleScreenState extends State<PlayScheduleScreen>
   }
 
   Future<void> _ensureDataLoaded() async {
-    final scheduleProvider = context.read<ScheduleProvider>();
+    final scheduleProvider = context.read<LocalScheduleProvider>();
+    final cloudScheduleProvider = context.read<CloudScheduleProvider>();
     final playlistProvider = context.read<PlaylistProvider>();
     final cipherProvider = context.read<CipherProvider>();
     final versionProvider = context.read<LocalVersionProvider>();
@@ -50,11 +52,11 @@ class PlayScheduleScreenState extends State<PlayScheduleScreen>
     if (widget.scheduleId == null) throw Exception("Schedule ID is required");
 
     if (!isCloud) {
-      await scheduleProvider.loadLocalSchedule(widget.scheduleId);
-      final schedule = scheduleProvider.schedules[widget.scheduleId];
-      await playlistProvider.loadPlaylist(schedule.playlistId);
+      final schedule = scheduleProvider.getSchedule(widget.scheduleId)!;
 
-      items = playlistProvider.getPlaylistById(schedule.playlistId)!.items;
+      await playlistProvider.loadPlaylist(schedule.playlistId!);
+
+      items = playlistProvider.getPlaylistById(schedule.playlistId!)!.items;
 
       for (final item in items) {
         if (item.type == PlaylistItemType.version) {
@@ -65,16 +67,17 @@ class PlayScheduleScreenState extends State<PlayScheduleScreen>
         }
       }
     } else {
-      if (!scheduleProvider.schedules.containsKey(widget.scheduleId)) {
-        await scheduleProvider.fetchSchedule(widget.scheduleId);
+      if (!cloudScheduleProvider.schedules.containsKey(widget.scheduleId)) {
+        await cloudScheduleProvider.loadSchedule(widget.scheduleId);
       }
 
-      final schedule = scheduleProvider.schedules[widget.scheduleId];
+      final schedule = cloudScheduleProvider.schedules[widget.scheduleId];
+
       if (schedule == null) {
         throw Exception("Schedule not found");
       }
 
-      items = (schedule as ScheduleDto).playlist!.getPlaylistItems();
+      items = schedule.playlist!.getPlaylistItems();
     }
   }
 
@@ -84,7 +87,7 @@ class PlayScheduleScreenState extends State<PlayScheduleScreen>
     final colorScheme = Theme.of(context).colorScheme;
 
     return Consumer6<
-      ScheduleProvider,
+      CloudScheduleProvider,
       PlaylistProvider,
       LocalVersionProvider,
       CipherProvider,

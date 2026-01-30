@@ -1,3 +1,4 @@
+import 'package:cordis/providers/schedule/cloud_schedule_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -16,7 +17,7 @@ import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/section_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/providers/settings_provider.dart';
-import 'package:cordis/providers/schedule/schedule_provider.dart';
+import 'package:cordis/providers/schedule/local_schedule_provider.dart';
 import 'package:cordis/providers/flow_item_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/providers/version/local_version_provider.dart';
@@ -63,7 +64,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => SettingsProvider()..loadSettings(),
         ),
-        ChangeNotifierProvider(create: (_) => ScheduleProvider()),
+        ChangeNotifierProvider(create: (_) => CloudScheduleProvider()),
+        ChangeNotifierProvider(create: (_) => LocalScheduleProvider()),
         ChangeNotifierProvider(create: (_) => FlowItemProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()..loadUsers()),
         ChangeNotifierProvider(create: (_) => CloudVersionProvider()),

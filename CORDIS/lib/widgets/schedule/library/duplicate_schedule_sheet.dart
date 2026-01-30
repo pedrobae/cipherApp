@@ -1,6 +1,7 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/models/domain/schedule.dart';
-import 'package:cordis/providers/schedule/schedule_provider.dart';
+import 'package:cordis/providers/schedule/cloud_schedule_provider.dart';
+import 'package:cordis/providers/schedule/local_schedule_provider.dart';
 import 'package:cordis/utils/date_utils.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:cordis/widgets/schedule/create_edit/details_form.dart';
@@ -28,8 +29,12 @@ class _DuplicateScheduleSheetState extends State<DuplicateScheduleSheet> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final scheduleProvider = context.read<ScheduleProvider>();
-      final schedule = scheduleProvider.getScheduleById(widget.scheduleId)!;
+      final localScheduleProvider = context.read<LocalScheduleProvider>();
+      final cloudScheduleProvider = context.read<CloudScheduleProvider>();
+
+      final dynamic schedule = widget.scheduleId is int
+          ? localScheduleProvider.getSchedule(widget.scheduleId)!
+          : cloudScheduleProvider.getSchedule(widget.scheduleId);
 
       nameController.text = schedule?.name ?? '';
       dateController.text = (schedule is Schedule)
@@ -57,8 +62,8 @@ class _DuplicateScheduleSheetState extends State<DuplicateScheduleSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ScheduleProvider>(
-      builder: (context, scheduleProvider, child) {
+    return Consumer2<LocalScheduleProvider, CloudScheduleProvider>(
+      builder: (context, localScheduleProvider, cloudScheduleProvider, child) {
         return Container(
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
@@ -105,14 +110,35 @@ class _DuplicateScheduleSheetState extends State<DuplicateScheduleSheet> {
                   text: AppLocalizations.of(context)!.keepGoing,
                   isDark: true,
                   onPressed: () {
-                    scheduleProvider.duplicateSchedule(
-                      widget.scheduleId,
-                      nameController.text,
-                      dateController.text,
-                      startTimeController.text,
-                      locationController.text,
-                      roomVenueController.text,
-                    );
+                    if (widget.scheduleId is int) {
+                      localScheduleProvider.duplicateSchedule(
+                        widget.scheduleId,
+                        nameController.text,
+                        dateController.text,
+                        startTimeController.text,
+                        locationController.text,
+                        roomVenueController.text,
+                      );
+                    } else {
+                      // final scheduleDto = cloudScheduleProvider
+                      //     .duplicateSchedule(
+                      //       widget.scheduleId,
+                      //       nameController.text,
+                      //       dateController.text,
+                      //       startTimeController.text,
+                      //       locationController.text,
+                      //       roomVenueController.text,
+                      //     );
+
+                      // TODO - CLOUD - implement duplication in cloud schedules
+                      // localScheduleProvider.createNewSchedule(
+                      //   scheduleDto.toDomain(
+                      //     ownerLocalId,
+                      //     roleMemberIds,
+                      //     playlistLocalId,
+                      //   ),
+                      // );
+                    }
                     Navigator.of(context).pop();
                   },
                 ),

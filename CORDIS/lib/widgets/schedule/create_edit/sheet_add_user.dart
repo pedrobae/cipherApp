@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/models/domain/schedule.dart';
-import 'package:cordis/providers/schedule/schedule_provider.dart';
+import 'package:cordis/providers/schedule/local_schedule_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:flutter/material.dart';
@@ -125,7 +125,7 @@ class _AddUserSheetState extends State<AddUserSheet> {
     }
 
     final userProvider = context.read<UserProvider>();
-    final scheduleProvider = context.read<ScheduleProvider>();
+    final scheduleProvider = context.read<LocalScheduleProvider>();
 
     // Check if user exists in known users
     dynamic user = userProvider.knownUsers.firstWhereOrNull(
@@ -152,7 +152,7 @@ class _AddUserSheetState extends State<AddUserSheet> {
           );
         }
       } else {
-        scheduleProvider.addMemberToRoleFirebase(
+        scheduleProvider.addMemberToRole(
           widget.scheduleId,
           widget.role.name,
           user.firebaseId,
@@ -169,7 +169,7 @@ class _AddUserSheetState extends State<AddUserSheet> {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return Consumer2<UserProvider, ScheduleProvider>(
+    return Consumer2<UserProvider, LocalScheduleProvider>(
       builder: (context, userProvider, scheduleProvider, child) {
         return Container(
           decoration: BoxDecoration(

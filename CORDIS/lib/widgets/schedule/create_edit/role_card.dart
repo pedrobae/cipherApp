@@ -1,5 +1,5 @@
 import 'package:cordis/l10n/app_localizations.dart';
-import 'package:cordis/providers/schedule/schedule_provider.dart';
+import 'package:cordis/providers/schedule/local_schedule_provider.dart';
 import 'package:cordis/widgets/delete_confirmation.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:cordis/widgets/schedule/create_edit/sheet_edit_role.dart';
@@ -17,7 +17,7 @@ class RoleCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Consumer<ScheduleProvider>(
+    return Consumer<LocalScheduleProvider>(
       builder: (context, scheduleProvider, child) => SizedBox(
         width: double.infinity,
         child: Container(

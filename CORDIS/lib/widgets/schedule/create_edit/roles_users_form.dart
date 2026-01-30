@@ -1,7 +1,8 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/models/domain/schedule.dart';
 import 'package:cordis/models/dtos/schedule_dto.dart';
-import 'package:cordis/providers/schedule/schedule_provider.dart';
+import 'package:cordis/providers/schedule/cloud_schedule_provider.dart';
+import 'package:cordis/providers/schedule/local_schedule_provider.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:cordis/widgets/schedule/create_edit/role_card.dart';
 import 'package:flutter/material.dart';
@@ -21,9 +22,11 @@ class _RolesAndUsersFormState extends State<RolesAndUsersForm> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    return Consumer<ScheduleProvider>(
-      builder: (context, scheduleProvider, child) {
-        final schedule = scheduleProvider.getScheduleById(widget.scheduleId);
+    return Consumer2<LocalScheduleProvider, CloudScheduleProvider>(
+      builder: (context, scheduleProvider, cloudScheduleProvider, child) {
+        final dynamic schedule = widget.scheduleId is String
+            ? cloudScheduleProvider.getSchedule(widget.scheduleId)
+            : scheduleProvider.getSchedule(widget.scheduleId);
 
         if (schedule == null) {
           return Center(child: Text('Schedule not found'));
@@ -88,7 +91,7 @@ class _RolesAndUsersFormState extends State<RolesAndUsersForm> {
   void _openNewRoleSheet(
     BuildContext context,
     dynamic schedule,
-    ScheduleProvider scheduleProvider,
+    LocalScheduleProvider scheduleProvider,
   ) {
     final TextEditingController roleNameController = TextEditingController();
 

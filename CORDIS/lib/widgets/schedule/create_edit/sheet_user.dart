@@ -1,6 +1,6 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/models/domain/schedule.dart';
-import 'package:cordis/providers/schedule/schedule_provider.dart';
+import 'package:cordis/providers/schedule/local_schedule_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:cordis/widgets/schedule/create_edit/sheet_add_user.dart';
@@ -27,7 +27,7 @@ class _UsersBottomSheetState extends State<UsersBottomSheet> {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return Consumer2<UserProvider, ScheduleProvider>(
+    return Consumer2<UserProvider, LocalScheduleProvider>(
       builder: (context, userProvider, scheduleProvider, child) {
         final users = (widget.role is Role)
             ? userProvider.getUsersByIds(widget.role.memberIds)
@@ -147,7 +147,7 @@ class _UsersBottomSheetState extends State<UsersBottomSheet> {
 
   void _openAddUserSheet(
     BuildContext context,
-    ScheduleProvider scheduleProvider,
+    LocalScheduleProvider scheduleProvider,
   ) {
     showModalBottomSheet(
       context: context,

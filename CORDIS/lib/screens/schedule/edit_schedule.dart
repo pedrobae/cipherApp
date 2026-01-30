@@ -2,7 +2,7 @@ import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/models/domain/schedule.dart';
 import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
-import 'package:cordis/providers/schedule/schedule_provider.dart';
+import 'package:cordis/providers/schedule/local_schedule_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/screens/playlist/playlist_library.dart';
 import 'package:cordis/utils/date_utils.dart';
@@ -36,17 +36,17 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
   final TextEditingController roomVenueController = TextEditingController();
   final TextEditingController annotationsController = TextEditingController();
 
-  late ScheduleProvider _scheduleProvider;
+  late LocalScheduleProvider _scheduleProvider;
 
   @override
   void initState() {
     super.initState();
-    _scheduleProvider = context.read<ScheduleProvider>();
+    _scheduleProvider = context.read<LocalScheduleProvider>();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _scheduleProvider.addListener(_scheduleErrorListener);
-        final schedule = _scheduleProvider.getScheduleById(widget.scheduleId);
+        final schedule = _scheduleProvider.getSchedule(widget.scheduleId);
         _populateControllers(schedule);
       }
     });
@@ -98,7 +98,7 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
     return Consumer4<
       SelectionProvider,
       NavigationProvider,
-      ScheduleProvider,
+      LocalScheduleProvider,
       PlaylistProvider
     >(
       builder:
@@ -192,7 +192,7 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
 
   void _saveDetails(
     NavigationProvider navigationProvider,
-    ScheduleProvider scheduleProvider,
+    LocalScheduleProvider scheduleProvider,
     int scheduleId,
   ) {
     scheduleProvider.cacheScheduleDetails(
@@ -204,12 +204,12 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
       roomVenue: roomVenueController.text,
       annotations: annotationsController.text,
     );
-    scheduleProvider.saveLocalSchedule(scheduleId);
+    scheduleProvider.saveSchedule(scheduleId);
   }
 
   void _savePlaylist(
     NavigationProvider navigationProvider,
-    ScheduleProvider scheduleProvider,
+    LocalScheduleProvider scheduleProvider,
     PlaylistProvider playlistProvider,
     SelectionProvider selectionProvider,
   ) {
@@ -221,11 +221,11 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
     );
     if (selectedPlaylist == null) return;
 
-    scheduleProvider.assignPlaylistToLocalSchedule(
+    scheduleProvider.assignPlaylistToSchedule(
       widget.scheduleId,
       selectedPlaylistId,
     );
 
-    scheduleProvider.saveLocalSchedule(widget.scheduleId);
+    scheduleProvider.saveSchedule(widget.scheduleId);
   }
 }

@@ -1,6 +1,6 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/navigation_provider.dart';
-import 'package:cordis/providers/schedule/schedule_provider.dart';
+import 'package:cordis/providers/schedule/local_schedule_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/screens/playlist/edit_playlist.dart';
 import 'package:cordis/screens/schedule/create_Schedule.dart';
@@ -29,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _loadData() async {
-    await context.read<ScheduleProvider>().loadLocalSchedules();
+    await context.read<LocalScheduleProvider>().loadSchedules();
   }
 
   @override
@@ -39,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child:
           Consumer4<
             MyAuthProvider,
-            ScheduleProvider,
+            LocalScheduleProvider,
             NavigationProvider,
             SelectionProvider
           >(
@@ -180,7 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildNextSchedule(
     BuildContext context,
-    ScheduleProvider scheduleProvider,
+    LocalScheduleProvider scheduleProvider,
     dynamic nextSchedule,
     TextTheme textTheme,
     ColorScheme colorScheme,

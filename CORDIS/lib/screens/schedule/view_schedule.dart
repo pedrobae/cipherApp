@@ -3,7 +3,8 @@ import 'package:cordis/models/domain/schedule.dart';
 import 'package:cordis/models/dtos/schedule_dto.dart';
 import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
-import 'package:cordis/providers/schedule/schedule_provider.dart';
+import 'package:cordis/providers/schedule/cloud_schedule_provider.dart';
+import 'package:cordis/providers/schedule/local_schedule_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
 import 'package:cordis/screens/schedule/edit_schedule.dart';
@@ -23,13 +24,22 @@ class ViewScheduleScreen extends StatefulWidget {
 }
 
 class _ViewScheduleScreenState extends State<ViewScheduleScreen> {
+  late bool isCloud;
+
+  @override
+  void initState() {
+    super.initState();
+    isCloud = widget.scheduleId is String;
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Consumer5<
-      ScheduleProvider,
+    return Consumer6<
+      LocalScheduleProvider,
+      CloudScheduleProvider,
       PlaylistProvider,
       NavigationProvider,
       SelectionProvider,
@@ -38,7 +48,8 @@ class _ViewScheduleScreenState extends State<ViewScheduleScreen> {
       builder:
           (
             context,
-            scheduleProvider,
+            localScheduleProvider,
+            cloudScheduleProvider,
             playlistProvider,
             navigationProvider,
             selectionProvider,
@@ -46,7 +57,8 @@ class _ViewScheduleScreenState extends State<ViewScheduleScreen> {
             child,
           ) {
             // LOADING STATE
-            if (scheduleProvider.isLoading) {
+            if (localScheduleProvider.isLoading ||
+                cloudScheduleProvider.isLoading) {
               return Scaffold(
                 appBar: AppBar(
                   title: Text(AppLocalizations.of(context)!.loading),
@@ -61,8 +73,8 @@ class _ViewScheduleScreenState extends State<ViewScheduleScreen> {
             }
 
             // ERROR STATE
-            if (scheduleProvider.error != null &&
-                scheduleProvider.error?.isNotEmpty == true) {
+            if (localScheduleProvider.error != null &&
+                cloudScheduleProvider.error != null) {
               return Scaffold(
                 appBar: AppBar(
                   title: Text(AppLocalizations.of(context)!.error),
@@ -78,14 +90,16 @@ class _ViewScheduleScreenState extends State<ViewScheduleScreen> {
                       Text(
                         AppLocalizations.of(context)!.errorMessage(
                           AppLocalizations.of(context)!.load,
-                          scheduleProvider.error!,
+                          localScheduleProvider.error ??
+                              cloudScheduleProvider.error ??
+                              '',
                         ),
                         style: const TextStyle(color: Colors.red),
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          scheduleProvider.loadLocalSchedules();
-                          scheduleProvider.loadCloudSchedules();
+                          localScheduleProvider.loadSchedules();
+                          cloudScheduleProvider.loadSchedules();
                         },
                         child: Text(AppLocalizations.of(context)!.tryAgain),
                       ),
@@ -95,9 +109,10 @@ class _ViewScheduleScreenState extends State<ViewScheduleScreen> {
               );
             }
 
-            final schedule = scheduleProvider.getScheduleById(
-              widget.scheduleId,
-            );
+            // FETCH SCHEDULE DEPENDING ON PROVIDER
+            final dynamic schedule = isCloud
+                ? cloudScheduleProvider.getSchedule(widget.scheduleId)
+                : localScheduleProvider.getSchedule(widget.scheduleId);
 
             if (schedule == null) {
               return Scaffold(
@@ -281,12 +296,13 @@ class _ViewScheduleScreenState extends State<ViewScheduleScreen> {
                               isDark: true,
                               isDense: true,
                               onPressed: () {
+                                if (isCloud) return;
                                 selectionProvider.enableSelectionMode(
                                   targetId: widget.scheduleId,
                                 );
                                 selectionProvider.select(
-                                  scheduleProvider
-                                      .getScheduleById(widget.scheduleId)
+                                  localScheduleProvider
+                                      .getSchedule(widget.scheduleId)!
                                       .playlistId,
                                 );
 

@@ -1,11 +1,12 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/navigation_provider.dart';
+import 'package:cordis/providers/schedule/cloud_schedule_provider.dart';
+import 'package:cordis/providers/schedule/local_schedule_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/screens/schedule/create_schedule.dart';
 import 'package:cordis/widgets/schedule/library/schedule_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cordis/providers/schedule/schedule_provider.dart';
 
 class ScheduleLibraryScreen extends StatefulWidget {
   const ScheduleLibraryScreen({super.key});
@@ -21,9 +22,10 @@ class _ScheduleLibraryScreenState extends State<ScheduleLibraryScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final scheduleProvider = context.read<ScheduleProvider>();
-      scheduleProvider.loadLocalSchedules();
-      scheduleProvider.loadCloudSchedules();
+      final localScheduleProvider = context.read<LocalScheduleProvider>();
+      final cloudScheduleProvider = context.read<CloudScheduleProvider>();
+      localScheduleProvider.loadSchedules();
+      cloudScheduleProvider.loadSchedules();
     });
   }
 
@@ -32,11 +34,17 @@ class _ScheduleLibraryScreenState extends State<ScheduleLibraryScreen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Consumer3<ScheduleProvider, NavigationProvider, SelectionProvider>(
+    return Consumer4<
+      LocalScheduleProvider,
+      CloudScheduleProvider,
+      NavigationProvider,
+      SelectionProvider
+    >(
       builder:
           (
             context,
-            scheduleProvider,
+            localScheduleProvider,
+            cloudScheduleProvider,
             navigationProvider,
             selectionProvider,
             child,
@@ -75,12 +83,14 @@ class _ScheduleLibraryScreenState extends State<ScheduleLibraryScreen> {
                           visualDensity: VisualDensity.compact,
                         ),
                         onChanged: (value) {
-                          scheduleProvider.setSearchTerm(value);
+                          localScheduleProvider.setSearchTerm(value);
+                          cloudScheduleProvider.setSearchTerm(value);
                         },
                       ),
 
                       // Loading state
-                      if (scheduleProvider.isLoading) ...[
+                      if (localScheduleProvider.isLoading ||
+                          cloudScheduleProvider.isLoading) ...[
                         Expanded(
                           child: Center(
                             child: CircularProgressIndicator(
@@ -89,11 +99,14 @@ class _ScheduleLibraryScreenState extends State<ScheduleLibraryScreen> {
                           ),
                         ),
                         // Error state
-                      ] else if (scheduleProvider.error != null) ...[
+                      ] else if (localScheduleProvider.error != null ||
+                          cloudScheduleProvider.error != null) ...[
                         Expanded(
                           child: Center(
                             child: Text(
-                              scheduleProvider.error!,
+                              localScheduleProvider.error ??
+                                  cloudScheduleProvider.error ??
+                                  '',
                               style: theme.textTheme.bodyMedium!.copyWith(
                                 color: colorScheme.error,
                               ),

@@ -4,7 +4,7 @@ import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
-import 'package:cordis/providers/version/version_provider.dart';
+import 'package:cordis/providers/version/local_version_provider.dart';
 import 'package:cordis/screens/cipher/edit_cipher.dart';
 import 'package:cordis/screens/cipher/view_cipher.dart';
 import 'package:cordis/utils/date_utils.dart';
@@ -27,7 +27,9 @@ class _CipherCardState extends State<CipherCard> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<VersionProvider>().loadVersionsOfCipher(widget.cipherId);
+      context.read<LocalVersionProvider>().loadVersionsOfCipher(
+        widget.cipherId,
+      );
     });
   }
 
@@ -38,7 +40,7 @@ class _CipherCardState extends State<CipherCard> {
 
     return Consumer5<
       CipherProvider,
-      VersionProvider,
+      LocalVersionProvider,
       SelectionProvider,
       PlaylistProvider,
       NavigationProvider

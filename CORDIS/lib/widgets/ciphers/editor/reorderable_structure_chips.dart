@@ -1,6 +1,6 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/section_provider.dart';
-import 'package:cordis/providers/version/version_provider.dart';
+import 'package:cordis/providers/version/local_version_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:cordis/widgets/ciphers/editor/custom_reorderable_delayed.dart';
 import 'package:provider/provider.dart';
@@ -16,7 +16,11 @@ class ReorderableStructureChips extends StatefulWidget {
 }
 
 class _ReorderableStructureChipsState extends State<ReorderableStructureChips> {
-  void _reorder(int oldIndex, int newIndex, VersionProvider versionProvider) {
+  void _reorder(
+    int oldIndex,
+    int newIndex,
+    LocalVersionProvider versionProvider,
+  ) {
     versionProvider.reorderSongStructure(
       widget.versionId ?? -1,
       oldIndex,
@@ -26,7 +30,7 @@ class _ReorderableStructureChipsState extends State<ReorderableStructureChips> {
 
   void _removeSection(
     int index,
-    VersionProvider versionProvider,
+    LocalVersionProvider versionProvider,
     SectionProvider sectionProvider,
   ) {
     if (!versionProvider
@@ -46,7 +50,7 @@ class _ReorderableStructureChipsState extends State<ReorderableStructureChips> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    return Consumer2<VersionProvider, SectionProvider>(
+    return Consumer2<LocalVersionProvider, SectionProvider>(
       builder: (context, versionProvider, sectionProvider, child) {
         final songStructure = versionProvider.getSongStructure(
           widget.versionId ?? -1,

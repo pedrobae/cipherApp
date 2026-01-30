@@ -2,7 +2,7 @@ import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/layout_settings_provider.dart';
 import 'package:cordis/providers/section_provider.dart';
-import 'package:cordis/providers/version/version_provider.dart';
+import 'package:cordis/providers/version/local_version_provider.dart';
 import 'package:cordis/utils/date_utils.dart';
 import 'package:cordis/utils/section_helper.dart';
 import 'package:cordis/widgets/ciphers/viewer/section_card.dart';
@@ -38,7 +38,7 @@ class _PlayLocalVersionState extends State<PlayLocalVersion> {
   }
 
   Future<void> _ensureDataLoaded() async {
-    final versionProvider = context.read<VersionProvider>();
+    final versionProvider = context.read<LocalVersionProvider>();
     final sectionProvider = context.read<SectionProvider>();
 
     await versionProvider.loadVersion(widget.versionId);
@@ -74,7 +74,7 @@ class _PlayLocalVersionState extends State<PlayLocalVersion> {
 
     return Consumer4<
       CipherProvider,
-      VersionProvider,
+      LocalVersionProvider,
       SectionProvider,
       LayoutSettingsProvider
     >(

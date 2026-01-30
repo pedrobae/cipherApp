@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/layout_settings_provider.dart';
 import 'package:cordis/providers/version/cloud_version_provider.dart';
-import 'package:cordis/providers/version/version_provider.dart';
+import 'package:cordis/providers/version/local_version_provider.dart';
 import 'package:cordis/screens/cipher/edit_cipher.dart';
 import 'package:cordis/widgets/settings/layout_settings.dart';
 import 'package:cordis/widgets/ciphers/viewer/content_view.dart';
@@ -111,7 +111,7 @@ class _ViewCipherScreenState extends State<ViewCipherScreen>
 
     return Consumer6<
       CipherProvider,
-      VersionProvider,
+      LocalVersionProvider,
       CloudVersionProvider,
       SectionProvider,
       LayoutSettingsProvider,

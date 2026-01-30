@@ -1,6 +1,6 @@
 import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/providers/section_provider.dart';
-import 'package:cordis/providers/version/version_provider.dart';
+import 'package:cordis/providers/version/local_version_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -47,7 +47,7 @@ class _StructureListState extends State<StructureList> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    return Consumer2<VersionProvider, SectionProvider>(
+    return Consumer2<LocalVersionProvider, SectionProvider>(
       builder: (context, versionProvider, sectionProvider, child) {
         return Container(
           padding: EdgeInsets.all(8),

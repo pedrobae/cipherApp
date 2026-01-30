@@ -6,7 +6,7 @@ import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cordis/providers/section_provider.dart';
-import 'package:cordis/providers/version/version_provider.dart';
+import 'package:cordis/providers/version/local_version_provider.dart';
 import 'package:cordis/widgets/ciphers/editor/reorderable_structure_chips.dart';
 import 'package:cordis/widgets/ciphers/editor/sections/token_content_editor.dart';
 import 'package:cordis/utils/section_constants.dart';
@@ -33,7 +33,7 @@ class _SectionsTabState extends State<SectionsTab> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    return Consumer3<SectionProvider, VersionProvider, SelectionProvider>(
+    return Consumer3<SectionProvider, LocalVersionProvider, SelectionProvider>(
       builder:
           (
             context,
@@ -213,7 +213,7 @@ class _SectionsTabState extends State<SectionsTab> {
   void _addSection(
     SectionLabel sectionLabel,
     SectionProvider sectionProvider,
-    VersionProvider versionProvider,
+    LocalVersionProvider versionProvider,
   ) {
     final isNewSection = !sectionProvider
         .getSections(widget.versionID)
@@ -237,7 +237,7 @@ class _SectionsTabState extends State<SectionsTab> {
   void _showNewSectionSheet(
     BuildContext context,
     SectionProvider sectionProvider,
-    VersionProvider versionProvider,
+    LocalVersionProvider versionProvider,
   ) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;

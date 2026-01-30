@@ -7,7 +7,7 @@ import 'package:cordis/providers/flow_item_provider.dart';
 import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/schedule_provider.dart';
-import 'package:cordis/providers/version/version_provider.dart';
+import 'package:cordis/providers/version/local_version_provider.dart';
 import 'package:cordis/widgets/schedule/play/play_cloud_version.dart';
 import 'package:cordis/widgets/schedule/play/play_flow_item.dart';
 import 'package:cordis/widgets/schedule/play/play_local_version.dart';
@@ -44,7 +44,7 @@ class PlayScheduleScreenState extends State<PlayScheduleScreen>
     final scheduleProvider = context.read<ScheduleProvider>();
     final playlistProvider = context.read<PlaylistProvider>();
     final cipherProvider = context.read<CipherProvider>();
-    final versionProvider = context.read<VersionProvider>();
+    final versionProvider = context.read<LocalVersionProvider>();
     final flowItemProvider = context.read<FlowItemProvider>();
 
     if (widget.scheduleId == null) throw Exception("Schedule ID is required");
@@ -86,7 +86,7 @@ class PlayScheduleScreenState extends State<PlayScheduleScreen>
     return Consumer6<
       ScheduleProvider,
       PlaylistProvider,
-      VersionProvider,
+      LocalVersionProvider,
       CipherProvider,
       FlowItemProvider,
       NavigationProvider

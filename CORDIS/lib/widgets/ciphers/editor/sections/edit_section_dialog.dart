@@ -2,7 +2,7 @@ import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/models/domain/cipher/section.dart';
 import 'package:cordis/models/ui/song.dart';
 import 'package:cordis/providers/section_provider.dart';
-import 'package:cordis/providers/version/version_provider.dart';
+import 'package:cordis/providers/version/local_version_provider.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:cordis/utils/section_constants.dart';
@@ -207,7 +207,7 @@ class _EditSectionDialogState extends State<EditSectionDialog> {
     );
     // If the content code has changed, update the song structure accordingly
     if (code != null && code != widget.sectionCode) {
-      context.read<VersionProvider>().updateSectionCodeInStruct(
+      context.read<LocalVersionProvider>().updateSectionCodeInStruct(
         widget.versionId,
         oldCode: widget.sectionCode,
         newCode: code,
@@ -226,7 +226,7 @@ class _EditSectionDialogState extends State<EditSectionDialog> {
       widget.versionId,
       widget.sectionCode,
     );
-    context.read<VersionProvider>().removeSectionFromStructByCode(
+    context.read<LocalVersionProvider>().removeSectionFromStructByCode(
       widget.versionId,
       widget.sectionCode,
     );

@@ -2,7 +2,7 @@ import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:cordis/repositories/local_cipher_repository.dart';
 import 'package:flutter/foundation.dart';
 
-class VersionProvider extends ChangeNotifier {
+class LocalVersionProvider extends ChangeNotifier {
   final LocalCipherRepository _cipherRepository = LocalCipherRepository();
 
   final Map<int, Version> _versions = {}; // Cached versions localID -> Version

@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:cordis/helpers/chords/chords.dart';
 import 'package:cordis/models/ui/content_token.dart';
 import 'package:cordis/providers/cipher_provider.dart';
-import 'package:cordis/providers/version/version_provider.dart';
+import 'package:cordis/providers/version/local_version_provider.dart';
 import 'package:cordis/providers/version/cloud_version_provider.dart';
 import 'package:cordis/widgets/ciphers/editor/sections/chord_token.dart';
 
@@ -61,7 +61,11 @@ class _ChordPaletteState extends State<ChordPalette> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer3<VersionProvider, CipherProvider, CloudVersionProvider>(
+    return Consumer3<
+      LocalVersionProvider,
+      CipherProvider,
+      CloudVersionProvider
+    >(
       builder:
           (
             context,

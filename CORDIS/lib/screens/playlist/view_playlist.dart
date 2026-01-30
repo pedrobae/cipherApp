@@ -9,7 +9,7 @@ import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
-import 'package:cordis/providers/version/version_provider.dart';
+import 'package:cordis/providers/version/local_version_provider.dart';
 
 import 'package:cordis/widgets/playlist/viewer/add_to_playlist_sheet.dart';
 
@@ -34,7 +34,7 @@ class _ViewPlaylistScreenState extends State<ViewPlaylistScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final playlistProvider = context.read<PlaylistProvider>();
-      final versionProvider = context.read<VersionProvider>();
+      final versionProvider = context.read<LocalVersionProvider>();
       final flowItemProvider = context.read<FlowItemProvider>();
 
       await playlistProvider.loadPlaylist(widget.playlistId);

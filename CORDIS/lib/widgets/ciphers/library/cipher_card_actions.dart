@@ -2,7 +2,7 @@ import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/navigation_provider.dart';
-import 'package:cordis/providers/version/version_provider.dart';
+import 'package:cordis/providers/version/local_version_provider.dart';
 import 'package:cordis/screens/cipher/edit_cipher.dart';
 import 'package:cordis/widgets/delete_confirmation.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +20,7 @@ class CipherCardActionsSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer3<NavigationProvider, CipherProvider, VersionProvider>(
+    return Consumer3<NavigationProvider, CipherProvider, LocalVersionProvider>(
       builder:
           (
             context,

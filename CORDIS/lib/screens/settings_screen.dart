@@ -14,7 +14,7 @@ import 'package:cordis/providers/section_provider.dart';
 import 'package:cordis/providers/flow_item_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
-import 'package:cordis/providers/version/version_provider.dart';
+import 'package:cordis/providers/version/local_version_provider.dart';
 
 import 'package:cordis/widgets/delete_confirmation.dart';
 import 'package:cordis/widgets/filled_text_button.dart';
@@ -187,7 +187,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       // Clear all provider caches first
       context.read<CipherProvider>().clearCache();
       context.read<PlaylistProvider>().clearCache();
-      context.read<VersionProvider>().clearCache();
+      context.read<LocalVersionProvider>().clearCache();
       context.read<SectionProvider>().clearCache();
       context.read<UserProvider>().clearCache();
       context.read<FlowItemProvider>().clearCache();

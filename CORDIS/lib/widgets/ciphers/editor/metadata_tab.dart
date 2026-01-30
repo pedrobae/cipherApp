@@ -2,7 +2,7 @@ import 'package:cordis/l10n/app_localizations.dart';
 import 'package:cordis/models/domain/cipher/version.dart';
 import 'package:cordis/providers/cipher_provider.dart';
 import 'package:cordis/providers/selection_provider.dart';
-import 'package:cordis/providers/version/version_provider.dart';
+import 'package:cordis/providers/version/local_version_provider.dart';
 import 'package:cordis/providers/version/cloud_version_provider.dart';
 import 'package:cordis/utils/date_utils.dart';
 import 'package:cordis/widgets/ciphers/editor/add_tag_sheet.dart';
@@ -57,7 +57,7 @@ class _MetadataTabState extends State<MetadataTab> {
 
   void _syncWithProviderData() {
     if (mounted) {
-      final versionProvider = context.read<VersionProvider>();
+      final versionProvider = context.read<LocalVersionProvider>();
       final cloudVersionProvider = context.read<CloudVersionProvider>();
       final cipherProvider = context.read<CipherProvider>();
 
@@ -204,7 +204,11 @@ class _MetadataTabState extends State<MetadataTab> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer3<CipherProvider, VersionProvider, CloudVersionProvider>(
+    return Consumer3<
+      CipherProvider,
+      LocalVersionProvider,
+      CloudVersionProvider
+    >(
       builder:
           (
             context,
@@ -277,7 +281,7 @@ class _MetadataTabState extends State<MetadataTab> {
   Widget _buildKeySelector({
     required BuildContext context,
     required CipherProvider cipherProvider,
-    required VersionProvider versionProvider,
+    required LocalVersionProvider versionProvider,
     required InfoField field,
   }) {
     final theme = Theme.of(context);
@@ -338,7 +342,7 @@ class _MetadataTabState extends State<MetadataTab> {
   Widget _buildTextField({
     required BuildContext context,
     required CipherProvider cipherProvider,
-    required VersionProvider versionProvider,
+    required LocalVersionProvider versionProvider,
     required CloudVersionProvider cloudVersionProvider,
     required InfoField field,
     String? Function(String?)? validator,
@@ -400,7 +404,7 @@ class _MetadataTabState extends State<MetadataTab> {
   Widget _buildTags({
     required BuildContext context,
     required CipherProvider cipherProvider,
-    required VersionProvider versionProvider,
+    required LocalVersionProvider versionProvider,
     required CloudVersionProvider cloudVersionProvider,
     required InfoField field,
   }) {
@@ -462,7 +466,7 @@ class _MetadataTabState extends State<MetadataTab> {
   Widget _buildDurationPicker({
     required BuildContext context,
     required CipherProvider cipherProvider,
-    required VersionProvider versionProvider,
+    required LocalVersionProvider versionProvider,
     required CloudVersionProvider cloudVersionProvider,
     required InfoField field,
   }) {
@@ -599,7 +603,7 @@ class _MetadataTabState extends State<MetadataTab> {
   }
 
   void cacheLocalUpdates(
-    VersionProvider versionProvider,
+    LocalVersionProvider versionProvider,
     CipherProvider cipherProvider,
     InfoField field,
     String value,

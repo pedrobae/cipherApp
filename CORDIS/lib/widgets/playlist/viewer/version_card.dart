@@ -13,7 +13,7 @@ import 'package:cordis/widgets/playlist/viewer/version_card_actions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cordis/providers/cipher_provider.dart';
-import 'package:cordis/providers/version/version_provider.dart';
+import 'package:cordis/providers/version/local_version_provider.dart';
 import 'package:cordis/widgets/ciphers/editor/custom_reorderable_delayed.dart';
 
 class PlaylistVersionCard extends StatefulWidget {
@@ -38,7 +38,7 @@ class _PlaylistVersionCardState extends State<PlaylistVersionCard> {
     super.initState();
     // Pre-load cipher data if not already loaded
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final versionProvider = context.read<VersionProvider>();
+      final versionProvider = context.read<LocalVersionProvider>();
       final cloudVersionProvider = context.read<CloudVersionProvider>();
       final sectionProvider = context.read<SectionProvider>();
       final cipherProvider = context.read<CipherProvider>();
@@ -83,7 +83,7 @@ class _PlaylistVersionCardState extends State<PlaylistVersionCard> {
     updatedStructure.insert(newIndex, item);
 
     // Persist to database
-    context.read<VersionProvider>().saveUpdatedSongStructure(
+    context.read<LocalVersionProvider>().saveUpdatedSongStructure(
       widget.versionId,
       updatedStructure,
     );
@@ -95,7 +95,7 @@ class _PlaylistVersionCardState extends State<PlaylistVersionCard> {
     final colorScheme = theme.colorScheme;
 
     return Consumer4<
-      VersionProvider,
+      LocalVersionProvider,
       CipherProvider,
       CloudVersionProvider,
       NavigationProvider

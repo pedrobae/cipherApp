@@ -8,7 +8,7 @@ import 'package:cordis/providers/selection_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cordis/providers/cipher_provider.dart';
-import 'package:cordis/providers/version/version_provider.dart';
+import 'package:cordis/providers/version/local_version_provider.dart';
 import 'package:cordis/providers/version/cloud_version_provider.dart';
 import 'package:cordis/providers/section_provider.dart';
 import 'package:cordis/widgets/ciphers/editor/metadata_tab.dart';
@@ -51,7 +51,7 @@ class _EditCipherScreenState extends State<EditCipherScreen>
 
   Future<void> _loadData() async {
     final cipherProvider = context.read<CipherProvider>();
-    final versionProvider = context.read<VersionProvider>();
+    final versionProvider = context.read<LocalVersionProvider>();
     final cloudVersionProvider = context.read<CloudVersionProvider>();
     final sectionProvider = context.read<SectionProvider>();
 
@@ -158,7 +158,7 @@ class _EditCipherScreenState extends State<EditCipherScreen>
 
     return Consumer6<
       CipherProvider,
-      VersionProvider,
+      LocalVersionProvider,
       SectionProvider,
       SelectionProvider,
       NavigationProvider,
@@ -302,7 +302,7 @@ class _EditCipherScreenState extends State<EditCipherScreen>
 
   Future<void> _save(
     SelectionProvider selectionProvider,
-    VersionProvider versionProvider,
+    LocalVersionProvider versionProvider,
     CipherProvider cipherProvider,
     SectionProvider sectionProvider,
     PlaylistProvider playlistProvider,

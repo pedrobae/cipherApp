@@ -3,7 +3,7 @@ import 'package:cordis/providers/my_auth_provider.dart';
 import 'package:cordis/providers/navigation_provider.dart';
 import 'package:cordis/providers/playlist_provider.dart';
 import 'package:cordis/providers/user_provider.dart';
-import 'package:cordis/providers/version/version_provider.dart';
+import 'package:cordis/providers/version/local_version_provider.dart';
 import 'package:cordis/widgets/delete_confirmation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -23,7 +23,7 @@ class VersionCardActionsSheet extends StatelessWidget {
     return Consumer5<
       NavigationProvider,
       PlaylistProvider,
-      VersionProvider,
+      LocalVersionProvider,
       UserProvider,
       MyAuthProvider
     >(

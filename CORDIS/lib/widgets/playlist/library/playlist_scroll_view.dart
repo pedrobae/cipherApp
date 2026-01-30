@@ -44,6 +44,8 @@ class _PlaylistScrollViewState extends State<PlaylistScrollView> {
               );
             }
 
+            final List<int> playlistIds = playlistProvider.filteredPlaylists;
+
             // Display playlist list
             return RefreshIndicator(
               onRefresh: () async {
@@ -69,13 +71,9 @@ class _PlaylistScrollViewState extends State<PlaylistScrollView> {
                       cacheExtent: 500,
                       itemCount: playlistProvider.filteredPlaylists.length,
                       itemBuilder: (context, index) {
-                        final playlistId = playlistProvider
-                            .filteredPlaylists
-                            .keys
-                            .elementAt(index);
                         return Container(
                           margin: const EdgeInsets.only(bottom: 8.0),
-                          child: PlaylistCard(playlistId: playlistId),
+                          child: PlaylistCard(playlistId: playlistIds[index]),
                         );
                       },
                     ),

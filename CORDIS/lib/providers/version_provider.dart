@@ -21,7 +21,6 @@ class VersionProvider extends ChangeNotifier {
   Map<int, Version> _localVersions = {}; // Cached versions localID -> Version
   Map<String, VersionDto> _cloudVersions =
       {}; // Cached cloud versions firebaseID -> Version
-  Map<String, VersionDto> _filteredCloudVersions = {};
   bool _isLoading = false;
   bool _isSaving = false;
 
@@ -38,7 +37,24 @@ class VersionProvider extends ChangeNotifier {
   bool get isSaving => _isSaving;
 
   Map<String, VersionDto> get cloudVersions => _cloudVersions;
-  Map<String, VersionDto> get filteredCloudVersions => _filteredCloudVersions;
+  List<String> get filteredCloudVersions {
+    if (_searchTerm.isEmpty) {
+      return _cloudVersions.keys.toList();
+    } else {
+      final List<String> tempList = [];
+      for (var entry in _cloudVersions.entries) {
+        if (entry.value.title.toLowerCase().contains(_searchTerm) ||
+            entry.value.author.toLowerCase().contains(_searchTerm) ||
+            entry.value.tags.any(
+              (tag) => tag.toLowerCase().contains(_searchTerm),
+            )) {
+          tempList.add(entry.key);
+        }
+      }
+      return tempList;
+    }
+  }
+
   bool get isLoadingCloud => _isLoadingCloud;
 
   String? get error => _error;
@@ -48,10 +64,6 @@ class VersionProvider extends ChangeNotifier {
       return _localVersions.length - 1;
     }
     return _localVersions.length;
-  }
-
-  int get filteredCloudVersionCount {
-    return _filteredCloudVersions.length;
   }
 
   List<String> getSongStructure(dynamic versionKey) => versionKey is int
@@ -204,7 +216,6 @@ class VersionProvider extends ChangeNotifier {
 
       await _cloudCache.saveCloudVersions(cloudVersions);
       await _cloudCache.saveLastCloudLoad(now);
-      _filterCloudVersions();
 
       _lastCloudLoad = now;
 
@@ -239,7 +250,6 @@ class VersionProvider extends ChangeNotifier {
       );
       if (version != null) {
         _cloudVersions[firebaseId] = version;
-        _filterCloudVersions();
         notifyListeners();
       }
     } catch (e) {
@@ -293,7 +303,6 @@ class VersionProvider extends ChangeNotifier {
       }
 
       _cloudVersions[firebaseId] = version;
-      _filterCloudVersions();
       if (kDebugMode) {
         print(
           'Loaded the cloud version: ${_cloudVersions[firebaseId]?.versionName} into cache',
@@ -343,29 +352,9 @@ class VersionProvider extends ChangeNotifier {
   }
 
   /// Search cached cloud versions
-  Future<void> searchCachedCloudVersions(String term) async {
+  Future<void> setSearchTerm(String term) async {
     _searchTerm = term.toLowerCase();
-    _filterCloudVersions();
     notifyListeners();
-  }
-
-  void _filterCloudVersions() {
-    if (_searchTerm.isEmpty) {
-      _filteredCloudVersions = Map.from(_cloudVersions);
-    } else {
-      _filteredCloudVersions = Map.fromEntries(
-        _cloudVersions.entries
-            .where(
-              (e) =>
-                  e.value.title.toLowerCase().contains(_searchTerm) ||
-                  e.value.author.toLowerCase().contains(_searchTerm) ||
-                  e.value.tags.any(
-                    (tag) => tag.toLowerCase().contains(_searchTerm),
-                  ),
-            )
-            .toList(),
-      );
-    }
   }
 
   // ===== UPSERT =====
@@ -830,14 +819,13 @@ class VersionProvider extends ChangeNotifier {
         (version) => MapEntry(version.firebaseId!, version),
       ),
     );
-    _filterCloudVersions();
     notifyListeners();
   }
 
   void clearCache() {
     _localVersions.clear();
     _cloudVersions.clear();
-    _filteredCloudVersions.clear();
+    _searchTerm = '';
     notifyListeners();
   }
 }

@@ -99,8 +99,8 @@ class _CipherLibraryScreenState extends State<CipherLibraryScreen> {
                         visualDensity: VisualDensity.compact,
                       ),
                       onChanged: (value) {
-                        cipherProvider.searchLocalCiphers(value);
-                        versionProvider.searchCachedCloudVersions(value);
+                        cipherProvider.setSearchTerm(value);
+                        versionProvider.setSearchTerm(value);
                       },
                     ),
                     Expanded(

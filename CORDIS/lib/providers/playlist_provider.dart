@@ -11,7 +11,6 @@ class PlaylistProvider extends ChangeNotifier {
   PlaylistProvider();
 
   final Map<int, Playlist> _playlists = {};
-  Map<int, Playlist> _filteredPlaylists = {};
 
   bool _isLoading = false;
   bool _isSaving = false;
@@ -25,7 +24,20 @@ class PlaylistProvider extends ChangeNotifier {
 
   // Getters
   Map<int, Playlist> get playlists => _playlists;
-  Map<int, Playlist> get filteredPlaylists => _filteredPlaylists;
+  List<int> get filteredPlaylists {
+    if (_searchTerm.isEmpty) {
+      return _playlists.keys.toList();
+    } else {
+      List<int> tempFiltered = [];
+      for (var entry in _playlists.entries) {
+        final playlist = entry.value;
+        if (playlist.name.toLowerCase().contains(_searchTerm)) {
+          tempFiltered.add(entry.key);
+        }
+      }
+      return tempFiltered;
+    }
+  }
 
   String _searchTerm = '';
 
@@ -98,7 +110,6 @@ class PlaylistProvider extends ChangeNotifier {
         final items = await _playlistRepository.getItemsOfPlaylist(p.id);
         _playlists[p.id] = p.copyWith(items: items);
       }
-      _filterLocalPlaylists();
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -491,28 +502,11 @@ class PlaylistProvider extends ChangeNotifier {
   // ===== SEARCH =====
   void setSearchTerm(String searchTerm) {
     _searchTerm = searchTerm.toLowerCase();
-    _filterLocalPlaylists();
-  }
-
-  void _filterLocalPlaylists() {
-    if (_searchTerm.isEmpty) {
-      _filteredPlaylists = _playlists;
-    } else {
-      Map<int, Playlist> tempFiltered = {};
-      for (var entry in _playlists.entries) {
-        final playlist = entry.value;
-        if (playlist.name.toLowerCase().contains(_searchTerm)) {
-          tempFiltered[entry.key] = playlist;
-        }
-      }
-      _filteredPlaylists = tempFiltered;
-    }
     notifyListeners();
   }
 
   void clearSearch() {
     _searchTerm = '';
-    _filteredPlaylists = _playlists;
     notifyListeners();
   }
 }

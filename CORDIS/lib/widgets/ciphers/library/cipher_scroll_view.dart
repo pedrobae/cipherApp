@@ -84,13 +84,15 @@ class _CipherScrollViewState extends State<CipherScrollView> {
   ) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+
+    final List<int> localIds = cipherProvider.filteredLocalCiphers;
+    final List<String> cloudIds = versionProvider.filteredCloudVersions;
+
     return RefreshIndicator(
       onRefresh: () async {
         _loadData(forceReload: true);
       },
-      child:
-          (cipherProvider.filteredLocalCipherCount == 0 &&
-              versionProvider.filteredCloudVersionCount == 0)
+      child: (localIds.isEmpty && cloudIds.isEmpty)
           ? Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -108,36 +110,26 @@ class _CipherScrollViewState extends State<CipherScrollView> {
           : ListView.builder(
               cacheExtent: 500,
               physics: const AlwaysScrollableScrollPhysics(),
-              itemCount:
-                  (cipherProvider.filteredLocalCipherCount +
-                  versionProvider.filteredCloudVersionCount),
+              itemCount: (localIds.length + cloudIds.length),
               itemBuilder: (context, index) {
-                if (index >= cipherProvider.filteredLocalCipherCount) {
-                  final cloudIndex =
-                      index - cipherProvider.filteredLocalCipherCount;
-                  final version = versionProvider.filteredCloudVersions.values
-                      .toList()[cloudIndex];
+                if (index >= localIds.length) {
                   return Padding(
                     padding: const EdgeInsets.only(
                       bottom: 8.0,
                     ), // Spacing between cards
                     child: CloudCipherCard(
-                      version: version,
+                      versionId: cloudIds[index - localIds.length],
                       playlistId: widget.playlistId,
                     ),
                   );
                 }
 
-                final cipherList = cipherProvider.filteredLocalCiphers.values
-                    .toList();
-
-                final cipher = cipherList[index];
                 return Padding(
                   padding: const EdgeInsets.only(
                     bottom: 8.0,
                   ), // Spacing between cards
                   child: CipherCard(
-                    cipherId: cipher.id,
+                    cipherId: localIds[index],
                     playlistId: widget.playlistId,
                   ),
                 );

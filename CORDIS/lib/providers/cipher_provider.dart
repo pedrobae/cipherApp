@@ -12,7 +12,6 @@ class CipherProvider extends ChangeNotifier {
   }
 
   Map<int, Cipher> _localCiphers = {};
-  Map<int, Cipher> _filteredLocalCiphers = {};
   bool _isLoading = false;
   bool _isSaving = false;
   String? _error;
@@ -21,7 +20,23 @@ class CipherProvider extends ChangeNotifier {
 
   // Getters
   Map<int, Cipher> get localCiphers => _localCiphers;
-  Map<int, Cipher> get filteredLocalCiphers => _filteredLocalCiphers;
+  List<int> get filteredLocalCiphers {
+    if (_searchTerm.isEmpty) {
+      return _localCiphers.keys.toList();
+    } else {
+      final List<int> tempList = [];
+      for (var entry in _localCiphers.entries) {
+        final cipher = entry.value;
+        if (cipher.title.toLowerCase().contains(_searchTerm) ||
+            cipher.author.toLowerCase().contains(_searchTerm) ||
+            cipher.tags.any((tag) => tag.toLowerCase().contains(_searchTerm))) {
+          tempList.add(entry.key);
+        }
+      }
+      return tempList;
+    }
+  }
+
   bool get isLoading => _isLoading;
   bool get isSaving => _isSaving;
   bool get hasLoadedCiphers => _hasLoadedCiphers;
@@ -33,13 +48,6 @@ class CipherProvider extends ChangeNotifier {
       return _localCiphers.length - 1;
     }
     return _localCiphers.length;
-  }
-
-  int get filteredLocalCipherCount {
-    if (_filteredLocalCiphers[-1] != null) {
-      return _filteredLocalCiphers.length - 1;
-    }
-    return _filteredLocalCiphers.length;
   }
 
   int? getLocalCipherIdByTitle(String title) {
@@ -67,7 +75,6 @@ class CipherProvider extends ChangeNotifier {
           (cipher) => MapEntry(cipher.id, cipher),
         ),
       );
-      _filterLocalCiphers();
 
       if (kDebugMode) {
         print('Loaded ${_localCiphers.length} ciphers from SQLite');
@@ -132,34 +139,9 @@ class CipherProvider extends ChangeNotifier {
   }
 
   /// Search functionality
-  Future<void> searchLocalCiphers(String term) async {
+  Future<void> setSearchTerm(String term) async {
     _searchTerm = term.toLowerCase();
-    _filterLocalCiphers();
     notifyListeners();
-  }
-
-  void _filterLocalCiphers() {
-    if (_searchTerm.isEmpty) {
-      _filteredLocalCiphers = _localCiphers;
-    } else {
-      _filteredLocalCiphers = Map.fromEntries(
-        _localCiphers.entries
-            .where(
-              (e) =>
-                  e.value.title.toLowerCase().contains(_searchTerm) ||
-                  e.value.author.toLowerCase().contains(_searchTerm) ||
-                  e.value.tags.any(
-                    (tag) => tag.toLowerCase().contains(_searchTerm),
-                  ),
-            )
-            .toList(),
-      );
-    }
-  }
-
-  void clearSearch() {
-    _searchTerm = '';
-    _filteredLocalCiphers = _localCiphers;
   }
 
   // ===== CREATE =====
@@ -352,12 +334,15 @@ class CipherProvider extends ChangeNotifier {
   /// Clear cached data and reset state for debugging
   void clearCache() {
     _localCiphers.clear();
-    _filteredLocalCiphers.clear();
     _isLoading = false;
     _isSaving = false;
     _error = null;
     _searchTerm = '';
     notifyListeners();
+  }
+
+  void clearSearch() {
+    _searchTerm = '';
   }
 
   // ===== CIPHER CACHING =====
